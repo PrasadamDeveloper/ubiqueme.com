@@ -25,7 +25,7 @@ const createQR = async () => {
   // Validar límites de QR activos según el plan de usuario
   const userPlan = (userStore.getPlan || 'alpha').toLowerCase()
   const maxQRs = userPlan === 'epsilon' ? 5 : userPlan === 'beta' ? 3 : 1
-  
+
   if (userQRs.value.length >= maxQRs) {
     toast.error(`Límite alcanzado: Su plan ${userPlan.toUpperCase()} permite un máximo de ${maxQRs} código(s) QR activos. Por favor, actualice su suscripción en la sección de Precios para registrar más.`)
     return
@@ -164,11 +164,17 @@ const images = imageStore.getImages;
           Códigos QR
         </h2>
       </div>
-      <button @click="createQR"
-        class="w-full cursor-pointer md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-black text-sm bg-white text-black hover:bg-white/90 transition-colors active:scale-95">
+      <button
+        class="w-full  cursor-pointer md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-black text-sm bg-white text-black hover:bg-white/90 transition-colors active:scale-95">
         <span class="material-symbols-outlined text-[18px]">add</span>
         Crear Nuevo QR
       </button>
+
+      <RouterLink to="/admin"
+        class="bg-cyan-700 text-white px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer">
+        Administrar
+        Usuarios
+      </RouterLink> <!-- Only for admin -->
     </div>
 
     <!-- Content Section -->

@@ -22,13 +22,14 @@ export interface IUser {
   /** Estado comercial de la suscripción */
   subscriptionStatus: 'active' | 'inactive' | 'canceled'
   /** Fecha en la que se adquirió el plan actual */
-  planPurchasedAt: string | Timestamp
+  planPurchasedAt: Timestamp
   /** Fecha en la que expira el plan (null para pruebas o planes sin fecha fija) */
-  planEndDate: string | Timestamp | null
+  planEndDate: Timestamp
   /** ID de referencia del proveedor de pagos (por ejemplo, Stripe o PayPal) */
   paymentProviderId: string
   /** Cantidad acumulada de códigos QR creados por el usuario */
   totalQRs: number
+  planCancelReason: string
   /** Preferencias de comunicación y notificaciones del usuario */
   preferences: {
     emailNotifications: boolean
@@ -36,7 +37,7 @@ export interface IUser {
     whatsappNotifications: boolean
   }
   /** Fecha y hora del último inicio de sesión */
-  lastLoginAt: string | Timestamp
+  lastLoginAt: Timestamp
   /** Fecha y hora en la que se registró la cuenta */
-  createdAt: string | Timestamp
+  createdAt: Timestamp
 }

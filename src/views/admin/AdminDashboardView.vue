@@ -1,18 +1,29 @@
 <template>
   <UserDashoardLayout>
     <template #main>
-      <div class="min-h-screen bg-[#09090b] w-full p-4 md:p-8 font-google-sans text-white pt-28">
+      <div class="min-h-screen bg-[#09090b] w-full p-4 md:p-8 font-google-sans text-white pt-28!">
 
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
-          <div>
-            <h1 class="text-3xl font-black italic uppercase tracking-tighter text-[#dce7ff] font-poppins">Centro de
-              Mando</h1>
+          <div class="w-full  flex flex-col items-center">
+            <h1 class="text-3xl font-bold  text  text-white font-poppins">Centro de
+              <span class="text-[#e6651f]">control</span>
+            </h1>
             <p class="text-white/40 text-sm mt-1">Inspección profunda de base de datos de usuarios</p>
           </div>
 
           <div class="flex items-center gap-4">
-
+            <select class="bg-white/5 border border-white/10 rounded-xl text-white focus:border-orange-500 focus:ring-1
+             focus:ring-orange-500 outline-none placeholder:text-white/20 p-2" v-model="selectedFilter">
+              <option value="all">Todos los usuarios</option>
+              <option value="active">Usarios activos</option>
+              <option value="banned">Usuarios suspendidos</option>
+              <option value="future">Próximos a vencer</option>
+              <option value="canceled">Usuarios que cancelaron</option>
+              <option value="inactive">Usuarios expirados</option>
+            </select>
+            <input type="text" v-model="searchQuery" placeholder="Buscar usuario..."
+              class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none placeholder:text-white/20">
           </div>
         </div>
 
@@ -29,7 +40,7 @@
 
               <!-- Header -->
               <thead>
-                <tr class="border-b border-white/10 bg-white/[0.02] font-poppins">
+                <tr class="border-b border-white/10 bg-white/2 font-poppins">
                   <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[280px]">Identidad
                     / Contacto</th>
                   <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[180px]">Actividad
@@ -45,7 +56,7 @@
               </thead>
 
               <!-- Body -->
-              <tbody v-if="!loading && usersData && usersData.length > 0">
+              <tbody v-if="!loading && usersComputed && usersComputed.length > 0">
                 <tr class="hidden">
                   <td colspan="5" class="p-10 text-center text-white/40">
                     <span class="material-symbols-outlined animate-spin text-3xl mb-2">settings</span>
@@ -53,13 +64,13 @@
                   </td>
                 </tr>
 
-                <tr v-for="user in usersData" :key="user.uid"
-                  class="border-b border-white/5 hover:bg-white/[0.02] transition-colors group align-top">
+                <tr v-for="user in usersComputed" :key="user.uid"
+                  class="border-b border-white/5 hover:bg-white/2 transition-colors group align-top">
 
                   <!-- 1. IDENTIDAD / CONTACTO -->
                   <td class="p-4">
                     <div class="flex gap-3">
-                      <div class="w-10 h-10 rounded-full border flex items-center justify-center flex-shrink-0 mt-1"
+                      <div class="w-10 h-10 rounded-full border flex items-center justify-center shrink-0 mt-1"
                         :class="user.role === 'admin' ? 'bg-orange-500/10 border-orange-500/20 text-orange-500' : 'bg-white/5 border-white/10 text-white'">
                         <span class="font-bold uppercase">{{ user.name.charAt(0) }}</span>
                       </div>
@@ -122,11 +133,11 @@
                       <div class="bg-black/40 rounded-lg p-2 border border-white/5 space-y-1.5 mt-2">
                         <div class="flex justify-between items-center text-[9px]">
                           <span class="text-white/40">Registro</span>
-                          <span class="font-mono text-white/60">{{ user.createdAt }}</span>
+                          <span class="font-mono text-white/60">{{ formatedDate(user.createdAt) }}</span>
                         </div>
                         <div class="flex justify-between items-center text-[9px]">
                           <span class="text-white/40">Último Login</span>
-                          <span class="font-mono text-white/60">{{ user.lastLoginAt }}</span>
+                          <span class="font-mono text-white/60">{{ formatedDate(user.lastLoginAt) }}</span>
                         </div>
                       </div>
 
@@ -164,10 +175,10 @@
                           <span class="font-mono">ID: {{ user.paymentProviderId }}</span>
                         </div>
                         <div class="text-white/30 font-mono">
-                          Comprado: {{ user.planPurchasedAt }}
+                          Comprado: {{ formatedDate(user.planPurchasedAt) }}
                         </div>
                         <div v-if="user.planEndDate" class="text-white/30 font-mono">
-                          Vence: {{ user.planEndDate }}
+                          Vence: {{ formatedDate(user.planEndDate) }}
                         </div>
                       </div>
                     </div>
@@ -249,7 +260,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
 import QRNamePrompt from '@/components/admin/QRNamePrompt.vue'
 import BanConfirmPrompt from '@/components/admin/BanConfirmPrompt.vue'
@@ -259,33 +270,6 @@ import { collection, doc, increment, onSnapshot, runTransaction, Timestamp, writ
 import { db as firestoreDb } from '@/firebase'
 import type { IUser } from '@/interfaces/IUser'
 import { nanoid } from 'nanoid'
-
-// ==========================================
-// 🚀 17-FIELD MOCK DATA & TYPES
-// ==========================================
-interface MockUser {
-  uid: string
-  name: string
-  email: string
-  phone: string
-  role: 'scanner' | 'admin' | 'user'
-  isActive: boolean
-  isBanned: boolean
-  banReason: string
-  plan: 'alpha' | 'beta' | 'epsilon'
-  subscriptionStatus: 'active' | 'inactive' | 'canceled'
-  planPurchasedAt: string
-  planEndDate: string | null
-  paymentProviderId: string
-  totalQRs: number
-  preferences: {
-    emailNotifications: boolean
-    smsNotifications: boolean
-    whatsappNotifications: boolean
-  }
-  lastLoginAt: string
-  createdAt: string
-}
 
 const loading = ref(true)
 
@@ -394,7 +378,6 @@ const handleQRSubmit = async (qrName: string) => {
 
 
 
-
 //BAN USER
 const isBanModalOpen = ref(false)
 const openBanModal = (user: IUser) => {
@@ -455,10 +438,44 @@ const handlePlanSubmit = async (plan: string) => {
   }
 }
 
-//===============================
-//functions to control the modals
-//===============================
+const formatedDate = (date: Timestamp | null): string => {
+  if (!date) return 'N/A';
+  return date.toDate().toLocaleString('es-MX', { dateStyle: 'long', timeStyle: 'short' })
+}
 
+const selectedFilter = ref<'all' | 'active' | 'banned' | 'future' | 'canceled' | 'inactive'>('all');
+
+const searchQuery = ref('');
+
+const usersComputed = computed(() => {
+
+  let result = usersData.value;
+
+  if (!selectedFilter.value) return result;
+
+  //FILTRO 2: SELECT (ALL / ACTIVE / BANNED)
+  if (selectedFilter.value == 'active') result = result.filter(u => !u.isBanned);
+
+  if (selectedFilter.value == 'banned') result = result.filter(u => u.isBanned);
+
+  if (selectedFilter.value == 'future') result = result.filter(u => u.planEndDate > Timestamp.now());
+
+  if (selectedFilter.value == 'canceled') result = result.filter(u => u.subscriptionStatus === 'canceled');
+
+  if (selectedFilter.value == 'inactive') result = result.filter(u => u.subscriptionStatus === 'inactive');
+
+  if (selectedFilter.value == 'all') result = usersData.value;
+
+  if (searchQuery.value) {
+    result = result.filter(u =>
+      u.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  }
+
+
+  return result;
+})
 
 
 </script>
