@@ -236,6 +236,7 @@ const loadLogs = () => {
       return;
     }
 
+    qrLogs.value = [];
     qrLogs.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       scanDate: doc.data().scanDate,
@@ -259,7 +260,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] flex flex-col sm:flex-row hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans group">
+  <div
+    class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] flex flex-col sm:flex-row hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans group">
 
     <!-- Patrón de Fondo Cuadrícula -->
     <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
@@ -323,7 +325,7 @@ onUnmounted(() => {
             <div class="flex items-center gap-1.5">
               <span :class="['w-1.5 h-1.5 rounded-full shadow-lg', currentStatus.dot]"></span>
               <span class="text-white/90 text-[10px] font-bold uppercase tracking-wider">{{ currentStatus.label
-                }}</span>
+              }}</span>
             </div>
           </div>
         </div>

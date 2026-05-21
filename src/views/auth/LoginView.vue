@@ -99,7 +99,8 @@
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Correo
                     Electrónico</label>
                   <div class="group relative">
-                    <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com" :disabled="loading"
+                    <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
+                      :disabled="loading"
                       class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                   </div>
                 </div>
@@ -118,7 +119,7 @@
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
-                        }}</span>
+                      }}</span>
                     </button>
                   </div>
                 </div>
@@ -138,17 +139,26 @@
                   <div class="w-full border-t border-white/5"></div>
                 </div>
                 <div class="relative flex justify-center">
-                  <span class="bg-[#09090b] px-4 text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">O CONECTAR CON</span>
+                  <span class="bg-[#09090b] px-4 text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">O
+                    CONECTAR CON</span>
                 </div>
               </div>
 
               <button type="button" @click="handleGoogleAuth"
                 class="group w-full flex items-center justify-center gap-3 h-14 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 font-bold text-sm text-white shadow-lg shadow-black/20">
                 <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4" />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853" />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    fill="#FBBC05" />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335" />
                 </svg>
                 Cuenta de Google
               </button>
@@ -161,7 +171,7 @@
             </template>
 
             <template v-else>
-              <VerificationBanner />
+              <VerificationBanner :loading="resendLoading" @resend="resendVerification" />
               <button @click="emailVerified = true"
                 class="w-full mt-6 h-14 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-sm transition-all duration-300 hover:bg-white/10 flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-lg">arrow_back</span>
@@ -180,9 +190,9 @@
 import { ref, reactive } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import VerificationBanner from '@/components/auth/VerificationBanner.vue'
-import { signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo } from 'firebase/auth'
-import { doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore'
-import { auth } from '@/firebase'
+import { signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, sendEmailVerification } from 'firebase/auth'
+import { doc, getFirestore, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
+import { auth, db as firestoreDb } from '@/firebase'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { toast } from 'vue-sonner'
@@ -190,6 +200,7 @@ import { toast } from 'vue-sonner'
 const router = useRouter();
 const showPassword = ref(false)
 const emailVerified = ref(true)
+const resendLoading = ref(false)
 const form = reactive({
   email: '',
   password: '',
@@ -198,6 +209,8 @@ const form = reactive({
 const userStore = useUserStore()
 const loading = ref(false)
 
+
+const db = firestoreDb
 const handleLogin = async () => {
   if (!form.email || !form.password) {
     toast.error('Por favor, complete todos los campos.')
@@ -207,6 +220,7 @@ const handleLogin = async () => {
   try {
     loading.value = true
     const user = await signInWithEmailAndPassword(auth, form.email, form.password)
+
 
     // Check if email is verified
     if (!user.user.emailVerified) {
@@ -219,6 +233,12 @@ const handleLogin = async () => {
       toast.error('El usuario no tiene nombre para mostrar')
       return
     }
+    const userDoc = doc(db, 'users', user.user.uid)
+
+    await updateDoc(userDoc, {
+      lastLoginAt: Timestamp.now()
+    })
+
     userStore.setFullName(user.user.displayName || '')
     userStore.setCreationDate(user.user.metadata?.creationTime || '')
     userStore.setUserId(user.user.uid)
@@ -229,6 +249,31 @@ const handleLogin = async () => {
     toast.error('Error al iniciar sesión. Verifique sus credenciales.')
   } finally {
     loading.value = false
+  }
+}
+
+// Re-autentica brevemente al usuario usando las credenciales del form,
+// envía el email de verificación y cierra sesión de inmediato.
+const resendVerification = async () => {
+  if (!form.email || !form.password) {
+    toast.error('Por favor, regresa al login e ingresa tus credenciales primero.')
+    return
+  }
+  try {
+    resendLoading.value = true
+    // Iniciamos sesión momentáneamente para obtener el objeto User
+    const credential = await signInWithEmailAndPassword(auth, form.email, form.password)
+    // Enviamos el correo de verificación
+    await sendEmailVerification(credential.user)
+    // Volvemos a cerrar sesión de inmediato
+    await signOut(auth)
+    toast.success('¡Listo! Revisae su bandeja de entrada, le enviamos un nuevo enlace de verificación.')
+  } catch (error: any) {
+    // Si las credenciales ya no son válidas o expiró la sesión
+    toast.error('No pudimos reenviar el correo. Verifica tus credenciales e inténtalo de nuevo.')
+    console.error(error)
+  } finally {
+    resendLoading.value = false
   }
 }
 

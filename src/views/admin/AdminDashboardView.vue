@@ -41,8 +41,9 @@
               <!-- Header -->
               <thead>
                 <tr class="border-b border-white/10 bg-white/2 font-poppins">
-                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[280px]">Identidad
-                    / Contacto</th>
+                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[280px]"><span
+                      class="text-orange-500">ID Usuario</span>
+                  </th>
                   <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[180px]">Actividad
                     y QRs</th>
                   <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[220px]">
@@ -55,188 +56,381 @@
                 </tr>
               </thead>
 
-              <!-- Body -->
-              <tbody v-if="!loading && usersComputed && usersComputed.length > 0">
-                <tr class="hidden">
-                  <td colspan="5" class="p-10 text-center text-white/40">
-                    <span class="material-symbols-outlined animate-spin text-3xl mb-2">settings</span>
-                    <p class="text-xs font-bold uppercase tracking-widest">Recopilando Datos de Firestore...</p>
-                  </td>
-                </tr>
+              <tbody v-if="!loading && usersComputed?.length">
 
-                <tr v-for="user in usersComputed" :key="user.uid"
-                  class="border-b border-white/5 hover:bg-white/2 transition-colors group align-top">
+                <tr v-for="(user, index) in usersComputed" :key="user.uid"
+                  class="border-b border-white/5 hover:bg-white/[0.02] transition align-top">
 
-                  <!-- 1. IDENTIDAD / CONTACTO -->
-                  <td class="p-4">
-                    <div class="flex gap-3">
-                      <div class="w-10 h-10 rounded-full border flex items-center justify-center shrink-0 mt-1"
-                        :class="user.role === 'admin' ? 'bg-orange-500/10 border-orange-500/20 text-orange-500' : 'bg-white/5 border-white/10 text-white'">
-                        <span class="font-bold uppercase">{{ user.name.charAt(0) }}</span>
+                  <!-- IDENTIDAD -->
+                  <td class="p-5">
+
+                    <div class="flex gap-4">
+
+                      <div
+                        class="w-16 h-11 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
+
+                        <span class=" font-poppins text-sm text-white">
+
+                          {{ getUserIdUI(user, index) }}
+
+                        </span>
+
                       </div>
-                      <div class="overflow-hidden flex flex-col space-y-1">
-                        <div class="flex items-center gap-1.5">
-                          <h3 class="text-sm font-bold text-white truncate max-w-[150px] font-poppins">{{ user.name }}
+
+                      <div class="min-w-0 space-y-1">
+
+                        <div class="flex items-center gap-2">
+
+                          <h3 class="text-sm font-semibold text-white truncate max-w-[180px]">
+
+                            {{ user.name }}
+
                           </h3>
-                          <div v-tooltip="'Rol: ' + user.role"
-                            class="px-1.5 py-0.5 rounded border text-[8px] font-black uppercase tracking-widest"
-                            :class="user.role === 'admin' ? 'bg-orange-500/10 border-orange-500/20 text-orange-500' : 'bg-white/5 border-white/10 text-white/60'">
+
+                          <span
+                            class="px-2 py-0.5 rounded-md border border-white/10 bg-white/5 text-[9px] uppercase tracking-widest text-white/50">
+
                             {{ user.role }}
-                          </div>
+
+                          </span>
+
                         </div>
-                        <div class="flex items-center gap-1 text-white/50 text-xs" v-tooltip="'Email Principal'">
-                          <span class="material-symbols-outlined text-[12px]">mail</span>
-                          <span class="truncate">{{ user.email }}</span>
+
+                        <div class="text-xs text-white/40 flex gap-1">
+
+                          <span class="material-symbols-outlined text-[12px]">
+
+                            mail
+
+                          </span>
+
+                          {{ user.email }}
+
                         </div>
-                        <div v-if="user.phone" class="flex items-center gap-1 text-white/50 text-xs"
-                          v-tooltip="'Teléfono'">
-                          <span class="material-symbols-outlined text-[12px]">call</span>
-                          <span class="font-mono">{{ user.phone }}</span>
+
+                        <div v-if="user.phone" class="text-xs text-white/30 flex gap-1">
+
+                          <span class="material-symbols-outlined text-[12px]">
+
+                            call
+
+                          </span>
+
+                          {{ user.phone }}
+
                         </div>
-                        <!-- UID Oculto/Truncado pero copiable visualmente -->
-                        <div class="flex items-center gap-1 mt-1 pt-1 border-t border-white/5">
-                          <span class="material-symbols-outlined text-[10px] text-white/20">key</span>
-                          <span class="text-[8px] font-mono text-white/20 truncate w-32"
-                            v-tooltip="'UID de Firebase: ' + user.uid">{{ user.uid }}</span>
+
+                        <!-- UID -->
+                        <div class="flex gap-1 pt-2 mt-2 border-t border-white/5">
+
+                          <span class="material-symbols-outlined text-[10px] text-white/20">
+
+                            key
+
+                          </span>
+
+                          <span class="text-[9px] font-google-sans text-white/20 truncate max-w-[180px]">
+
+                            {{ user.uid }}
+
+                          </span>
+
                         </div>
+
                       </div>
+
                     </div>
+
                   </td>
 
-                  <!-- 2. ACTIVIDAD Y QRs -->
-                  <td class="p-4">
-                    <div class="flex flex-col space-y-2">
+                  <!-- ACTIVIDAD -->
+                  <td class="p-5">
 
-                      <!-- QRs e IsActive -->
-                      <div class="flex items-center gap-3">
-                        <div class="flex flex-col">
-                          <span class="text-[9px] font-black uppercase tracking-widest text-white/30">Total QRs</span>
-                          <div class="flex items-center gap-1 text-white">
-                            <span class="material-symbols-outlined text-[14px]">qr_code_2</span>
-                            <span class="text-sm font-mono font-bold">{{ user.totalQRs }}</span>
+                    <div class="space-y-3">
+
+                      <div class="flex gap-6">
+
+                        <div>
+
+                          <p class="text-[9px] uppercase tracking-widest text-white/30">
+
+                            Total QR
+
+                          </p>
+
+                          <div class="flex gap-1 items-center text-white">
+
+                            <span class="material-symbols-outlined text-[13px]">
+
+                              qr_code_2
+
+                            </span>
+
+                            {{ user.totalQRs }}
+
                           </div>
+
                         </div>
-                        <div class="w-px h-6 bg-white/10"></div>
-                        <div class="flex flex-col">
-                          <span class="text-[9px] font-black uppercase tracking-widest text-white/30">Cuenta
-                            Activa</span>
-                          <div class="flex items-center gap-1"
-                            :class="user.isActive ? 'text-green-500' : 'text-white/40'">
-                            <span class="material-symbols-outlined text-[14px]">{{ user.isActive ? 'verified_user' :
-                              'pending' }}</span>
-                            <span class="text-[10px] font-bold">{{ user.isActive ? 'Sí' : 'No' }}</span>
-                          </div>
+
+                        <div class="w-px bg-white/10"></div>
+
+                        <div>
+
+                          <p class="text-[9px] uppercase tracking-widest text-white/30">
+
+                            Cuenta
+
+                          </p>
+
+                          <span :class="user.isActive
+                            ? 'text-orange-400'
+                            : 'text-white/40'" class="text-xs">
+
+                            {{ user.isActive
+                              ? 'Activa'
+                              : 'Inactiva' }}
+
+                          </span>
+
                         </div>
+
                       </div>
 
                       <!-- Fechas -->
-                      <div class="bg-black/40 rounded-lg p-2 border border-white/5 space-y-1.5 mt-2">
-                        <div class="flex justify-between items-center text-[9px]">
-                          <span class="text-white/40">Registro</span>
-                          <span class="font-mono text-white/60">{{ formatedDate(user.createdAt) }}</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[9px]">
-                          <span class="text-white/40">Último Login</span>
-                          <span class="font-mono text-white/60">{{ formatedDate(user.lastLoginAt) }}</span>
-                        </div>
-                      </div>
+                      <div class="rounded-xl border border-white/5 bg-black/30 p-3 space-y-2 text-[10px]">
 
-                    </div>
-                  </td>
+                        <div class="flex justify-between">
 
-                  <!-- 3. FACTURACIÓN Y PLANES -->
-                  <td class="p-4">
-                    <div class="flex flex-col space-y-2">
-                      <!-- Plan & Status -->
-                      <div class="flex items-center gap-2">
-                        <div
-                          class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[9px] font-black uppercase tracking-widest"
-                          :class="{
-                            'bg-white/5 border-white/10 text-white': user.plan === 'alpha',
-                            'bg-blue-500/10 border-blue-500/20 text-blue-400': user.plan === 'beta',
-                            'bg-orange-500/10 border-orange-500/20 text-orange-500': user.plan === 'epsilon'
-                          }">
-                          Plan {{ user.plan }}
-                        </div>
-                        <div class="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest"
-                          :class="user.subscriptionStatus === 'active' ? 'text-green-500' : (user.subscriptionStatus === 'canceled' ? 'text-red-500' : 'text-white/40')">
-                          <span class="material-symbols-outlined text-[12px]">
-                            {{ user.subscriptionStatus === 'active' ? 'check_circle' : (user.subscriptionStatus ===
-                              'canceled' ? 'cancel' : 'radio_button_unchecked') }}
+                          <span class="text-white/30">
+
+                            Registro
+
                           </span>
-                          {{ user.subscriptionStatus }}
+
+                          <span class="font-google-sans text-white/50">
+
+                            {{ formatedDate(
+                              user.createdAt) }}
+
+                          </span>
+
                         </div>
+
+                        <div class="flex justify-between">
+
+                          <span class="text-white/30">
+
+                            Último login
+
+                          </span>
+
+                          <span class="font-google-sans text-white/50">
+
+                            {{ formatedDate(
+                              user.lastLoginAt) }}
+
+                          </span>
+
+                        </div>
+
                       </div>
 
-                      <!-- Detalles Extra (Fechas y Provider ID) -->
-                      <div class="text-[9px] space-y-1">
-                        <div v-if="user.paymentProviderId" class="flex items-center gap-1 text-white/40">
-                          <span class="material-symbols-outlined text-[10px]">receipt_long</span>
-                          <span class="font-mono">ID: {{ user.paymentProviderId }}</span>
-                        </div>
-                        <div class="text-white/30 font-mono">
-                          Comprado: {{ formatedDate(user.planPurchasedAt) }}
-                        </div>
-                        <div v-if="user.planEndDate" class="text-white/30 font-mono">
-                          Vence: {{ formatedDate(user.planEndDate) }}
-                        </div>
-                      </div>
                     </div>
+
                   </td>
 
-                  <!-- 4. ESTADO / SEGURIDAD -->
-                  <td class="p-4">
-                    <div class="space-y-1.5">
+                  <!-- PLAN -->
+                  <td class="p-5">
+
+                    <div class="space-y-3">
+
+                      <!-- Plan -->
                       <div
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest"
-                        :class="user.isBanned ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-green-500/10 border-green-500/20 text-green-500'">
-                        <span class="material-symbols-outlined text-[12px]">{{ user.isBanned ? 'block' : 'shield'
-                          }}</span>
-                        {{ user.isBanned ? 'Baneado / Suspendido' : 'Cuenta Segura' }}
+                        class="inline-flex gap-2 items-center px-3 py-1 rounded-xl border border-orange-500/15 bg-orange-500/5 text-orange-400 text-[10px] uppercase tracking-widest">
+
+                        <span class="material-symbols-outlined text-[12px]">
+
+                          workspace_premium
+
+                        </span>
+
+                        {{ user.plan }}
+
                       </div>
 
-                      <!-- Razón del baneo si existe -->
-                      <div v-if="user.isBanned && user.banReason"
-                        class="bg-red-500/5 border border-red-500/10 rounded-lg p-2 text-[10px] text-red-400/80 leading-snug">
-                        <strong>Motivo:</strong> {{ user.banReason }}
+                      <!-- Status -->
+                      <div class="flex items-center gap-2 text-[10px] uppercase tracking-widest">
+
+                        <span class="material-symbols-outlined text-[12px]" :class="user.subscriptionStatus === 'active'
+                          ? 'text-orange-400'
+                          : 'text-white/30'">
+
+                          {{ user.subscriptionStatus
+                            === 'active'
+                            ? 'check_circle'
+                            : 'radio_button_unchecked' }}
+
+                        </span>
+
+                        <span class="text-white/40">
+
+                          {{ user.subscriptionStatus }}
+
+                        </span>
+
                       </div>
+
+                      <!-- Provider -->
+                      <div v-if="user.paymentProviderId" class="text-[10px] text-white/30 font-google-sans">
+
+                        ID:
+
+                        {{ user.paymentProviderId }}
+
+                      </div>
+
+                      <div class="text-[10px] text-white/30 font-google-sans">
+
+                        Comprado:
+
+                        {{ formatedDate(
+                          user.planPurchasedAt) }}
+
+                      </div>
+
+                      <div v-if="user.planEndDate" class="text-[10px] text-white/30 font-google-sans">
+
+                        Expira:
+
+                        {{ formatedDate(
+                          user.planEndDate) }}
+
+                      </div>
+
                     </div>
+
                   </td>
 
-                  <!-- 5. ACCIONES DE MANDO -->
-                  <td class="p-4 text-right align-middle">
-                    <div class="flex flex-col items-end justify-center gap-2 h-full">
+                  <!-- SEGURIDAD -->
+                  <td class="p-5">
 
-                      <div class="flex gap-2">
-                        <!-- Asignar QR -->
-                        <button @click="openQRModal(user)" v-tooltip="'Asignar Código QR'"
-                          class="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors">
-                          <span class="material-symbols-outlined text-[14px] mr-1.5 text-white/50">qr_code</span>
-                          <span class="text-[9px] font-black uppercase tracking-widest">+ QR</span>
-                        </button>
+                    <div class="space-y-3">
 
-                        <!-- Cambiar Plan -->
-                        <button @click="openPlanModal(user)" v-tooltip="'Gestionar Plan'"
-                          class="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 transition-colors">
-                          <span class="material-symbols-outlined text-[14px] mr-1.5">payments</span>
-                          <span class="text-[9px] font-black uppercase tracking-widest">Plan</span>
-                        </button>
+                      <div
+                        class="inline-flex gap-2 items-center px-3 py-1 rounded-xl border text-[10px] uppercase tracking-widest"
+                        :class="user.isBanned
+                          ? 'border-red-500/20 bg-red-500/5 text-red-400'
+                          : 'border-white/10 bg-white/5 text-white/50'">
+
+                        <span class="material-symbols-outlined text-[12px]">
+
+                          {{ user.isBanned
+                            ? 'block'
+                            : 'shield' }}
+
+                        </span>
+
+                        {{ user.isBanned
+                          ? 'Suspendido'
+                          : 'Normal' }}
+
                       </div>
 
-                      <!-- Banear -->
+                      <!-- MOTIVO -->
+                      <div v-if="user.isBanned && user.banReason"
+                        class="rounded-xl border border-red-500/10 bg-red-500/[0.03] p-3 text-[10px] text-red-300">
+
+                        <strong>
+
+                          Motivo:
+
+                        </strong>
+
+                        {{ user.banReason }}
+
+                      </div>
+
+                    </div>
+
+                  </td>
+
+                  <!-- ACCIONES -->
+                  <td class="p-4">
+
+                    <div class="flex flex-col gap-2 min-w-[180px]">
+
+                      <!-- Toolbar -->
+                      <div class="grid grid-cols-2 gap-2">
+
+                        <!-- QR -->
+                        <button @click="openQRModal(user)"
+                          class="h-8 px-3 cursor-pointer rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center gap-1.5">
+
+                          <span class="material-symbols-outlined text-[13px] text-white/50">
+
+                            qr_code
+
+                          </span>
+
+                          <span class="text-[9px] uppercase tracking-widest font-semibold text-white/70">
+
+                            Agregar QR
+
+                          </span>
+
+                        </button>
+
+                        <!-- Plan -->
+                        <button @click="openPlanModal(user)"
+                          class="h-8 px-3 cursor-pointer rounded-lg border border-orange-500/15 bg-orange-500/5 hover:bg-orange-500/10 transition flex items-center justify-center gap-1.5">
+
+                          <span class="material-symbols-outlined text-[13px]">
+
+                            workspace_premium
+
+                          </span>
+
+                          <span class="text-[9px] uppercase tracking-widest font-semibold">
+
+                            Plan
+
+                          </span>
+
+                        </button>
+
+                      </div>
+
+                      <!-- Ban -->
                       <button @click="openBanModal(user)"
-                        class="inline-flex items-center justify-center h-8 px-3 rounded-lg transition-colors border w-full"
-                        :class="user.isBanned ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white/60' : 'bg-red-500/10 hover:bg-red-500/20 border-red-500/20 text-red-500'">
-                        <span class="material-symbols-outlined text-[14px] mr-1.5">{{ user.isBanned ? 'how_to_reg' :
-                          'gavel' }}</span>
-                        <span class="text-[9px] font-black uppercase tracking-widest">
-                          {{ user.isBanned ? 'Quitar Restricción' : 'Suspender Acceso' }}</span>
+                        class="h-8 px-3 cursor-pointer rounded-lg border transition flex items-center justify-center gap-1.5"
+                        :class="user.isBanned
+                          ? 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10'
+                          : 'border-red-500/15 bg-red-500/5 text-red-400 hover:bg-red-500/10'">
+
+                        <span class="material-symbols-outlined text-[13px]">
+
+                          {{ user.isBanned
+                            ? 'how_to_reg'
+                            : 'gavel' }}
+
+                        </span>
+
+                        <span class="text-[9px] uppercase tracking-widest font-semibold">
+
+                          {{ user.isBanned
+                            ? 'Restaurar'
+                            : 'Suspender' }}
+
+                        </span>
+
                       </button>
 
                     </div>
+
                   </td>
 
                 </tr>
+
               </tbody>
             </table>
           </div>
@@ -477,6 +671,28 @@ const usersComputed = computed(() => {
   return result;
 })
 
+const getUserIdUI = (userPayload: IUser, index: number) => {
+  let user;
+  const planType = userPayload.plan;
+  switch (planType) {
+    case 'alpha':
+      user = `A10${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      break;
+
+    case 'beta':
+      user = `B10${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      break;
+
+    case 'epsilon':
+      user = `E10${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      break;
+
+    default:
+      console.log(`Plan was not found`);
+      break;
+  }
+  return user
+}
 
 </script>
 
