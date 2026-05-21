@@ -4,6 +4,7 @@ import { ref, watch } from 'vue'
 const props = defineProps<{
   isOpen: boolean
   userName: string
+  userEmail: string
   currentPlan: string
 }>()
 
@@ -188,13 +189,13 @@ renewalDate.setMonth(currentMonth + 12)
               <p class="text-[11px] text-white/40 leading-relaxed">
 
                 Se enviará automáticamente un correo notificando el cambio de
-                plan a
+                plan de
 
                 <span class="font-semibold text-white/70">
 
                   {{ userName }}
 
-                </span>
+                </span> a <span class="text-white/70">{{ userEmail }}</span>
 
               </p>
 

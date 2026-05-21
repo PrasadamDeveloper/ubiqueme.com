@@ -41,17 +41,20 @@
               <!-- Header -->
               <thead>
                 <tr class="border-b border-white/10 bg-white/2 font-poppins">
-                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[280px]"><span
-                      class="text-orange-500">ID Usuario</span>
+                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[280px]"
+                    v-tooltip="'Identidad / Contacto'"><span class="text-orange-500">ID Usuario</span>
                   </th>
-                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[180px]">Actividad
-                    y QRs</th>
-                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[220px]">
+                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[180px]"
+                    v-tooltip="'Actividad y QRs'">Actividad y QRs</th>
+                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[220px]"
+                    v-tooltip="'Facturación y Planes'">
                     Facturación y Planes</th>
-                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[180px]">Estado
+                  <th class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 min-w-[180px]"
+                    v-tooltip="'Estado (Security)'">Estado
                     (Security)</th>
                   <th
-                    class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-right min-w-[250px]">
+                    class="p-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-right min-w-[250px]"
+                    v-tooltip="'Acciones de Mando'">
                     Acciones de Mando</th>
                 </tr>
               </thead>
@@ -121,15 +124,19 @@
                         </div>
 
                         <!-- UID -->
-                        <div class="flex gap-1 pt-2 mt-2 border-t border-white/5">
+                        <div class="flex gap-1 pt-2 mt-2 border-t border-white/5 items-center  flex-col">
 
-                          <span class="material-symbols-outlined text-[10px] text-white/20">
+                          <div class="flex items-center gap-1">
 
-                            key
+                            <span class="material-symbols-outlined text-[10px] text-white/20">
 
-                          </span>
+                              key
 
-                          <span class="text-[9px] font-google-sans text-white/20 truncate max-w-[180px]">
+                            </span>
+                            <span class="text-white/40 font-bold text-xs">UID Database:</span>
+
+                          </div>
+                          <span class="text-[9px] font-google-sans text-white/20  ">
 
                             {{ user.uid }}
 
@@ -184,7 +191,8 @@
 
                           <span :class="user.isActive
                             ? 'text-orange-400'
-                            : 'text-white/40'" class="text-xs">
+                            : 'text-white/40'" class="text-xs"
+                            v-tooltip="user.isActive ? 'Cuenta Activa' : 'Cuenta Inactiva'">
 
                             {{ user.isActive
                               ? 'Activa'
@@ -259,7 +267,8 @@
                       </div>
 
                       <!-- Status -->
-                      <div class="flex items-center gap-2 text-[10px] uppercase tracking-widest">
+                      <div class="flex items-center gap-2 text-[10px] uppercase tracking-widest"
+                        v-tooltip="'Estado de la suscripción'">
 
                         <span class="material-symbols-outlined text-[12px]" :class="user.subscriptionStatus === 'active'
                           ? 'text-orange-400'
@@ -283,7 +292,7 @@
                       <!-- Provider -->
                       <div v-if="user.paymentProviderId" class="text-[10px] text-white/30 font-google-sans">
 
-                        ID:
+                        Payment provider:
 
                         {{ user.paymentProviderId }}
 
@@ -363,7 +372,7 @@
                       <div class="grid grid-cols-2 gap-2">
 
                         <!-- QR -->
-                        <button @click="openQRModal(user)"
+                        <button @click="openQRModal(user)" v-tooltip="'Asignar código QR'"
                           class="h-8 px-3 cursor-pointer rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center gap-1.5">
 
                           <span class="material-symbols-outlined text-[13px] text-white/50">
@@ -381,7 +390,7 @@
                         </button>
 
                         <!-- Plan -->
-                        <button @click="openPlanModal(user)"
+                        <button @click="openPlanModal(user)" v-tooltip="'Gestionar Plan'"
                           class="h-8 px-3 cursor-pointer rounded-lg border border-orange-500/15 bg-orange-500/5 hover:bg-orange-500/10 transition flex items-center justify-center gap-1.5">
 
                           <span class="material-symbols-outlined text-[13px]">
@@ -401,7 +410,7 @@
                       </div>
 
                       <!-- Ban -->
-                      <button @click="openBanModal(user)"
+                      <button @click="openBanModal(user)" v-tooltip="'Suspender o reactivar acceso del usuario'"
                         class="h-8 px-3 cursor-pointer rounded-lg border transition flex items-center justify-center gap-1.5"
                         :class="user.isBanned
                           ? 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10'
@@ -445,8 +454,8 @@
           @cancel="isBanModalOpen = false" />
 
         <ChangePlanPrompt :is-open="isPlanModalOpen" :user-name="selectedUserForPlan?.name || ''"
-          :current-plan="selectedUserForPlan?.plan || ''" @submit="handlePlanSubmit"
-          @cancel="isPlanModalOpen = false" />
+          :user-email="selectedUserForPlan?.email || ''" :current-plan="selectedUserForPlan?.plan || ''"
+          @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false" />
 
       </div>
     </template>

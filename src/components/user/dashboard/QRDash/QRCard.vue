@@ -347,11 +347,12 @@ onUnmounted(() => {
       <Transition enter-active-class="transition-all duration-200 ease-out"
         enter-from-class="opacity-0 -translate-y-2 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
         leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
-        leave-to-class="opacity-0 -translate-y-2 scale-95">
+        leave-to-class="opacity-0 -translate-y-2 scale-95" class="z-30!">
+
         <div v-if="showMenu"
-          class="absolute top-12 right-4 w-[200px] bg-[#0c0500] border border-orange-500/20 rounded-xl p-1.5 z-30 shadow-[0_8px_30px_rgb(249,115,22,0.1)]">
+          class="absolute top-12 right-4 w-[200px] bg-[#050505] border border-orange-500/20 rounded-xl p-1.5 shadow-[0_8px_30px_rgb(249,115,22,0.1)] z-50!">
           <template v-for="(option, index) in menuOptions" :key="index">
-            <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2"></div>
+            <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2 z-50!"></div>
             <button v-else @click="option.action" v-tooltip="{ content: option.description, placement: 'top' }" :class="[
               'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
               option.color || 'text-white/70',
@@ -364,10 +365,7 @@ onUnmounted(() => {
         </div>
       </Transition>
 
-      <!-- Resplandor sutil detrás del QR -->
-      <div
-        class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.1)_0%,transparent_70%)] pointer-events-none">
-      </div>
+
 
       <!-- Contenedor del QR con bordes muy redondeados y centrado -->
       <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-3xl flex items-center justify-center relative z-10 bg-white p-3!">
@@ -385,7 +383,7 @@ onUnmounted(() => {
     </div>
 
     <!-- Overlay invisible para cerrar el menú al hacer clic afuera -->
-    <div v-if="showMenu" @click="showMenu = false" class="fixed inset-0 z-20 cursor-default"></div>
+    <div v-if="showMenu" @click="showMenu = false" class="fixed inset-0 z-10 cursor-default pointer-events-none"></div>
 
     <!-- Overlay Prompts -->
     <Transition enter-active-class="transition-all duration-200 ease-out" enter-from-class="opacity-0"
