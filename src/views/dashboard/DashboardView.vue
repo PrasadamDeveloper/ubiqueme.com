@@ -4,6 +4,9 @@ import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
 import MainLoader from '@/components/ui/MainLoader.vue'
 import { useAuth } from '@/handleAuth'
 import { defineAsyncComponent, ref, shallowRef } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const hoverOnSideBar = ref(false)
 let timeout = null as any
@@ -90,6 +93,13 @@ const changeComponent = (component: ComponentName) => {
               :iconActive="btn.iconActive" :active="componentsMap[btn.name] === currentComponent" />
           </div>
 
+          <!-- Request QR Button -->          
+          <button @click="router.push({ name: 'request-qr' })"
+            class="mb-4 w-full flex items-center cursor-pointer transition-all duration-300 rounded-2xl px-3 py-3 gap-3 border border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/15 hover:border-orange-500/40 group overflow-hidden">
+            <span class="material-symbols-outlined text-orange-400 text-[22px] flex-shrink-0">add_circle</span>
+            <span v-if="hoverOnSideBar" class="text-orange-400 text-[11px] font-black uppercase tracking-widest whitespace-nowrap transition-all">Solicitar QR</span>
+          </button>
+
           <div class="mt-auto opacity-20 text-[8px] font-black uppercase tracking-[0.3em] font-mono whitespace-nowrap"
             v-if="hoverOnSideBar">
             System Terminal v2.4
@@ -113,6 +123,12 @@ const changeComponent = (component: ComponentName) => {
           >
             <v-icon :name="componentsMap[btn.name] === currentComponent ? btn.iconActive : btn.icon" scale="1.2" />
             <span class="text-[9px] font-bold tracking-tight uppercase">{{ btn.label }}</span>
+          </button>
+          <!-- Request QR Shortcut (mobile) -->
+          <button @click="router.push({ name: 'request-qr' })"
+            class="flex flex-col items-center justify-center text-center gap-1 cursor-pointer transition-all duration-300 w-12 h-12 rounded-xl active:scale-95 text-orange-400">
+            <span class="material-symbols-outlined text-[22px]">add_circle</span>
+            <span class="text-[9px] font-bold tracking-tight uppercase">QR</span>
           </button>
         </nav>
 

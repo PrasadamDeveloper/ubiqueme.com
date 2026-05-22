@@ -46,6 +46,14 @@ const router = createRouter({
       component: () => import('@/views/dashboard/DashboardView.vue'),
     },
     {
+      path: '/dashboard/request-qr',
+      name: 'request-qr',
+      meta: {
+        requiresAuth: true,
+      },
+      component: () => import('@/views/dashboard/RequestQRView.vue'),
+    },
+    {
       path: '/admin',
       name: 'admin',
       meta: {

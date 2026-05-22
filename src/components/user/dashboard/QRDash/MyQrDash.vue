@@ -164,11 +164,11 @@ const images = imageStore.getImages;
           Códigos QR
         </h2>
       </div>
-      <button
+      <RouterLink to="/dashboard/request-qr"
         class="w-full  cursor-pointer md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-black text-sm bg-white text-black hover:bg-white/90 transition-colors active:scale-95">
         <span class="material-symbols-outlined text-[18px]">add</span>
-        Crear Nuevo QR
-      </button>
+        Comprar nuevo QR
+      </RouterLink>
 
       <RouterLink to="/admin"
         class="bg-cyan-700 text-white px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer">
