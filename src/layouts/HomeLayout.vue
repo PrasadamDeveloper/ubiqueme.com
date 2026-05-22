@@ -41,9 +41,9 @@ onUnmounted(() => {
 
         <!-- Logo -->
         <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
-          <span
-            class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform">location_on</span>
-          <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
+  <span class="material-symbols-outlined text-white/70 text-[1.5rem] mr-1" aria-hidden="true">shield</span>
+  <span class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform" aria-hidden="true">location_on</span>
+  <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
             <Transition name="slide-up">
               <div :key="currentDomainIndex"
                 class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
@@ -141,36 +141,59 @@ onUnmounted(() => {
     <main>
       <slot name="main"></slot>
     </main>
-
-    <footer
-      class="bg-[#09090b] border-t border-white/5 w-full flex justify-center gap-8 px-12 py-8 z-40 text-slate-500 relative">
-      <div
-        class="flex flex-col md:flex-row gap-4 md:gap-12 items-center opacity-80 hover:opacity-100 transition-opacity">
-
-        <span class="font-body text-xs uppercase tracking-widest text-slate-500">
-          ©{{ new Date().getFullYear() }} ubiqueme.com
-        </span>
-
-        <div class="flex gap-6">
-          <RouterLink
-            class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'privacy' }">
-            Política de Privacidad
-          </RouterLink>
-          <RouterLink
-            class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'terms' }">
-            Términos de Servicio
-          </RouterLink>
-          <RouterLink
-            class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'help' }">
-            Contacto
-          </RouterLink>
-        </div>
-
+<footer class="bg-[#09090b] border-t border-white/5 w-full flex flex-col justify-center items-center gap-8 px-12 py-8 text-slate-500 relative">
+<div class="flex flex-col items-center space-y-2">
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-white/70 text-[1.2rem]" aria-hidden="true">shield</span>
+    <span class="text-xs uppercase tracking-widest">SSL Secure</span>
+  </div>
+  <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }} ubiqueme.com</span>
+  <div class="flex items-center mt-2">
+    <Transition name="slide-up">
+      <div :key="currentDomainIndex" class="text-[#dce7ff] font-black text-[17px] sm:text-[22px] lowercase whitespace-nowrap">
+        <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span><span class="text-orange-500">.com</span>
       </div>
-    </footer>
+    </Transition>
+  </div>
+</div>
+
+  <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center justify-center">
+    <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'home' }">
+      <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">home</span> Inicio
+    </RouterLink>
+    <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'help' }">
+      <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">help</span> Ayuda
+    </RouterLink>
+    <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'pricing' }">
+      <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">attach_money</span> Precios
+    </RouterLink>
+    <template v-if="!useUserStore().getUserId">
+      <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'login' }">
+        <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">login</span> Iniciar sesión
+      </RouterLink>
+      <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'register' }">
+        <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">person_add</span> Registrarse
+      </RouterLink>
+    </template>
+  </div>
+  <div class="flex flex-col items-center space-y-2">
+    <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+      <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'privacy' }">
+        <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">privacy_tip</span> Política de Privacidad
+      </RouterLink>
+      <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'terms' }">
+        <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">gavel</span> Términos de Servicio
+      </RouterLink>
+      <RouterLink class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer" :to="{ name: 'contact' }">
+        <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">contact_mail</span> Contacto
+      </RouterLink>
+    </div>
+    <div class="flex items-center gap-2 text-xs text-slate-500">
+      <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">public</span>
+      <span class="font-body">{{ domains[currentDomainIndex] }}</span>
+    </div>
+  </div>
+</footer>
   </div>
 </template>
 

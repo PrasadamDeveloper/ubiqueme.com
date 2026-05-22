@@ -209,9 +209,10 @@ const qrSize = ref('SM')
               <div class="grid grid-cols-2 gap-3">
 
                 <!-- Compact -->
-                <button @click="qrLayout = 'compact'" class="rounded-xl border p-4 text-left transition" :class="qrLayout === 'compact'
-                  ? 'border-orange-500/20 bg-orange-500/5'
-                  : 'border-white/10 bg-white/5'">
+                <button @click="qrLayout = 'compact'" class="rounded-xl border p-4 text-left transition cursor-pointer"
+                  :class="qrLayout === 'compact'
+                    ? 'border-orange-500/20 bg-orange-500/5'
+                    : 'border-white/10 bg-white/5'">
 
                   <div class="flex justify-between items-start">
 
@@ -219,7 +220,7 @@ const qrSize = ref('SM')
 
                       <p class="text-white">
 
-                        Compact
+                        Compacta
 
                       </p>
 
@@ -242,9 +243,10 @@ const qrSize = ref('SM')
                 </button>
 
                 <!-- Detail -->
-                <button @click="qrLayout = 'detail'" class="rounded-xl border p-4 text-left transition" :class="qrLayout === 'detail'
-                  ? 'border-orange-500/20 bg-orange-500/5'
-                  : 'border-white/10 bg-white/5'">
+                <button @click="qrLayout = 'detail'" class="rounded-xl border p-4 text-left transition cursor-pointer"
+                  :class="qrLayout === 'detail'
+                    ? 'border-orange-500/20 bg-orange-500/5'
+                    : 'border-white/10 bg-white/5'">
 
                   <div class="flex justify-between items-start">
 
@@ -252,7 +254,7 @@ const qrSize = ref('SM')
 
                       <p class="text-white">
 
-                        Detail
+                        Detallada
 
                       </p>
 
@@ -290,7 +292,7 @@ const qrSize = ref('SM')
               <div class="grid grid-cols-6 gap-2">
 
                 <button v-for="size in ['XS', 'SM', 'MD', 'LG', 'XL', 'XXL']" :key="size" @click="qrSize = size"
-                  class="h-10 rounded-lg border text-[10px] uppercase transition" :class="qrSize === size
+                  class="h-10 rounded-lg border text-[10px] uppercase transition cursor-pointer" :class="qrSize === size
                     ? 'border-orange-500/20 bg-orange-500/5 text-orange-400'
                     : 'border-white/10 bg-white/5 text-white/50'">
 
@@ -418,14 +420,14 @@ const qrSize = ref('SM')
             <div class="grid grid-cols-2 gap-2">
 
               <button @click="handleCancel"
-                class="h-10 rounded-xl border border-white/10 bg-white/5 text-xs uppercase text-white/70">
+                class="h-10 rounded-xl border border-white/10 bg-white/5 text-xs uppercase text-white/70 cursor-pointer">
 
                 Cancelar
 
               </button>
 
               <button @click="handleSubmit" :disabled="!qrNameInput.trim()"
-                class="h-10 rounded-xl bg-orange-500 hover:bg-orange-600 text-black text-xs uppercase font-semibold disabled:opacity-50">
+                class="h-10 rounded-xl bg-orange-500 hover:bg-orange-600 text-black text-xs uppercase font-semibold disabled:opacity-50 cursor-pointer">
 
                 Crear QR
 

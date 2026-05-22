@@ -11,9 +11,10 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'submit', newPlan: string): void
   (e: 'cancel'): void
+  (e: 'cancelPlan'): void
 }>()
 
-const selectedPlan = ref('')
+const selectedPlan = ref<string>(props.currentPlan)
 
 // Initialize selected plan when modal opens
 watch(() => props.isOpen, (newVal) => {
@@ -34,138 +35,159 @@ const renewalDate = new Date();
 const currentMonth = now.getMonth();
 renewalDate.setMonth(currentMonth + 12)
 
+const handleCancelPlan = () => {
+  emit('cancelPlan')
+}
 
 </script>
 
 <template>
   <Transition name="fade-scale">
-    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4">
+    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/85  p-4">
 
       <div
-        class="bg-[#01060e] border border-white/10 w-full max-w-5xl rounded-[32px] p-5 md:p-7 relative overflow-hidden shadow-2xl">
+        class="relative w-full max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0a0a0b] shadow-2xl font-google-sans">
 
         <!-- Pattern -->
-        <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-          style="background-image: linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px); background-size:24px 24px;">
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style="background-image: linear-gradient(rgba(255,255,255,.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.7) 1px, transparent 1px); background-size:28px 28px;">
         </div>
 
-        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6">
+
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr]">
 
           <!-- LEFT -->
-          <section class="space-y-5">
+          <section class="p-6 md:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-white/10 space-y-8">
 
             <!-- Header -->
-            <div class="flex items-center gap-4">
+            <div class="flex gap-5 items-start">
 
               <div
-                class="w-14 h-14 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-
-                <span class="material-symbols-outlined text-blue-400 text-[28px]">
+                class="w-16 h-16 rounded-3xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-orange-400 text-[30px]">
                   workspace_premium
                 </span>
-
               </div>
 
               <div>
 
-                <h3 class="text-2xl  tracking-tight text-[#dce7ff] inline-flex overflow-hidden font-jost">
-                  Cambiar Plan a <span class="animate-fade-down ml-2" :key="selectedPlan">{{ selectedPlan.toUpperCase()
-                  }}</span>
+                <span class="text-[10px] uppercase tracking-[0.30em] text-orange-400 font-black">
+                  Subscription Management
+                </span>
+
+                <h3 class="text-3xl md:text-4xl font-black tracking-tight text-white mt-2 flex flex-wrap">
+
+                  Cambiar Plan a
+
+                  <span class="ml-3 text-orange-400 animate-fade-down" :key="selectedPlan">
+                    {{ selectedPlan.toUpperCase() }}
+                  </span>
+
                 </h3>
 
-                <p class="text-xs text-white/40 mt-1">
+                <p class="text-sm text-white/45 mt-3">
+
                   Seleccione el nuevo plan para
-                  <span class="font-bold text-white">
+
+                  <span class="font-semibold text-white">
+
                     {{ userName }}
+
                   </span>
+
                 </p>
 
               </div>
 
             </div>
 
-            <!-- INFO CARDS -->
+            <!-- INFO -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
               <!-- Inicio -->
-              <article class="rounded-3xl border border-white/10 bg-white/5 p-5 flex gap-4">
+              <article class="rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
 
-                <div
-                  class="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+                <div class="flex gap-4">
 
-                  <span class="material-symbols-outlined">
-                    calendar_month
-                  </span>
+                  <div
+                    class="h-14 w-14 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined">
+                      calendar_month
+                    </span>
+                  </div>
 
-                </div>
+                  <div>
 
-                <div class="min-w-0">
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-white/35">
 
-                  <span class="text-[10px] uppercase tracking-[0.2em] text-white/30">
-
-                    Inicio del plan
-
-                  </span>
-
-                  <p class="text-sm text-white mt-2">
-
-                    Plan
-
-                    <span class="font-bold text-blue-400">
-
-                      {{ selectedPlan.toUpperCase() }}
+                      Inicio del plan
 
                     </span>
 
-                  </p>
+                    <p class="mt-3 text-white">
 
-                  <span class="text-xs text-white/50 block mt-1">
+                      Plan
 
-                    {{ now.toLocaleString(
-                      'es-MX',
-                      { dateStyle: 'full' }
-                    ) }}
+                      <span class="font-bold text-orange-400">
 
-                  </span>
+                        {{ selectedPlan.toUpperCase() }}
+
+                      </span>
+
+                    </p>
+
+                    <span class="text-xs text-white/50 mt-2 block">
+
+                      {{ now.toLocaleString(
+                        'es-MX',
+                        { dateStyle: 'full' }
+                      ) }}
+
+                    </span>
+
+                  </div>
 
                 </div>
 
               </article>
 
               <!-- Renovacion -->
-              <article class="rounded-3xl border border-white/10 bg-white/5 p-5 flex gap-4">
+              <article class="rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
 
-                <div
-                  class="h-12 w-12 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
+                <div class="flex gap-4">
 
-                  <span class="material-symbols-outlined animate-spin animate-duration-8000">
-                    autorenew
-                  </span>
+                  <div
+                    class="h-14 w-14 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined animate-spin animate-duration-8000">
+                      autorenew
+                    </span>
+                  </div>
 
-                </div>
+                  <div>
 
-                <div class="min-w-0">
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-white/35">
 
-                  <span class="text-[10px] uppercase tracking-[0.2em] text-white/30">
+                      Renovación
 
-                    Renovación
+                    </span>
 
-                  </span>
+                    <p class="mt-3 text-white">
 
-                  <p class="text-sm text-white mt-2">
+                      Próximo ciclo
 
-                    Próximo ciclo
+                    </p>
 
-                  </p>
+                    <span class="text-xs text-white/50 mt-2 block">
 
-                  <span class="text-xs text-white/50 block mt-1">
+                      {{ renewalDate.toLocaleString(
+                        'es-MX',
+                        { dateStyle: 'full' }
+                      ) }}
 
-                    {{ renewalDate.toLocaleString(
-                      'es-MX',
-                      { dateStyle: 'full' }
-                    ) }}
+                    </span>
 
-                  </span>
+                  </div>
 
                 </div>
 
@@ -173,29 +195,32 @@ renewalDate.setMonth(currentMonth + 12)
 
             </div>
 
-            <!-- Mail Notice -->
-            <div class="rounded-3xl bg-white/5 border border-white/10 p-4 flex gap-3">
+            <!-- Notice -->
+            <div class="rounded-[28px] border border-orange-500/10 bg-orange-500/[0.03] p-5 flex gap-4">
 
-              <div class="h-10 w-10 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
-
-                <span class="material-symbols-outlined text-white/50">
-
+              <div class="h-12 w-12 rounded-2xl bg-orange-500/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-orange-400">
                   mail
-
                 </span>
-
               </div>
 
-              <p class="text-[11px] text-white/40 leading-relaxed">
+              <p class="text-[12px] leading-relaxed text-white/50">
 
-                Se enviará automáticamente un correo notificando el cambio de
-                plan de
+                Se enviará automáticamente un correo notificando el cambio de plan de
 
-                <span class="font-semibold text-white/70">
+                <span class="text-white font-medium">
 
                   {{ userName }}
 
-                </span> a <span class="text-white/70">{{ userEmail }}</span>
+                </span>
+
+                a
+
+                <span class="text-white/80">
+
+                  {{ userEmail }}
+
+                </span>
 
               </p>
 
@@ -204,126 +229,140 @@ renewalDate.setMonth(currentMonth + 12)
           </section>
 
           <!-- RIGHT -->
-          <section class="rounded-[28px] border border-white/10 bg-white/[0.03] p-4 space-y-3">
+          <section class="p-6 md:p-8 bg-white/[0.02]">
 
-            <!-- Alpha -->
-            <button @click="selectedPlan = 'alpha'"
-              class="w-full rounded-2xl border p-4 text-left transition-all duration-200" :class="selectedPlan === 'alpha'
-                ? 'border-white/30 bg-white/10'
-                : 'border-white/10 hover:bg-white/5'">
+            <div class="space-y-4">
 
-              <div class="flex items-center justify-between">
+              <!-- Alpha -->
+              <button @click="selectedPlan = 'alpha'"
+                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'alpha'
+                  ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
+                  : 'border-white/10 hover:bg-white/[0.04]'">
 
-                <div>
+                <div class="flex justify-between items-center">
 
-                  <p class="text-xs uppercase font-bold tracking-widest text-white">
+                  <div>
 
-                    Alpha
+                    <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
+                      Alpha
+                    </p>
 
-                  </p>
+                    <span class="text-[11px] text-white/40">
+                      $50 MXN / mes · Máx 1 QR
+                    </span>
 
-                  <span class="text-[11px] text-white/40">
+                  </div>
 
-                    $50 MXN / mes · Máx 1 QR
-
+                  <span v-if="selectedPlan === 'alpha'" class="material-symbols-outlined text-orange-400">
+                    check_circle
                   </span>
 
                 </div>
-
-                <span v-if="selectedPlan === 'alpha'" class="material-symbols-outlined text-white">
-
-                  check_circle
-
-                </span>
-
-              </div>
-
-            </button>
-
-            <!-- Beta -->
-            <button @click="selectedPlan = 'beta'"
-              class="w-full rounded-2xl border p-4 text-left transition-all duration-200" :class="selectedPlan === 'beta'
-                ? 'border-blue-500/30 bg-blue-500/10'
-                : 'border-white/10 hover:bg-white/5'">
-
-              <div class="flex items-center justify-between">
-
-                <div>
-
-                  <p class="text-xs uppercase font-bold tracking-widest text-blue-400">
-
-                    Beta
-
-                  </p>
-
-                  <span class="text-[11px] text-white/40">
-
-                    $100 MXN / mes · Máx 3 QR
-
-                  </span>
-
-                </div>
-
-                <span v-if="selectedPlan === 'beta'" class="material-symbols-outlined text-blue-400">
-
-                  check_circle
-
-                </span>
-
-              </div>
-
-            </button>
-
-            <!-- Epsilon -->
-            <button @click="selectedPlan = 'epsilon'"
-              class="w-full rounded-2xl border p-4 text-left transition-all duration-200" :class="selectedPlan === 'epsilon'
-                ? 'border-orange-500/30 bg-orange-500/10'
-                : 'border-white/10 hover:bg-white/5'">
-
-              <div class="flex items-center justify-between">
-
-                <div>
-
-                  <p class="text-xs uppercase font-bold tracking-widest text-orange-400">
-
-                    Epsilon
-
-                  </p>
-
-                  <span class="text-[11px] text-white/40">
-
-                    $200 MXN / mes · Máx 5 QR
-
-                  </span>
-
-                </div>
-
-                <span v-if="selectedPlan === 'epsilon'" class="material-symbols-outlined text-orange-400">
-
-                  check_circle
-
-                </span>
-
-              </div>
-
-            </button>
-
-            <!-- Buttons -->
-            <div class="grid grid-cols-2 gap-3 pt-3">
-
-              <button @click="handleCancel"
-                class="h-12 rounded-2xl bg-white/5 border border-white/10 text-white text-xs uppercase font-black tracking-widest hover:bg-white/10 transition">
-
-                Cancelar
 
               </button>
 
-              <button @click="handleSubmit" :disabled="selectedPlan === currentPlan"
-                class="h-12 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white text-xs uppercase font-black tracking-widest transition disabled:opacity-50 disabled:cursor-not-allowed">
+              <!-- Beta -->
+              <button @click="selectedPlan = 'beta'"
+                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'beta'
+                  ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
+                  : 'border-white/10 hover:bg-white/[0.04]'">
 
-                Guardar
+                <div class="flex justify-between items-center">
+
+                  <div>
+
+                    <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
+                      Beta
+                    </p>
+
+                    <span class="text-[11px] text-white/40">
+                      $100 MXN / mes · Máx 3 QR
+                    </span>
+
+                  </div>
+
+                  <span v-if="selectedPlan === 'beta'" class="material-symbols-outlined text-orange-400">
+                    check_circle
+                  </span>
+
+                </div>
 
               </button>
+
+              <!-- Epsilon -->
+              <button @click="selectedPlan = 'epsilon'"
+                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'epsilon'
+                  ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
+                  : 'border-white/10 hover:bg-white/[0.04]'">
+
+                <div class="flex justify-between items-center">
+
+                  <div>
+
+                    <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
+                      Epsilon
+                    </p>
+
+                    <span class="text-[11px] text-white/40">
+                      $200 MXN / mes · Máx 5 QR
+                    </span>
+
+                  </div>
+
+                  <span v-if="selectedPlan === 'epsilon'" class="material-symbols-outlined text-orange-400">
+                    check_circle
+                  </span>
+
+                </div>
+
+              </button>
+
+              <!-- Cancel Subscription -->
+              <button
+                class="w-full rounded-[24px] border border-red-500/15 bg-red-500/[0.04] p-5 text-left transition-all duration-300 hover:bg-red-500/[0.08] hover:border-red-500/25">
+
+                <div class="flex justify-between items-center">
+
+                  <div>
+
+                    <p class="text-xs uppercase tracking-[0.25em] font-black text-red-400">
+
+                      Cancelar plan
+
+                    </p>
+
+                    <span class="text-[11px] text-white/40">
+
+                      Finaliza la suscripción activa y deshabilita futuras renovaciones
+
+                    </span>
+
+                  </div>
+
+                  <span class="material-symbols-outlined text-red-400">
+
+                    cancel
+
+                  </span>
+
+                </div>
+
+              </button>
+
+              <!-- Buttons -->
+              <div class="grid grid-cols-2 gap-3 pt-5">
+
+                <button @click="handleCancel"
+                  class="h-14 rounded-[20px] border border-white/10 bg-white/[0.03] text-white text-xs uppercase font-black tracking-[0.20em] hover:bg-white/[0.06] transition">
+                  Cancelar
+                </button>
+
+                <button @click="handleSubmit" :disabled="selectedPlan === currentPlan"
+                  class="h-14 rounded-[20px] bg-orange-500 hover:bg-orange-600 text-white text-xs uppercase font-black tracking-[0.20em] transition disabled:opacity-50 disabled:cursor-not-allowed">
+                  Guardar
+                </button>
+
+              </div>
 
             </div>
 

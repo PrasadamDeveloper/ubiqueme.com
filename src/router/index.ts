@@ -94,6 +94,14 @@ const router = createRouter({
       component: () => import('@/views/public/PrivacyView.vue'),
     },
     {
+      path: '/contact',
+      name: 'contact',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/ContactView.vue'),
+    },
+    {
       path: '/terms',
       name: 'terms',
       meta: {
@@ -119,7 +127,7 @@ const router = createRouter({
     },
   ],
 
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(_to, _from, _savedPosition) {
     return { top: 0 }
   },
 })
@@ -136,12 +144,12 @@ const waitForAuth = () => {
           unwatch()
           resolve()
         }
-      }
+      },
     )
   })
 }
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   // Esperar a que Firebase valide el estado inicial
   await waitForAuth()
 
@@ -150,11 +158,11 @@ router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.meta.requiresAuth
 
   if (requiresAuth && !isAuth) {
-    next({ name: 'home' })
+    return { name: 'home' }
   } else if ((to.name === 'login' || to.name === 'register') && isAuth) {
-    next({ name: 'dashboard' })
+    return { name: 'dashboard' }
   } else {
-    next()
+    return true
   }
 })
 

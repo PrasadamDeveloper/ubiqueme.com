@@ -40,4 +40,12 @@ export interface IUser {
   lastLoginAt: Timestamp
   /** Fecha y hora en la que se registró la cuenta */
   createdAt: Timestamp
+  /** Indica si el usuario se encuentra en periodo de prueba */
+  trialActive: boolean
+  /** Fecha y hora en la que inicia el periodo de prueba */
+  trialStartsAt: Timestamp
+  /** Fecha y hora en la que expira el periodo de prueba */
+  trialEndsAt: Timestamp
+  /** Indica si el usuario ya ha utilizado su periodo de prueba */
+  isTrialUsed: boolean
 }

@@ -100,7 +100,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 
 		// 5. Prepare Notification
 		const cleanScannerPhone = senderPhone.replace('+', '');
-		let ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
+		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
 		
 		const notificationText = `*Aviso de ubiqueme.com*\n\nHola ${ownerData.displayName || 'propietario'},\n\nEl número *${cleanScannerPhone}* escaneó su código QR *${qrData.name || 'Desconocido'}* y dejó este mensaje:\n\n_"${customMessage}"_\n\n⚠️ _Interacción segura. Actúe con cuidado si responde._`;
 

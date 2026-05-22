@@ -72,7 +72,7 @@
                       <div
                         class="w-16 h-11 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
 
-                        <span class=" font-poppins text-sm text-white">
+                        <span class=" font-poppins text-xs text-white">
 
                           {{ getUserIdUI(user, index) }}
 
@@ -270,7 +270,7 @@
                       <div class="flex items-center gap-2 text-[10px] uppercase tracking-widest"
                         v-tooltip="'Estado de la suscripción'">
 
-                        <span class="material-symbols-outlined text-[12px]" :class="user.subscriptionStatus === 'active'
+                        <span class="material-symbols-outlined  text-[15px]!" :class="user.subscriptionStatus === 'active'
                           ? 'text-orange-400'
                           : 'text-white/30'">
 
@@ -289,30 +289,94 @@
 
                       </div>
 
-                      <!-- Provider -->
-                      <div v-if="user.paymentProviderId" class="text-[10px] text-white/30 font-google-sans">
+                      <div v-if="user.trialActive"
+                        class="inline-flex items-center gap-2 rounded-full border border-orange-500/10 bg-orange-500/[0.03] px-3 py-1.5">
 
-                        Payment provider:
+                        <!-- Icon -->
+                        <div class="w-5 h-5 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0">
 
-                        {{ user.paymentProviderId }}
+                          <span class="material-symbols-outlined text-[18px]!  text-orange-400">
+
+                            rocket_launch
+
+                          </span>
+
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex items-center gap-2 text-[9px] font-google-sans">
+
+                          <span class="text-white/75">
+
+                            Trial activo
+
+                          </span>
+
+                          <span class="text-white/20">
+
+                            •
+
+                          </span>
+
+                          <span class="text-white/40">
+
+                            Inicio {{ formatedDate(user.trialStartsAt) }}
+
+                          </span>
+
+                          <span class="text-white/20">
+
+                            →
+
+                          </span>
+
+                          <span class="text-orange-300/90">
+
+                            {{ formatedDate(user.trialEndsAt) }}
+
+                          </span>
+
+                        </div>
 
                       </div>
 
-                      <div class="text-[10px] text-white/30 font-google-sans">
+                      <div class="flex flex-wrap gap-2">
 
-                        Comprado:
+                        <!-- Comprado -->
+                        <div
+                          class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 h-7">
 
-                        {{ formatedDate(
-                          user.planPurchasedAt) }}
+                          <span class="material-symbols-outlined text-[18px]! text-white/40">
 
-                      </div>
+                            shopping_bag
 
-                      <div v-if="user.planEndDate" class="text-[10px] text-white/30 font-google-sans">
+                          </span>
 
-                        Expira:
+                          <span class="text-[9px] text-white/65 font-google-sans">
 
-                        {{ formatedDate(
-                          user.planEndDate) }}
+                            Comprado · {{ formatedDate(user.planPurchasedAt) }}
+
+                          </span>
+
+                        </div>
+
+                        <!-- Expira -->
+                        <div v-if="user.planEndDate"
+                          class="inline-flex items-center gap-2 rounded-full border border-orange-500/10 bg-orange-500/[0.03] px-3 h-7">
+
+                          <span class="material-symbols-outlined text-[18px]! text-orange-400">
+
+                            schedule
+
+                          </span>
+
+                          <span class="text-[9px] text-white/65 font-google-sans">
+
+                            Expira · {{ formatedDate(user.planEndDate) }}
+
+                          </span>
+
+                        </div>
 
                       </div>
 
@@ -376,15 +440,11 @@
                           class="h-8 px-3 cursor-pointer rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center gap-1.5">
 
                           <span class="material-symbols-outlined text-[13px] text-white/50">
-
                             qr_code
-
                           </span>
 
                           <span class="text-[9px] uppercase tracking-widest font-semibold text-white/70">
-
                             Agregar QR
-
                           </span>
 
                         </button>
@@ -394,15 +454,44 @@
                           class="h-8 px-3 cursor-pointer rounded-lg border border-orange-500/15 bg-orange-500/5 hover:bg-orange-500/10 transition flex items-center justify-center gap-1.5">
 
                           <span class="material-symbols-outlined text-[13px]">
-
                             workspace_premium
-
                           </span>
 
                           <span class="text-[9px] uppercase tracking-widest font-semibold">
-
                             Plan
+                          </span>
 
+                        </button>
+
+                      </div>
+
+                      <!-- FREE TRIAL -->
+                      <div class="grid grid-cols-2 gap-2">
+
+                        <!-- Agregar -->
+                        <button @click="addFreeTrial(user)" v-tooltip="'Agregar prueba gratuita de 30 días'"
+                          class="h-8 px-3 cursor-pointer rounded-lg border border-orange-500/15 bg-orange-500/5 hover:bg-orange-500/10 transition flex items-center justify-center gap-1.5">
+
+                          <span class="material-symbols-outlined text-[13px] text-orange-400">
+                            rocket_launch
+                          </span>
+
+                          <span class="text-[9px] uppercase tracking-widest font-semibold text-orange-300">
+                            + Trial
+                          </span>
+
+                        </button>
+
+                        <!-- Quitar -->
+                        <button @click="removeFreeTrial(user)" v-tooltip="'Eliminar prueba gratuita'"
+                          class="h-8 px-3 cursor-pointer rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center gap-1.5">
+
+                          <span class="material-symbols-outlined text-[13px] text-white/50">
+                            remove_circle
+                          </span>
+
+                          <span class="text-[9px] uppercase tracking-widest font-semibold text-white/60">
+                            - Trial
                           </span>
 
                         </button>
@@ -449,13 +538,13 @@
         <QRNamePrompt :is-open="isQRModalOpen" :user-name="selectedUserForQR?.name || ''" @submit="handleQRSubmit"
           @cancel="isQRModalOpen = false" />
 
-        <BanConfirmPrompt :is-open="isBanModalOpen" :user-name="selectedUserForBan?.name || ''"
+        <BanConfirmPrompt :is-open="isBanModalOpen" :user="selectedUserForBan!"
           :is-currently-banned="selectedUserForBan?.isBanned || false" @submit="handleBanSubmit"
           @cancel="isBanModalOpen = false" />
 
         <ChangePlanPrompt :is-open="isPlanModalOpen" :user-name="selectedUserForPlan?.name || ''"
           :user-email="selectedUserForPlan?.email || ''" :current-plan="selectedUserForPlan?.plan || ''"
-          @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false" />
+          @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false" @cancel-plan="cancelUserPlan" />
 
       </div>
     </template>
@@ -619,8 +708,8 @@ const openPlanModal = (user: IUser) => {
 const handlePlanSubmit = async (plan: string) => {
   if (!selectedUserForPlan.value?.uid) return;
   const now = new Date();
-  const nextMonth = new Date(now);
-  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const nextYear = new Date(now);
+  nextYear.setFullYear(nextYear.getFullYear() + 1);
 
   const userRef = doc(firestoreDb, 'users', selectedUserForPlan.value.uid);
   const batch = writeBatch(firestoreDb);
@@ -628,7 +717,7 @@ const handlePlanSubmit = async (plan: string) => {
     batch.update(userRef, {
       plan,
       planPurchasedAt: Timestamp.fromDate(now),
-      planEndDate: Timestamp.fromDate(nextMonth),
+      planEndDate: Timestamp.fromDate(nextYear),
       subscriptionStatus: 'active',
       paymentProviderId: 'admin',
     });
@@ -641,9 +730,72 @@ const handlePlanSubmit = async (plan: string) => {
   }
 }
 
+const addFreeTrial = async (user: IUser) => {
+  if (!user.uid) return;
+  const now = new Date();
+  const nextMonth = new Date(now);
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const userRef = doc(firestoreDb, 'users', user.uid);
+  const batch = writeBatch(firestoreDb);
+  try {
+    batch.update(userRef, {
+      trialActive: true,
+      trialEndsAt: Timestamp.fromDate(nextMonth),
+      trialStartsAt: Timestamp.fromDate(now),
+      isTrialUsed: false,
+      plan: 'alpha',
+      planPurchasedAt: Timestamp.fromDate(now),
+      planEndDate: Timestamp.fromDate(nextMonth),
+      subscriptionStatus: 'active',
+      paymentProviderId: 'admin',
+    });
+    await batch.commit();
+    toast.success('Prueba gratuita agregada exitosamente al usuario ' + user.name);
+  } catch (error) {
+    toast.error('Error al agregar prueba gratuita al usuario: ' + error);
+  }
+}
+
+const removeFreeTrial = async (user: IUser) => {
+  if (!user.uid) return;
+  const userRef = doc(firestoreDb, 'users', user.uid);
+  const batch = writeBatch(firestoreDb);
+  try {
+    batch.update(userRef, {
+      trialActive: false,
+      trialEndsAt: null,
+      trialStartsAt: null,
+      isTrialUsed: true,
+    });
+    await batch.commit();
+    toast.success('Prueba gratuita eliminada exitosamente del usuario ' + user.name);
+  } catch (error) {
+    toast.error('Error al eliminar prueba gratuita del usuario: ' + error);
+  }
+
+}
+
+const cancelUserPlan = async (user: IUser) => {
+  const db = firestoreDb;
+  const userDoc = doc(db, `users/${user.uid}`);
+  const batch = writeBatch(db);
+  try {
+    batch.update(userDoc, {
+      plan: null,
+      planEndDate: null,
+      planPurchasedAt: null,
+      paymentProviderId: null,
+      subscriptionStatus: 'withoutPlan',
+
+    })
+    await batch.commit()
+  } catch (error) {
+    toast.error(`Error al cancelar el plan del usuario, ${error}`)
+  }
+}
 const formatedDate = (date: Timestamp | null): string => {
   if (!date) return 'N/A';
-  return date.toDate().toLocaleString('es-MX', { dateStyle: 'long', timeStyle: 'short' })
+  return date.toDate().toLocaleString('es-MX', { dateStyle: 'full', timeStyle: 'short' })
 }
 
 const selectedFilter = ref<'all' | 'active' | 'banned' | 'future' | 'canceled' | 'inactive'>('all');
@@ -685,15 +837,15 @@ const getUserIdUI = (userPayload: IUser, index: number) => {
   const planType = userPayload.plan;
   switch (planType) {
     case 'alpha':
-      user = `A10${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      user = `A00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
       break;
 
     case 'beta':
-      user = `B10${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      user = `B00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
       break;
 
     case 'epsilon':
-      user = `E10${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      user = `E00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
       break;
 
     default:

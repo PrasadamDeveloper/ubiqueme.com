@@ -350,7 +350,7 @@ onUnmounted(() => {
         leave-to-class="opacity-0 -translate-y-2 scale-95" class="z-30!">
 
         <div v-if="showMenu"
-          class="absolute top-12 right-4 w-[200px] bg-[#050505] border border-orange-500/20 rounded-xl p-1.5 shadow-[0_8px_30px_rgb(249,115,22,0.1)] z-50!">
+          class="absolute top-12 right-4 w-[200px] bg-[#050505  ] border border-orange-500/20 rounded-xl p-1.5 shadow-[0_8px_30px_rgb(249,115,22,0.1)] z-50!">
           <template v-for="(option, index) in menuOptions" :key="index">
             <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2 z-50!"></div>
             <button v-else @click="option.action" v-tooltip="{ content: option.description, placement: 'top' }" :class="[
