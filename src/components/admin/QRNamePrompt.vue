@@ -291,8 +291,9 @@ const qrSize = ref('SM')
 
               <div class="grid grid-cols-6 gap-2">
 
-                <button v-for="size in ['XS', 'SM', 'MD', 'LG', 'XL', 'XXL']" :key="size" @click="qrSize = size"
-                  class="h-10 rounded-lg border text-[10px] uppercase transition cursor-pointer" :class="qrSize === size
+                <button v-for="size in ['XS (3cm)', 'SM (5cm)', 'MD (10cm)', 'LG (15cm)']" :key="size"
+                  @click="qrSize = size" class="h-10 rounded-lg border text-[10px] uppercase transition cursor-pointer"
+                  :class="qrSize === size
                     ? 'border-orange-500/20 bg-orange-500/5 text-orange-400'
                     : 'border-white/10 bg-white/5 text-white/50'">
 

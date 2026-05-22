@@ -18,9 +18,9 @@ export interface IUser {
   /** Razón descriptiva detallada si la cuenta fue suspendida */
   banReason: string
   /** Plan actual de suscripción del usuario */
-  plan: 'alpha' | 'beta' | 'epsilon'
+  plan: 'alpha' | 'beta' | 'epsilon' | 'withoutPlan' | 'trial'
   /** Estado comercial de la suscripción */
-  subscriptionStatus: 'active' | 'inactive' | 'canceled'
+  subscriptionStatus: 'active' | 'inactive' | 'canceled' | 'trial' | 'withoutPlan'
   /** Fecha en la que se adquirió el plan actual */
   planPurchasedAt: Timestamp
   /** Fecha en la que expira el plan (null para pruebas o planes sin fecha fija) */

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
+import PlanDeleteConfirm from './PlanDeleteConfirm.vue';
 
 const props = defineProps<{
   isOpen: boolean
@@ -11,7 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'submit', newPlan: string): void
   (e: 'cancel'): void
-  (e: 'cancelPlan'): void
+  (e: 'cancelplan'): void
 }>()
 
 const selectedPlan = ref<string>(props.currentPlan)
@@ -35,15 +36,26 @@ const renewalDate = new Date();
 const currentMonth = now.getMonth();
 renewalDate.setMonth(currentMonth + 12)
 
+
 const handleCancelPlan = () => {
-  emit('cancelPlan')
+  emit('cancelplan')
+  showDeleteConfirm.value = false
+}
+
+const showDeleteConfirm = ref(true)
+const cancelDeletePlan = () => {
+  showDeleteConfirm.value = false
 }
 
 </script>
 
 <template>
   <Transition name="fade-scale">
+
+
     <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/85  p-4">
+      <PlanDeleteConfirm v-if="showDeleteConfirm" @confirm="handleCancelPlan" @cancel="cancelDeletePlan">
+      </PlanDeleteConfirm>
 
       <div
         class="relative w-full max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0a0a0b] shadow-2xl font-google-sans">
@@ -318,7 +330,7 @@ const handleCancelPlan = () => {
               </button>
 
               <!-- Cancel Subscription -->
-              <button
+              <button @click="showDeleteConfirm = true"
                 class="w-full rounded-[24px] border border-red-500/15 bg-red-500/[0.04] p-5 text-left transition-all duration-300 hover:bg-red-500/[0.08] hover:border-red-500/25">
 
                 <div class="flex justify-between items-center">

@@ -469,7 +469,8 @@
                       <div class="grid grid-cols-2 gap-2">
 
                         <!-- Agregar -->
-                        <button @click="addFreeTrial(user)" v-tooltip="'Agregar prueba gratuita de 30 días'"
+                        <button v-if="user.subscriptionStatus === 'withoutPlan'" @click="addFreeTrial(user)"
+                          v-tooltip="'Agregar prueba gratuita de 30 días'"
                           class="h-8 px-3 cursor-pointer rounded-lg border border-orange-500/15 bg-orange-500/5 hover:bg-orange-500/10 transition flex items-center justify-center gap-1.5">
 
                           <span class="material-symbols-outlined text-[13px] text-orange-400">
@@ -483,7 +484,8 @@
                         </button>
 
                         <!-- Quitar -->
-                        <button @click="removeFreeTrial(user)" v-tooltip="'Eliminar prueba gratuita'"
+                        <button v-if="user.subscriptionStatus === 'trial'" @click="removeFreeTrial(user)"
+                          v-tooltip="'Eliminar prueba gratuita'"
                           class="h-8 px-3 cursor-pointer rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center gap-1.5">
 
                           <span class="material-symbols-outlined text-[13px] text-white/50">
@@ -538,13 +540,13 @@
         <QRNamePrompt :is-open="isQRModalOpen" :user-name="selectedUserForQR?.name || ''" @submit="handleQRSubmit"
           @cancel="isQRModalOpen = false" />
 
-        <BanConfirmPrompt :is-open="isBanModalOpen" :user="selectedUserForBan!"
-          :is-currently-banned="selectedUserForBan?.isBanned || false" @submit="handleBanSubmit"
+        <BanConfirmPrompt v-if="selectedUserForBan" :is-open="isBanModalOpen" :user="selectedUserForBan"
+          :is-currently-banned="selectedUserForBan.isBanned || false" @submit="handleBanSubmit"
           @cancel="isBanModalOpen = false" />
 
         <ChangePlanPrompt :is-open="isPlanModalOpen" :user-name="selectedUserForPlan?.name || ''"
           :user-email="selectedUserForPlan?.email || ''" :current-plan="selectedUserForPlan?.plan || ''"
-          @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false" @cancel-plan="cancelUserPlan" />
+          @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false" @cancelplan="cancelUserPlan" />
 
       </div>
     </template>
@@ -716,6 +718,10 @@ const handlePlanSubmit = async (plan: string) => {
   try {
     batch.update(userRef, {
       plan,
+      trialActive: false,
+      trialEndsAt: null,
+      trialStartsAt: null,
+      isTrialUsed: true,
       planPurchasedAt: Timestamp.fromDate(now),
       planEndDate: Timestamp.fromDate(nextYear),
       subscriptionStatus: 'active',
@@ -739,14 +745,12 @@ const addFreeTrial = async (user: IUser) => {
   const batch = writeBatch(firestoreDb);
   try {
     batch.update(userRef, {
+      plan: 'trial',
       trialActive: true,
       trialEndsAt: Timestamp.fromDate(nextMonth),
       trialStartsAt: Timestamp.fromDate(now),
-      isTrialUsed: false,
-      plan: 'alpha',
-      planPurchasedAt: Timestamp.fromDate(now),
-      planEndDate: Timestamp.fromDate(nextMonth),
-      subscriptionStatus: 'active',
+      isTrialUsed: true,
+      subscriptionStatus: 'trial',
       paymentProviderId: 'admin',
     });
     await batch.commit();
@@ -762,10 +766,12 @@ const removeFreeTrial = async (user: IUser) => {
   const batch = writeBatch(firestoreDb);
   try {
     batch.update(userRef, {
+      plan: 'withoutPlan',
       trialActive: false,
       trialEndsAt: null,
       trialStartsAt: null,
       isTrialUsed: true,
+      subscriptionStatus: 'withoutPlan',
     });
     await batch.commit();
     toast.success('Prueba gratuita eliminada exitosamente del usuario ' + user.name);
@@ -775,13 +781,15 @@ const removeFreeTrial = async (user: IUser) => {
 
 }
 
-const cancelUserPlan = async (user: IUser) => {
+const cancelUserPlan = async () => {
+  const user = selectedUserForPlan.value;
+  if (!user || !user.uid) return;
   const db = firestoreDb;
   const userDoc = doc(db, `users/${user.uid}`);
   const batch = writeBatch(db);
   try {
     batch.update(userDoc, {
-      plan: null,
+      plan: 'withoutPlan',
       planEndDate: null,
       planPurchasedAt: null,
       paymentProviderId: null,
@@ -789,6 +797,9 @@ const cancelUserPlan = async (user: IUser) => {
 
     })
     await batch.commit()
+    toast.success(`Plan cancelado exitosamente al usuario ${user.name}`)
+    isPlanModalOpen.value = false;
+    selectedUserForPlan.value = null;
   } catch (error) {
     toast.error(`Error al cancelar el plan del usuario, ${error}`)
   }
@@ -836,6 +847,14 @@ const getUserIdUI = (userPayload: IUser, index: number) => {
   let user;
   const planType = userPayload.plan;
   switch (planType) {
+    case 'withoutPlan':
+      user = `N00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      break;
+
+    case 'trial':
+      user = `T00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
+      break;
+
     case 'alpha':
       user = `A00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
       break;
@@ -849,7 +868,8 @@ const getUserIdUI = (userPayload: IUser, index: number) => {
       break;
 
     default:
-      console.log(`Plan was not found`);
+      user = 'Plan inválido';
+      console.log(`Plan was not found ${planType}`);
       break;
   }
   return user
