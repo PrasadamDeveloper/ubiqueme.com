@@ -40,19 +40,25 @@ onUnmounted(() => {
       <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto">
 
         <!-- Logo -->
-        <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
-  <span class="material-symbols-outlined text-white/70 text-[1.5rem] mr-1" aria-hidden="true">shield</span>
-  <span class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform" aria-hidden="true">location_on</span>
-  <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
-            <Transition name="slide-up">
-              <div :key="currentDomainIndex"
-                class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
-                <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                <span class="text-orange-500">.com</span>
-              </div>
-            </Transition>
+        <div class="flex items-center gap-3">
+          <!-- SSL Badge -->
+          <div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md border border-white/8 bg-white/[0.03]">
+            <span class="material-symbols-outlined text-white/30" style="font-size:13px">shield</span>
+            <span class="text-[9px] font-black uppercase tracking-[0.15em] text-white/25">SSL</span>
           </div>
-        </RouterLink>
+          <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
+            <span class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform" aria-hidden="true">location_on</span>
+            <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
+              <Transition name="slide-up">
+                <div :key="currentDomainIndex"
+                  class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
+                  <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                  <span class="text-orange-500">.com</span>
+                </div>
+              </Transition>
+            </div>
+          </RouterLink>
+        </div>
 
         <!-- Menu -->
         <div class="hidden lg:flex items-center space-x-2 tracking-tight">
