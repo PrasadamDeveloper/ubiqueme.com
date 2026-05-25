@@ -196,7 +196,27 @@ const timestampToDate = (): string => {
   }
 }
 
+const _handleSendPhysicalQR = async () => {
+  isLoading.value = true;
+  try {
+    const docQRRef = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
+    await updateDoc(docQRRef, {
+      physicalShipped: true,
+      physicalShippedAt: Timestamp.now(),
+      shippingNotes: '',
+
+    })
+    isLoading.value = false;
+    toast.success(`QR físico actualizado`);
+  } catch (error) {
+    isLoading.value = false;
+    const e = error as Error;
+    toast.error(`Error al solicitar QR físico: ${e.message}`);
+  }
+}
+
 const menuOptions = [
+  //{ label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: _handleSendPhysicalQR },
   { label: 'Hacer Público', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: _setQrPublic },
   { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: _setQrPrivate },
   { divider: true },
@@ -325,7 +345,7 @@ onUnmounted(() => {
             <div class="flex items-center gap-1.5">
               <span :class="['w-1.5 h-1.5 rounded-full shadow-lg', currentStatus.dot]"></span>
               <span class="text-white/90 text-[10px] font-bold uppercase tracking-wider">{{ currentStatus.label
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -350,7 +370,8 @@ onUnmounted(() => {
         leave-to-class="opacity-0 -translate-y-2 scale-95" class="z-30!">
 
         <div v-if="showMenu"
-          class="absolute top-12 right-4 w-[200px] bg-[#050505  ] border border-orange-500/20 rounded-xl p-1.5 shadow-[0_8px_30px_rgb(249,115,22,0.1)] z-50!">
+          class="absolute top-12 right-4 w-[300px]  md:w-[180px] h-[150px] bg-[#0b0808] border md:h-[300px] pb-10 overflow-y-scroll border-orange-500/20 rounded-xl p-1.5 shadow-[0_8px_30px_rgb(249,115,22,0.1)] z-50!">
+
           <template v-for="(option, index) in menuOptions" :key="index">
             <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2 z-50!"></div>
             <button v-else @click="option.action" v-tooltip="{ content: option.description, placement: 'top' }" :class="[
@@ -362,6 +383,26 @@ onUnmounted(() => {
               {{ option.label }}
             </button>
           </template>
+          <button v-if="propsComputed.physicalShipped" @click="_handleSendPhysicalQR"
+            v-tooltip="{ content: 'Solicitar renovación de su código QR físico, el cual tiene un costo de $199MXN el envio.', placement: 'top' }"
+            :class="[
+              'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
+              'text-white/70',
+              'hover:bg-orange-500/10 hover:text-orange-400'
+            ]">
+            <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+            Volver a pedir QR físico {{ props.shippingNotes }}
+          </button>
+          <button v-if="!propsComputed.physicalShipped" @click="_handleSendPhysicalQR"
+            v-tooltip="{ content: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', placement: 'top' }"
+            :class="[
+              'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
+              'text-white/70',
+              'hover:bg-orange-500/10 hover:text-orange-400'
+            ]">
+            <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+            Pedir QR físico
+          </button>
         </div>
       </Transition>
 

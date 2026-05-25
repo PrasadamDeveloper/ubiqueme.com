@@ -473,32 +473,49 @@ const openQRModal = (user: IUser) => {
 const handleQRSubmit = async (qrName: string) => {
   const user = selectedUserForQR.value
 
-  if (!qrName || qrName.trim() === '') return toast.error(`Error al crear código QR no se especifico un nombre`);
-  if (!user?.uid) return toast.error(`Error al crear código QR no se encontro el usuario`);
-
-  // Skip plan limit validation since we manage this differently now
-  // and admin can add QR codes directly to the user as long as there is an active sub.
+  if (!qrName || qrName.trim() === '') return toast.error(`Error al crear código QR: no se especificó un nombre`);
+  if (!user?.uid) return toast.error(`Error al crear código QR: no se encontró el usuario`);
 
   try {
-    await runTransaction(firestoreDb, async (transaction) => {
-      // 1. Generamos el ID
-      const newQRId = nanoid(15);
+    // 1. Buscar suscripción activa con capacidad disponible
+    const { getDocs, collection: col } = await import('firebase/firestore');
+    const subsSnapshot = await getDocs(col(firestoreDb, `users/${user.uid}/subscriptions`));
+    const activeSubDoc = subsSnapshot.docs.find(d => {
+      const data = d.data();
+      return data.status === 'active' && data.totalQRsCreated < data.totalQRsAllowed;
+    });
 
-      // 2. Referencias a los documentos (Público y Privado)
+    if (!activeSubDoc) {
+      toast.error(`El usuario ${user.name} no tiene suscripciones activas con capacidad disponible.`);
+      return;
+    }
+
+    const subId = activeSubDoc.id;
+
+    await runTransaction(firestoreDb, async (transaction) => {
+      // Re-leer la suscripción dentro de la transacción para consistencia
+      const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${subId}`);
+      const subDocTx = await transaction.get(subRef);
+      if (!subDocTx.exists()) throw new Error('Suscripción no encontrada.');
+      const subData = subDocTx.data();
+      if (subData.totalQRsCreated >= subData.totalQRsAllowed) {
+        throw new Error('La suscripción seleccionada ya no tiene capacidad.');
+      }
+
+      const newQRId = nanoid(15);
       const publicQrRef = doc(firestoreDb, `publicQR/${newQRId}`);
       const userQrRef = doc(firestoreDb, `users/${user.uid}/qrs/${newQRId}`);
 
-      // 3. Verificamos idempotencia (Que no exista en la base de datos pública globalmente)
+      // Verificar idempotencia
       const qrDoc = await transaction.get(publicQrRef);
       if (qrDoc.exists()) {
-        throw new Error("Colisión de ID. La transacción se cancelará y puede reintentar.");
+        throw new Error('Colisión de ID. La transacción se cancelará y puede reintentar.');
       }
 
-      // 4. Si no existe, creamos el documento en ambas colecciones atómicamente
-      // Colección Pública (Para cuando lo escaneen)
+      // Colección Pública (para escaneos)
       transaction.set(publicQrRef, {
         id: newQRId,
-        name: 'Nuevo QR (Prueba)',
+        name: qrName,
         status: 'Active',
         lastScan: null,
         totalScans: 0,
@@ -506,34 +523,32 @@ const handleQRSubmit = async (qrName: string) => {
         banReason: '',
         docId: newQRId,
         uid: user.uid,
-        tier: 'free',
+        tier: subData.planType ?? 'free',
         createdAt: Timestamp.now()
       });
 
-      // Subcolección del Usuario (Para su Dashboard)
+      // Subcolección del usuario
       transaction.set(userQrRef, {
         id: newQRId,
         uid: user.uid,
-        name: qrName ?? 'QR name',
+        name: qrName,
         status: 'Active',
         scans: 0,
-        lastScan: "",
+        lastScan: '',
         isActive: true,
         isBanned: false,
         banReason: '',
-        subscriptionId: 'admin_created',
+        subscriptionId: subId,
         createdAt: Timestamp.now()
       });
 
-      // Incrementamos el contador global de QRs en el documento PRINCIPAL del usuario
+      // Incrementar contadores
       const userRootRef = doc(firestoreDb, `users/${user.uid}`);
-      transaction.update(userRootRef, {
-        totalQRs: increment(1)
-      });
-
+      transaction.update(userRootRef, { totalQRs: increment(1) });
+      transaction.update(subRef, { totalQRsCreated: increment(1) });
     });
 
-    toast.success(`Se ha creado el nuevo QR con nombre ${qrName} para el usuario ${user.name}`);
+    toast.success(`QR "${qrName}" creado y asignado al plan ${activeSubDoc.data().planType} de ${user.name}`);
     isQRModalOpen.value = false;
     selectedUserForQR.value = null;
   } catch (error) {
@@ -598,7 +613,9 @@ const handlePlanSubmit = async (plan: string) => {
       endDate: Timestamp.fromDate(nextYear),
       paymentProviderId: 'admin',
       totalQRsAllowed: plan === 'epsilon' ? 5 : plan === 'beta' ? 3 : 1,
-      totalQRsCreated: 0
+      totalQRsCreated: 0,
+      freeShipmentsAllowed: 1, // 1 envío gratuito incluido por plan
+      freeShipmentsUsed: 0
     });
     
     await batch.commit();
@@ -630,7 +647,9 @@ const addFreeTrial = async (user: IUser) => {
       endDate: Timestamp.fromDate(nextMonth),
       paymentProviderId: 'admin',
       totalQRsAllowed: 1,
-      totalQRsCreated: 0
+      totalQRsCreated: 0,
+      freeShipmentsAllowed: 1, // 1 envío gratuito incluido por plan
+      freeShipmentsUsed: 0
     });
     
     await batch.commit();
@@ -640,18 +659,14 @@ const addFreeTrial = async (user: IUser) => {
   }
 }
 
-const removeFreeTrial = async (user: IUser) => {
+const removeFreeTrial = async (_user: IUser) => {
   toast.info('Para remover un trial, cancele la suscripción desde la vista de detalles.');
 }
 
 const cancelUserPlan = async () => {
   toast.info('Para cancelar un plan, gestióne la suscripción desde los detalles del usuario.');
-}
-    isPlanModalOpen.value = false;
-    selectedUserForPlan.value = null;
-  } catch (error) {
-    toast.error(`Error al cancelar el plan del usuario, ${error}`)
-  }
+  isPlanModalOpen.value = false;
+  selectedUserForPlan.value = null;
 }
 const formatedDate = (date: Timestamp | null): string => {
   if (!date) return 'N/A';
@@ -663,65 +678,44 @@ const selectedFilter = ref<'all' | 'active' | 'banned' | 'future' | 'canceled' |
 const searchQuery = ref('');
 
 const usersComputed = computed(() => {
-
   let result = usersData.value;
 
-  if (!selectedFilter.value) return result;
-
-  //FILTRO 2: SELECT (ALL / ACTIVE / BANNED)
-  if (selectedFilter.value == 'active') result = result.filter(u => !u.isBanned);
-
-  if (selectedFilter.value == 'banned') result = result.filter(u => u.isBanned);
-
-  if (selectedFilter.value == 'future') result = result.filter(u => u.planEndDate > Timestamp.now());
-
-  if (selectedFilter.value == 'canceled') result = result.filter(u => u.subscriptionStatus === 'canceled');
-
-  if (selectedFilter.value == 'inactive') result = result.filter(u => u.subscriptionStatus === 'inactive');
-
-  if (selectedFilter.value == 'all') result = usersData.value;
+  if (!selectedFilter.value || selectedFilter.value === 'all') {
+    // No filtrar, devolver todos
+  } else if (selectedFilter.value === 'active') {
+    result = result.filter(u => !u.isBanned && u.isActive);
+  } else if (selectedFilter.value === 'banned') {
+    result = result.filter(u => u.isBanned);
+  } else if (selectedFilter.value === 'future') {
+    result = result.filter(u => u.planEndDate != null && u.planEndDate > Timestamp.now());
+  } else if (selectedFilter.value === 'canceled') {
+    result = result.filter(u => u.subscriptionStatus === 'canceled');
+  } else if (selectedFilter.value === 'inactive') {
+    result = result.filter(u => u.subscriptionStatus === 'inactive');
+  }
 
   if (searchQuery.value) {
     result = result.filter(u =>
-      u.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+      u.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      u.email?.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
-
 
   return result;
 })
 
 const getUserIdUI = (userPayload: IUser, index: number) => {
-  let user;
+  const initial = userPayload.name?.charAt(0).toUpperCase() ?? 'U';
   const planType = userPayload.plan;
-  switch (planType) {
-    case 'withoutPlan':
-      user = `N00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
-      break;
-
-    case 'trial':
-      user = `T00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
-      break;
-
-    case 'alpha':
-      user = `A00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
-      break;
-
-    case 'beta':
-      user = `B00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
-      break;
-
-    case 'epsilon':
-      user = `E00010${index}${userPayload.name.charAt(0).toUpperCase()}`;
-      break;
-
-    default:
-      user = 'Plan inválido';
-      console.log(`Plan was not found ${planType}`);
-      break;
-  }
-  return user
+  const prefixMap: Record<string, string> = {
+    withoutPlan: 'N',
+    trial: 'T',
+    alpha: 'A',
+    beta: 'B',
+    epsilon: 'E',
+  };
+  const prefix = prefixMap[planType] ?? 'U';
+  return `${prefix}${String(index).padStart(5, '0')}${initial}`;
 }
 
 </script>

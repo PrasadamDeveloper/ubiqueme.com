@@ -49,20 +49,22 @@ onUnmounted(() => {
               class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform">location_on</span>
             <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
               <Transition name="slide-up">
-              <div :key="currentDomainIndex"
-                class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
-                <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                <span class="text-orange-500">.com</span>
-              </div>
-            </Transition>
-          </div>
-        </RouterLink>
+                <div :key="currentDomainIndex"
+                  class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
+                  <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                  <span class="text-orange-500">.com</span>
+                </div>
+              </Transition>
+            </div>
+          </RouterLink>
+        </div>
 
         <!-- Menu -->
         <div class="hidden lg:flex items-center space-x-2 tracking-tight">
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
-            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
+            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{
+              link.icon
             }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
 
@@ -83,7 +85,8 @@ onUnmounted(() => {
         </div>
 
         <!-- Hamburger Button (Mobile Only) -->
-        <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
+        <button @click="isMobileMenuOpen = !isMobileMenuOpen"
+          class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
           <span class="material-symbols-outlined text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
         </button>
 
@@ -91,7 +94,8 @@ onUnmounted(() => {
 
       <!-- Mobile Menu Overlay -->
       <Transition name="fade-slide">
-        <div v-if="isMobileMenuOpen" class="fixed top-20 left-0 w-full h-[calc(100vh-80px)] bg-[#09090b]/95 backdrop-blur-xl z-40 border-t border-white/5 flex flex-col justify-between p-8 lg:hidden">
+        <div v-if="isMobileMenuOpen"
+          class="fixed top-20 left-0 w-full h-[calc(100vh-80px)] bg-[#09090b]/95 backdrop-blur-xl z-40 border-t border-white/5 flex flex-col justify-between p-8 lg:hidden">
           <!-- Links -->
           <div class="flex flex-col space-y-4">
             <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"

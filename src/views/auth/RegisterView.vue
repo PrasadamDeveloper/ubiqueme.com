@@ -204,7 +204,7 @@ const auth = authFirebase
 const router = useRouter()
 const db = getFirestore()
 const userStore = useUserStore()
-const generateRandomId = () => nanoid(10);
+const generateRandomId = () => nanoid(15);
 const loading = ref(false)
 
 const handleRegister = async () => {
@@ -293,7 +293,7 @@ const handleGoogleAuth = async () => {
         lastLoginAt: Timestamp.now(),
         createdAt: Timestamp.now(),
       })
-      
+
       const subId = generateRandomId();
       batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
         id: subId,

@@ -47,4 +47,12 @@ export interface IQRCard {
   subscriptionId: string
   /** Associated URL link of the QR */
   link?: string
+  /** Whether the physical QR has been shipped */
+  physicalShipped?: boolean
+  /** Timestamp of when the physical QR was shipped */
+  physicalShippedAt?: Timestamp
+  /** Internal notes about the shipment */
+  shippingNotes?: string
+  /** Whether the free shipment from the plan was used */
+  freeShipmentUsed?: boolean
 }
