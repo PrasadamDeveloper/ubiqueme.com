@@ -43,10 +43,8 @@ export interface IQRCard {
   docId: string
   /** Optional URL to a preview image of the asset */
   img?: string
-  /** Purchased dates (can be null if not premium) */
-  planPurchasedAt?: any
-  /** Expiration date of the current plan */
-  planEndDate?: any
+  /** The ID of the subscription this QR code belongs to */
+  subscriptionId: string
   /** Associated URL link of the QR */
   link?: string
 }

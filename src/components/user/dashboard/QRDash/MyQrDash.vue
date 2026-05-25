@@ -22,32 +22,41 @@ const userQrsCollection = collection(db, `users/${userId}/qrs`);
 
 //Add QR doc to user ATENTION THIS MUST BE ONLY FOR ADMIN ITS CREATED HERE FOR TEST PURPOUSE ONLY
 const createQR = async () => {
-  // Validar límites de QR activos según el plan de usuario
-  const userPlan = (userStore.getPlan || 'alpha').toLowerCase()
-  const maxQRs = userPlan === 'epsilon' ? 5 : userPlan === 'beta' ? 3 : 1
-
-  if (userQRs.value.length >= maxQRs) {
-    toast.error(`Límite alcanzado: Su plan ${userPlan.toUpperCase()} permite un máximo de ${maxQRs} código(s) QR activos. Por favor, actualice su suscripción en la sección de Precios para registrar más.`)
-    return
-  }
-
   try {
-    await runTransaction(db, async (transaction) => {
-      // 1. Generamos el ID
-      const newQRId = nanoid(15);
+    // 1. Fetch available subscriptions first (before transaction for simplicity)
+    const { getDocs, collection } = await import('firebase/firestore');
+    const subsSnapshot = await getDocs(collection(db, `users/${userId}/subscriptions`));
+    const activeSubDoc = subsSnapshot.docs.find(d => {
+      const data = d.data();
+      return data.status === 'active' && data.totalQRsCreated < data.totalQRsAllowed;
+    });
 
-      // 2. Referencias a los documentos (Público y Privado)
+    if (!activeSubDoc) {
+      toast.error('Límite alcanzado o sin suscripción activa. Por favor, adquiera o actualice un plan para registrar más QRs.');
+      return;
+    }
+    
+    const subId = activeSubDoc.id;
+
+    await runTransaction(db, async (transaction) => {
+      // Re-read subscription to ensure consistency inside transaction
+      const subRef = doc(db, `users/${userId}/subscriptions/${subId}`);
+      const subDocTx = await transaction.get(subRef);
+      if (!subDocTx.exists()) throw new Error("Subscription not found.");
+      const subData = subDocTx.data();
+      if (subData.totalQRsCreated >= subData.totalQRsAllowed) {
+        throw new Error("La suscripción seleccionada ya no tiene capacidad.");
+      }
+
+      const newQRId = nanoid(15);
       const publicQrRef = doc(db, `publicQR/${newQRId}`);
       const userQrRef = doc(db, `users/${userId}/qrs/${newQRId}`);
 
-      // 3. Verificamos idempotencia (Que no exista en la base de datos pública globalmente)
       const qrDoc = await transaction.get(publicQrRef);
       if (qrDoc.exists()) {
         throw new Error("Colisión de ID. La transacción se cancelará y puede reintentar.");
       }
 
-      // 4. Si no existe, creamos el documento en ambas colecciones atómicamente
-      // Colección Pública (Para cuando lo escaneen)
       transaction.set(publicQrRef, {
         id: newQRId,
         name: 'Nuevo QR (Prueba)',
@@ -62,7 +71,6 @@ const createQR = async () => {
         createdAt: Timestamp.now()
       });
 
-      // Subcolección del Usuario (Para su Dashboard)
       transaction.set(userQrRef, {
         id: newQRId,
         uid: userId,
@@ -73,20 +81,24 @@ const createQR = async () => {
         isActive: true,
         isBanned: false,
         banReason: '',
-        planEndDate: null,
-        planPurchasedAt: null,
+        subscriptionId: subId,
         createdAt: Timestamp.now()
       });
 
-      // Incrementamos el contador global de QRs en el documento PRINCIPAL del usuario
+      // Update totalQRs on user root
       const userRootRef = doc(db, `users/${userId}`);
       transaction.update(userRootRef, {
         totalQRs: increment(1)
       });
 
+      // Update totalQRsCreated on the chosen subscription
+      transaction.update(subRef, {
+        totalQRsCreated: increment(1)
+      });
+
     });
 
-    toast.success("¡QR creado con éxito atómicamente!");
+    toast.success("¡QR creado con éxito atómicamente y asignado a la suscripción!");
   } catch (error) {
     toast.error(`Fallo al crear el QR: ${error}`);
   }

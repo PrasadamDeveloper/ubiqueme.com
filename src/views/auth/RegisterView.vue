@@ -230,11 +230,6 @@ const handleRegister = async () => {
       isActive: true,
       isBanned: false,
       banReason: '',
-      plan: 'alpha',
-      subscriptionStatus: 'active',
-      planPurchasedAt: Timestamp.now(),
-      planEndDate: null,
-      paymentProviderId: '',
       totalQRs: 0,
       preferences: {
         emailNotifications: false,
@@ -243,6 +238,19 @@ const handleRegister = async () => {
       },
       lastLoginAt: Timestamp.now(),
       createdAt: Timestamp.now(),
+    });
+
+    const subId = generateRandomId();
+    batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
+      id: subId,
+      userId: user.uid,
+      planType: 'alpha',
+      status: 'active',
+      purchasedAt: Timestamp.now(),
+      endDate: null,
+      paymentProviderId: '',
+      totalQRsAllowed: 1, // Default limit for alpha plan
+      totalQRsCreated: 0
     });
 
     await batch.commit()
@@ -276,11 +284,6 @@ const handleGoogleAuth = async () => {
         isActive: true,
         isBanned: false,
         banReason: '',
-        plan: 'alpha',
-        subscriptionStatus: 'active',
-        planPurchasedAt: Timestamp.now(),
-        planEndDate: null,
-        paymentProviderId: '',
         totalQRs: 0,
         preferences: {
           emailNotifications: false,
@@ -290,6 +293,20 @@ const handleGoogleAuth = async () => {
         lastLoginAt: Timestamp.now(),
         createdAt: Timestamp.now(),
       })
+      
+      const subId = generateRandomId();
+      batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
+        id: subId,
+        userId: user.uid,
+        planType: 'alpha',
+        status: 'active',
+        purchasedAt: Timestamp.now(),
+        endDate: null,
+        paymentProviderId: '',
+        totalQRsAllowed: 1,
+        totalQRsCreated: 0
+      })
+
       await batch.commit()
     }
 

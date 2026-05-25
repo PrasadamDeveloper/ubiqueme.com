@@ -31,7 +31,6 @@ export interface IMyQR {
   scans: number
   lastScan: string
   createdAt: Timestamp
-  planPurchasedAt?: Timestamp | null
-  planEndDate?: Timestamp | null
+  subscriptionId: string
   link?: string
 }

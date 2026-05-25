@@ -144,33 +144,8 @@ const formatDate = (timestamp: any) => {
                 </div>
 
                 <div class="flex justify-between">
-
-                  <span class="text-white/40">
-                    Plan
-                  </span>
-
-                  <span class="text-orange-400">
-
-                    {{ user.plan }}
-
-                  </span>
-
-                </div>
-
-                <div class="flex justify-between">
-
-                  <span class="text-white/40">
-                    Estado
-                  </span>
-
-                  <span :class="user.subscriptionStatus === 'active'
-                    ? 'text-green-400'
-                    : 'text-red-400'">
-
-                    {{ user.subscriptionStatus }}
-
-                  </span>
-
+                  <span class="text-white/40">Suscripciones</span>
+                  <span class="text-orange-400">Ver en Detalles</span>
                 </div>
 
               </div>

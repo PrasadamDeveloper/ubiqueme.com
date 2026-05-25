@@ -110,7 +110,7 @@ const _setQrPublic = async () => {
       totalScans: props.scans,
       lastScan: null,
       uid: userStore.getUserId,
-      tier: userStore.getPlan,
+      tier: props.subscriptionId,
     }
     const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
     batch.update(qrDoc, {

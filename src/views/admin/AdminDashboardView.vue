@@ -255,129 +255,33 @@
                       <!-- Plan -->
                       <div
                         class="inline-flex gap-2 items-center px-3 py-1 rounded-xl border border-orange-500/15 bg-orange-500/5 text-orange-400 text-[10px] uppercase tracking-widest">
-
                         <span class="material-symbols-outlined text-[12px]">
-
                           workspace_premium
-
                         </span>
-
-                        {{ user.plan }}
-
+                        Suscripciones
                       </div>
-
+                      
                       <!-- Status -->
                       <div class="flex items-center gap-2 text-[10px] uppercase tracking-widest"
-                        v-tooltip="'Estado de la suscripción'">
-
-                        <span class="material-symbols-outlined  text-[15px]!" :class="user.subscriptionStatus === 'active'
-                          ? 'text-orange-400'
-                          : 'text-white/30'">
-
-                          {{ user.subscriptionStatus
-                            === 'active'
-                            ? 'check_circle'
-                            : 'radio_button_unchecked' }}
-
+                        v-tooltip="'Gestionar desde acciones'">
+                        <span class="material-symbols-outlined  text-[15px]! text-orange-400">
+                          info
                         </span>
-
                         <span class="text-white/40">
-
-                          {{ user.subscriptionStatus }}
-
+                          Ver en Detalles
                         </span>
-
                       </div>
 
                       <div v-if="user.trialActive"
                         class="inline-flex items-center gap-2 rounded-full border border-orange-500/10 bg-orange-500/[0.03] px-3 py-1.5">
-
-                        <!-- Icon -->
                         <div class="w-5 h-5 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0">
-
                           <span class="material-symbols-outlined text-[18px]!  text-orange-400">
-
                             rocket_launch
-
                           </span>
-
                         </div>
-
-                        <!-- Content -->
                         <div class="flex items-center gap-2 text-[9px] font-google-sans">
-
-                          <span class="text-white/75">
-
-                            Trial activo
-
-                          </span>
-
-                          <span class="text-white/20">
-
-                            •
-
-                          </span>
-
-                          <span class="text-white/40">
-
-                            Inicio {{ formatedDate(user.trialStartsAt) }}
-
-                          </span>
-
-                          <span class="text-white/20">
-
-                            →
-
-                          </span>
-
-                          <span class="text-orange-300/90">
-
-                            {{ formatedDate(user.trialEndsAt) }}
-
-                          </span>
-
+                          <span class="text-white/75">Trial Activo</span>
                         </div>
-
-                      </div>
-
-                      <div class="flex flex-wrap gap-2">
-
-                        <!-- Comprado -->
-                        <div
-                          class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 h-7">
-
-                          <span class="material-symbols-outlined text-[18px]! text-white/40">
-
-                            shopping_bag
-
-                          </span>
-
-                          <span class="text-[9px] text-white/65 font-google-sans">
-
-                            Comprado · {{ formatedDate(user.planPurchasedAt) }}
-
-                          </span>
-
-                        </div>
-
-                        <!-- Expira -->
-                        <div v-if="user.planEndDate"
-                          class="inline-flex items-center gap-2 rounded-full border border-orange-500/10 bg-orange-500/[0.03] px-3 h-7">
-
-                          <span class="material-symbols-outlined text-[18px]! text-orange-400">
-
-                            schedule
-
-                          </span>
-
-                          <span class="text-[9px] text-white/65 font-google-sans">
-
-                            Expira · {{ formatedDate(user.planEndDate) }}
-
-                          </span>
-
-                        </div>
-
                       </div>
 
                     </div>
@@ -465,39 +369,13 @@
 
                       </div>
 
-                      <!-- FREE TRIAL -->
                       <div class="grid grid-cols-2 gap-2">
-
-                        <!-- Agregar -->
-                        <button v-if="user.subscriptionStatus === 'withoutPlan'" @click="addFreeTrial(user)"
+                        <button @click="addFreeTrial(user)"
                           v-tooltip="'Agregar prueba gratuita de 30 días'"
                           class="h-8 px-3 cursor-pointer rounded-lg border border-orange-500/15 bg-orange-500/5 hover:bg-orange-500/10 transition flex items-center justify-center gap-1.5">
-
-                          <span class="material-symbols-outlined text-[13px] text-orange-400">
-                            rocket_launch
-                          </span>
-
-                          <span class="text-[9px] uppercase tracking-widest font-semibold text-orange-300">
-                            + Trial
-                          </span>
-
+                          <span class="material-symbols-outlined text-[13px] text-orange-400">rocket_launch</span>
+                          <span class="text-[9px] uppercase tracking-widest font-semibold text-orange-300">+ Trial</span>
                         </button>
-
-                        <!-- Quitar -->
-                        <button v-if="user.subscriptionStatus === 'trial'" @click="removeFreeTrial(user)"
-                          v-tooltip="'Eliminar prueba gratuita'"
-                          class="h-8 px-3 cursor-pointer rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center gap-1.5">
-
-                          <span class="material-symbols-outlined text-[13px] text-white/50">
-                            remove_circle
-                          </span>
-
-                          <span class="text-[9px] uppercase tracking-widest font-semibold text-white/60">
-                            - Trial
-                          </span>
-
-                        </button>
-
                       </div>
 
                       <!-- Ban -->
@@ -598,14 +476,8 @@ const handleQRSubmit = async (qrName: string) => {
   if (!qrName || qrName.trim() === '') return toast.error(`Error al crear código QR no se especifico un nombre`);
   if (!user?.uid) return toast.error(`Error al crear código QR no se encontro el usuario`);
 
-  // Validar límites de QR activos según el plan de usuario
-  const userPlan = (user.plan || 'alpha')
-  const maxQRs = userPlan === 'epsilon' ? 5 : userPlan === 'beta' ? 3 : 1
-
-  if (user.totalQRs >= maxQRs) {
-    toast.error(`Límite alcanzado: El plan del usuario ${user.name}, ${userPlan.toUpperCase()} permite un máximo de ${maxQRs} código(s) QR activos. Por favor, actualice su suscripción en la sección de Precios para registrar más.`)
-    return
-  }
+  // Skip plan limit validation since we manage this differently now
+  // and admin can add QR codes directly to the user as long as there is an active sub.
 
   try {
     await runTransaction(firestoreDb, async (transaction) => {
@@ -649,8 +521,7 @@ const handleQRSubmit = async (qrName: string) => {
         isActive: true,
         isBanned: false,
         banReason: '',
-        planEndDate: null,
-        planPurchasedAt: null,
+        subscriptionId: 'admin_created',
         createdAt: Timestamp.now()
       });
 
@@ -713,26 +584,29 @@ const handlePlanSubmit = async (plan: string) => {
   const nextYear = new Date(now);
   nextYear.setFullYear(nextYear.getFullYear() + 1);
 
-  const userRef = doc(firestoreDb, 'users', selectedUserForPlan.value.uid);
-  const batch = writeBatch(firestoreDb);
+  const subId = nanoid(15);
+  const subRef = doc(firestoreDb, `users/${selectedUserForPlan.value.uid}/subscriptions/${subId}`);
+  
   try {
-    batch.update(userRef, {
-      plan,
-      trialActive: false,
-      trialEndsAt: null,
-      trialStartsAt: null,
-      isTrialUsed: true,
-      planPurchasedAt: Timestamp.fromDate(now),
-      planEndDate: Timestamp.fromDate(nextYear),
-      subscriptionStatus: 'active',
+    const batch = writeBatch(firestoreDb);
+    batch.set(subRef, {
+      id: subId,
+      userId: selectedUserForPlan.value.uid,
+      planType: plan,
+      status: 'active',
+      purchasedAt: Timestamp.fromDate(now),
+      endDate: Timestamp.fromDate(nextYear),
       paymentProviderId: 'admin',
+      totalQRsAllowed: plan === 'epsilon' ? 5 : plan === 'beta' ? 3 : 1,
+      totalQRsCreated: 0
     });
+    
     await batch.commit();
-    toast.success('Plan del usuario ' + selectedUserForPlan.value.name + ' actualizado exitosamente');
+    toast.success('Nueva suscripción agregada al usuario ' + selectedUserForPlan.value.name);
     isPlanModalOpen.value = false;
     selectedUserForPlan.value = null;
   } catch (error) {
-    toast.error('Error al actualizar el plan del usuario: ' + error);
+    toast.error('Error al agregar suscripción al usuario: ' + error);
   }
 }
 
@@ -741,63 +615,38 @@ const addFreeTrial = async (user: IUser) => {
   const now = new Date();
   const nextMonth = new Date(now);
   nextMonth.setMonth(nextMonth.getMonth() + 1);
-  const userRef = doc(firestoreDb, 'users', user.uid);
-  const batch = writeBatch(firestoreDb);
+  
+  const subId = nanoid(15);
+  const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${subId}`);
+  
   try {
-    batch.update(userRef, {
-      plan: 'trial',
-      trialActive: true,
-      trialEndsAt: Timestamp.fromDate(nextMonth),
-      trialStartsAt: Timestamp.fromDate(now),
-      isTrialUsed: true,
-      subscriptionStatus: 'trial',
+    const batch = writeBatch(firestoreDb);
+    batch.set(subRef, {
+      id: subId,
+      userId: user.uid,
+      planType: 'trial',
+      status: 'active',
+      purchasedAt: Timestamp.fromDate(now),
+      endDate: Timestamp.fromDate(nextMonth),
       paymentProviderId: 'admin',
+      totalQRsAllowed: 1,
+      totalQRsCreated: 0
     });
+    
     await batch.commit();
-    toast.success('Prueba gratuita agregada exitosamente al usuario ' + user.name);
+    toast.success('Suscripción Trial agregada exitosamente al usuario ' + user.name);
   } catch (error) {
-    toast.error('Error al agregar prueba gratuita al usuario: ' + error);
+    toast.error('Error al agregar trial al usuario: ' + error);
   }
 }
 
 const removeFreeTrial = async (user: IUser) => {
-  if (!user.uid) return;
-  const userRef = doc(firestoreDb, 'users', user.uid);
-  const batch = writeBatch(firestoreDb);
-  try {
-    batch.update(userRef, {
-      plan: 'withoutPlan',
-      trialActive: false,
-      trialEndsAt: null,
-      trialStartsAt: null,
-      isTrialUsed: true,
-      subscriptionStatus: 'withoutPlan',
-    });
-    await batch.commit();
-    toast.success('Prueba gratuita eliminada exitosamente del usuario ' + user.name);
-  } catch (error) {
-    toast.error('Error al eliminar prueba gratuita del usuario: ' + error);
-  }
-
+  toast.info('Para remover un trial, cancele la suscripción desde la vista de detalles.');
 }
 
 const cancelUserPlan = async () => {
-  const user = selectedUserForPlan.value;
-  if (!user || !user.uid) return;
-  const db = firestoreDb;
-  const userDoc = doc(db, `users/${user.uid}`);
-  const batch = writeBatch(db);
-  try {
-    batch.update(userDoc, {
-      plan: 'withoutPlan',
-      planEndDate: null,
-      planPurchasedAt: null,
-      paymentProviderId: null,
-      subscriptionStatus: 'withoutPlan',
-
-    })
-    await batch.commit()
-    toast.success(`Plan cancelado exitosamente al usuario ${user.name}`)
+  toast.info('Para cancelar un plan, gestióne la suscripción desde los detalles del usuario.');
+}
     isPlanModalOpen.value = false;
     selectedUserForPlan.value = null;
   } catch (error) {

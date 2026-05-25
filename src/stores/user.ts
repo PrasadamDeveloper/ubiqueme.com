@@ -8,7 +8,6 @@ export const useUserStore = defineStore('userStore', () => {
   const creationDate = ref('')
   const userId = ref('')
   const email = ref('')
-  const plan = ref('')
   const isAuthenticated = ref(false)
   const authReady = ref(false)
 
@@ -18,7 +17,6 @@ export const useUserStore = defineStore('userStore', () => {
   const getCreationDate = computed(() => creationDate.value)
   const getUserId = computed(() => userId.value)
   const getEmail = computed(() => email.value)
-  const getPlan = computed(() => plan.value)
   const getIsAuthenticated = computed(() => isAuthenticated.value)
   const isAuthReady = computed(() => authReady.value)
 
@@ -35,9 +33,6 @@ export const useUserStore = defineStore('userStore', () => {
   function setEmail(val: string) {
     email.value = val
   }
-  function setPlan(val: string) {
-    plan.value = val
-  }
   function setIsAuthenticated(val: boolean) {
     isAuthenticated.value = val
   }
@@ -52,7 +47,6 @@ export const useUserStore = defineStore('userStore', () => {
     creationDate.value = ''
     userId.value = ''
     email.value = ''
-    plan.value = ''
     isAuthenticated.value = false
   }
 
@@ -62,7 +56,6 @@ export const useUserStore = defineStore('userStore', () => {
     creationDate,
     userId,
     email,
-    plan,
     isAuthenticated,
     authReady,
     // Getters
@@ -71,7 +64,6 @@ export const useUserStore = defineStore('userStore', () => {
     getCreationDate,
     getUserId,
     getEmail,
-    getPlan,
     getIsAuthenticated,
     isAuthReady,
     // Actions
@@ -79,7 +71,6 @@ export const useUserStore = defineStore('userStore', () => {
     setUserId,
     setCreationDate,
     setEmail,
-    setPlan,
     setIsAuthenticated,
     setAuthReady,
     clearFullName,

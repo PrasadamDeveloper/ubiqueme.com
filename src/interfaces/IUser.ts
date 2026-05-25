@@ -9,27 +9,16 @@ export interface IUser {
   email: string
   /** Teléfono de contacto (opcional) */
   phone: string
-  /** Rol del usuario dentro del sistema */
+  /** Role of the user within the system */
   role: 'scanner' | 'admin' | 'user'
-  /** Indica si la cuenta se encuentra activa en el flujo del sistema */
+  /** Indicates if the account is active */
   isActive: boolean
-  /** Estado de bloqueo/suspensión por administración */
+  /** Ban status */
   isBanned: boolean
-  /** Razón descriptiva detallada si la cuenta fue suspendida */
+  /** Reason for ban */
   banReason: string
-  /** Plan actual de suscripción del usuario */
-  plan: 'alpha' | 'beta' | 'epsilon' | 'withoutPlan' | 'trial'
-  /** Estado comercial de la suscripción */
-  subscriptionStatus: 'active' | 'inactive' | 'canceled' | 'trial' | 'withoutPlan'
-  /** Fecha en la que se adquirió el plan actual */
-  planPurchasedAt: Timestamp
-  /** Fecha en la que expira el plan (null para pruebas o planes sin fecha fija) */
-  planEndDate: Timestamp
-  /** ID de referencia del proveedor de pagos (por ejemplo, Stripe o PayPal) */
-  paymentProviderId: string
-  /** Cantidad acumulada de códigos QR creados por el usuario */
+  /** Total amount of QR codes created globally by the user */
   totalQRs: number
-  planCancelReason: string
   /** Preferencias de comunicación y notificaciones del usuario */
   preferences: {
     emailNotifications: boolean
