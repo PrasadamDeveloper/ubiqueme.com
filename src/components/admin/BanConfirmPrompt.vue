@@ -224,21 +224,7 @@ const formatDate = (timestamp: any) => {
 
               </div>
 
-              <div class="rounded-2xl border border-white/10 p-5 bg-white/[0.02]">
 
-                <p class="text-[10px] uppercase text-white/35">
-
-                  Fin del plan
-
-                </p>
-
-                <p class="mt-2 text-sm text-white">
-
-                  {{ formatDate(user.planEndDate) }}
-
-                </p>
-
-              </div>
 
               <div class="rounded-2xl border border-white/10 p-5 bg-white/[0.02]">
 

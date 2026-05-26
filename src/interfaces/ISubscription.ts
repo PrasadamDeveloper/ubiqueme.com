@@ -3,7 +3,7 @@ import type { Timestamp } from 'firebase/firestore';
 export interface ISubscription {
   id: string;              // Document ID within users/{uid}/subscriptions
   userId: string;          // The owner of the subscription
-  planType: 'alpha' | 'beta' | 'epsilon' | 'trial';
+  planType: 'bronce' | 'plata' | 'oro' | 'trial';
   status: 'active' | 'inactive' | 'canceled';
   purchasedAt: Timestamp;
   endDate: Timestamp | null;

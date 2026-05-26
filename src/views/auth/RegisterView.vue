@@ -244,13 +244,15 @@ const handleRegister = async () => {
     batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
       id: subId,
       userId: user.uid,
-      planType: 'alpha',
+      planType: 'bronce',
       status: 'active',
       purchasedAt: Timestamp.now(),
       endDate: null,
       paymentProviderId: '',
-      totalQRsAllowed: 1, // Default limit for alpha plan
-      totalQRsCreated: 0
+      totalQRsAllowed: 1, // Default limit for bronce plan
+      totalQRsCreated: 0,
+      freeShipmentsAllowed: 1,
+      freeShipmentsUsed: 0
     });
 
     await batch.commit()
@@ -298,13 +300,15 @@ const handleGoogleAuth = async () => {
       batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
         id: subId,
         userId: user.uid,
-        planType: 'alpha',
+        planType: 'bronce',
         status: 'active',
         purchasedAt: Timestamp.now(),
         endDate: null,
         paymentProviderId: '',
         totalQRsAllowed: 1,
-        totalQRsCreated: 0
+        totalQRsCreated: 0,
+        freeShipmentsAllowed: 1,
+        freeShipmentsUsed: 0
       })
 
       await batch.commit()

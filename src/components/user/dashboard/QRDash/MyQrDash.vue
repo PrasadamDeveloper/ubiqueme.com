@@ -32,10 +32,12 @@ const groupedQRs = computed(() => {
     groups[sub.id] = { subscription: sub, qrs: [] };
   });
 
-  // Distribuir QRs en sus respectivos grupos
   userQRs.value.forEach(qr => {
-    if (qr.subscriptionId && groups[qr.subscriptionId]) {
-      groups[qr.subscriptionId].qrs.push(qr);
+    if (qr.subscriptionId) {
+      const group = groups[qr.subscriptionId]
+      if (group) {
+        group.qrs.push(qr)
+      }
     }
   });
 
@@ -271,8 +273,13 @@ const images = imageStore.getImages;
                 :physicalShippedAt="qr.physicalShippedAt" />
             </div>
 
-            <div v-else class="pl-2 sm:pl-6 border-l-2 border-white/5 py-4">
+            <div v-else
+              class="pl-2 sm:pl-6 border-l-2 border-white/5 py-4 flex flex-col items-center gap-2 justify-between">
               <p class="text-white/40 text-sm italic">No hay QRs generados en esta suscripción.</p>
+              <button
+                class="bg-amber-500 text-white px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer"
+                @click="$router.push('/dashboard/request-qr')">
+                Crear Código QR</button>
             </div>
 
           </div>

@@ -249,43 +249,27 @@
 
                   <!-- PLAN -->
                   <td class="p-5">
-
-                    <div class="space-y-3">
-
-                      <!-- Plan -->
-                      <div
-                        class="inline-flex gap-2 items-center px-3 py-1 rounded-xl border border-orange-500/15 bg-orange-500/5 text-orange-400 text-[10px] uppercase tracking-widest">
-                        <span class="material-symbols-outlined text-[12px]">
-                          workspace_premium
-                        </span>
-                        Suscripciones
+                    <div class="space-y-2">
+                      <div v-if="getUserSubscriptions(user.uid).length === 0" class="text-xs text-white/30 italic">
+                        Sin suscripciones
                       </div>
-                      
-                      <!-- Status -->
-                      <div class="flex items-center gap-2 text-[10px] uppercase tracking-widest"
-                        v-tooltip="'Gestionar desde acciones'">
-                        <span class="material-symbols-outlined  text-[15px]! text-orange-400">
-                          info
-                        </span>
-                        <span class="text-white/40">
-                          Ver en Detalles
-                        </span>
-                      </div>
-
-                      <div v-if="user.trialActive"
-                        class="inline-flex items-center gap-2 rounded-full border border-orange-500/10 bg-orange-500/[0.03] px-3 py-1.5">
-                        <div class="w-5 h-5 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0">
-                          <span class="material-symbols-outlined text-[18px]!  text-orange-400">
-                            rocket_launch
-                          </span>
-                        </div>
-                        <div class="flex items-center gap-2 text-[9px] font-google-sans">
-                          <span class="text-white/75">Trial Activo</span>
+                      <div v-else class="space-y-1.5 max-w-[200px]">
+                        <div v-for="sub in getUserSubscriptions(user.uid)" :key="sub.id" 
+                          class="p-2 rounded-xl border border-white/5 bg-white/[0.02] text-[11px] space-y-1">
+                          <div class="flex items-center justify-between">
+                            <span class="font-bold text-orange-400 uppercase text-[9px] tracking-wider">{{ sub.planType }}</span>
+                            <span :class="sub.status === 'active' ? 'text-green-400 border-green-500/20 bg-green-500/5' : 'text-white/40 border-white/10 bg-white/5'"
+                              class="px-1.5 py-0.2 rounded border text-[8px] uppercase tracking-wider font-bold">
+                              {{ sub.status }}
+                            </span>
+                          </div>
+                          <div class="text-[9px] text-white/40 flex justify-between">
+                            <span>QRs: {{ sub.totalQRsCreated }} / {{ sub.totalQRsAllowed }}</span>
+                            <span v-if="sub.endDate" class="font-mono text-[8px]">Exp: {{ formatedDate(sub.endDate).split(' ')[0] }}</span>
+                          </div>
                         </div>
                       </div>
-
                     </div>
-
                   </td>
 
                   <!-- SEGURIDAD -->
@@ -423,7 +407,7 @@
           @cancel="isBanModalOpen = false" />
 
         <ChangePlanPrompt :is-open="isPlanModalOpen" :user-name="selectedUserForPlan?.name || ''"
-          :user-email="selectedUserForPlan?.email || ''" :current-plan="selectedUserForPlan?.plan || ''"
+          :user-email="selectedUserForPlan?.email || ''" :current-plan="selectedUserForPlan ? getActivePlanType(selectedUserForPlan) : ''"
           @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false" @cancelplan="cancelUserPlan" />
 
       </div>
@@ -438,14 +422,16 @@ import QRNamePrompt from '@/components/admin/QRNamePrompt.vue'
 import BanConfirmPrompt from '@/components/admin/BanConfirmPrompt.vue'
 import ChangePlanPrompt from '@/components/admin/ChangePlanPrompt.vue'
 import { toast } from 'vue-sonner'
-import { collection, doc, increment, onSnapshot, runTransaction, Timestamp, writeBatch } from 'firebase/firestore'
+import { collection, doc, increment, onSnapshot, runTransaction, Timestamp, writeBatch, collectionGroup } from 'firebase/firestore'
 import { db as firestoreDb } from '@/firebase'
 import type { IUser } from '@/interfaces/IUser'
+import type { ISubscription } from '@/interfaces/ISubscription'
 import { nanoid } from 'nanoid'
 
 const loading = ref(true)
 
 const usersData = ref<IUser[]>([])
+const subscriptionsData = ref<ISubscription[]>([])
 
 onMounted(() => {
   const db = firestoreDb;
@@ -457,7 +443,25 @@ onMounted(() => {
     })
     loading.value = false
   })
+
+  const subsCollectionGroup = collectionGroup(db, 'subscriptions')
+  onSnapshot(subsCollectionGroup, (snapshot) => {
+    subscriptionsData.value = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as ISubscription[]
+  })
 })
+
+const getUserSubscriptions = (userId: string) => {
+  return subscriptionsData.value.filter(sub => sub.userId === userId)
+}
+
+const getActivePlanType = (user: IUser): string => {
+  const subs = getUserSubscriptions(user.uid)
+  const activeSub = subs.find(s => s.status === 'active')
+  return activeSub ? activeSub.planType : 'withoutPlan'
+}
 
 //===============================
 //Values for dynamics componenrs (Ban, Plan, AddQR)
@@ -556,8 +560,6 @@ const handleQRSubmit = async (qrName: string) => {
   }
 }
 
-
-
 //BAN USER
 const isBanModalOpen = ref(false)
 const openBanModal = (user: IUser) => {
@@ -583,7 +585,6 @@ const handleBanSubmit = async (reason: string) => {
   }
 }
 
-
 //MANAGE USER PLAN
 const isPlanModalOpen = ref(false)
 const selectedUserForPlan = ref<IUser | null>(null)
@@ -592,34 +593,35 @@ const openPlanModal = (user: IUser) => {
   isPlanModalOpen.value = true;
 }
 
-
 const handlePlanSubmit = async (plan: string) => {
-  if (!selectedUserForPlan.value?.uid) return;
+  const user = selectedUserForPlan.value;
+  if (!user?.uid) return;
   const now = new Date();
   const nextYear = new Date(now);
   nextYear.setFullYear(nextYear.getFullYear() + 1);
 
-  const subId = nanoid(15);
-  const subRef = doc(firestoreDb, `users/${selectedUserForPlan.value.uid}/subscriptions/${subId}`);
+  const newSubId = nanoid(15);
+  const newSubRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${newSubId}`);
   
   try {
-    const batch = writeBatch(firestoreDb);
-    batch.set(subRef, {
-      id: subId,
-      userId: selectedUserForPlan.value.uid,
-      planType: plan,
-      status: 'active',
-      purchasedAt: Timestamp.fromDate(now),
-      endDate: Timestamp.fromDate(nextYear),
-      paymentProviderId: 'admin',
-      totalQRsAllowed: plan === 'epsilon' ? 5 : plan === 'beta' ? 3 : 1,
-      totalQRsCreated: 0,
-      freeShipmentsAllowed: 1, // 1 envío gratuito incluido por plan
-      freeShipmentsUsed: 0
+    await runTransaction(firestoreDb, async (transaction) => {
+      // Crear nueva suscripción activa sin desactivar las previas
+      transaction.set(newSubRef, {
+        id: newSubId,
+        userId: user.uid,
+        planType: plan,
+        status: 'active',
+        purchasedAt: Timestamp.fromDate(now),
+        endDate: Timestamp.fromDate(nextYear),
+        paymentProviderId: 'admin',
+        totalQRsAllowed: plan === 'oro' ? 5 : plan === 'plata' ? 3 : 1,
+        totalQRsCreated: 0,
+        freeShipmentsAllowed: 1, // 1 envío gratuito incluido por plan
+        freeShipmentsUsed: 0
+      });
     });
     
-    await batch.commit();
-    toast.success('Nueva suscripción agregada al usuario ' + selectedUserForPlan.value.name);
+    toast.success('Nueva suscripción agregada al usuario ' + user.name);
     isPlanModalOpen.value = false;
     selectedUserForPlan.value = null;
   } catch (error) {
@@ -637,22 +639,23 @@ const addFreeTrial = async (user: IUser) => {
   const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${subId}`);
   
   try {
-    const batch = writeBatch(firestoreDb);
-    batch.set(subRef, {
-      id: subId,
-      userId: user.uid,
-      planType: 'trial',
-      status: 'active',
-      purchasedAt: Timestamp.fromDate(now),
-      endDate: Timestamp.fromDate(nextMonth),
-      paymentProviderId: 'admin',
-      totalQRsAllowed: 1,
-      totalQRsCreated: 0,
-      freeShipmentsAllowed: 1, // 1 envío gratuito incluido por plan
-      freeShipmentsUsed: 0
+    await runTransaction(firestoreDb, async (transaction) => {
+      // Agregar trial activo sin desactivar las previas
+      transaction.set(subRef, {
+        id: subId,
+        userId: user.uid,
+        planType: 'trial',
+        status: 'active',
+        purchasedAt: Timestamp.fromDate(now),
+        endDate: Timestamp.fromDate(nextMonth),
+        paymentProviderId: 'admin',
+        totalQRsAllowed: 1,
+        totalQRsCreated: 0,
+        freeShipmentsAllowed: 1, // 1 envío gratuito incluido por plan
+        freeShipmentsUsed: 0
+      });
     });
     
-    await batch.commit();
     toast.success('Suscripción Trial agregada exitosamente al usuario ' + user.name);
   } catch (error) {
     toast.error('Error al agregar trial al usuario: ' + error);
@@ -660,14 +663,36 @@ const addFreeTrial = async (user: IUser) => {
 }
 
 const removeFreeTrial = async (_user: IUser) => {
-  toast.info('Para remover un trial, cancele la suscripción desde la vista de detalles.');
+  toast.info('Para remover un trial, cancele la suscripción.');
 }
 
 const cancelUserPlan = async () => {
-  toast.info('Para cancelar un plan, gestióne la suscripción desde los detalles del usuario.');
-  isPlanModalOpen.value = false;
-  selectedUserForPlan.value = null;
+  const user = selectedUserForPlan.value;
+  if (!user?.uid) return;
+  
+  const subs = getUserSubscriptions(user.uid);
+  const activeSub = subs.find(s => s.status === 'active');
+  if (!activeSub) {
+    toast.error('El usuario no tiene una suscripción activa para cancelar.');
+    return;
+  }
+  
+  try {
+    const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${activeSub.id}`);
+    await runTransaction(firestoreDb, async (transaction) => {
+      transaction.update(subRef, {
+        status: 'canceled',
+        cancelReason: 'Cancelado por el Administrador'
+      });
+    });
+    toast.success(`Suscripción ${activeSub.planType} cancelada para ${user.name}`);
+    isPlanModalOpen.value = false;
+    selectedUserForPlan.value = null;
+  } catch (error) {
+    toast.error(`Error al cancelar suscripción: ${error}`);
+  }
 }
+
 const formatedDate = (date: Timestamp | null): string => {
   if (!date) return 'N/A';
   return date.toDate().toLocaleString('es-MX', { dateStyle: 'full', timeStyle: 'short' })
@@ -687,11 +712,21 @@ const usersComputed = computed(() => {
   } else if (selectedFilter.value === 'banned') {
     result = result.filter(u => u.isBanned);
   } else if (selectedFilter.value === 'future') {
-    result = result.filter(u => u.planEndDate != null && u.planEndDate > Timestamp.now());
+    result = result.filter(u => {
+      const subs = getUserSubscriptions(u.uid);
+      const activeSub = subs.find(s => s.status === 'active');
+      return activeSub && activeSub.endDate != null && activeSub.endDate.toDate() > new Date();
+    });
   } else if (selectedFilter.value === 'canceled') {
-    result = result.filter(u => u.subscriptionStatus === 'canceled');
+    result = result.filter(u => {
+      const subs = getUserSubscriptions(u.uid);
+      return subs.some(s => s.status === 'canceled');
+    });
   } else if (selectedFilter.value === 'inactive') {
-    result = result.filter(u => u.subscriptionStatus === 'inactive');
+    result = result.filter(u => {
+      const subs = getUserSubscriptions(u.uid);
+      return subs.some(s => s.status === 'inactive') || subs.length === 0;
+    });
   }
 
   if (searchQuery.value) {
@@ -706,13 +741,13 @@ const usersComputed = computed(() => {
 
 const getUserIdUI = (userPayload: IUser, index: number) => {
   const initial = userPayload.name?.charAt(0).toUpperCase() ?? 'U';
-  const planType = userPayload.plan;
+  const planType = getActivePlanType(userPayload);
   const prefixMap: Record<string, string> = {
     withoutPlan: 'N',
     trial: 'T',
-    alpha: 'A',
-    beta: 'B',
-    epsilon: 'E',
+    bronce: 'B',
+    plata: 'P',
+    oro: 'O',
   };
   const prefix = prefixMap[planType] ?? 'U';
   return `${prefix}${String(index).padStart(5, '0')}${initial}`;

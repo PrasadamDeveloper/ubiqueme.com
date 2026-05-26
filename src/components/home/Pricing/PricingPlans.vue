@@ -5,16 +5,16 @@ const hoveredPlan = ref<string | null>(null)
 
 const plans = [
   {
-    id: 'alpha',
-    name: 'Alpha',
+    id: 'bronce',
+    name: 'Bronce',
     tagline: 'Protección básica esencial',
-    price: '$50',
-    priceNote: 'MXN / mes · 1 Mes Gratis',
+    price: '$499',
+    priceNote: 'MXN / año · 1er Envío Físico Gratis',
     accent: 'rgba(255,255,255,0.15)',
     accentBorder: 'rgba(255,255,255,0.1)',
     accentText: '#ffffff',
     badge: 'Básico',
-    cta: 'Activar Alpha',
+    cta: 'Activar Bronce',
     features: [
       { label: 'Hasta 1 código QR activo', included: true },
       { label: 'Contador de escaneos básico', included: true },
@@ -28,16 +28,16 @@ const plans = [
     ]
   },
   {
-    id: 'beta',
-    name: 'Beta',
+    id: 'plata',
+    name: 'Plata',
     tagline: 'Para quienes toman en serio sus bienes',
-    price: '$100',
-    priceNote: 'MXN / mes · 1 Mes Gratis',
+    price: '$999',
+    priceNote: 'MXN / año · 1er Envío Físico Gratis',
     accent: 'rgba(249,115,22,0.12)',
     accentBorder: 'rgba(249,115,22,0.35)',
     accentText: '#f97316',
     badge: 'Más Popular',
-    cta: 'Activar Beta',
+    cta: 'Activar Plata',
     features: [
       { label: 'Hasta 3 códigos QR activos', included: true },
       { label: 'Contador de escaneos en tiempo real', included: true },
@@ -51,16 +51,16 @@ const plans = [
     ]
   },
   {
-    id: 'epsilon',
-    name: 'Epsilon',
+    id: 'oro',
+    name: 'Oro',
     tagline: 'Control total. Sin compromisos.',
-    price: '$200',
-    priceNote: 'MXN / mes · 1 Mes Gratis',
+    price: '$1499',
+    priceNote: 'MXN / año · 1er Envío Físico Gratis',
     accent: 'rgba(255,210,100,0.08)',
     accentBorder: 'rgba(255,210,100,0.3)',
     accentText: '#ffd264',
     badge: 'Premium',
-    cta: 'Activar Epsilon',
+    cta: 'Activar Oro',
     features: [
       { label: 'Hasta 5 códigos QR activos', included: true },
       { label: 'Ubicación con Mapa dinámico incluido', included: true },
@@ -102,7 +102,7 @@ const plans = [
         @mouseleave="hoveredPlan = null"
         :class="[
           'relative flex flex-col rounded-[2.5rem] border p-8 transition-all duration-500 cursor-default',
-          plan.id === 'beta' ? 'md:-translate-y-4 md:scale-[1.03]' : '',
+          plan.id === 'plata' ? 'md:-translate-y-4 md:scale-[1.03]' : '',
           hoveredPlan === plan.id ? 'shadow-2xl' : ''
         ]"
         :style="{
@@ -137,7 +137,7 @@ const plans = [
               :style="{ borderColor: plan.accentBorder, background: plan.accent }"
             >
               <span class="material-symbols-outlined text-xl" :style="{ color: plan.accentText }">
-                {{ plan.id === 'alpha' ? 'shield' : plan.id === 'beta' ? 'verified_user' : 'military_tech' }}
+                {{ plan.id === 'bronce' ? 'shield' : plan.id === 'plata' ? 'verified_user' : 'military_tech' }}
               </span>
             </div>
           </div>
@@ -148,7 +148,7 @@ const plans = [
         <div class="mb-8 pb-8 border-b border-white/[0.06]">
           <div class="flex items-baseline gap-2">
             <span class="text-5xl font-black text-white tracking-tighter">{{ plan.price }}</span>
-            <span class="text-white/20 text-xs font-black uppercase tracking-widest">/mo</span>
+            <span class="text-white/20 text-xs font-black uppercase tracking-widest">/año</span>
           </div>
           <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-2">{{ plan.priceNote }}</p>
         </div>
@@ -182,7 +182,7 @@ const plans = [
         <button
           @click="$router.push({ name: 'checkout', params: { planId: plan.id } })"
           class="w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-[0.97] border cursor-pointer"
-          :style="plan.id === 'alpha'
+          :style="plan.id === 'bronce'
             ? { background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.15)', color: '#ffffff' }
             : { background: plan.accentText, borderColor: plan.accentText, color: '#09090b' }"
         >
@@ -192,8 +192,22 @@ const plans = [
       </div>
     </div>
 
+    <!-- Shipping Info Card -->
+    <div class="mt-16 max-w-3xl mx-auto p-6 rounded-[2rem] border border-orange-500/10 bg-orange-500/5 text-center space-y-3">
+      <div class="inline-flex items-center gap-2 text-orange-400 font-bold text-xs uppercase tracking-wider">
+        <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+        Información de Envío Física (Sólo México)
+      </div>
+      <p class="text-sm text-white/80 leading-relaxed">
+        Cada plan incluye <strong class="text-orange-400">1 envío físico gratuito</strong> a cualquier parte de la República Mexicana.
+      </p>
+      <p class="text-xs text-white/60 leading-relaxed">
+        💡 <strong class="text-white">Recomendación importante:</strong> Le sugerimos solicitar todos los códigos QR permitidos en su plan (1 en Bronce, 3 en Plata, 5 en Oro) en su primer envío gratuito. Los QRs adicionales o solicitados posteriormente siguen siendo completamente gratuitos, pero se cobrará una tarifa de de envío de <strong class="text-white">$199 MXN</strong> por paquete.
+      </p>
+    </div>
+
     <!-- Bottom Note -->
-    <p class="text-center text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mt-16">
+    <p class="text-center text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mt-12">
       Todos los planes incluyen encriptación de extremo a extremo · Sin contratos forzosos · Cancela cuando quieras
     </p>
 

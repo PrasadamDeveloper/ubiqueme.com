@@ -83,6 +83,10 @@ const toggleFaq = (index: number) => {
 
 const faqs = [
   {
+    question: '¿Cómo funciona el envío de mis códigos QR físicos y qué costos tiene?',
+    answer: 'Al contratar cualquier plan (Bronce, Plata u Oro), usted obtiene 1 envío físico totalmente gratuito a cualquier parte de la República Mexicana. Le recomendamos encarecidamente solicitar todos los códigos QR que permite su plan (1 en Bronce, 3 en Plata, 5 en Oro) en este primer envío de su suscripción. Si después decide pedirlos por separado, las etiquetas y códigos siguen siendo gratis, pero se cobrará una tarifa de $199 MXN por envío de paquete adicional. Los envíos físicos se realizan exclusivamente dentro de México.'
+  },
+  {
     question: '¿En qué formatos puedo obtener mi código QR?',
     answer: 'Nuestros códigos QR se entregan impresos físicamente. Pueden adquirirse en formato de tarjeta o como etiquetas adhesivas (con pegamento frontal o trasero) con tres medidas a escoger, diseñadas específicamente para adaptarse a distintas superficies como parabrisas de vehículos, laptops, maletas o paredes.'
   },

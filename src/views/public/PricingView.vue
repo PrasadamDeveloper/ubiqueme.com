@@ -6,16 +6,16 @@ const router = useRouter()
 
 const plans = [
   {
-    id: 'alpha',
-    name: 'Alpha',
-    price: '50',
+    id: 'bronce',
+    name: 'Bronce',
+    price: '499',
     currency: 'MXN',
-    period: '/ mes',
-    priceNote: '1 mes de prueba gratis',
+    period: '/ año',
+    priceNote: '1er envío físico gratis',
     description: 'Protección básica esencial',
     icon: 'shield',
     color: '#ffffff',
-    cta: 'Activar Alpha',
+    cta: 'Activar Bronce',
     features: [
       { label: 'Hasta 1 código QR activo', included: true },
       { label: 'Contador de escaneos básico', included: true },
@@ -29,17 +29,17 @@ const plans = [
     ]
   },
   {
-    id: 'beta',
-    name: 'Beta',
-    price: '100',
+    id: 'plata',
+    name: 'Plata',
+    price: '999',
     currency: 'MXN',
-    period: '/ mes',
-    priceNote: '1 mes de prueba gratis',
+    period: '/ año',
+    priceNote: '1er envío físico gratis',
     description: 'Para quienes toman en serio sus bienes',
     icon: 'verified_user',
     color: '#7bd0ff',
     featured: true,
-    cta: 'Activar Beta',
+    cta: 'Activar Plata',
     features: [
       { label: 'Hasta 3 códigos QR activos', included: true },
       { label: 'Contador de escaneos en tiempo real', included: true },
@@ -53,16 +53,16 @@ const plans = [
     ]
   },
   {
-    id: 'epsilon',
-    name: 'Epsilon',
-    price: '200',
+    id: 'oro',
+    name: 'Oro',
+    price: '1499',
     currency: 'MXN',
-    period: '/ mes',
-    priceNote: '1 mes de prueba gratis',
+    period: '/ año',
+    priceNote: '1er envío físico gratis',
     description: 'Control total. Sin compromisos.',
     icon: 'military_tech',
     color: '#ffd264',
-    cta: 'Seleccionar Premium',
+    cta: 'Seleccionar Oro',
     features: [
       { label: 'Hasta 5 códigos QR activos', included: true },
       { label: 'Ubicación con Mapa dinámico incluido', included: true },
@@ -169,6 +169,20 @@ const handleSelect = (id: string) => {
                 <span v-if="plan.featured" class="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
               </button>
             </div>
+          </div>
+
+          <!-- Shipping Info Card -->
+          <div class="mt-16 max-w-3xl mx-auto p-6 rounded-[2rem] border border-primary/20 bg-primary/5 text-center space-y-3">
+            <div class="inline-flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider">
+              <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+              Información de Envío Física (Sólo México)
+            </div>
+            <p class="text-sm text-white/80 leading-relaxed">
+              Cada plan incluye <strong class="text-primary">1 envío físico gratuito</strong> a cualquier parte de la República Mexicana.
+            </p>
+            <p class="text-xs text-white/60 leading-relaxed">
+              💡 <strong class="text-white">Recomendación importante:</strong> Le sugerimos solicitar todos los códigos QR permitidos en su plan (1 en Bronce, 3 en Plata, 5 en Oro) en su primer envío gratuito. Los QRs adicionales o solicitados posteriormente siguen siendo completamente gratuitos, pero se cobrará una tarifa de de envío de <strong class="text-white">$199 MXN</strong> por paquete.
+            </p>
           </div>
 
         </div>

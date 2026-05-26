@@ -42,7 +42,7 @@ const handleCancelPlan = () => {
   showDeleteConfirm.value = false
 }
 
-const showDeleteConfirm = ref(true)
+const showDeleteConfirm = ref(false)
 const cancelDeletePlan = () => {
   showDeleteConfirm.value = false
 }
@@ -245,9 +245,9 @@ const cancelDeletePlan = () => {
 
             <div class="space-y-4">
 
-              <!-- Alpha -->
-              <button @click="selectedPlan = 'alpha'"
-                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'alpha'
+              <!-- Bronce -->
+              <button @click="selectedPlan = 'bronce'"
+                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'bronce'
                   ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
                   : 'border-white/10 hover:bg-white/[0.04]'">
 
@@ -256,16 +256,16 @@ const cancelDeletePlan = () => {
                   <div>
 
                     <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
-                      Alpha
+                      Bronce
                     </p>
 
                     <span class="text-[11px] text-white/40">
-                      $50 MXN / mes · Máx 1 QR
+                      $499 MXN / año · Máx 1 QR
                     </span>
 
                   </div>
 
-                  <span v-if="selectedPlan === 'alpha'" class="material-symbols-outlined text-orange-400">
+                  <span v-if="selectedPlan === 'bronce'" class="material-symbols-outlined text-orange-400">
                     check_circle
                   </span>
 
@@ -273,9 +273,9 @@ const cancelDeletePlan = () => {
 
               </button>
 
-              <!-- Beta -->
-              <button @click="selectedPlan = 'beta'"
-                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'beta'
+              <!-- Plata -->
+              <button @click="selectedPlan = 'plata'"
+                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'plata'
                   ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
                   : 'border-white/10 hover:bg-white/[0.04]'">
 
@@ -284,16 +284,16 @@ const cancelDeletePlan = () => {
                   <div>
 
                     <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
-                      Beta
+                      Plata
                     </p>
 
                     <span class="text-[11px] text-white/40">
-                      $100 MXN / mes · Máx 3 QR
+                      $999 MXN / año · Máx 3 QR
                     </span>
 
                   </div>
 
-                  <span v-if="selectedPlan === 'beta'" class="material-symbols-outlined text-orange-400">
+                  <span v-if="selectedPlan === 'plata'" class="material-symbols-outlined text-orange-400">
                     check_circle
                   </span>
 
@@ -301,9 +301,9 @@ const cancelDeletePlan = () => {
 
               </button>
 
-              <!-- Epsilon -->
-              <button @click="selectedPlan = 'epsilon'"
-                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'epsilon'
+              <!-- Oro -->
+              <button @click="selectedPlan = 'oro'"
+                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'oro'
                   ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
                   : 'border-white/10 hover:bg-white/[0.04]'">
 
@@ -312,16 +312,16 @@ const cancelDeletePlan = () => {
                   <div>
 
                     <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
-                      Epsilon
+                      Oro
                     </p>
 
                     <span class="text-[11px] text-white/40">
-                      $200 MXN / mes · Máx 5 QR
+                      $1499 MXN / año · Máx 5 QR
                     </span>
 
                   </div>
 
-                  <span v-if="selectedPlan === 'epsilon'" class="material-symbols-outlined text-orange-400">
+                  <span v-if="selectedPlan === 'oro'" class="material-symbols-outlined text-orange-400">
                     check_circle
                   </span>
 

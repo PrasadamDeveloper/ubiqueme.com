@@ -8,7 +8,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const selectedPlan = ref(route.params.planId as string || 'Beta')
+const selectedPlan = ref(route.params.planId as string || 'plata')
 const isSubmitting = ref(false)
 const isSuccess = ref(false)
 
@@ -22,9 +22,9 @@ const formData = ref({
 
 const plans = [
   {
-    id: 'alpha',
-    name: 'Alpha',
-    price: '$50 MXN',
+    id: 'bronce',
+    name: 'Bronce',
+    price: '$499 MXN',
     icon: 'shield',
     color: '#ffffff',
     description: 'Esencial para protección individual y doméstica.',
@@ -35,9 +35,9 @@ const plans = [
     ]
   },
   {
-    id: 'beta',
-    name: 'Beta',
-    price: '$100 MXN',
+    id: 'plata',
+    name: 'Plata',
+    price: '$999 MXN',
     icon: 'verified_user',
     color: '#7bd0ff',
     description: 'Seguridad profesional con alertas y logs avanzados.',
@@ -49,9 +49,9 @@ const plans = [
     ]
   },
   {
-    id: 'epsilon',
-    name: 'Epsilon',
-    price: '$200 MXN',
+    id: 'oro',
+    name: 'Oro',
+    price: '$1499 MXN',
     icon: 'military_tech',
     color: '#ffd264',
     description: 'Control absoluto con todas las características de protección avanzada y soporte prioritario.',
@@ -71,9 +71,9 @@ const currentPlanFeatures = computed(() => {
 
 const inheritedFeatures = computed(() => {
   const currentPlanId = selectedPlan.value.toLowerCase()
-  if (currentPlanId === 'alpha') return []
-  if (currentPlanId === 'beta') return plans[0]?.features || []
-  if (currentPlanId === 'epsilon') return [...(plans[0]?.features || []), ...(plans[1]?.features || [])]
+  if (currentPlanId === 'bronce') return []
+  if (currentPlanId === 'plata') return plans[0]?.features || []
+  if (currentPlanId === 'oro') return [...(plans[0]?.features || []), ...(plans[1]?.features || [])]
   return []
 })
 
@@ -205,6 +205,18 @@ const handleSubmit = async () => {
                 </div>
               </div>
             </section>
+
+            <!-- Shipping Info Note -->
+            <div class="p-6 rounded-3xl border border-primary/20 bg-primary/5 flex items-start gap-4">
+              <span class="material-symbols-outlined text-primary text-2xl shrink-0 mt-1">local_shipping</span>
+              <div class="space-y-1">
+                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Políticas de Envío (Sólo dentro de México)</h4>
+                <p class="text-xs text-white/70 leading-relaxed">
+                  Cada suscripción incluye <strong class="text-primary">1 envío gratis</strong>. Te recomendamos solicitar todos tus códigos QR del plan en el primer envío. 
+                  Si realizas solicitudes posteriores, las etiquetas QR siguen siendo gratuitas, pero se cobrará el costo de envío de <strong class="text-primary">$199 MXN</strong> por paquete.
+                </p>
+              </div>
+            </div>
 
             <!-- Combined Footer Action (Google Style) -->
             <div class="pt-12 border-t border-white/5">
