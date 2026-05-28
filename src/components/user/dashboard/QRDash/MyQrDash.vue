@@ -27,10 +27,10 @@
       </RouterLink>
 
       <!-- Botón de admin/test (Crear QR) -->
-      <button @click="createQR"
+      <RouterLink to="/admin"
         class="bg-cyan-700 text-white px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer">
-        Test Admin: Crear QR
-      </button>
+        Ir al panel de admin
+      </RouterLink>
     </div>
 
     <!-- Content Section -->
@@ -339,8 +339,16 @@ const createQRForSubscription = async () => {
     toast.error('No se ha seleccionado una suscripción válida. Por favor, intente nuevamente.');
     return;
   }
-  if (groupedQRs.value.find(g => g.subscription.id === selectedSubscription.value?.id)?.qrs.length >= selectedSubscription.value.totalQRsAllowed) {
-    toast.error('La suscripción seleccionada ya ha alcanzado su límite de QRs. Por favor, seleccione otra suscripción o actualice su plan.');
+  if (
+    (groupedQRs.value.find(
+      g => g.subscription.id === selectedSubscription.value?.id
+    )?.qrs.length ?? 0) >=
+    (selectedSubscription.value?.totalQRsAllowed ?? 0)
+  ) {
+    toast.error(
+      'La suscripción seleccionada ya ha alcanzado su límite de QRs. Por favor, seleccione otra suscripción o actualice su plan.'
+    );
+
     return;
   }
 
