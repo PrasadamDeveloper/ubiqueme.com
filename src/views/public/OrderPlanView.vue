@@ -24,58 +24,65 @@ const plans = [
   {
     id: 'bronce',
     name: 'Bronce',
-    price: '$499 MXN',
+    price: '$499',
+    period: '/año',
     icon: 'shield',
-    color: '#ffffff',
-    description: 'Esencial para protección individual y doméstica.',
+    description: 'Protección básica esencial para comenzar.',
+    cta: 'Seleccionar Bronce',
     features: [
-      { t: 'Capacidad', v: 'Hasta 1 QR', d: 'Límite de códigos activos vinculados.', i: 'inventory_2', c: '#ffffff' },
-      { t: 'Métricas', v: 'Contador Escaneos', d: 'Estadísticas básicas de acceso.', i: 'analytics', c: '#ffffff' },
-      { t: 'Privacidad', v: 'Registro Básico', d: 'Protocolo estándar de protección.', i: 'vpn_lock', c: '#ffffff' }
+      { label: '1 código QR activo', included: true },
+      { label: 'Contador de escaneos básico', included: true },
+      { label: 'Mensajes predefinidos', included: true },
+      { label: 'Pausar o reactivar QR', included: false },
+      { label: 'Historial de escaneos', included: false },
+      { label: 'Ubicación con mapa', included: false },
+      { label: 'Evidencia fotográfica', included: false },
+      { label: 'Notificaciones por correo', included: false }
     ]
   },
   {
     id: 'plata',
     name: 'Plata',
-    price: '$999 MXN',
+    price: '$999',
+    period: '/año',
     icon: 'verified_user',
-    color: '#7bd0ff',
-    description: 'Seguridad profesional con alertas y logs avanzados.',
+    description: 'La opción más equilibrada con monitoreo avanzado.',
+    featured: true,
+    cta: 'Seleccionar Plata',
     features: [
-      { t: 'Capacidad', v: 'Hasta 3 QRs', d: 'Límite de códigos activos vinculados.', i: 'inventory_2', c: '#7bd0ff' },
-      { t: 'Historial', v: '30 Días de Log', d: 'Registro detallado de actividad.', i: 'history', c: '#7bd0ff' },
-      { t: 'Evidencia', v: 'Foto del escaneo', d: 'Se permite al usuario subir una foto al momento de reportar el QR.', i: 'photo_camera', c: '#7bd0ff' },
-      { t: 'Alertas', v: 'Email Instantáneo', d: 'Notificaciones en tiempo real.', i: 'notifications_active', c: '#7bd0ff' }
+      { label: '3 códigos QR activos', included: true },
+      { label: 'Contador de escaneos en tiempo real', included: true },
+      { label: '3 regeneraciones digitales', included: true },
+      { label: 'Pausar o reactivar QR', included: true },
+      { label: 'Historial de escaneos (30 días)', included: true },
+      { label: 'Ubicación aproximada', included: true },
+      { label: 'Evidencia fotográfica', included: true },
+      { label: 'Notificaciones por correo', included: true }
     ]
   },
   {
     id: 'oro',
     name: 'Oro',
-    price: '$1499 MXN',
+    price: '$1,499',
+    period: '/año',
     icon: 'military_tech',
-    color: '#ffd264',
-    description: 'Control absoluto con todas las características de protección avanzada y soporte prioritario.',
+    description: 'Control total con todas las funciones premium.',
+    cta: 'Seleccionar Oro',
     features: [
-      { t: 'Capacidad', v: 'Hasta 5 QRs', d: 'Límite de códigos activos vinculados.', i: 'inventory_2', c: '#ffd264' },
-      { t: 'Tracking', v: 'Mapa / ScanLoc', d: 'Rastreo geográfico interactivo.', i: 'map', c: '#ffd264' },
-      { t: 'Soporte', v: 'Prioritario', d: 'Atención técnica especializada y prioritaria.', i: 'support_agent', c: '#ffd264' },
-      { t: 'Logs', v: 'Historial Ilimitado', d: 'Almacenamiento sin caducidad.', i: 'database', c: '#ffd264' }
+      { label: '5 códigos QR activos', included: true },
+      { label: 'Mapa dinámico de ubicación', included: true },
+      { label: 'Ubicación aproximada', included: true },
+      { label: '5 regeneraciones digitales', included: true },
+      { label: 'Mensajes personalizados', included: true },
+      { label: 'Pausar o reactivar QR', included: true },
+      { label: 'Historial ilimitado', included: true },
+      { label: 'Evidencia fotográfica', included: true },
+      { label: 'Notificaciones prioritarias', included: true }
     ]
   }
 ]
 
-const currentPlanFeatures = computed(() => {
-  const plan = plans.find(p => p.id.toLowerCase() === selectedPlan.value.toLowerCase())
-  return plan ? plan.features : []
-})
-
-const inheritedFeatures = computed(() => {
-  const currentPlanId = selectedPlan.value.toLowerCase()
-  if (currentPlanId === 'bronce') return []
-  if (currentPlanId === 'plata') return plans[0]?.features || []
-  if (currentPlanId === 'oro') return [...(plans[0]?.features || []), ...(plans[1]?.features || [])]
-  return []
-})
+const currentPlan = computed(() => plans.find(p => p.id === selectedPlan.value))
 
 const handleSubmit = async () => {
   isSubmitting.value = true
@@ -89,255 +96,207 @@ const handleSubmit = async () => {
 <template>
   <HomeLayout>
     <template #main>
-      <main class="relative min-h-screen bg-[#050505] pt-12 pb-24 overflow-hidden font-geist text-white">
+      <div class="relative min-h-screen bg-[#0a0a0b] font-google-sans overflow-hidden">
 
-        <!-- Vercel-style Background Halo -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[1000px] pointer-events-none">
-          <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full ">
-          </div>
-          <div class="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/5 rounded-full"></div>
+        <!-- Grid overlay -->
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style="background-image: linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px); background-size: 48px 48px;">
         </div>
 
-        <div class="relative z-10 max-w-6xl mx-auto px-6">
+        <!-- Radial glow -->
+        <div
+          class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#ff7900]/5 rounded-full blur-[120px] pointer-events-none">
+        </div>
 
-          <!-- Minimal Header (Vercel Style) -->
-          <div class="mb-20 space-y-6 pt-12">
-            <button @click="router.back()"
-              class="inline-flex items-center gap-2 text-white/30 hover:text-white transition-all text-[10px] font-medium tracking-widest group">
-              <span
-                class="material-symbols-outlined text-[14px] transition-transform group-hover:-translate-x-1">west</span>
-              ATRÁS
-            </button>
-            <div class="space-y-2">
-              <h1 class="text-5xl md:text-6xl font-medium tracking-tight leading-none text-white">
-                Seleccione su <span
-                  class="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">Plan</span>
-              </h1>
-              <p class="text-lg text-white/40 font-light max-w-2xl">
-                Selecciona la infraestructura de protección que mejor se adapte a tus QRs. Escalable en cualquier
-                momento.
-              </p>
-            </div>
-          </div>
+        <div class="relative z-10 pt-24 pb-20 px-4 sm:px-6">
+          <div class="max-w-5xl mx-auto">
 
-          <div v-if="!isSuccess" class="space-y-16">
-
-            <!-- Plan Cards (Claude Style) -->
-            <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <button v-for="plan in plans" :key="plan.id" type="button" @click="selectedPlan = plan.id" :class="[
-                'relative group text-left rounded-[2rem] border transition-all duration-500 overflow-hidden outline-none',
-                selectedPlan === plan.id
-                  ? 'bg-black border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
-                  : 'bg-black/20 opacity-40 border-white/5 hover:border-white/10 hover:opacity-100'
-              ]">
-
-                <div class="p-8 h-full flex flex-col gap-8">
-                  <div class="flex items-center justify-between">
-                    <div
-                      class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-110">
-                      <span class="material-symbols-outlined text-2xl" :style="{ color: plan.color }">{{ plan.icon
-                        }}</span>
-                    </div>
-                    <div v-if="selectedPlan === plan.id"
-                      class="px-3 py-1 bg-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-primary border border-primary/20">
-                      Seleccionado</div>
-                  </div>
-
-                  <div class="space-y-1.5">
-                    <h3 class="text-xl font-medium tracking-tight text-white">{{ plan.name }}</h3>
-                    <p class="text-xs text-white/40 leading-relaxed font-light">{{ plan.description }}</p>
-                  </div>
-
-                  <div class="mt-auto pt-6 border-t border-white/5 flex items-baseline gap-2">
-                    <span class="text-3xl font-medium tracking-tighter"
-                      :style="{ color: selectedPlan === plan.id ? plan.color : 'white' }">{{ plan.price }}</span>
-                    <span class="text-[10px] font-medium text-white/20 uppercase tracking-widest leading-none">/
-                      Licencia</span>
-                  </div>
-                </div>
-
-                <!-- Gradient Border Highlight -->
-                <div v-if="selectedPlan === plan.id"
-                  class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50">
-                </div>
+            <!-- Back + Header -->
+            <div class="mb-14 space-y-6">
+              <button @click="router.back()"
+                class="inline-flex items-center gap-1.5 text-white/30 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.25em] cursor-pointer">
+                <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+                Volver
               </button>
-            </section>
-
-            <!-- Horizontal Benefits Panel (Vercel Style) -->
-            <section class="relative">
-              <!-- Label -->
-              <div class="flex items-center gap-4 mb-8">
-                <span
-                  class="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] whitespace-nowrap">BENEFICIOS
-                  PREMIUM</span>
-                <div class="h-px w-full bg-white/5"></div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div v-for="feat in currentPlanFeatures" :key="feat.t"
-                  class="group flex flex-col gap-4 p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all hover:-translate-y-1 relative overflow-hidden">
-
-                  <div
-                    class="absolute -right-4 -top-4 w-20 h-20 bg-primary/5  rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                      <span class="material-symbols-outlined text-[16px]" :style="{ color: feat.c }">{{ feat.i }}</span>
-                    </div>
-                    <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{{ feat.t }}</span>
-                  </div>
-
-                  <div class="space-y-1">
-                    <h4 class="text-sm font-medium tracking-tight text-white">{{ feat.v }}</h4>
-                    <p class="text-[10px] text-white/30 font-light leading-relaxed">{{ feat.d }}</p>
-                  </div>
+              <div>
+                <div
+                  class="inline-flex items-center gap-2 px-3 py-1 bg-[#ff7900]/10 rounded-full border border-[#ff7900]/20 mb-4">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#ff7900]"></span>
+                  <span class="text-[9px] font-black uppercase tracking-[0.3em] text-[#ff7900]">Contratación</span>
                 </div>
-              </div>
-
-              <!-- Inherited Benefits (Subtle) -->
-              <div v-if="inheritedFeatures.length > 0" class="mt-8 flex flex-wrap gap-3">
-                <div v-for="feat in inheritedFeatures" :key="feat.t"
-                  class="px-4 py-2 bg-white/[0.01] border border-white/5 rounded-full flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[10px] text-white/20">check</span>
-                  <span class="text-[10px] text-white/40 font-medium uppercase tracking-widest">{{ feat.t }}: {{ feat.v
-                    }}</span>
-                </div>
-              </div>
-            </section>
-
-            <!-- Shipping Info Note -->
-            <div class="p-6 rounded-3xl border border-primary/20 bg-primary/5 flex items-start gap-4">
-              <span class="material-symbols-outlined text-primary text-2xl shrink-0 mt-1">local_shipping</span>
-              <div class="space-y-1">
-                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Políticas de Envío (Sólo dentro de México)</h4>
-                <p class="text-xs text-white/70 leading-relaxed">
-                  Cada suscripción incluye <strong class="text-primary">1 envío gratis</strong>. Te recomendamos solicitar todos tus códigos QR del plan en el primer envío. 
-                  Si realizas solicitudes posteriores, las etiquetas QR siguen siendo gratuitas, pero se cobrará el costo de envío de <strong class="text-primary">$199 MXN</strong> por paquete.
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.1]">
+                  Complete su <span class="text-[#ff7900]">suscripción</span>
+                </h1>
+                <p class="text-white/40 text-sm md:text-base mt-3 max-w-xl">
+                  Revise los detalles del plan elegido y proporcione sus datos para continuar con el proceso.
                 </p>
               </div>
             </div>
 
-            <!-- Combined Footer Action (Google Style) -->
-            <div class="pt-12 border-t border-white/5">
-              <form @submit.prevent="handleSubmit"
-                class="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-5xl mx-auto">
+            <div v-if="!isSuccess" class="space-y-14">
 
-                <div class="flex flex-col md:flex-row items-center gap-4 flex-1 w-full">
-                  <div class="flex-1 w-full space-y-1.5">
-                    <label class="text-[10px] font-medium text-white/30 uppercase tracking-widest ml-1">TELÉFONO
-                      WHATSAPP</label>
-                    <input v-model="formData.phone" required type="tel" placeholder="+52 555 555 5555"
-                      class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-white/10 font-light" />
+              <!-- Plan selector row -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button v-for="plan in plans" :key="plan.id" @click="selectedPlan = plan.id"
+                  class="relative p-5 rounded-2xl border text-left transition-all duration-300 cursor-pointer" :class="selectedPlan === plan.id
+                    ? 'border-[#ff7900]/40 bg-[#ff7900]/[0.04] shadow-[0_0_30px_rgba(255,121,0,0.04)]'
+                    : 'border-white/[0.06] bg-[#0d0d0e] hover:border-white/[0.15]'">
+
+                  <div v-if="plan.featured"
+                    class="absolute -top-2.5 right-4 px-3 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.25em] bg-[#ff7900] text-black">
+                    Más popular
                   </div>
-                  <div class="flex-1 w-full space-y-1.5 opacity-50">
-                    <label class="text-[10px] font-medium text-white/30 uppercase tracking-widest ml-1">USUARIO
-                      ACTUAL</label>
-                    <div
-                      class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-sm text-white/60 font-light truncate">
-                      {{ formData.fullName }} ({{ formData.email }})
+
+                  <div class="flex items-start justify-between mb-3">
+                    <div>
+                      <p class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30 mb-0.5">Plan</p>
+                      <h3 class="text-xl font-black text-white">{{ plan.name }}</h3>
+                    </div>
+                    <span class="material-symbols-outlined text-xl"
+                      :class="selectedPlan === plan.id ? 'text-[#ff7900]' : 'text-white/30'">
+                      {{ plan.icon }}
+                    </span>
+                  </div>
+
+                  <div class="flex items-baseline gap-1 mb-1">
+                    <span class="text-2xl font-black text-white">{{ plan.price }}</span>
+                    <span class="text-white/20 text-[9px] font-black uppercase">{{ plan.period }}</span>
+                  </div>
+                  <p class="text-white/40 text-[11px]">{{ plan.description }}</p>
+
+                  <div v-if="selectedPlan === plan.id"
+                    class="absolute bottom-0 left-4 right-4 h-[2px] bg-gradient-to-r from-transparent via-[#ff7900]/50 to-transparent rounded-full">
+                  </div>
+                </button>
+              </div>
+
+              <!-- Plan comparison - visual benefits -->
+              <div v-if="currentPlan">
+                <div class="flex items-center gap-4 mb-6">
+                  <span class="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] whitespace-nowrap">Lo que
+                    incluye</span>
+                  <div class="h-px w-full bg-white/[0.04]"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div v-for="feature in currentPlan.features" :key="feature.label"
+                    class="flex items-center gap-3 p-4 rounded-xl border"
+                    :class="feature.included ? 'border-white/[0.06] bg-white/[0.02]' : 'border-white/[0.03] bg-white/[0.01] opacity-40'">
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                      :class="feature.included ? 'bg-[#ff7900]/10 text-[#ff7900]' : 'bg-white/[0.03] text-white/20'">
+                      <span class="material-symbols-outlined text-[14px] font-black">{{ feature.included ? 'check' :
+                        'close' }}</span>
+                    </div>
+                    <span class="text-sm font-medium"
+                      :class="feature.included ? 'text-white/80' : 'text-white/20 line-through'">
+                      {{ feature.label }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Inherited benefits note -->
+                <div v-if="selectedPlan === 'plata' || selectedPlan === 'oro'" class="mt-4 flex flex-wrap gap-2">
+                  <div
+                    v-for="(f, i) in (selectedPlan === 'plata' ? (plans[0]?.features ?? []) : [...(plans[0]?.features ?? []), ...(plans[1]?.features ?? [])])"
+                    :key="(f?.label ?? '') + i"
+                    class="px-3 py-1.5 rounded-lg border border-white/[0.04] bg-white/[0.01] flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[10px] text-white/20">add</span>
+                    <span class="text-[10px] text-white/30 font-medium">{{ f?.label }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Shipping info -->
+              <div class="relative p-5 rounded-2xl border border-[#ff7900]/10 bg-[#ff7900]/[0.02] overflow-hidden">
+                <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
+                  style="background-image: linear-gradient(rgba(255,121,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,121,0,.3) 1px, transparent 1px); background-size: 20px 20px;">
+                </div>
+                <div class="relative z-10 flex items-start gap-3">
+                  <span class="material-symbols-outlined text-[#ff7900] text-xl shrink-0 mt-0.5">local_shipping</span>
+                  <div class="space-y-1">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Envío físico — Solo México</h4>
+                    <p class="text-[12px] text-white/50 leading-relaxed">
+                      Cada suscripción incluye <strong class="text-[#ff7900]">1 envío gratis</strong>. Le recomendamos
+                      solicitar todos los códigos QR de su plan en el primer envío. Solicitudes posteriores tienen un
+                      costo de <strong class="text-white">$199 MXN</strong> por paquete.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form -->
+              <div class="border-t border-white/[0.04] pt-10">
+                <form @submit.prevent="handleSubmit" class="space-y-8 max-w-3xl mx-auto">
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                      <label class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30">Nombre
+                        completo</label>
+                      <input v-model="formData.fullName" readonly
+                        class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white/60 text-sm outline-none cursor-not-allowed" />
+                    </div>
+                    <div class="space-y-1.5">
+                      <label class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30">Correo
+                        electrónico</label>
+                      <input v-model="formData.email" readonly
+                        class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white/60 text-sm outline-none cursor-not-allowed" />
                     </div>
                   </div>
-                </div>
 
-                <div class="flex flex-col items-center gap-4 min-w-[280px]">
-                  <button type="submit" :disabled="isSubmitting"
-                    class="w-full h-16 bg-white text-black font-medium tracking-tight text-sm rounded-2xl overflow-hidden hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
-                    <span v-if="isSubmitting"
-                      class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full "></span>
-                    <span v-else>Confirmar Plan {{ selectedPlan }}</span>
-                    <span v-if="!isSubmitting" class="material-symbols-outlined text-sm">arrow_forward</span>
-                  </button>
-                  <p class="text-[9px] text-white/20 font-light uppercase tracking-[0.3em]">REDIRECCIÓN A PAGO SEGURO
-                  </p>
-                </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30">Teléfono WhatsApp
+                      <span class="text-[#ff7900]">*</span></label>
+                    <input v-model="formData.phone" required type="tel" placeholder="+52 555 555 5555"
+                      class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-[#0d0d0e] text-white text-sm outline-none focus:border-[#ff7900]/40 focus:ring-1 focus:ring-[#ff7900]/20 transition-all placeholder:text-white/15" />
+                  </div>
 
-              </form>
-            </div>
+                  <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                    <button type="submit" :disabled="isSubmitting"
+                      class="w-full sm:w-auto h-12 px-10 rounded-xl bg-[#ff7900] text-black font-black text-xs uppercase tracking-[0.2em] hover:bg-[#ff7900]/90 transition-all duration-300 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer">
+                      <span v-if="isSubmitting"
+                        class="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
+                      <span v-else>Confirmar y pagar</span>
+                    </button>
+                    <p class="text-[8px] text-white/20 uppercase tracking-[0.3em]">Pago seguro vía Stripe</p>
+                  </div>
 
-          </div>
-
-          <!-- SUCCESS STATE (Vercel Style) -->
-          <div v-else class="max-w-xl mx-auto py-32 text-center space-y-12 ">
-            <div class="relative inline-flex mb-8">
-              <div class="absolute inset-0 bg-primary/20  rounded-full"></div>
-              <div
-                class="relative w-24 h-24 bg-[#050505] border border-white/20 rounded-[2.5rem] flex items-center justify-center shadow-2xl">
-                <span class="material-symbols-outlined text-primary text-4xl font-light">verified</span>
+                </form>
               </div>
+
             </div>
-            <div class="space-y-4">
-              <h2 class="text-5xl font-medium tracking-tight text-white leading-tight">Configuración en Curso</h2>
-              <p class="text-white/40 text-lg font-light leading-relaxed max-w-sm mx-auto">
-                Tu solicitud ha sido encriptada y enviada a <span class="text-white font-medium">{{ formData.email
-                  }}</span>.
-              </p>
-            </div>
-            <div class="pt-10">
+
+            <!-- Success -->
+            <div v-else class="max-w-lg mx-auto py-24 text-center space-y-8">
+              <div
+                class="w-20 h-20 rounded-2xl bg-[#ff7900]/10 border border-[#ff7900]/20 flex items-center justify-center mx-auto">
+                <span class="material-symbols-outlined text-4xl text-[#ff7900]">check_circle</span>
+              </div>
+              <div class="space-y-3">
+                <h2 class="text-3xl font-black text-white tracking-tight">Suscripción en proceso</h2>
+                <p class="text-white/40 text-sm leading-relaxed max-w-xs mx-auto">
+                  Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-white">{{ formData.email
+                    }}</strong>.
+                </p>
+              </div>
               <button @click="router.push('/')"
-                class="px-10 py-4 bg-white/5 border border-white/10 text-white font-medium tracking-tight text-xs rounded-2xl hover:bg-white/10 transition-all">
-                Ir al Panel Principal
+                class="h-11 px-8 rounded-xl border border-white/[0.06] bg-[#0d0d0e] text-white/70 text-[10px] font-black uppercase tracking-[0.25em] hover:bg-white/[0.04] transition cursor-pointer">
+                Ir al inicio
               </button>
             </div>
+
           </div>
-
         </div>
-
-      </main>
+      </div>
     </template>
   </HomeLayout>
 </template>
 
 <style scoped>
-@import url('https://rsms.me/inter/inter.css');
-
-.font-geist {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+.font-google-sans {
+  font-family: 'Google Sans', 'Inter', sans-serif;
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 20;
-}
-
-.animate-in {
-  animation-duration: 0.8s;
-  animation-fill-mode: both;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes zoom-in {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Scrollbar Hide */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-input::placeholder {
-  font-weight: 300;
-  opacity: 0.2;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 </style>

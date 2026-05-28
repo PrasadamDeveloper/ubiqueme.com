@@ -1,72 +1,84 @@
 <template>
   <HomeLayout>
     <template #main>
-      <section
-        class="relative min-h-screen w-full flex flex-col items-center bg-[#070b14] font-google-sans overflow-hidden py-24 px-4 sm:px-6">
+      <div class="relative min-h-screen w-full bg-[#0a0a0b] font-google-sans overflow-hidden">
 
-        <!-- 📐 BACKGROUND DOT MATRIX (Lightweight) -->
-        <div class="absolute inset-0 z-0 opacity-[0.05]"
-          style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;">
+        <!-- Grid overlay -->
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style="background-image: linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px); background-size: 48px 48px;">
         </div>
 
-        <div class="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center">
+        <!-- Radial glow -->
+        <div
+          class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#ff7900]/5 rounded-full blur-[120px] pointer-events-none">
+        </div>
 
-          <!-- Header Section -->
-          <div class="text-center mb-16 space-y-4">
-            <div
-              class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20 mb-4">
-              <span class="material-symbols-outlined text-[14px] text-primary">help</span>
-              <span class="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Soporte y Ayuda</span>
+        <div class="relative z-10 pt-28 pb-20 px-4 sm:px-6">
+          <div class="max-w-4xl mx-auto">
+
+            <!-- Header -->
+            <div class="text-center mb-16 space-y-5">
+              <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ff7900]/10 rounded-full border border-[#ff7900]/20">
+                <span class="material-symbols-outlined text-[14px] text-[#ff7900]">help</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff7900]">Soporte y Ayuda</span>
+              </div>
+              <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight leading-[0.9]">
+                Preguntas <span class="text-[#ff7900]">Frecuentes.</span>
+              </h1>
+              <p class="text-white/35 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                Resuelva sus dudas sobre cómo Ubiqueme protege y gestiona su información mediante códigos QR
+                inteligentes.
+              </p>
             </div>
 
-            <h1 class="text-4xl md:text-6xl font-black text-white leading-tight tracking-tighter">
-              Preguntas <span class="text-primary">Frecuentes.</span>
-            </h1>
-            <p class="text-white/40 text-base md:text-lg font-medium max-w-2xl mx-auto leading-relaxed">
-              Resuelva sus dudas sobre cómo Ubiqueme protege y gestiona su información mediante códigos QR inteligentes.
-            </p>
-          </div>
+            <!-- FAQ Accordion -->
+            <div class="w-full space-y-3">
+              <div v-for="(faq, index) in faqs" :key="index"
+                class="rounded-2xl border border-white/[0.06] bg-[#0d0d0e] overflow-hidden transition-colors hover:border-white/[0.12]">
+                <button @click="toggleFaq(index)"
+                  class="w-full flex items-center justify-between p-5 md:p-6 text-left focus:outline-none cursor-pointer">
+                  <h3 class="text-base md:text-lg font-bold text-white tracking-tight pr-6">
+                    {{ faq.question }}
+                  </h3>
+                  <span class="material-symbols-outlined text-white/30 transition-transform duration-300 shrink-0"
+                    :class="{ 'rotate-180 text-[#ff7900]': activeIndex === index }">
+                    keyboard_arrow_down
+                  </span>
+                </button>
 
-          <!-- FAQ Accordion -->
-          <div class="w-full space-y-4">
-            <div v-for="(faq, index) in faqs" :key="index"
-              class="group bg-white/5 border border-white/10 rounded-3xl overflow-hidden transition-colors hover:bg-white/[0.07] hover:border-white/20">
-              <button @click="toggleFaq(index)"
-                class="w-full flex items-center justify-between p-6 md:p-8 text-left focus:outline-none">
-                <h3 class="text-lg md:text-xl font-bold text-white tracking-tight pr-8">
-                  {{ faq.question }}
-                </h3>
-                <span class="material-symbols-outlined text-white/40 transition-transform duration-300"
-                  :class="{ 'rotate-180 text-primary': activeIndex === index }">
-                  keyboard_arrow_down
-                </span>
-              </button>
-
-              <div class="grid transition-all duration-300 ease-in-out"
-                :class="activeIndex === index ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'">
-                <div class="overflow-hidden">
-                  <p class="px-6 md:px-8 pb-6 md:pb-8 text-white/60 font-medium leading-relaxed text-sm md:text-base">
-                    {{ faq.answer }}
-                  </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                  :class="activeIndex === index ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'">
+                  <div class="overflow-hidden">
+                    <p class="px-5 md:px-6 pb-5 md:pb-6 text-white/50 leading-relaxed text-sm">
+                      {{ faq.answer }}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Contact Prompt -->
-          <div class="mt-16 text-center bg-primary/5 border border-primary/10 rounded-3xl p-8 md:p-12 w-full">
-            <h4 class="text-2xl font-black text-white tracking-tight mb-3">¿Aún tiene dudas?</h4>
-            <p class="text-white/50 mb-8 font-medium">Nuestro equipo de soporte está listo para ayudarle con su
-              configuración o resolver problemas específicos.</p>
-            <a href="mailto:soporte@ubiqueme.com"
-              class="inline-flex h-14 items-center justify-center gap-3 bg-white text-black px-8 rounded-2xl font-black text-base transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98]">
-              <span class="material-symbols-outlined">mail</span>
-              <span>Contactar Soporte</span>
-            </a>
-          </div>
+            <!-- Contact Prompt -->
+            <div
+              class="mt-16 relative rounded-2xl border border-[#ff7900]/10 bg-[#ff7900]/[0.02] p-8 md:p-12 text-center overflow-hidden">
+              <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
+                style="background-image: linear-gradient(rgba(255,121,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,121,0,.3) 1px, transparent 1px); background-size: 20px 20px;">
+              </div>
+              <div class="relative z-10">
+                <h4 class="text-2xl font-black text-white tracking-tight mb-3">¿Aún tiene dudas?</h4>
+                <p class="text-white/50 mb-8">Nuestro equipo de soporte está listo para ayudarle con su configuración o
+                  resolver problemas específicos.</p>
+                <a href="mailto:soporte@ubiqueme.com"
+                  class="inline-flex h-12 items-center justify-center gap-2 bg-[#ff7900] text-black px-8 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-[#ff7900]/90 shadow-lg shadow-[#ff7900]/15 active:scale-[0.97]">
+                  <span class="material-symbols-outlined text-[16px]">mail</span>
+                  <span>Contactar Soporte</span>
+                </a>
+              </div>
+            </div>
 
+          </div>
         </div>
-      </section>
+      </div>
     </template>
   </HomeLayout>
 </template>

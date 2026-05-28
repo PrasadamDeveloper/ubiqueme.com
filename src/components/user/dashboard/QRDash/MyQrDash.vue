@@ -326,6 +326,7 @@ const createQR = async () => {
 const selectedSubscription = ref<ISubscription | null>(null);
 //Show QR creation modal function and variable
 const showCreateQRModal = ref(false);
+const newQrName = ref('');
 const toggleCreateQrModal = async (e: ISubscription) => {
   showCreateQRModal.value = !showCreateQRModal.value;
   if (!e.id) {
