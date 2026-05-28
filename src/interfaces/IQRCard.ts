@@ -50,7 +50,7 @@ export interface IQRCard {
   /** Whether the physical QR has been shipped */
   physicalShipped?: boolean
   /** Timestamp of when the physical QR was shipped */
-  physicalShippedAt?: Timestamp
+  physicalShippedAt?: Timestamp | string
   /** Internal notes about the shipment */
   shippingNotes?: string
   /** Whether the free shipment from the plan was used */

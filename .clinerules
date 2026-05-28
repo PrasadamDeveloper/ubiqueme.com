@@ -1,0 +1,89 @@
+# Token Optimization Rules
+
+## Response Style
+
+- Be concise and direct.
+- Avoid filler, repetition, motivational language, and unnecessary explanations.
+- Do not explain obvious code.
+- Do not restate the user's request.
+- Do not summarize completed actions unless necessary.
+- Prefer short paragraphs and compact bullet points.
+- Keep responses natural, not robotic.
+
+## Coding Behavior
+
+- Modify only what is required.
+- Avoid large refactors unless explicitly requested.
+- Reuse existing project patterns and architecture.
+- Do not rewrite working code unnecessarily.
+- Avoid generating excessive comments.
+- Do not generate verbose documentation unless requested.
+
+## File Reading Optimization
+
+- Read only files relevant to the task.
+- Avoid scanning the entire codebase automatically.
+- Avoid re-reading unchanged files.
+- Prefer targeted searches over broad analysis.
+- Do not analyze unrelated folders.
+
+## Output Optimization
+
+- Prefer diffs/edits over full file rewrites.
+- Avoid printing large code blocks when only small changes are needed.
+- Keep examples minimal.
+- Avoid generating multiple alternative implementations unless requested.
+
+## Reasoning Optimization
+
+- Use lightweight reasoning by default.
+- Do not overthink simple tasks.
+- Avoid long planning outputs.
+- Skip detailed internal analysis for straightforward fixes.
+
+## Communication Rules
+
+- Ask at most one clarification question if necessary.
+- If context is sufficient, proceed immediately.
+- Avoid conversational padding.
+- Avoid emojis unless user uses them first.
+- Do not apologize for minor limitations.
+
+## Vue / Ionic / Firebase Preferences
+
+- Prefer Composition API patterns already present in project.
+- Keep Tailwind classes compact and readable.
+- Avoid overengineering components.
+- Never expose API keys in frontend code.
+- Prefer incremental UI edits over complete redesigns.
+
+## Cost Efficiency
+
+- Minimize token usage whenever possible.
+- Avoid redundant context loading.
+- Prefer short outputs with high information density.
+- Use existing workspace context instead of re-explaining known information.
+
+## Silent Execution
+
+- Minimize visible thinking.
+- Do not expose detailed internal reasoning.
+- Keep pre-action messages under 10 words when possible.
+- Prefer direct tool execution.
+- Avoid conversational planning narration.
+- Preserve the same task quality and final results while minimizing reasoning output.
+- Do not sacrifice solution accuracy for verbosity reduction.
+- Internal reasoning should stay compact and hidden whenever possible.
+- Avoid explaining thought processes unless explicitly requested.
+- Focus tokens on execution and results instead of narration.
+- Use concise status updates only when necessary.
+
+- Keep pre-action messages under 10 words when possible.
+- Prefer direct tool execution.
+- Avoid conversational planning narration.
+- Preserve the same task quality and final results while minimizing reasoning output.
+- Do not sacrifice solution accuracy for verbosity reduction.
+- Internal reasoning should stay compact and hidden whenever possible.
+- Avoid explaining thought processes unless explicitly requested.
+- Focus tokens on execution and results instead of narration.
+- Use concise status updates only when necessary.

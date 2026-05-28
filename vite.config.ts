@@ -9,24 +9,9 @@ import tailwindcss from '@tailwindcss/vite'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Force the editor to our script
-process.env.LAUNCH_EDITOR = path.resolve(
-  __dirname,
-  process.platform === 'win32' ? './scripts/agy.cmd' : './scripts/agy-wrapper.sh',
-)
-
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools({
-      launchEditor: path.resolve(
-        __dirname,
-        process.platform === 'win32' ? './scripts/agy.cmd' : './scripts/agy-wrapper.sh',
-      ),
-    }),
-    tailwindcss(),
-  ],
+  plugins: [vue(), vueDevTools({ launchEditor: 'code' }), tailwindcss()],
   server: {
     allowedHosts: true,
   },
