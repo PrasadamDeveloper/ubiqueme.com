@@ -253,19 +253,24 @@
                       <div v-if="getUserSubscriptions(user.uid).length === 0" class="text-xs text-white/30 italic">
                         Sin suscripciones
                       </div>
-                      <div v-else class="space-y-1.5 max-w-[200px]">
-                        <div v-for="sub in getUserSubscriptions(user.uid)" :key="sub.id" 
+                      <div v-else class="space-y-1.5 max-w-52 max-h-60 overflow-auto custom-scrollbar">
+                        <div v-for="sub in getUserSubscriptions(user.uid)" :key="sub.id"
                           class="p-2 rounded-xl border border-white/5 bg-white/[0.02] text-[11px] space-y-1">
                           <div class="flex items-center justify-between">
-                            <span class="font-bold text-orange-400 uppercase text-[9px] tracking-wider">{{ sub.planType }}</span>
-                            <span :class="sub.status === 'active' ? 'text-green-400 border-green-500/20 bg-green-500/5' : 'text-white/40 border-white/10 bg-white/5'"
+                            <span class="font-bold text-orange-400 uppercase text-[9px] tracking-wider">{{ sub.planType
+                              }}</span>
+                            <span
+                              :class="sub.status === 'active' ? 'text-green-400 border-green-500/20 bg-green-500/5' : 'text-white/40 border-white/10 bg-white/5'"
                               class="px-1.5 py-0.2 rounded border text-[8px] uppercase tracking-wider font-bold">
                               {{ sub.status }}
                             </span>
                           </div>
                           <div class="text-[9px] text-white/40 flex justify-between">
-                            <span>QRs: {{ sub.totalQRsCreated }} / {{ sub.totalQRsAllowed }}</span>
-                            <span v-if="sub.endDate" class="font-mono text-[8px]">Exp: {{ formatedDate(sub.endDate).split(' ')[0] }}</span>
+                            <span class="wrap-break-word p-1">QRs: <br> {{ sub.totalQRsCreated }} / {{
+                              sub.totalQRsAllowed
+                              }}</span>
+                            <span v-if="sub.endDate" class="font-mono text-white text-[8px]">Exp: {{
+                              formatedDate(sub.endDate) }}</span>
                           </div>
                         </div>
                       </div>
@@ -354,11 +359,11 @@
                       </div>
 
                       <div class="grid grid-cols-2 gap-2">
-                        <button @click="addFreeTrial(user)"
-                          v-tooltip="'Agregar prueba gratuita de 30 días'"
+                        <button @click="addFreeTrial(user)" v-tooltip="'Agregar prueba gratuita de 30 días'"
                           class="h-8 px-3 cursor-pointer rounded-lg border border-orange-500/15 bg-orange-500/5 hover:bg-orange-500/10 transition flex items-center justify-center gap-1.5">
                           <span class="material-symbols-outlined text-[13px] text-orange-400">rocket_launch</span>
-                          <span class="text-[9px] uppercase tracking-widest font-semibold text-orange-300">+ Trial</span>
+                          <span class="text-[9px] uppercase tracking-widest font-semibold text-orange-300">+
+                            Trial</span>
                         </button>
                       </div>
 
@@ -407,8 +412,9 @@
           @cancel="isBanModalOpen = false" />
 
         <ChangePlanPrompt :is-open="isPlanModalOpen" :user-name="selectedUserForPlan?.name || ''"
-          :user-email="selectedUserForPlan?.email || ''" :current-plan="selectedUserForPlan ? getActivePlanType(selectedUserForPlan) : ''"
-          @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false" @cancelplan="cancelUserPlan" />
+          :user-email="selectedUserForPlan?.email || ''"
+          :current-plan="selectedUserForPlan ? getActivePlanType(selectedUserForPlan) : ''" @submit="handlePlanSubmit"
+          @cancel="isPlanModalOpen = false" @cancelplan="cancelUserPlan" />
 
       </div>
     </template>
@@ -602,7 +608,7 @@ const handlePlanSubmit = async (plan: string) => {
 
   const newSubId = nanoid(15);
   const newSubRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${newSubId}`);
-  
+
   try {
     await runTransaction(firestoreDb, async (transaction) => {
       // Crear nueva suscripción activa sin desactivar las previas
@@ -620,7 +626,7 @@ const handlePlanSubmit = async (plan: string) => {
         freeShipmentsUsed: 0
       });
     });
-    
+
     toast.success('Nueva suscripción agregada al usuario ' + user.name);
     isPlanModalOpen.value = false;
     selectedUserForPlan.value = null;
@@ -634,10 +640,10 @@ const addFreeTrial = async (user: IUser) => {
   const now = new Date();
   const nextMonth = new Date(now);
   nextMonth.setMonth(nextMonth.getMonth() + 1);
-  
+
   const subId = nanoid(15);
   const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${subId}`);
-  
+
   try {
     await runTransaction(firestoreDb, async (transaction) => {
       // Agregar trial activo sin desactivar las previas
@@ -655,7 +661,7 @@ const addFreeTrial = async (user: IUser) => {
         freeShipmentsUsed: 0
       });
     });
-    
+
     toast.success('Suscripción Trial agregada exitosamente al usuario ' + user.name);
   } catch (error) {
     toast.error('Error al agregar trial al usuario: ' + error);
@@ -669,14 +675,14 @@ const removeFreeTrial = async (_user: IUser) => {
 const cancelUserPlan = async () => {
   const user = selectedUserForPlan.value;
   if (!user?.uid) return;
-  
+
   const subs = getUserSubscriptions(user.uid);
   const activeSub = subs.find(s => s.status === 'active');
   if (!activeSub) {
     toast.error('El usuario no tiene una suscripción activa para cancelar.');
     return;
   }
-  
+
   try {
     const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${activeSub.id}`);
     await runTransaction(firestoreDb, async (transaction) => {

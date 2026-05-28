@@ -33,6 +33,8 @@
       </RouterLink>
     </div>
 
+
+
     <!-- Content Section -->
     <div class="space-y-10">
       <div class="relative min-h-[300px]">
@@ -59,7 +61,7 @@
                 <label class="block text-xs font-medium text-[#A1A3B5] mb-1.5">
                   Nombre del QR
                 </label>
-                <input type="text" placeholder="Ej: Mi laptop personal" class="w-full px-3 py-2 text-sm bg-[#242634] border border-[#3A3D4E] rounded-md
+                <input type="text" v-model="newQrName" placeholder="Ej: Mi laptop personal" class="w-full px-3 py-2 text-sm bg-[#242634] border border-[#3A3D4E] rounded-md
                  focus:outline-none focus:border-[#F38020] focus:ring-1 focus:ring-[#F38020]/30
                  placeholder:text-[#5E5E6F] text-[#E5E7EB]">
               </div>
@@ -114,6 +116,9 @@
 
           <div v-for="group in groupedQRs" :key="group.subscription.id" class="space-y-6 animate-fade-up">
 
+            <LimitReached :subscriptionName="group.subscription.planType"
+              v-if="group.subscription.totalQRsCreated >= group.subscription.totalQRsAllowed && showLimitReached"
+              @close="showLimitReached = false" />
             <!-- Subscription Header -->
             <div
               class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
@@ -204,6 +209,7 @@ import type { ISubscription } from '@/interfaces/ISubscription'
 import { nanoid } from 'nanoid'
 import LineLoader from '@/components/ui/LineLoader.vue'
 import { toast } from 'vue-sonner'
+import LimitReached from './LimitReached.vue'
 
 const userQRs = ref<IMyQR[]>([])
 const userSubscriptions = ref<ISubscription[]>([])
@@ -217,25 +223,13 @@ const userQrsCollection = collection(db, `users/${userId}/qrs`);
 const subscriptionsCollection = collection(db, `users/${userId}/subscriptions`);
 
 // Agrupar QRs por suscripción
+// Alternativa simple: por cada suscripción, filtrar los QRs que le pertenecen
 const groupedQRs = computed(() => {
-  const groups: Record<string, { subscription: ISubscription; qrs: IMyQR[] }> = {};
-
-  // Inicializar grupos basados en suscripciones activas/inactivas
-  userSubscriptions.value.forEach(sub => {
-    groups[sub.id] = { subscription: sub, qrs: [] };
-  });
-
-  userQRs.value.forEach(qr => {
-    if (qr.subscriptionId) {
-      const group = groups[qr.subscriptionId]
-      if (group) {
-        group.qrs.push(qr)
-      }
-    }
-  });
-
-  return Object.values(groups);
-});
+  return userSubscriptions.value.map((sub) => ({
+    subscription: sub,
+    qrs: userQRs.value.filter((qr) => qr.subscriptionId === sub.id),
+  }))
+})
 
 //Add QR doc to user ATENTION THIS MUST BE ONLY FOR ADMIN ITS CREATED HERE FOR TEST PURPOUSE ONLY
 const createQR = async () => {
@@ -324,6 +318,12 @@ const createQR = async () => {
 }
 
 const selectedSubscription = ref<ISubscription | null>(null);
+
+//Limit Reached
+const showLimitReached = ref(false);
+const toggleLimitReached = () => {
+  showLimitReached.value = !showLimitReached.value;
+}
 //Show QR creation modal function and variable
 const showCreateQRModal = ref(false);
 const newQrName = ref('');
@@ -334,6 +334,13 @@ const toggleCreateQrModal = async (e: ISubscription) => {
     return
   }
   selectedSubscription.value = e;
+  if (e.totalQRsCreated >= e.totalQRsAllowed) {
+    toast.error('La suscripción seleccionada ya ha alcanzado su límite de QRs. Por favor, seleccione otra suscripción o actualice su plan.');
+    showLimitReached.value = true;
+    showCreateQRModal.value = false;
+    return;
+  }
+
 };
 const createQRForSubscription = async () => {
   if (!selectedSubscription.value) {
@@ -349,7 +356,9 @@ const createQRForSubscription = async () => {
     toast.error(
       'La suscripción seleccionada ya ha alcanzado su límite de QRs. Por favor, seleccione otra suscripción o actualice su plan.'
     );
-
+    showLimitReached.value = true;
+    showCreateQRModal.value = false;
+    newQrName.value = '';
     return;
   }
 
@@ -363,7 +372,7 @@ const createQRForSubscription = async () => {
       isActive: true,
       isBanned: false,
       lastScan: '',
-      name: 'MacBook Pro',
+      name: newQrName.value || 'QR sin nombre',
       scans: 0,
       status: 'Active',
       docId: '',
@@ -395,6 +404,7 @@ const createQRForSubscription = async () => {
     await batch.commit();
     toast.success('QR creado y asignado a la suscripción exitosamente.');
     showCreateQRModal.value = false;
+    newQrName.value = '';
   }
   catch (error) {
     toast.error(`Fallo al crear el QR: ${error}`);
