@@ -460,6 +460,7 @@ onUnmounted(() => {
   if (unsubQRs) unsubQRs();
   if (unsubSubs) unsubSubs();
   isLoading.value = true;
+  imageStore.clearImages();
 })
 
 const imageStore = useImageStore();

@@ -295,9 +295,8 @@ const handleSubmit = async () => {
                       class="w-full sm:w-auto h-12 px-10 rounded-xl bg-[#ff7900] text-black font-black text-xs uppercase tracking-[0.2em] hover:bg-[#ff7900]/90 transition-all duration-300 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer">
                       <span v-if="isSubmitting"
                         class="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
-                      <span v-else>Confirmar y pagar</span>
+                      <span v-else>Confirmar</span>
                     </button>
-                    <p class="text-[8px] text-white/20 uppercase tracking-[0.3em]">Pago seguro vía Stripe</p>
                   </div>
 
                 </form>
