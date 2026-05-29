@@ -1,1 +1,0 @@
-import{_ as e}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{o,c}from"./index-Bc3zXOCA.js";const r={},s={class:"line-wobble"};function t(n,_){return o(),c("div",s)}const i=e(r,[["render",t],["__scopeId","data-v-b80354cd"]]);export{i as L};

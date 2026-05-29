@@ -1,0 +1,1 @@
+import{_ as c}from"./_plugin-vue_export-helper-Bia426Uf.js";import{o as t,c as e}from"./index-BIzYsoEG.js";const o={};function n(r,a){return t(),e("p",null,"contact")}const f=c(o,[["render",n]]);export{f as default};
