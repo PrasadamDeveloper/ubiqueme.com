@@ -72,8 +72,8 @@ const isLoading = ref(false);
 const handleEdit = async () => {
   try {
     isLoading.value = true;
-    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
-    const publicQrDoc = doc(db, 'publicQR', props.docId);
+    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`)
+    const publicQrDoc = doc(db, 'publicQR', props.id);
 
     const batch = writeBatch(db);
     batch.update(userQRDoc, {
@@ -113,7 +113,7 @@ const _setQrPublic = async () => {
     if (props.category) {
       publicQRData.category = props.category
     }
-    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
+    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`)
     batch.update(qrDoc, {
       status: 'Active',
     })
@@ -135,7 +135,7 @@ const _setQrPrivate = async () => {
     const batch = writeBatch(db);
     const publicQrRef = doc(db, 'publicQR', props.id);
     batch.delete(publicQrRef);
-    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
+    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`)
     batch.update(qrDoc, {
       status: 'Paused',
     })
@@ -209,7 +209,7 @@ const handleRenewQR = async () => {
   try {
     isLoading.value = true;
     const batch = writeBatch(db);
-    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`);
+    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`);
     const publicQrDoc = doc(db, 'publicQR', props.id);
 
     batch.update(userQRDoc, {

@@ -148,58 +148,6 @@ const formatDate = (timestamp: any) => {
         </div>
       </div>
 
-      <!-- Bottom Row: Preferences -->
-      <div
-        class="md:col-span-3 bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-10 hover:border-white/20 transition-colors">
-        <div class="mb-8">
-          <h3 class="text-xl font-black tracking-tight mb-1">Preferencias de Comunicación</h3>
-          <p class="text-xs text-white/40 font-medium">Configuración de notificaciones del sistema (Solo lectura)</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-          <div class="flex items-center justify-between p-5 bg-[#0f0f11] rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                <span class="material-symbols-outlined text-white/60 text-lg">mail</span>
-              </div>
-              <span class="text-sm font-bold text-white/80">Email</span>
-            </div>
-            <span class="material-symbols-outlined text-3xl"
-              :class="userData.preferences?.emailNotifications ? 'text-amber-500' : 'text-white/20'">
-              {{ userData.preferences?.emailNotifications ? 'toggle_on' : 'toggle_off' }}
-            </span>
-          </div>
-
-          <div class="flex items-center justify-between p-5 bg-[#0f0f11] rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                <span class="material-symbols-outlined text-white/60 text-lg">sms</span>
-              </div>
-              <span class="text-sm font-bold text-white/80">SMS</span>
-            </div>
-            <span class="material-symbols-outlined text-3xl"
-              :class="userData.preferences?.smsNotifications ? 'text-amber-500' : 'text-white/20'">
-              {{ userData.preferences?.smsNotifications ? 'toggle_on' : 'toggle_off' }}
-            </span>
-          </div>
-
-          <div class="flex items-center justify-between p-5 bg-[#0f0f11] rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                <span class="material-symbols-outlined text-white/60 text-lg">chat</span>
-              </div>
-              <span class="text-sm font-bold text-white/80">WhatsApp</span>
-            </div>
-            <span class="material-symbols-outlined text-3xl"
-              :class="userData.preferences?.whatsappNotifications ? 'text-amber-500' : 'text-white/20'">
-              {{ userData.preferences?.whatsappNotifications ? 'toggle_on' : 'toggle_off' }}
-            </span>
-          </div>
-
-        </div>
-      </div>
-
     </div>
   </div>
 </template>
