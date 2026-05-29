@@ -329,37 +329,6 @@ const cancelDeletePlan = () => {
 
               </button>
 
-              <!-- Cancel Subscription -->
-              <button @click="showDeleteConfirm = true"
-                class="w-full rounded-[24px] border border-red-500/15 bg-red-500/[0.04] p-5 text-left transition-all duration-300 hover:bg-red-500/[0.08] hover:border-red-500/25">
-
-                <div class="flex justify-between items-center">
-
-                  <div>
-
-                    <p class="text-xs uppercase tracking-[0.25em] font-black text-red-400">
-
-                      Cancelar plan
-
-                    </p>
-
-                    <span class="text-[11px] text-white/40">
-
-                      Finaliza la suscripción activa y deshabilita futuras renovaciones
-
-                    </span>
-
-                  </div>
-
-                  <span class="material-symbols-outlined text-red-400">
-
-                    cancel
-
-                  </span>
-
-                </div>
-
-              </button>
 
               <!-- Buttons -->
               <div class="grid grid-cols-2 gap-3 pt-5">

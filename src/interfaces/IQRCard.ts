@@ -23,6 +23,8 @@ export type TQRStatus = 'Active' | 'Canceled' | 'Process' | 'Error' | 'Paused'
 export interface IQRCard {
   /** Display name given to the asset by the owner */
   name: string
+  /** Category of the asset (vehicle, home, phone, etc.) */
+  category: string
   /** Operational state of the QR code */
   isActive: boolean
   /** Security flag indicating if the QR has been blocked by system administrators */

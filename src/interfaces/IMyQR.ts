@@ -24,6 +24,7 @@ export interface IMyQR {
   id: string
   docId: string
   name: string
+  category: string
   isActive: boolean
   isBanned: boolean
   banReason: string
@@ -33,8 +34,8 @@ export interface IMyQR {
   createdAt: Timestamp
   subscriptionId: string
   link?: string
-  physicalShipped?: boolean       // Si el QR físico ya fue enviado
-  physicalShippedAt?: Timestamp   // Cuándo fue enviado
-  shippingNotes?: string          // Nota interna (ej: número de guía, dirección, observaciones)
-  freeShipmentUsed?: boolean      // true = usó el envío gratuito del plan | false/undefined = pagó $199 MXN
+  physicalShipped?: boolean // Si el QR físico ya fue enviado
+  physicalShippedAt?: Timestamp // Cuándo fue enviado
+  shippingNotes?: string // Nota interna (ej: número de guía, dirección, observaciones)
+  freeShipmentUsed?: boolean // true = usó el envío gratuito del plan | false/undefined = pagó $199 MXN
 }

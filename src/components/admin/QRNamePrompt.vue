@@ -7,7 +7,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'submit', qrName: string): void
+  (e: 'submit', qrName: string, category: string): void
   (e: 'cancel'): void
 }>()
 
@@ -22,7 +22,7 @@ watch(() => props.isOpen, (newVal) => {
 
 const handleSubmit = () => {
   if (!qrNameInput.value.trim()) return
-  emit('submit', qrNameInput.value.trim())
+  emit('submit', qrNameInput.value.trim(), qrCategory.value)
 }
 
 const handleCancel = () => {

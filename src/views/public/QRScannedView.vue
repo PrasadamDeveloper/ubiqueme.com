@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, doc, getDoc, increment, setDoc, serverTimestamp, Timestamp, writeBatch } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
+import imageCompression from 'browser-image-compression'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
-import type { IPublicQR } from '@/interfaces/IPublicQR'
+import type { IPublicQR, IQRScanMetrics } from '@/interfaces/IPublicQR'
 import { toast } from 'vue-sonner'
 import { useUserStore } from '@/stores/user'
 
@@ -14,7 +15,9 @@ const route = useRoute()
 const userStore = useUserStore()
 const qrId = route.params.qrId as string
 
-// State
+// ========================
+// CURRENT FLOW STATE (WhatsApp + Email)
+// ========================
 const loading = ref(true)
 const isAuthenticating = ref(false)
 const qrData = ref<IPublicQR | null>(null)
@@ -24,7 +27,7 @@ const customMessage = ref('')
 const isSending = ref(false)
 const hasSent = ref(false)
 
-// Configurar el número oficial de Meta WhatsApp en tu archivo .env
+// WhatsApp number from .env
 const whatsappNumber = '+15556322742'
 
 const defaultBody = computed(() => {
@@ -52,6 +55,20 @@ const copyToClipboard = async (text: string, field: string) => {
     toast.error('Error al copiar al portapapeles')
   }
 }
+
+// ========================
+// LEGACY FLOW STATE (Reasons + Image)
+// ========================
+const showContactForm = ref(false)
+const selectedReason = ref('')
+const legacyMessage = ref('')
+const capturedImage = ref<string | null>(null)
+const imagePreviewUrl = ref('')
+const processingImage = ref(false)
+const legacySending = ref(false)
+const legacySuccess = ref(false)
+
+const reasons = ref<any[]>([])
 
 const loadQRData = async () => {
   try {
@@ -83,7 +100,7 @@ const handleCredentialResponse = async (response: any) => {
         name: user.displayName || 'Usuario QR',
         email: user.email,
         phone: '',
-        role: 'scanner', // Mantenemos 'scanner' para diferenciar el origen
+        role: 'scanner',
         isActive: true,
         isBanned: false,
         banReason: '',
@@ -163,6 +180,133 @@ const handleSendClick = async () => {
   }
 }
 
+// ========================
+// LEGACY FLOW FUNCTIONS
+// ========================
+
+const clearImage = () => {
+  if (imagePreviewUrl.value) URL.revokeObjectURL(imagePreviewUrl.value)
+  imagePreviewUrl.value = ''
+  capturedImage.value = null
+}
+
+const handleImageGet = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  clearImage()
+  imagePreviewUrl.value = URL.createObjectURL(file)
+
+  try {
+    processingImage.value = true
+    const compressed = await imageCompression(file, { maxSizeMB: 0.14, maxWidthOrHeight: 900, useWebWorker: true })
+    const reader = new FileReader()
+    reader.readAsDataURL(compressed)
+    reader.onloadend = () => {
+      capturedImage.value = reader.result as string
+      processingImage.value = false
+    }
+  } catch (err) {
+    toast.error(`Error procesando la imagen: ${err}`)
+    processingImage.value = false
+  }
+}
+
+const getMetrics = async () => {
+  const metrics: IQRScanMetrics = { country: "", city: "", region: "" };
+  try {
+    const res = await fetch('https://ipapi.co/json/')
+    const d = await res.json()
+
+    metrics.country = d.country_name || "";
+    metrics.city = d.city || "";
+    metrics.region = d.region || "";
+
+    // Default to minimal metrics (epsilon plan fallback)
+    return metrics;
+  } catch {
+    return metrics;
+  }
+}
+
+const selectPreset = (preset: string) => {
+  legacyMessage.value = preset
+}
+
+const handleSubmitMessageLegacy = async () => {
+  if (!selectedReason.value) {
+    toast.error('Selecciona un motivo del mensaje.')
+    return
+  }
+  legacySending.value = true
+  try {
+    const metricData = await getMetrics()
+    const batch = writeBatch(db)
+    const QRDoc = doc(db, 'publicQR', qrId)
+    const logDoc = doc(collection(db, 'publicQR', qrId, 'logs'), Date.now().toString())
+
+    batch.update(QRDoc, { totalScans: increment(1), lastScan: Timestamp.now() })
+    batch.set(logDoc, {
+      scanDate: Timestamp.now(),
+      scanMetrics: metricData,
+      interaction: { reason: selectedReason.value, message: legacyMessage.value, type: 'contact_request' },
+      img: capturedImage.value
+    })
+
+    await batch.commit()
+    legacySuccess.value = true
+    if (qrData.value) qrData.value.totalScans = (qrData.value.totalScans || 0) + 1
+    toast.success('Mensaje registrado exitosamente. El propietario será notificado.')
+  } catch (e) {
+    toast.error("Error al enviar el mensaje. Intenta de nuevo.")
+  } finally {
+    legacySending.value = false
+  }
+}
+
+const updateReasons = () => {
+  if (showContactForm.value) return;
+  showContactForm.value = true;
+  reasons.value = [
+    {
+      id: 'emergency',
+      label: 'Emergencia',
+      icon: 'emergency',
+      presets: [
+        `¡Atención! He localizado tu "${QRName.value.trim()}" y requiere atención inmediata.`,
+        `Situación urgente: tu "${QRName.value.trim()}" se encuentra en un estado que necesita tu intervención.`,
+        `Necesito comunicarme contigo de inmediato. Tu "${QRName.value.trim()}" podría estar en riesgo. Por favor responde.`
+      ]
+    },
+    {
+      id: 'communication',
+      label: 'Comunicación',
+      icon: 'chat',
+      presets: [
+        `Hola, he encontrado tu "${QRName.value.trim()}" y está a salvo. ¿Cómo podemos coordinar su devolución?`,
+        `Tu "${QRName.value.trim()}" está en mis manos y en buen estado. Escríbeme o llámame para ponernos de acuerdo.`,
+        `Me gustaría devolverle su "${QRName.value.trim()}" .`
+      ]
+    },
+    {
+      id: 'informative',
+      label: 'Informativo',
+      icon: 'info',
+      presets: [
+        `Solo paso a avisar que tu "${QRName.value.trim()}" está visible y aparentemente en buen estado.`,
+        `Escaneo de verificación: todo parece estar en orden con este registro.`,
+        `Qué buena idea proteger tus bienes así. ¡Un saludo desde donde me encuentro!`
+      ]
+    },
+    {
+      id: 'other',
+      label: 'Personalizado',
+      icon: 'edit_note',
+      presets: []
+    }
+  ]
+}
+
 onMounted(() => {
   customMessage.value = defaultBody.value
   loadQRData()
@@ -181,6 +325,10 @@ onMounted(() => {
       }
     }, 1000)
   }
+})
+
+onUnmounted(() => {
+  clearImage()
 })
 </script>
 
@@ -222,7 +370,8 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="relative z-10 flex flex-col items-center pt-8 md:pt-28 pb-10 md:pb-20 px-4 md:px-6 max-w-2xl mx-auto w-full">
+        <div
+          class="relative z-10 flex flex-col items-center pt-24 md:pt-28 pb-10 md:pb-20 px-4 md:px-6 max-w-2xl mx-auto w-full">
 
           <CloudLoader v-if="loading" />
 
@@ -242,18 +391,15 @@ onMounted(() => {
               al Inicio</button>
           </div>
 
-          <!-- 🚀 MAIN CONTENT (Google Modern Redesign) -->
+          <!-- 🚀 MAIN CONTENT -->
           <div v-else class="w-full space-y-0 md:space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
 
-            <!-- 🆔 SECURITY DOSSIER CARD (Redesigned) -->
+            <!-- 🆔 SECURITY DOSSIER CARD -->
             <div
               class="hidden md:block w-full bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-6 relative overflow-hidden group shadow-2xl">
-              <!-- Subtle Scanline Effect -->
               <div
                 class="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent h-2 w-full animate-scanline opacity-20 pointer-events-none">
               </div>
-
-              <!-- Header Info -->
               <div class="flex justify-between items-center border-b border-white/10 pb-4">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
@@ -262,9 +408,7 @@ onMounted(() => {
                 </div>
                 <span class="text-[9px] font-mono text-orange-500/60 tracking-widest">v4.0.2 // UBIQUEME</span>
               </div>
-
               <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8 py-2 md:py-4">
-                <!-- Icon Focus -->
                 <div class="relative flex-shrink-0">
                   <div
                     class="w-32 h-32 bg-orange-500 rounded-[2rem] flex items-center justify-center border-4 border-[#09090b] shadow-[0_20px_50px_rgba(249,115,22,0.3)] group-hover:scale-105 transition-transform">
@@ -275,27 +419,22 @@ onMounted(() => {
                     <span class="material-symbols-outlined text-[10px] font-black">check</span> Activo
                   </div>
                 </div>
-
-                <!-- Data Grid -->
                 <div class="flex-grow grid grid-cols-2 gap-x-8 gap-y-4 w-full text-center md:text-left">
                   <div class="col-span-2 space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Identificación del
                       Objeto</label>
                     <h2 class="text-3xl font-black tracking-tighter text-[#dce7ff] uppercase italic">{{ QRName }}</h2>
                   </div>
-
                   <div class="space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Serial ID</label>
                     <p class="font-mono text-orange-500 text-sm tracking-widest">{{ qrId.substring(0, 10).toUpperCase()
                       }}</p>
                   </div>
-
                   <div class="space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Historial</label>
                     <p class="text-white font-black text-sm uppercase italic tracking-tight">{{ qrData?.totalScans || 0
                       }} Escaneos totales</p>
                   </div>
-
                   <div class="col-span-2 pt-4 border-t border-white/5 flex items-center gap-4">
                     <div class="flex-1 h-[1px] bg-white/5"></div>
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-[0.5em]">Protocolo de Privacidad
@@ -306,27 +445,32 @@ onMounted(() => {
               </div>
             </div>
 
-            <!-- 📝 INTERACTION CARD (Material Focus) -->
+            <!-- 📝 INTERACTION CARD (WhatsApp + Email) -->
             <div
               class="bg-transparent md:bg-white/5 border-0 md:border border-white/10 rounded-[2rem] md:rounded-[3rem] p-0 md:p-2 overflow-visible md:overflow-hidden shadow-none md:shadow-2xl relative w-full mt-4 md:mt-0">
-              <div class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10 p-6 md:p-10 space-y-6 md:space-y-10 relative z-10 w-full shadow-2xl md:shadow-none">
+              <div
+                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10 p-6 md:p-10 space-y-6 md:space-y-10 relative z-10 w-full shadow-2xl md:shadow-none">
 
                 <Transition name="fade-slide" mode="out-in">
 
                   <!-- MESSAGE FORM HOOK -->
-                  <div v-if="!hasSent" class="space-y-6 md:space-y-6 text-center animate-in fade-in duration-500 w-full">
+                  <div v-if="!hasSent"
+                    class="space-y-6 md:space-y-6 text-center animate-in fade-in duration-500 w-full">
 
-                    <!-- Mobile Header (Hidden on Desktop) -->
+                    <!-- Mobile Header -->
                     <div class="block md:hidden space-y-3 mb-6 text-center animate-in zoom-in duration-500">
-                      <div class="inline-flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20">
+                      <div
+                        class="inline-flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20">
                         <span class="material-symbols-outlined text-[12px]">qr_code_2</span>
                         ID: {{ qrId.substring(0, 8).toUpperCase() }}
                       </div>
-                      <h2 class="text-4xl font-black tracking-tighter text-[#dce7ff] uppercase italic leading-none">{{ QRName }}</h2>
-                      <p class="text-white/40 text-xs max-w-[200px] mx-auto mt-2 leading-tight">Notifica al dueño para coordinar la recuperación.</p>
+                      <h2 class="text-4xl font-black tracking-tighter text-[#dce7ff] uppercase italic leading-none">{{
+                        QRName }}</h2>
+                      <p class="text-white/40 text-xs max-w-[200px] mx-auto mt-2 leading-tight">Notifica al dueño para
+                        coordinar la recuperación.</p>
                     </div>
 
-                    <!-- Desktop Header (Hidden on Mobile) -->
+                    <!-- Desktop Header -->
                     <div class="hidden md:block space-y-2">
                       <h3 class="text-xl font-black italic uppercase tracking-tighter">Enviar Mensaje</h3>
                       <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura para
@@ -334,8 +478,8 @@ onMounted(() => {
                     </div>
 
                     <div class="space-y-4 md:space-y-4 flex flex-col">
-                      
-                      <!-- WhatsApp Button (Moved to top on mobile) -->
+
+                      <!-- WhatsApp Button -->
                       <a :href="`https://wa.me/${whatsappNumber}?text=Hola,%20te%20escribo%20porque%20encontré%20tu%20artículo.%0A%0AID:%20${qrId}%0A%0AMensaje:%20${encodeURIComponent(customMessage)}`"
                         target="_blank"
                         class="w-full h-16 md:h-16 bg-[#25D366] text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(37,211,102,0.3)] flex items-center justify-center gap-2 order-1">
@@ -349,7 +493,8 @@ onMounted(() => {
 
                       <!-- Textarea -->
                       <div class="text-left w-full order-2 mt-4 md:mt-0">
-                        <label class="text-[9px] md:text-[9px] font-black text-orange-500 uppercase tracking-widest ml-2">Tu
+                        <label
+                          class="text-[9px] md:text-[9px] font-black text-orange-500 uppercase tracking-widest ml-2">Tu
                           Mensaje (Opcional)</label>
                         <textarea v-model="customMessage" :disabled="isSending || isAuthenticating"
                           class="w-full mt-1 p-4 md:p-4 bg-[#09090b] border border-white/20 hover:border-white/30 rounded-2xl text-sm md:text-sm text-white/80 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors resize-none placeholder:text-white/20 h-20 md:h-[120px]"
@@ -385,6 +530,212 @@ onMounted(() => {
                   </div>
 
                 </Transition>
+              </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- SEPARADOR: LEGACY FLOW -->
+            <!-- ==================== -->
+            <div class="relative py-4 md:py-6">
+              <div class="flex items-center gap-4">
+                <div class="flex-1 h-px bg-white/10"></div>
+                <div
+                  class="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
+                  <span class="material-symbols-outlined text-[14px] text-orange-400">qr_code_scanner</span>
+                  Escanea desde la web con más opciones
+                </div>
+                <div class="flex-1 h-px bg-white/10"></div>
+              </div>
+            </div>
+
+            <!-- 📸 LEGACY INTERACTION PANEL (Reasons + Image) -->
+            <div
+              class="bg-transparent md:bg-white/5 border-0 md:border border-white/10 rounded-[2rem] md:rounded-[3rem] p-0 md:p-2 overflow-visible md:overflow-hidden shadow-none md:shadow-2xl relative w-full">
+              <div
+                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10 p-6 md:p-10 space-y-6 md:space-y-8 relative z-10 w-full shadow-2xl md:shadow-none">
+
+                <Transition name="fade-slide" mode="out-in">
+
+                  <!-- 1. INITIAL STATE -->
+                  <div v-if="!showContactForm && !legacySuccess" class="py-8 text-center space-y-8">
+                    <div class="space-y-2">
+                      <div
+                        class="inline-flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20 mb-4">
+                        <span class="material-symbols-outlined text-[12px]">add_a_photo</span>
+                        Reporte Digital
+                      </div>
+                      <h3 class="text-2xl font-black text-white tracking-tight">¿Deseas dejar un reporte al dueño?</h3>
+                      <p class="text-white/40 text-sm max-w-xs mx-auto">Selecciona el motivo y adjunta una foto para que
+                        el propietario sepa qué sucede con su pertenencia.</p>
+                    </div>
+
+                    <button @click="updateReasons"
+                      class="group relative w-full max-w-xs h-16 rounded-2xl bg-white text-black font-black text-lg overflow-hidden mx-auto transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+                      <div class="relative z-10 flex items-center justify-center gap-3">
+                        <span>Contactar Propietario</span>
+                        <span
+                          class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
+                      </div>
+                    </button>
+                  </div>
+
+                  <!-- 2. MESSAGING FLOW -->
+                  <div v-else-if="showContactForm && !legacySuccess && !loading && qrData?.name" class="space-y-8">
+                    <!-- REASON SELECTION -->
+                    <div class="space-y-4">
+                      <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] ml-2">Motivo del
+                        Mensaje</label>
+                      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button v-for="reason in reasons" :key="reason.id" @click="selectedReason = reason.id" :class="[
+                          'h-14 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1.5 px-2 relative overflow-hidden cursor-pointer',
+                          selectedReason === reason.id
+                            ? 'bg-orange-500 border-orange-500 text-black'
+                            : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                        ]">
+                          <span class="material-symbols-outlined text-lg">{{ reason.icon }}</span>
+                          {{ reason.label }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- PRESET MESSAGES -->
+                    <Transition name="fade-slide">
+                      <div v-if="selectedReason && reasons.find((r: any) => r.id === selectedReason)?.presets.length"
+                        class="space-y-4">
+                        <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] ml-2">Sugerencias
+                          Rápidas</label>
+                        <div class="flex flex-col gap-2">
+                          <button v-for="(preset, index) in reasons.find((r: any) => r.id === selectedReason)?.presets"
+                            :key="index" @click="selectPreset(preset)" :class="[
+                              'px-4 py-3 rounded-xl border text-[11px] font-bold text-left transition-all cursor-pointer',
+                              selectedReason === 'emergency'
+                                ? 'bg-red-500/5 border-red-500/20 text-red-100 hover:bg-red-500/10 hover:border-red-500/40'
+                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/30'
+                            ]">
+                            {{ preset }}
+                          </button>
+                        </div>
+                      </div>
+                    </Transition>
+
+                    <!-- MANUAL MESSAGE TEXTAREA -->
+                    <div class="space-y-4">
+                      <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] ml-2">Mensaje
+                        Personalizado</label>
+                      <textarea v-model="legacyMessage"
+                        placeholder="Si el motivo es 'Personalizado', especifica aquí los detalles del mensaje..."
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white text-sm focus:outline-none focus:border-orange-500/50 transition-all min-h-[140px] resize-none shadow-inner"></textarea>
+                    </div>
+
+                    <!-- 📸 IMAGE CAPTURE AREA -->
+                    <div class="space-y-4 relative">
+                      <div class="flex items-center justify-between ml-2">
+                        <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">
+                          Evidencia Fotográfica (Opcional)
+                        </label>
+                        <Transition name="fade-slide">
+                          <button v-if="imagePreviewUrl" @click="clearImage"
+                            class="text-red-500 text-[10px] font-black uppercase tracking-[0.2em] bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg px-3 py-1 transition-all flex items-center gap-1.5 active:scale-95 leading-none cursor-pointer">
+                            Eliminar
+                            <span class="material-symbols-outlined text-sm!">close</span>
+                          </button>
+                        </Transition>
+                      </div>
+
+                      <div class="relative group/upload min-h-[160px] cursor-pointer group">
+                        <input type="file" accept="image/*" @change="handleImageGet" capture="environment"
+                          class="absolute inset-0 opacity-0 cursor-pointer z-20" />
+
+                        <!-- PREVIEW STATE -->
+                        <div v-if="imagePreviewUrl"
+                          class="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-orange-500/20 group-hover:border-orange-500/40 transition-all duration-500">
+                          <img :src="imagePreviewUrl" alt="Preview" class="w-full h-full object-cover" />
+                          <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                            <div class="flex items-center gap-2">
+                              <div class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
+                              <p class="text-[10px] font-black text-white uppercase tracking-[0.2em]">Captura Lista
+                              </p>
+                            </div>
+                            <p class="text-[9px] font-medium text-white/40 uppercase tracking-widest mt-1">Toque para
+                              reemplazar la fotografía</p>
+                          </div>
+                        </div>
+
+                        <!-- UPLOAD PROMPT -->
+                        <div v-else
+                          class="w-full h-40 border-2 border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center gap-4 group-hover/upload:border-orange-500/30 group-hover/upload:bg-white/2 transition-all duration-300">
+                          <div
+                            class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center group-hover/upload:bg-orange-500/10 group-hover/upload:scale-110 transition-all duration-500">
+                            <span
+                              class="material-symbols-outlined text-white/20 text-3xl group-hover/upload:text-orange-500 transition-colors">add_a_photo</span>
+                          </div>
+                          <div class="text-center space-y-1">
+                            <span
+                              class="block text-[11px] font-black text-white/40 uppercase tracking-[0.2em] group-hover/upload:text-white/60 transition-colors">Tocar
+                              para capturar</span>
+                            <span class="block text-[8px] font-bold text-white/10 uppercase tracking-tight">Formatos:
+                              JPG, PNG • Max 5MB</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- ACTIONS FOOTER -->
+                    <div class="flex flex-col md:flex-row gap-4 pt-4">
+                      <button @click="showContactForm = false"
+                        class="flex-1 h-14 rounded-2xl border border-white/10 text-white/40 font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-colors order-2 md:order-1 cursor-pointer">
+                        Cancelar
+                      </button>
+                      <button @click="handleSubmitMessageLegacy"
+                        :disabled="!selectedReason || legacySending || processingImage"
+                        class="flex-[2] h-14 rounded-2xl bg-orange-500 text-black font-black text-xs uppercase tracking-widest disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-3 order-1 md:order-2 cursor-pointer">
+                        <span v-if="legacySending || processingImage"
+                          class="w-5 h-5 border-3 border-black/20 border-t-black rounded-full animate-spin"></span>
+                        <span v-else>Enviar Mensaje Directo</span>
+                        <span v-if="!legacySending && !processingImage"
+                          class="material-symbols-outlined text-lg">send</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 3. SUCCESS STATE -->
+                  <div v-else-if="legacySuccess" class="py-12 text-center space-y-6">
+                    <div class="relative inline-flex mx-auto">
+                      <div
+                        class="relative w-20 h-20 bg-green-500 rounded-full flex items-center justify-center border border-green-400">
+                        <span class="material-symbols-outlined text-black text-4xl font-black">check_circle</span>
+                      </div>
+                    </div>
+                    <div class="space-y-2">
+                      <h3 class="text-3xl font-black text-white tracking-tight italic uppercase">Mensaje Enviado</h3>
+                      <p class="text-white/50 text-sm max-w-xs mx-auto font-medium">El propietario ha recibido tu
+                        notificación de forma segura. Gracias por tu responsabilidad.</p>
+                    </div>
+                    <button @click="$router.push('/')"
+                      class="px-8 py-3 rounded-xl bg-white/5 border border-white/10 text-white/40 font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all cursor-pointer">
+                      Finalizar Sesión
+                    </button>
+                  </div>
+
+                </Transition>
+              </div>
+            </div>
+
+            <!-- PRIVACY INFO CARD -->
+            <div class="relative overflow-hidden bg-white/5 border border-white/10 rounded-[2.5rem] p-8 group">
+              <div class="flex items-start gap-6">
+                <div
+                  class="w-14 h-14 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-orange-500 text-2xl">security</span>
+                </div>
+                <div class="space-y-2 pt-1">
+                  <h4 class="text-white font-black text-lg">Privacidad de Identidad</h4>
+                  <p class="text-white/50 text-xs leading-relaxed font-medium">
+                    Utilizamos protocolos de comunicación seguros. Tus datos personales nunca serán compartidos sin tu
+                    autorización.
+                  </p>
+                </div>
               </div>
             </div>
 

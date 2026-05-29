@@ -71,7 +71,7 @@
                 <label class="block text-xs font-medium text-[#A1A3B5] mb-1.5">
                   Categoría
                 </label>
-                <select class="w-full px-3 py-2 text-sm bg-[#242634] border border-[#3A3D4E] rounded-md
+                <select v-model="selectedCategory" class="w-full px-3 py-2 text-sm bg-[#242634] border border-[#3A3D4E] rounded-md
                  focus:outline-none focus:border-[#F38020] focus:ring-1 focus:ring-[#F38020]/30
                  text-[#E5E7EB] appearance-none cursor-pointer">
                   <option value="vehicle" class="bg-[#1D1F2C]">Vehículos</option>
@@ -166,9 +166,9 @@
             <!-- QRs Grid for this Subscription -->
             <div v-if="group.qrs.length > 0"
               class="grid grid-cols-1 xl:grid-cols-2 gap-8 relative z-0 pl-2 sm:pl-6 border-l-2 border-white/5">
-              <QRCard v-for="qr in group.qrs" :key="qr.id" :id="qr.id" :name="qr.name" :status="qr.status"
-                :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link" :isActive="qr.isActive"
-                :isBanned="qr.isBanned" :banReason="qr.banReason" :createdAt="qr.createdAt"
+              <QRCard v-for="qr in group.qrs" :key="qr.id" :id="qr.id" :name="qr.name" :category="qr.category"
+                :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link"
+                :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason" :createdAt="qr.createdAt"
                 :subscriptionId="qr.subscriptionId" :physicalShipped="qr.physicalShipped"
                 :physicalShippedAt="qr.physicalShippedAt" />
             </div>
@@ -327,6 +327,7 @@ const toggleLimitReached = () => {
 //Show QR creation modal function and variable
 const showCreateQRModal = ref(false);
 const newQrName = ref('');
+const selectedCategory = ref('other');
 const toggleCreateQrModal = async (e: ISubscription) => {
   showCreateQRModal.value = !showCreateQRModal.value;
   if (!e.id) {
@@ -382,7 +383,8 @@ const createQRForSubscription = async () => {
       physicalShippedAt: '',
       shippingNotes: '',
       img: '',
-      link: ''
+      link: '',
+      category: selectedCategory.value
     }
 
     const userDocRef = doc(db, `users/${userStore.getUserId}/qrs/${randomId}`);

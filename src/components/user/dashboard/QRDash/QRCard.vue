@@ -5,12 +5,10 @@ import { collection, doc, onSnapshot, orderBy, query, Timestamp, updateDoc, writ
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
-import { nanoid } from 'nanoid'
 import type { IQRCard } from '@/interfaces/IQRCard'
 import type { IPublicQR, IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
-import QRCardLogSkeleton from '@/components/ui/user/dashboard/QRCardLogSkeleton.vue'
 import { toast } from 'vue-sonner'
 
 const props = defineProps<IQRCard>()
@@ -104,6 +102,7 @@ const _setQrPublic = async () => {
     const publicQRData: IPublicQR = {
       id: props.id,
       name: props.name,
+      category: props.category,
       status: 'Active',
       isBanned: false,
       banReason: '',
@@ -184,15 +183,51 @@ onUnmounted(() => {
   if (unsubscribe) unsubscribe();
 })
 
-const timestampToDate = (): string => {
+const handleCancelQR = async () => {
   try {
-    if (qrStatus.lastScan instanceof Timestamp) {
-      return qrStatus.lastScan.toDate().toLocaleString('es-MX');
-    }
-    return 'No se ha escaneado aún';
+    isLoading.value = true;
+    const batch = writeBatch(db);
+    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`);
+    const publicQrDoc = doc(db, 'publicQR', props.id);
+
+    batch.update(userQRDoc, { status: 'Canceled' });
+    batch.update(publicQrDoc, { status: 'Canceled' });
+    await batch.commit();
+    closeAll();
+    toast.success(`QR desactivado permanentemente`);
   } catch (error) {
-    toast.error(`Error al convertir la fecha: ${error}`);
-    return 'No se ha escaneado aún';
+    const e = error as Error;
+    toast.error(`Error al desactivar QR: ${e.message}`);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+const handleRenewQR = async () => {
+  try {
+    isLoading.value = true;
+    const batch = writeBatch(db);
+    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`);
+    const publicQrDoc = doc(db, 'publicQR', props.id);
+
+    batch.update(userQRDoc, {
+      status: 'Active',
+      scans: 0,
+      lastScan: null,
+    });
+    batch.update(publicQrDoc, {
+      status: 'Active',
+      totalScans: 0,
+      lastScan: null,
+    });
+    await batch.commit();
+    closeAll();
+    toast.success(`QR renovado exitosamente`);
+  } catch (error) {
+    const e = error as Error;
+    toast.error(`Error al renovar QR: ${e.message}`);
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -216,7 +251,7 @@ const _handleSendPhysicalQR = async () => {
 }
 
 const menuOptions = [
-  //{ label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: _handleSendPhysicalQR },
+  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: _handleSendPhysicalQR },
   { label: 'Hacer Público', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: _setQrPublic },
   { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: _setQrPrivate },
   { divider: true },
@@ -350,6 +385,19 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+
+      <!-- Logs Toggle -->
+      <div class="mt-3">
+        <button v-if="!logsLoaded" @click="loadLogs"
+          class="text-xs text-orange-400/60 hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-[14px]">history</span>
+          Ver registros de escaneo
+        </button>
+        <div v-else class="mt-2 space-y-2">
+          <QRCardLog v-for="log in qrLogs" :key="log.id" v-bind="log" />
+          <p v-if="qrLogs.length === 0" class="text-white/30 text-xs">Sin registros de escaneo</p>
+        </div>
+      </div>
     </div>
 
     <!-- Código QR (Derecho) -->
@@ -383,26 +431,6 @@ onUnmounted(() => {
               {{ option.label }}
             </button>
           </template>
-          <button v-if="propsComputed.physicalShipped" @click="_handleSendPhysicalQR"
-            v-tooltip="{ content: 'Solicitar renovación de su código QR físico, el cual tiene un costo de $199MXN el envio.', placement: 'top' }"
-            :class="[
-              'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
-              'text-white/70',
-              'hover:bg-orange-500/10 hover:text-orange-400'
-            ]">
-            <span class="material-symbols-outlined text-[16px]">local_shipping</span>
-            Volver a pedir QR físico {{ props.shippingNotes }}
-          </button>
-          <button v-if="!propsComputed.physicalShipped" @click="_handleSendPhysicalQR"
-            v-tooltip="{ content: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', placement: 'top' }"
-            :class="[
-              'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
-              'text-white/70',
-              'hover:bg-orange-500/10 hover:text-orange-400'
-            ]">
-            <span class="material-symbols-outlined text-[16px]">local_shipping</span>
-            Pedir QR físico
-          </button>
         </div>
       </Transition>
 
@@ -453,7 +481,7 @@ onUnmounted(() => {
             <div class="flex gap-3 w-full">
               <button @click="closeAll"
                 class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
-              <button
+              <button @click="handleCancelQR"
                 class="flex-1 py-2.5 bg-rose-500 text-white rounded-lg font-medium text-sm hover:bg-rose-600 transition-colors active:scale-[0.98] cursor-pointer">Desactivar</button>
             </div>
           </div>
@@ -474,7 +502,7 @@ onUnmounted(() => {
             <div class="flex gap-3 w-full">
               <button @click="closeAll"
                 class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
-              <button
+              <button @click="handleRenewQR"
                 class="flex-1 py-2.5 bg-white text-black rounded-lg font-medium text-sm hover:bg-white/90 transition-colors active:scale-[0.98] cursor-pointer">Renovar</button>
             </div>
           </div>

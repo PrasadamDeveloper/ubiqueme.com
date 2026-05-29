@@ -8,6 +8,7 @@ export interface IPublicQR {
   lastScan: Timestamp | null
   totalScans: number | null
   name?: string
+  category?: string
   isBanned: boolean
   banReason?: string
   docId?: string

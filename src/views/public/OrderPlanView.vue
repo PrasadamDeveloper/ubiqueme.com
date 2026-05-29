@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import HomeLayout from '@/layouts/HomeLayout.vue'
@@ -84,11 +84,47 @@ const plans = [
 
 const currentPlan = computed(() => plans.find(p => p.id === selectedPlan.value))
 
+const WORKER_URL = import.meta.env.VITE_WORKER_URL || 'http://localhost:8787'
+
+const errorMsg = ref('')
+const toastVisible = ref(false)
+const toastMessage = ref('')
+const toastType = ref<'success' | 'error'>('success')
+let toastTimer: ReturnType<typeof setTimeout> | null = null
+
+const showToast = (message: string, type: 'success' | 'error') => {
+  toastMessage.value = message
+  toastType.value = type
+  toastVisible.value = true
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => { toastVisible.value = false }, 4000)
+}
+
 const handleSubmit = async () => {
   isSubmitting.value = true
-  await new Promise(resolve => setTimeout(resolve, 2000))
-  isSubmitting.value = false
-  isSuccess.value = true
+  errorMsg.value = ''
+  try {
+    const res = await fetch(`${WORKER_URL}/api/purchase-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plan: selectedPlan.value,
+        fullName: formData.value.fullName,
+        email: formData.value.email,
+        phone: formData.value.phone,
+        firebaseUid: formData.value.firebaseUid,
+        notes: formData.value.specialNotes,
+      }),
+    })
+    if (!res.ok) throw new Error('Error al enviar la solicitud')
+    showToast('Solicitud enviada correctamente', 'success')
+    isSuccess.value = true
+  } catch (e) {
+    errorMsg.value = e instanceof Error ? e.message : 'Error de conexión'
+    showToast(errorMsg.value, 'error')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 </script>
@@ -107,6 +143,23 @@ const handleSubmit = async () => {
         <div
           class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#ff7900]/5 rounded-full blur-[120px] pointer-events-none">
         </div>
+
+        <!-- Toast -->
+        <Teleport to="body">
+          <Transition enter-from-class="opacity-0 translate-y-2" enter-active-class="transition-all duration-300"
+            leave-active-class="transition-all duration-300" leave-to-class="opacity-0 translate-y-2">
+            <div v-if="toastVisible"
+              class="fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl border shadow-lg text-sm font-medium"
+              :class="toastType === 'success' ? 'bg-[#0d1f0d] border-[#2e7d32]/40 text-[#81c784]' : 'bg-[#1f0d0d] border-[#d32f2f]/40 text-[#ef9a9a]'">
+              <span class="material-symbols-outlined text-lg">{{ toastType === 'success' ? 'check_circle' : 'error'
+                }}</span>
+              <span>{{ toastMessage }}</span>
+              <button @click="toastVisible = false" class="ml-2 opacity-50 hover:opacity-100 transition cursor-pointer">
+                <span class="material-symbols-outlined text-lg">close</span>
+              </button>
+            </div>
+          </Transition>
+        </Teleport>
 
         <div class="relative z-10 pt-24 pb-20 px-4 sm:px-6">
           <div class="max-w-5xl mx-auto">
@@ -135,44 +188,31 @@ const handleSubmit = async () => {
 
             <div v-if="!isSuccess" class="space-y-14">
 
-              <!-- Plan selector row -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button v-for="plan in plans" :key="plan.id" @click="selectedPlan = plan.id"
-                  class="relative p-5 rounded-2xl border text-left transition-all duration-300 cursor-pointer" :class="selectedPlan === plan.id
-                    ? 'border-[#ff7900]/40 bg-[#ff7900]/[0.04] shadow-[0_0_30px_rgba(255,121,0,0.04)]'
-                    : 'border-white/[0.06] bg-[#0d0d0e] hover:border-white/[0.15]'">
+              <!-- Selected plan summary card -->
+              <div v-if="currentPlan"
+                class="relative p-6 rounded-2xl border border-[#ff7900]/30 bg-[#ff7900]/[0.04] shadow-[0_0_30px_rgba(255,121,0,0.04)]">
 
-                  <div v-if="plan.featured"
-                    class="absolute -top-2.5 right-4 px-3 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.25em] bg-[#ff7900] text-black">
-                    Más popular
+                <div v-if="currentPlan.featured"
+                  class="absolute -top-2.5 right-4 px-3 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.25em] bg-[#ff7900] text-black">
+                  Más popular
+                </div>
+
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30 mb-0.5">Plan seleccionado
+                    </p>
+                    <h3 class="text-2xl font-black text-white">{{ currentPlan.name }}</h3>
                   </div>
+                  <span class="material-symbols-outlined text-2xl text-[#ff7900]">{{ currentPlan.icon }}</span>
+                </div>
 
-                  <div class="flex items-start justify-between mb-3">
-                    <div>
-                      <p class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30 mb-0.5">Plan</p>
-                      <h3 class="text-xl font-black text-white">{{ plan.name }}</h3>
-                    </div>
-                    <span class="material-symbols-outlined text-xl"
-                      :class="selectedPlan === plan.id ? 'text-[#ff7900]' : 'text-white/30'">
-                      {{ plan.icon }}
-                    </span>
-                  </div>
+                <div class="flex items-baseline gap-1 mb-3">
+                  <span class="text-3xl font-black text-white">{{ currentPlan.price }}</span>
+                  <span class="text-white/20 text-[10px] font-black uppercase">{{ currentPlan.period }}</span>
+                </div>
+                <p class="text-white/40 text-sm mb-6">{{ currentPlan.description }}</p>
 
-                  <div class="flex items-baseline gap-1 mb-1">
-                    <span class="text-2xl font-black text-white">{{ plan.price }}</span>
-                    <span class="text-white/20 text-[9px] font-black uppercase">{{ plan.period }}</span>
-                  </div>
-                  <p class="text-white/40 text-[11px]">{{ plan.description }}</p>
-
-                  <div v-if="selectedPlan === plan.id"
-                    class="absolute bottom-0 left-4 right-4 h-[2px] bg-gradient-to-r from-transparent via-[#ff7900]/50 to-transparent rounded-full">
-                  </div>
-                </button>
-              </div>
-
-              <!-- Plan comparison - visual benefits -->
-              <div v-if="currentPlan">
-                <div class="flex items-center gap-4 mb-6">
+                <div class="flex items-center gap-4 mb-5">
                   <span class="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] whitespace-nowrap">Lo que
                     incluye</span>
                   <div class="h-px w-full bg-white/[0.04]"></div>
@@ -275,7 +315,7 @@ const handleSubmit = async () => {
                 <h2 class="text-3xl font-black text-white tracking-tight">Suscripción en proceso</h2>
                 <p class="text-white/40 text-sm leading-relaxed max-w-xs mx-auto">
                   Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-white">{{ formData.email
-                    }}</strong>.
+                  }}</strong>.
                 </p>
               </div>
               <button @click="router.push('/')"
