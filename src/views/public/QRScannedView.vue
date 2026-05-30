@@ -10,6 +10,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
 import type { IPublicQR, IQRScanMetrics } from '@/interfaces/IPublicQR'
 import { toast } from 'vue-sonner'
 import { useUserStore } from '@/stores/user'
+import WhatsappButton from '@/components/home/QRScanned/WhatsappButton.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -31,7 +32,7 @@ const hasSent = ref(false)
 const whatsappNumber = '+15556322742'
 
 const defaultBody = computed(() => {
-  return `Hola, acabo de encontrar su artículo protegido por Ubiqueme: "${QRName.value}".`
+  return `Hola, acabo de encontrar su artículo protegido por Ubiqueme: "${QRName.value ?? 'pertenencia'}".`
 })
 
 watch(QRName, () => {
@@ -445,114 +446,96 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <!-- 📝 INTERACTION CARD (WhatsApp + Email) -->
+            <!-- 📝 INTERACTION CARD-->
             <div
               class="bg-transparent md:bg-white/5 border-0 md:border border-white/10 rounded-[2rem] md:rounded-[3rem] p-0 md:p-2 overflow-visible md:overflow-hidden shadow-none md:shadow-2xl relative w-full mt-4 md:mt-0">
               <div
-                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10 p-6 md:p-10 space-y-6 md:space-y-10 relative z-10 w-full shadow-2xl md:shadow-none">
+                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10  md:p-1 space-y-6 md:space-y-10 relative z-10 w-full shadow-2xl md:shadow-none whatsapp-preview">
+                <div class="wa-header">
+                  <div class="wa-avatar">
+                    {{ QRName?.charAt(0)?.toUpperCase() || 'U' }}
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="wa-name">{{ QRName }}</span>
+                    <span class="wa-status">
+                      Recuperación de artículo
+                    </span>
+                  </div>
+                </div>
 
                 <Transition name="fade-slide" mode="out-in">
 
-                  <!-- MESSAGE FORM HOOK -->
-                  <div v-if="!hasSent"
-                    class="space-y-6 md:space-y-6 text-center animate-in fade-in duration-500 w-full">
+                  <!-- MESSAGE FORM -->
+                  <div v-if="!hasSent" class="wa-chat-area">
 
-                    <!-- Mobile Header -->
-                    <div class="block md:hidden space-y-3 mb-6 text-center animate-in zoom-in duration-500">
-                      <div
-                        class="inline-flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20">
-                        <span class="material-symbols-outlined text-[12px]">qr_code_2</span>
-                        ID: {{ qrId.substring(0, 8).toUpperCase() }}
+                    <!-- Message Bubble Preview -->
+                    <div class="wa-bubble-row">
+                      <div class="wa-bubble">
+                        <p class="wa-bubble-text">{{ customMessage || defaultBody }}</p>
+                        <div class="wa-bubble-meta">
+                          <span class="wa-bubble-time">12:34</span>
+                          <svg class="wa-double-check" viewBox="0 0 16 11" width="16" height="11">
+                            <path
+                              d="M11.071.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-2.011-2.095a.463.463 0 0 0-.336-.153.457.457 0 0 0-.337.128.49.49 0 0 0-.137.34.537.537 0 0 0 .149.354l2.358 2.457a.472.472 0 0 0 .348.166.47.47 0 0 0 .33-.148l6.55-8.083a.516.516 0 0 0 .128-.344.485.485 0 0 0-.148-.334"
+                              fill="#53bdeb" />
+                            <path
+                              d="M14.618.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-1.004-1.046a.277.277 0 0 0-.1.195.33.33 0 0 0 .049.185l.923 1.074a.472.472 0 0 0 .348.166.47.47 0 0 0 .33-.148l6.55-8.083a.516.516 0 0 0 .128-.344.485.485 0 0 0-.148-.334"
+                              fill="#53bdeb" />
+                          </svg>
+                        </div>
                       </div>
-                      <h2 class="text-4xl font-black tracking-tighter text-[#dce7ff] uppercase italic leading-none">{{
-                        QRName }}</h2>
-                      <p class="text-white/40 text-xs max-w-[200px] mx-auto mt-2 leading-tight">Notifica al dueño para
-                        coordinar la recuperación.</p>
                     </div>
 
-                    <!-- Desktop Header -->
-                    <div class="hidden md:block space-y-2">
-                      <h3 class="text-xl font-black italic uppercase tracking-tighter">Enviar Mensaje</h3>
-                      <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura para
-                        coordinar la recuperación.</p>
-                    </div>
+                    <!-- WhatsApp Button -->
+                    <a :href="`https://wa.me/${whatsappNumber}?text=Hola,%20te%20escribo%20porque%20encontr%C3%A9%20tu%20art%C3%ADculo.%0A%0AID:%20${qrId}%0A%0AMensaje:%20${encodeURIComponent(customMessage)}`"
+                      target="_blank" class="wa-whatsapp-btn">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                      </svg>
+                      Abrir WhatsApp
+                    </a>
 
-                    <div class="space-y-4 md:space-y-4 flex flex-col">
-
-                      <!-- WhatsApp Button -->
-                      <a :href="`https://wa.me/${whatsappNumber}?text=Hola,%20te%20escribo%20porque%20encontré%20tu%20artículo.%0A%0AID:%20${qrId}%0A%0AMensaje:%20${encodeURIComponent(customMessage)}`"
-                        target="_blank"
-                        class="w-full h-16 md:h-16 bg-[#25D366] text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(37,211,102,0.3)] flex items-center justify-center gap-2 order-1">
-                        <svg class="w-6 h-6 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                    <!-- WhatsApp-style Input Bar -->
+                    <div class="wa-input-bar">
+                      <textarea v-model="customMessage" :disabled="isSending || isAuthenticating" class="wa-input"
+                        placeholder="Escribe un mensaje..." rows="1"></textarea>
+                      <button @click="handleSendClick"
+                        :disabled="isAuthenticating || isSending || !customMessage.trim()" class="wa-send-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                          <path d="M1.101 21.757 23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"
+                            fill="currentColor" />
                         </svg>
-                        Contactar por WhatsApp
-                      </a>
-
-                      <!-- Textarea -->
-                      <div class="text-left w-full order-2 mt-4 md:mt-0">
-                        <label
-                          class="text-[9px] md:text-[9px] font-black text-orange-500 uppercase tracking-widest ml-2">Tu
-                          Mensaje (Opcional)</label>
-                        <textarea v-model="customMessage" :disabled="isSending || isAuthenticating"
-                          class="w-full mt-1 p-4 md:p-4 bg-[#09090b] border border-white/20 hover:border-white/30 rounded-2xl text-sm md:text-sm text-white/80 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors resize-none placeholder:text-white/20 h-20 md:h-[120px]"
-                          placeholder="Escribe tu mensaje aquí..."></textarea>
-                      </div>
-
-                      <!-- Email Fallback -->
-                      <button @click="handleSendClick" :disabled="isAuthenticating || isSending"
-                        class="w-full h-14 md:h-14 bg-white/5 border border-white/10 text-white rounded-2xl font-bold text-[10px] md:text-xs uppercase tracking-widest hover:bg-white/10 transition-all disabled:opacity-50 flex items-center justify-center gap-2 order-3 mt-1 md:mt-0">
-                        <span v-if="isAuthenticating || isSending"
-                          class="material-symbols-outlined animate-spin text-[18px] md:text-[18px]">refresh</span>
-                        <span v-else class="material-symbols-outlined text-[18px] md:text-[18px]">mail</span>
-                        O Enviar Anónimo por Correo
                       </button>
                     </div>
                   </div>
 
                   <!-- SUCCESS STATE -->
-                  <div v-else class="py-10 text-center space-y-6 animate-in zoom-in duration-500">
-                    <div
-                      class="w-24 h-24 bg-green-500/10 border border-green-500/20 rounded-[2rem] flex items-center justify-center mx-auto">
-                      <span class="material-symbols-outlined text-green-500 text-5xl">check_circle</span>
+                  <div v-else class="wa-success">
+                    <div class="wa-success-icon">
+                      <svg viewBox="0 0 24 24" width="48" height="48" fill="#25D366">
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                      </svg>
                     </div>
-                    <div class="space-y-2">
-                      <h3 class="text-2xl font-black italic uppercase tracking-tighter text-green-400">Mensaje Enviado
-                      </h3>
-                      <p class="text-white/60 text-sm max-w-xs mx-auto">El propietario ha sido notificado exitosamente.
-                        Le responderá a su correo.</p>
+                    <div class="wa-success-text">
+                      <h3>Mensaje Enviado</h3>
+                      <p>El propietario ha sido notificado exitosamente.</p>
                     </div>
-                    <button @click="$router.push('/')"
-                      class="px-10 py-4 mt-4 bg-white/5 border border-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all">Volver
-                      al Inicio</button>
+                    <button @click="$router.push('/')" class="wa-success-btn">Volver al Inicio</button>
                   </div>
 
                 </Transition>
               </div>
             </div>
 
-            <!-- ==================== -->
-            <!-- SEPARADOR: LEGACY FLOW -->
-            <!-- ==================== -->
-            <div class="relative py-4 md:py-6">
-              <div class="flex items-center gap-4">
-                <div class="flex-1 h-px bg-white/10"></div>
-                <div
-                  class="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
-                  <span class="material-symbols-outlined text-[14px] text-orange-400">qr_code_scanner</span>
-                  Escanea desde la web con más opciones
-                </div>
-                <div class="flex-1 h-px bg-white/10"></div>
-              </div>
-            </div>
 
             <!-- 📸 LEGACY INTERACTION PANEL (Reasons + Image) -->
             <div
-              class="bg-transparent md:bg-white/5 border-0 md:border border-white/10 rounded-[2rem] md:rounded-[3rem] p-0 md:p-2 overflow-visible md:overflow-hidden shadow-none md:shadow-2xl relative w-full">
+              class="bg-transparent md:bg-white/5 border-0 md:border border-white/10 rounded-[2rem] md:rounded-[3rem] p-0 md:p-2 overflow-visible md:overflow-hidden shadow-none md:shadow-2xl relative w-full mt-2">
               <div
-                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10 p-6 md:p-10 space-y-6 md:space-y-8 relative z-10 w-full shadow-2xl md:shadow-none">
+                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10 p-2! md:p-10 space-y-6 md:space-y-8 relative z-10 w-full shadow-2xl md:shadow-none">
 
                 <Transition name="fade-slide" mode="out-in">
 
@@ -819,5 +802,261 @@ onUnmounted(() => {
 
 .animate-scanline {
   animation: scanline 4s linear infinite;
+}
+
+/* WhatsApp-style wallpaper */
+.whatsapp-preview {
+  position: relative;
+  background: #0b141a;
+  border-radius: 2rem;
+  overflow: hidden;
+}
+
+.whatsapp-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .04) 2px, transparent 2px),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, .03) 2px, transparent 2px),
+    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, .02) 3px, transparent 3px),
+    radial-gradient(circle at 85% 15%, rgba(255, 255, 255, .03) 1px, transparent 1px);
+  background-size: 80px 80px, 60px 60px, 100px 100px, 50px 50px;
+  background-position: 0 0, 30px 20px, 10px 50px, 60px 10px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* WhatsApp Header */
+.wa-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #202c33;
+  min-height: 64px;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+  z-index: 1;
+}
+
+.wa-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #0b141a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.wa-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e9edef;
+  line-height: 1.2;
+}
+
+.wa-status {
+  font-size: 12px;
+  color: #8696a0;
+  line-height: 1.2;
+}
+
+/* Chat Area */
+.wa-chat-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Message Bubble */
+.wa-bubble-row {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.wa-bubble {
+  max-width: 85%;
+  background: #005c4b;
+  border-radius: 8px 0 8px 8px;
+  padding: 8px 10px 6px;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+}
+
+.wa-bubble-text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #e9edef;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.wa-bubble-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.wa-bubble-time {
+  font-size: 11px;
+  color: rgba(233, 237, 239, 0.6);
+}
+
+.wa-double-check {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* WhatsApp Button */
+.wa-whatsapp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  background: #25d366;
+  color: #0b141a;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 24px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.25);
+}
+
+.wa-whatsapp-btn:hover {
+  background: #20bd5a;
+  transform: scale(1.02);
+  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.35);
+}
+
+.wa-whatsapp-btn:active {
+  transform: scale(0.98);
+}
+
+/* Input Bar */
+.wa-input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: #202c33;
+  border-radius: 8px;
+  padding: 6px 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.wa-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e9edef;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 6px 4px;
+  resize: none;
+  font-family: inherit;
+  min-height: 70px;
+  max-height: 100px;
+}
+
+.wa-input::placeholder {
+  color: #8696a0;
+}
+
+.wa-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #8696a0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.wa-send-btn:not(:disabled):hover {
+  color: #e9edef;
+}
+
+.wa-send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Success State */
+.wa-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.wa-success-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wa-success-text {
+  text-align: center;
+}
+
+.wa-success-text h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e9edef;
+  margin: 0 0 4px;
+}
+
+.wa-success-text p {
+  font-size: 14px;
+  color: #8696a0;
+  margin: 0;
+}
+
+.wa-success-btn {
+  padding: 10px 32px;
+  background: transparent;
+  border: 1px solid rgba(233, 237, 239, 0.2);
+  border-radius: 24px;
+  color: #e9edef;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wa-success-btn:hover {
+  background: rgba(233, 237, 239, 0.08);
+  border-color: rgba(233, 237, 239, 0.3);
 }
 </style>

@@ -158,6 +158,9 @@ const handleSubmit = async () => {
           style="background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:32px 32px;">
         </div>
 
+
+        <!--TODO: Important task, this will be an overlay instead a component, this will appear when user clicks on a ship Physical QR this will receive the props including the QR ID and full QR data (shipments should be visible in a specific route) -->
+
         <div class="max-w-6xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start">
 
           <!-- LEFT SECTION: FORM -->
@@ -173,7 +176,8 @@ const handleSubmit = async () => {
                 Generar Código QR
               </h1>
               <p class="text-white/40 mt-2 text-sm max-w-xl leading-relaxed">
-                Genere un código digital de inmediato o solicite su etiqueta física autoadherible de alta durabilidad a domicilio.
+                Genere un código digital de inmediato o solicite su etiqueta física autoadherible de alta durabilidad a
+                domicilio.
               </p>
             </header>
 
@@ -200,7 +204,8 @@ const handleSubmit = async () => {
                   Recomendación de Envío
                 </div>
                 <p class="text-[11px] text-white/60 leading-relaxed">
-                  💡 Se recomienda pedir todos tus códigos permitidos en el <strong>primer envío físico gratuito</strong>. 
+                  💡 Se recomienda pedir todos tus códigos permitidos en el <strong>primer envío físico
+                    gratuito</strong>.
                   Los envíos posteriores tendrán un costo de <strong>$199 MXN</strong> (envío solo dentro de México).
                 </p>
               </div>
@@ -243,7 +248,8 @@ const handleSubmit = async () => {
 
               <!-- TIPO DE SOLICITUD (DIGITAL vs FISICO) -->
               <div class="space-y-4">
-                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Tipo de Solicitud</label>
+                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Tipo de
+                  Solicitud</label>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <!-- Digital Only -->
                   <button @click="requestType = 'digital'"
@@ -332,7 +338,8 @@ const handleSubmit = async () => {
                         <div>
                           <p class="text-sm font-bold text-white mb-1">Pegamento Frontal</p>
                           <p class="text-xs text-white/40 leading-relaxed pr-4">Ideal para pegar <strong>por dentro de
-                              cristales</strong> (ej. parabrisas del coche, ventanas). El QR se escanea desde el exterior.
+                              cristales</strong> (ej. parabrisas del coche, ventanas). El QR se escanea desde el
+                            exterior.
                           </p>
                         </div>
                         <span class="material-symbols-outlined text-3xl transition-transform group-hover:scale-110"
@@ -483,6 +490,7 @@ const handleSubmit = async () => {
           </div>
 
         </div>
+
       </div>
     </template>
   </UserDashoardLayout>
