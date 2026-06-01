@@ -138,7 +138,7 @@ const handleCredentialResponse = async (response: any) => {
 const sendMessageToAPI = async () => {
   try {
     isSending.value = true
-    const workerUrl = import.meta.env.VITE_WORKER_URL || 'http://127.0.0.1:8787'
+    const workerUrl = import.meta.env.VITE_WHATSAPP_WORKER_URL || 'http://127.0.0.1:8787'
     const res = await fetch(`${workerUrl}/api/notify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -429,12 +429,12 @@ onUnmounted(() => {
                   <div class="space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Serial ID</label>
                     <p class="font-mono text-orange-500 text-sm tracking-widest">{{ qrId.substring(0, 10).toUpperCase()
-                      }}</p>
+                    }}</p>
                   </div>
                   <div class="space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Historial</label>
                     <p class="text-white font-black text-sm uppercase italic tracking-tight">{{ qrData?.totalScans || 0
-                      }} Escaneos totales</p>
+                    }} Escaneos totales</p>
                   </div>
                   <div class="col-span-2 pt-4 border-t border-white/5 flex items-center gap-4">
                     <div class="flex-1 h-[1px] bg-white/5"></div>
