@@ -116,6 +116,8 @@
 
           <div v-for="group in groupedQRs" :key="group.subscription.id" class="space-y-6 animate-fade-up">
 
+            <RequestQRView></RequestQRView>
+
             <LimitReached :subscriptionName="group.subscription.planType"
               v-if="group.subscription.totalQRsCreated >= group.subscription.totalQRsAllowed && showLimitReached"
               @close="showLimitReached = false" />
@@ -210,6 +212,7 @@ import { nanoid } from 'nanoid'
 import LineLoader from '@/components/ui/LineLoader.vue'
 import { toast } from 'vue-sonner'
 import LimitReached from './LimitReached.vue'
+import RequestQRView from '@/views/dashboard/RequestQRView.vue'
 
 const userQRs = ref<IMyQR[]>([])
 const userSubscriptions = ref<ISubscription[]>([])

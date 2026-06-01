@@ -10,6 +10,7 @@ import type { IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
+import RequestQRView from '@/views/dashboard/RequestQRView.vue'
 
 const props = defineProps<IQRCard>()
 
@@ -317,6 +318,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+
   <div
     class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans group">
 
@@ -324,6 +326,7 @@ onUnmounted(() => {
     <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
       style="background-image: linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px); background-size: 24px 24px;">
     </div>
+
 
     <!-- Resplandor Naranja General Sutil -->
     <div
@@ -443,7 +446,6 @@ onUnmounted(() => {
           class="hidden sm:flex text-orange-500/90 hover:text-white transition-colors cursor-pointer w-9 h-9 items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 absolute top-4 right-4">
           <span data-name="hamMenu" class="material-symbols-outlined text-[22px]">more_horiz</span>
         </button>
-
         <!-- Menu Popover -->
         <Transition enter-active-class="transition-all duration-200 ease-out"
           enter-from-class="opacity-0 -translate-y-2 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"

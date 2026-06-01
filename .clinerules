@@ -1,36 +1,45 @@
 # Cline Rules
 
+## Cache Optimization
+
+- Always put stable content first (rules, file summaries, project context), dynamic content last — this keeps the cache prefix intact and maximizes DeepSeek cache hits.
+- Never add timestamps, task IDs, or session metadata to prompts — they invalidate the cache prefix on every request.
+- Prefer replace_in_file over full file reads — sending only the affected block keeps input tokens low and the stable prefix unchanged.
+- Read each file once per task and reference it; never re-read the same file unnecessarily.
+- Skip environment_details and directory trees unless the current task explicitly requires them.
+- Avoid /compact mid-task — only suggest it when switching to a completely separate task.
+
 ## File Editing
 
-- Always use replace_in_file for targeted edits — never rewrite full files unless explicitly asked.
-- If a file exceeds 100 lines, edit only the affected block.
-
-## Task Planning
-
-- For tasks involving 3+ files or unclear requirements, ask all clarifying questions before writing any code.
-
-## Context Management
-
-- If conversation exceeds 50 tool calls, suggest starting a new chat.
+- replace_in_file for all edits — full rewrites only if explicitly asked.
+- Files over 100 lines: edit only the affected block.
 
 ## Coding Behavior
 
 - Modify only what is required.
-- Reuse existing project patterns and architecture.
+- Reuse existing patterns and architecture.
 - Never expose API keys in frontend code.
 
 ## Communication
 
-- Be concise and direct.
-- Do not restate the user's request or summarize completed actions.
-- If user asks a question without requesting changes, respond with text only — no file changes.
-- Ask at most one clarifying question if needed.
+- Concise and direct. No restating requests or summarizing actions.
+- Text-only response if no changes requested.
+- Max one clarifying question per reply.
+
+## Task Planning
+
+- 3+ files or unclear scope: ask all questions before writing any code.
 
 ## Vue / Ionic / Firebase
 
-- Prefer Composition API patterns already present in the project.
-- Prefer incremental UI edits over complete redesigns.
+- Composition API only, matching existing project patterns.
+- Incremental UI edits — no full redesigns.
 
 ## Email Templates
 
-- Use hex colors only — no rgba() in main backgrounds.
+- Hex colors only — no rgba() in main backgrounds.
+- Hex colors only — no rgba() in main backgrounds.
+
+## Context Management
+
+- Over 50 tool calls: suggest new chat.
