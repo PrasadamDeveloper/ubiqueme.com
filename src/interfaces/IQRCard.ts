@@ -57,4 +57,6 @@ export interface IQRCard {
   shippingNotes?: string
   /** Whether the free shipment from the plan was used */
   freeShipmentUsed?: boolean
+  /** Plan type of the subscription this QR belongs to */
+  planType?: 'bronce' | 'plata' | 'oro' | 'trial'
 }

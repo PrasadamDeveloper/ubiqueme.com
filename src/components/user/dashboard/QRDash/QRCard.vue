@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
-import { collection, doc, onSnapshot, orderBy, query, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
@@ -10,7 +10,10 @@ import type { IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
-import RequestQRView from '@/views/dashboard/RequestQRView.vue'
+
+const emit = defineEmits<{
+  (e: 'request-physical', subscriptionId: string): void
+}>()
 
 const props = defineProps<IQRCard>()
 
@@ -234,29 +237,13 @@ const handleRenewQR = async () => {
   }
 }
 
-const _handleSendPhysicalQR = async () => {
-  isLoading.value = true;
-  try {
-    const docQRRef = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
-    await updateDoc(docQRRef, {
-      physicalShipped: true,
-      physicalShippedAt: Timestamp.now(),
-      shippingNotes: '',
 
-    })
-    isLoading.value = false;
-    toast.success(`QR físico actualizado`);
-  } catch (error) {
-    isLoading.value = false;
-    const e = error as Error;
-    toast.error(`Error al solicitar QR físico: ${e.message}`);
-  }
-}
+const canMakePublic = computed(() => propsComputed.value.planType && propsComputed.value.planType !== 'bronce')
 
 const menuOptions = [
-  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: _handleSendPhysicalQR },
-  { label: 'Hacer Público', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: _setQrPublic },
-  { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: _setQrPrivate },
+  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId) },
+  { label: 'Hacer Público', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+  { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePublic.value ? _setQrPrivate : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
   { divider: true },
   { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
   { label: 'Renovar QR', icon: 'autorenew', description: 'Inicia el proceso para renovar este código.', action: () => openPrompt('renew') },
@@ -455,6 +442,15 @@ onUnmounted(() => {
             class="absolute top-14 right-4 w-[260px] bg-[#0b0808] border border-orange-500/20 rounded-xl p-2 shadow-[0_8px_30px_rgb(249,115,22,0.15)] z-50 max-h-[200px] overflow-y-auto">
             <template v-for="(option, index) in menuOptions" :key="index">
               <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2"></div>
+              <div v-else-if="option.locked" v-tooltip="{ content: option.lockTooltip, placement: 'top' }"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-transparent text-sm text-left font-medium text-white/30 cursor-not-allowed">
+                <span class="material-symbols-outlined text-[18px]">lock</span>
+                <span class="flex flex-col">
+                  <span>{{ option.label }}</span>
+                  <span class="text-[10px] text-white/20 font-normal leading-tight truncate max-w-[180px]">{{
+                    option.description }}</span>
+                </span>
+              </div>
               <button v-else @click="option.action" v-tooltip="{ content: option.description, placement: 'top' }"
                 :class="[
                   'w-full flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',

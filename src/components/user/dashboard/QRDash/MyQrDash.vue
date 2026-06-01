@@ -116,8 +116,6 @@
 
           <div v-for="group in groupedQRs" :key="group.subscription.id" class="space-y-6 animate-fade-up">
 
-            <RequestQRView></RequestQRView>
-
             <LimitReached :subscriptionName="group.subscription.planType"
               v-if="group.subscription.totalQRsCreated >= group.subscription.totalQRsAllowed && showLimitReached"
               @close="showLimitReached = false" />
@@ -172,7 +170,8 @@
                 :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link"
                 :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason" :createdAt="qr.createdAt"
                 :subscriptionId="qr.subscriptionId" :physicalShipped="qr.physicalShipped"
-                :physicalShippedAt="qr.physicalShippedAt" />
+                :physicalShippedAt="qr.physicalShippedAt" :planType="group.subscription.planType"
+                @request-physical="handleRequestPhysical(group.subscription)" />
             </div>
 
             <div v-else
@@ -195,11 +194,16 @@
       </div>
     </div>
   </div>
+
+  <!-- Physical QR Request Overlay -->
+  <RequestQROverlay :visible="showPhysicalOverlay" :subscription="overlaySubscription" :qrs="overlayQrs"
+    @close="closePhysicalOverlay" @confirm="closePhysicalOverlay" />
 </template>
 
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
 import QRCard from './QRCard.vue'
+import RequestQROverlay from './RequestQROverlay.vue'
 import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { collection, getFirestore, onSnapshot, Timestamp, doc, runTransaction, increment, writeBatch } from 'firebase/firestore'
 import QRCardSkeleton from '@/components/ui/user/dashboard/QRCardSkeleton.vue'
@@ -212,7 +216,6 @@ import { nanoid } from 'nanoid'
 import LineLoader from '@/components/ui/LineLoader.vue'
 import { toast } from 'vue-sonner'
 import LimitReached from './LimitReached.vue'
-import RequestQRView from '@/views/dashboard/RequestQRView.vue'
 
 const userQRs = ref<IMyQR[]>([])
 const userSubscriptions = ref<ISubscription[]>([])
@@ -321,6 +324,26 @@ const createQR = async () => {
 }
 
 const selectedSubscription = ref<ISubscription | null>(null);
+
+// Physical QR Overlay state
+const showPhysicalOverlay = ref(false)
+const overlaySubscription = ref<ISubscription | null>(null)
+
+const handleRequestPhysical = (subscription: ISubscription) => {
+  overlaySubscription.value = subscription
+  showPhysicalOverlay.value = true
+}
+
+const closePhysicalOverlay = () => {
+  showPhysicalOverlay.value = false
+  overlaySubscription.value = null
+}
+
+const overlayQrs = computed(() => {
+  if (!overlaySubscription.value) return []
+  const group = groupedQRs.value.find(g => g.subscription.id === overlaySubscription.value?.id)
+  return group?.qrs ?? []
+})
 
 //Limit Reached
 const showLimitReached = ref(false);
