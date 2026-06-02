@@ -155,7 +155,7 @@
                       ? 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10'
                       : 'border-red-500/15 bg-red-500/5 text-red-400 hover:bg-red-500/10'">
                     <span class="material-symbols-outlined text-[14px]">{{ user.isBanned ? 'how_to_reg' : 'gavel'
-                      }}</span>
+                    }}</span>
                     {{ user.isBanned ? 'Restaurar' : 'Suspender' }}
                   </button>
                 </div>
@@ -179,7 +179,7 @@
                       <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px] text-[#ff7900]">workspace_premium</span>
                         <span class="font-black text-[#ff7900] uppercase text-[11px] tracking-wider">{{ sub.planType
-                        }}</span>
+                          }}</span>
                       </div>
                       <span
                         :class="sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : sub.status === 'canceled' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/40 border-white/10'"
@@ -198,7 +198,7 @@
                       <div class="flex justify-between text-[10px] mb-1">
                         <span class="text-white/40">Códigos QR</span>
                         <span class="text-white font-mono font-bold">{{ sub.totalQRsCreated }} / {{ sub.totalQRsAllowed
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full rounded-full transition-all duration-500"
@@ -577,12 +577,12 @@ const cancelSubscription = async (subId: string, userId: string) => {
 const renewSubscription = async (sub: ISubscription) => {
   try {
     const now = new Date();
-    const endDate = new Date(now);
-    if (sub.planType === 'trial') {
-      endDate.setMonth(endDate.getMonth() + 1);
-    } else {
-      endDate.setFullYear(endDate.getFullYear() + 1);
-    }
+
+    // Calcular duración original: endDate - purchasedAt
+    const purchasedAt = sub.purchasedAt?.toDate ? sub.purchasedAt.toDate() : new Date();
+    const originalEnd = sub.endDate?.toDate ? sub.endDate.toDate() : new Date();
+    const durationMs = originalEnd.getTime() - purchasedAt.getTime();
+    const newEndDate = new Date(now.getTime() + durationMs);
 
     const newSubId = nanoid(15);
     const newSubRef = doc(firestoreDb, `users/${sub.userId}/subscriptions/${newSubId}`);
@@ -594,7 +594,7 @@ const renewSubscription = async (sub: ISubscription) => {
         planType: sub.planType,
         status: 'active',
         purchasedAt: Timestamp.fromDate(now),
-        endDate: Timestamp.fromDate(endDate),
+        endDate: Timestamp.fromDate(newEndDate),
         paymentProviderId: 'admin',
         totalQRsAllowed: sub.totalQRsAllowed,
         totalQRsCreated: 0,
