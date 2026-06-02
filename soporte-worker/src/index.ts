@@ -133,29 +133,33 @@ const NOTIF_HTML = (fromEmail: string, subject: string, body: string) =>
   </tr>
 </table>`.trim();
 
-// ─── Contact form notification for HTTP endpoint ────────────────
-const CONTACT_NOTIF_HTML = (fields: Record<string, string>) =>
+// ─── Generic notification table (used by /api/contact and /api/physical-request) ─
+const NOTIF_TABLE_HTML = (title: string, fields: Record<string, string>) =>
 	`
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%">
   <tr>
     <td style="padding-bottom:20px">
-      <span style="display:inline-block;padding:4px 12px;border-radius:100px;background:#fff7ed;border:1px solid #ffedd5;color:#ff7900;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">
-        Nuevo mensaje desde el formulario de contacto
-      </span>
+      <span style="display:inline-block;padding:4px 12px;border-radius:100px;background:#fff7ed;border:1px solid #ffedd5;color:#ff7900;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">${title}</span>
     </td>
   </tr>
   <tr>
-    <td style="padding-top:8px">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0 4px">
-        ${Object.entries(fields)
-					.map(
-						([label, value]) => `
+    <td style="padding:0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7">
         <tr>
-          <td bgcolor="#f9f9f9" style="width:40%;padding:10px 14px;border-radius:8px 0 0 8px;font-size:12px;color:#666666;font-weight:500;vertical-align:top">${label}</td>
-          <td bgcolor="#f9f9f9" style="width:60%;padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#111111;font-weight:500;vertical-align:top">${value}</td>
-        </tr>`,
-					)
-					.join('')}
+          <td style="padding:0">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0">
+              ${Object.entries(fields)
+								.map(
+									([label, value], idx) => `
+              <tr>
+                <td bgcolor="${idx % 2 === 0 ? '#fafafa' : '#ffffff'}" style="width:35%;padding:12px 16px;font-size:12px;color:#71717a;font-weight:600;vertical-align:top;border-bottom:1px solid #e4e4e7">${label}</td>
+                <td bgcolor="${idx % 2 === 0 ? '#fafafa' : '#ffffff'}" style="width:65%;padding:12px 16px;font-size:13px;color:#18181b;font-weight:400;vertical-align:top;border-bottom:1px solid #e4e4e7">${value.replace(/\n/g, '<br>')}</td>
+              </tr>`,
+								)
+								.join('')}
+            </table>
+          </td>
+        </tr>
       </table>
     </td>
   </tr>
@@ -183,7 +187,7 @@ export default {
 		const subject = message.headers.get('subject') || 'Sin asunto';
 
 		// 1. Forward the email to the support team
-		await message.forward('shykandev@gmail.com');
+		await message.forward('informes@prasadam.mx');
 
 		// 2. Send auto-response to the sender via Email Binding
 		const autoReply = new EmailMessage('soporte@ubiqueme.com', from, EMAIL_WRAPPER(AUTO_REPLY_HTML));
@@ -195,7 +199,7 @@ export default {
 			const resend = new Resend(env.RESEND_API_KEY);
 			await resend.emails.send({
 				from: 'Ubiqueme <soporte@ubiqueme.com>',
-				to: ['shykandev@gmail.com'],
+				to: ['informes@prasadam.mx'],
 				subject: `Nuevo mensaje de soporte — ${subject}`,
 				html: EMAIL_WRAPPER(NOTIF_HTML(from, subject, '(Contenido reenviado por Email Routing)')),
 			});
@@ -246,9 +250,9 @@ export default {
 				// Send notification to support team
 				const notifResult = await resend.emails.send({
 					from: 'Ubiqueme <soporte@ubiqueme.com>',
-					to: ['shykandev@gmail.com'],
+					to: ['informes@prasadam.mx'],
 					subject: `Nuevo mensaje de contacto — ${name}`,
-					html: EMAIL_WRAPPER(CONTACT_NOTIF_HTML(fields)),
+					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Nuevo mensaje de contacto', fields)),
 				});
 
 				if (notifResult.error) {
@@ -289,6 +293,10 @@ export default {
 				Plan: body.planType || 'N/A',
 				'IDs de QR': body.qrIds || 'N/A',
 				Costo: body.cost || 'N/A',
+				Ciudad: body.city || 'N/A',
+				'Código Postal': body.postalCode || 'N/A',
+				Teléfono: body.phone || 'N/A',
+				'Notas de envío': body.shippingNotes || 'Ninguna',
 				'Notas adicionales': body.notes || 'Ninguna',
 			};
 
@@ -296,9 +304,9 @@ export default {
 				const resend = new Resend(env.RESEND_API_KEY);
 				const notifResult = await resend.emails.send({
 					from: 'Ubiqueme <soporte@ubiqueme.com>',
-					to: ['shykandev@gmail.com'],
+					to: ['informes@prasadam.mx'],
 					subject: 'Nueva solicitud de QR físico',
-					html: EMAIL_WRAPPER(CONTACT_NOTIF_HTML(fields)),
+					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Nueva solicitud de QR físico', fields)),
 				});
 
 				if (notifResult.error) {

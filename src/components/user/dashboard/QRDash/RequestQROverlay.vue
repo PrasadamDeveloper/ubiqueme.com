@@ -23,6 +23,12 @@ const userStore = useUserStore()
 const selectedQRIds = ref<Set<string>>(new Set())
 const isSubmitting = ref(false)
 
+// ─── Datos de entrega ──────────────────────────────────────────
+const city = ref('')
+const postalCode = ref('')
+const phone = ref('')
+const shippingNotes = ref('')
+
 // Per-QR customization: map of qrId -> { layout, size, gluePosition }
 interface QRCustomization {
   layout: 'compact' | 'detail'
@@ -116,6 +122,20 @@ const handleConfirm = async () => {
     return
   }
 
+  // Validar dirección de entrega
+  if (!city.value.trim()) {
+    toast.error('Ingrese la ciudad de entrega.')
+    return
+  }
+  if (!postalCode.value.trim() || postalCode.value.length < 5) {
+    toast.error('Ingrese un código postal válido (5 dígitos).')
+    return
+  }
+  if (!phone.value.trim() || phone.value.length < 10) {
+    toast.error('Ingrese un teléfono de contacto válido (10 dígitos).')
+    return
+  }
+
   isSubmitting.value = true
   try {
     const batch = writeBatch(db)
@@ -153,17 +173,33 @@ const handleConfirm = async () => {
       freeShipmentsUsed: increment(1)
     })
 
+    // Guardar dirección de entrega en un documento del pedido
+    const orderRef = doc(db, `users/${userId}/shipments/${Timestamp.now().toMillis()}`)
+    batch.set(orderRef, {
+      subscriptionId: props.subscription.id,
+      qrIds: Array.from(selectedQRIds.value),
+      city: city.value.trim(),
+      postalCode: postalCode.value.trim(),
+      phone: phone.value.trim(),
+      shippingNotes: shippingNotes.value.trim(),
+      cost: hasFreeShipment.value ? 0 : 199,
+      freeShipmentUsed: hasFreeShipment.value,
+      createdAt: Timestamp.now(),
+    })
+
     await batch.commit()
 
     // ── Notificar al worker de soporte ──────────────────────
     const soporteUrl = import.meta.env.VITE_SOPORTE_WORKER_URL
     if (soporteUrl) {
       const selectedQrs = props.qrs.filter(qr => selectedQRIds.value.has(qr.id))
-      const qrDetails = selectedQrs.map(qr => {
+      const qrNames = selectedQrs.map(qr => {
         const cust = getQrCust(qr.id)
-        return `${qr.name} (#${qr.id}) → ${cust.layout}/${cust.size}/${cust.gluePosition === 'frontal' ? 'pegamento frontal' : 'pegamento trasero'}`
+        return `• ${qr.name} (#${qr.id}) — Formato: ${cust.layout === 'compact' ? 'Compacto' : 'Detallado'}, Tamaño: ${cust.size}, Pegamento: ${cust.gluePosition === 'frontal' ? 'Frontal (para cristales)' : 'Trasero (tradicional)'}`
       })
-      const cost = hasFreeShipment.value ? 'Gratis (primer envío incluido en el plan)' : '$199 MXN'
+      const costLine = hasFreeShipment.value
+        ? '• Este es el PRIMER ENVÍO del usuario → no tiene costo'
+        : '• Costo de envío: $199 MXN'
 
       fetch(`${soporteUrl}/api/physical-request`, {
         method: 'POST',
@@ -174,8 +210,24 @@ const handleConfirm = async () => {
           userName: userStore.getFullName,
           planType: props.subscription.planType,
           qrIds: Array.from(selectedQRIds.value).join(', '),
-          cost,
-          notes: qrDetails.join('\n'),
+          cost: hasFreeShipment.value ? 'Gratis (primer envío)' : '$199 MXN',
+          city: city.value.trim(),
+          postalCode: postalCode.value.trim(),
+          phone: phone.value.trim(),
+          shippingNotes: shippingNotes.value.trim() || 'Ninguna',
+          notes: [
+            `El usuario ${userStore.getFullName} (${userStore.getEmail}) ha solicitado un envío físico de código(s) QR.`,
+            '',
+            costLine,
+            `• Plan del usuario: ${props.subscription.planType}`,
+            `• Códigos QR solicitados: ${selectedQRIds.value.size}`,
+            '',
+            '📦 Detalle de cada QR:',
+            ...qrNames,
+            '',
+            'Puede verificar el estado del usuario en:',
+            'https://www.ubiqueme.com/admin',
+          ].join('\n'),
         }),
       }).catch(err => console.error('Error notificando al worker:', err))
     }
@@ -290,6 +342,41 @@ const handleClose = () => {
                 {{ subscription?.freeShipmentsUsed }} / {{ subscription?.freeShipmentsAllowed }}
               </p>
             </div>
+          </div>
+        </div>
+
+        <!-- Address Section -->
+        <div class="mb-6 p-4 rounded-2xl border border-white/10 bg-white/[0.02]">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined text-[16px] text-white/50">location_on</span>
+            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Dirección de entrega</label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+            <div class="md:col-span-2">
+              <label class="text-[9px] font-bold uppercase tracking-wider text-white/30 ml-1 mb-1 block">Ciudad
+                *</label>
+              <input v-model="city" type="text" placeholder="Ej. Ciudad de México"
+                class="w-full h-10 px-3 rounded-xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 transition-all" />
+            </div>
+            <div>
+              <label class="text-[9px] font-bold uppercase tracking-wider text-white/30 ml-1 mb-1 block">Código Postal
+                *</label>
+              <input v-model="postalCode" type="text" placeholder="Ej. 06600" maxlength="5"
+                class="w-full h-10 px-3 rounded-xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 transition-all" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="text-[9px] font-bold uppercase tracking-wider text-white/30 ml-1 mb-1 block">Teléfono de
+              contacto
+              *</label>
+            <input v-model="phone" type="tel" placeholder="Ej. 5512345678"
+              class="w-full h-10 px-3 rounded-xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 transition-all" />
+          </div>
+          <div>
+            <label class="text-[9px] font-bold uppercase tracking-wider text-white/30 ml-1 mb-1 block">Notas adicionales
+              <span class="text-white/20 normal-case">(opcional)</span></label>
+            <textarea v-model="shippingNotes" rows="2" placeholder="Ej. Entregar con vecino, referencias, etc."
+              class="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 transition-all resize-none"></textarea>
           </div>
         </div>
 
