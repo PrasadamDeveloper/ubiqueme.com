@@ -24,6 +24,18 @@ const loading = ref(true)
 const isResettingPassword = ref(false)
 const isSavingPhone = ref(false)
 const isCancelling = ref(false)
+const showDeletePrompt = ref(false)
+const deleteReason = ref('')
+const deleteCustomReason = ref('')
+
+const deleteReasons = [
+  'Ya no uso la cuenta',
+  'Demasiado caro',
+  'Encontré otra opción',
+  'Otro (especificar)',
+]
+
+const isDeleting = ref(false)
 
 const phoneInput = ref('')
 
@@ -105,12 +117,44 @@ const handleSavePhone = async () => {
   }
 }
 
-const handleCancelAccount = () => {
-  isCancelling.value = true
-  setTimeout(() => {
-    toast.success('Solicitud de cancelación enviada. Recibirás un correo de confirmación pronto.')
-    isCancelling.value = false
-  }, 1500)
+const handleCancelAccount = async () => {
+  if (!deleteReason.value) {
+    toast.error('Selecciona un motivo para cancelar tu cuenta.')
+    return
+  }
+
+  const soporteUrl = import.meta.env.VITE_SOPORTE_WORKER_URL
+  isDeleting.value = true
+
+  try {
+    const res = await fetch(`${soporteUrl}/api/account-deletion`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firebaseUid: userStore.getUserId || 'N/A',
+        email: userData.value?.email || userStore.getEmail || 'N/A',
+        userName: userData.value?.name || userStore.getFullName || 'N/A',
+        reason: deleteReason.value,
+        customReason: deleteReason.value === 'Otro (especificar)' ? deleteCustomReason.value || 'N/A' : 'N/A',
+      }),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Error al enviar la solicitud')
+    }
+
+    toast.success('Solicitud de cancelación enviada. Nuestro equipo la revisará y te contactará pronto.')
+    showDeletePrompt.value = false
+    deleteReason.value = ''
+    deleteCustomReason.value = ''
+  } catch (error) {
+    const e = error as Error
+    toast.error(`Error al enviar: ${e.message}`)
+  } finally {
+    isDeleting.value = false
+  }
 }
 
 const formatDate = (timestamp: any) => {
@@ -346,7 +390,7 @@ const qrStatusColor = (status: string) => {
           </div>
         </div>
 
-        <!-- Danger Zone -->
+        <!-- Danger Zone with Delete Prompt -->
         <div class="bg-[#0f0f11] rounded-2xl p-6 border border-red-500/10">
           <h3 class="text-red-500 text-sm font-semibold mb-4 pb-3 border-b border-red-500/5 flex items-center gap-2">
             <span class="material-symbols-outlined text-[18px]">warning</span>
@@ -358,8 +402,73 @@ const qrStatusColor = (status: string) => {
             fácilmente.
           </p>
 
-          <button @click="handleCancelAccount" :disabled="isCancelling"
-            class="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2">
+          <!-- Delete Prompt Modal -->
+          <Teleport to="body">
+            <Transition name="fade">
+              <div v-if="showDeletePrompt"
+                class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                <div @click.stop
+                  class="w-full max-w-md bg-[#0f0f11] border border-red-500/20 rounded-3xl p-6 shadow-2xl space-y-5">
+                  <div class="flex items-center justify-between">
+                    <h4 class="text-white font-bold text-sm flex items-center gap-2">
+                      <span class="material-symbols-outlined text-red-500 text-[18px]">delete_forever</span>
+                      Cancelar cuenta
+                    </h4>
+                    <button @click="showDeletePrompt = false"
+                      class="text-white/30 hover:text-white transition-colors cursor-pointer">
+                      <span class="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                  </div>
+
+                  <p class="text-xs text-gray-500 leading-relaxed">
+                    Esta acción solicitará la eliminación de tu cuenta y todos tus datos. Cuéntanos el motivo para
+                    ayudarnos a mejorar.
+                  </p>
+
+                  <!-- Reason options -->
+                  <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Motivo</label>
+                    <div class="space-y-1.5">
+                      <button v-for="r in deleteReasons" :key="r" @click="deleteReason = r"
+                        class="w-full text-left px-4 py-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer"
+                        :class="deleteReason === r
+                          ? 'border-red-500/40 bg-red-500/10 text-red-400'
+                          : 'border-white/10 bg-black/40 text-white/60 hover:border-white/20'">
+                        {{ r }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Custom reason textarea -->
+                  <div v-if="deleteReason === 'Otro (especificar)'">
+                    <label
+                      class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1 mb-1.5 block">Especifica
+                      el motivo</label>
+                    <textarea v-model="deleteCustomReason" rows="3" placeholder="Describe el motivo..."
+                      class="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/40 text-white text-sm placeholder:text-white/20 outline-none focus:border-red-500/40 transition-all resize-none"></textarea>
+                  </div>
+
+                  <!-- Actions -->
+                  <div class="flex gap-3 pt-2">
+                    <button @click="showDeletePrompt = false"
+                      class="flex-1 py-3 rounded-xl border border-white/10 text-white/60 text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">
+                      Cancelar
+                    </button>
+                    <button @click="handleCancelAccount" :disabled="isDeleting || !deleteReason"
+                      class="flex-1 py-3 rounded-xl bg-red-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer">
+                      <span v-if="isDeleting"
+                        class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                      <span v-else class="material-symbols-outlined text-[16px]">delete_forever</span>
+                      {{ isDeleting ? 'Enviando...' : 'Solicitar cancelación' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Transition>
+          </Teleport>
+
+          <button @click="showDeletePrompt = true" :disabled="isCancelling"
+            class="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer">
             <span v-if="isCancelling"
               class="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin"></span>
             <span v-else class="material-symbols-outlined text-[16px]">delete_forever</span>
@@ -374,3 +483,15 @@ const qrStatusColor = (status: string) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

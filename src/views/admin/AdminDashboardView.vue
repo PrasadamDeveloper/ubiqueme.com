@@ -138,7 +138,13 @@
                     <span class="material-symbols-outlined text-[14px]">workspace_premium</span>
                     Plan
                   </button>
-                  <button @click="addFreeTrial(user)" v-tooltip="'Agregar prueba gratuita de 30 días'"
+                  <button v-if="hasActiveTrial(user.uid)" @click="endFreeTrial(user)"
+                    v-tooltip="'Finalizar prueba gratuita antes de tiempo'"
+                    class="h-9 px-3 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer">
+                    <span class="material-symbols-outlined text-[14px]">cancel</span>
+                    Terminar Trial
+                  </button>
+                  <button v-else @click="addFreeTrial(user)" v-tooltip="'Agregar prueba gratuita de 30 días'"
                     class="h-9 px-3 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/60 hover:bg-[#ff7900]/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer">
                     <span class="material-symbols-outlined text-[14px]">rocket_launch</span>
                     Trial
@@ -510,8 +516,33 @@ const addFreeTrial = async (user: IUser) => {
   }
 }
 
-const removeFreeTrial = async (_user: IUser) => {
-  toast.info('Para remover un trial, cancele la suscripción.');
+const hasActiveTrial = (userId: string): boolean => {
+  const subs = getUserSubscriptions(userId);
+  return subs.some(s => s.planType === 'trial' && s.status === 'active');
+}
+
+const endFreeTrial = async (user: IUser) => {
+  if (!user.uid) return;
+
+  const subs = getUserSubscriptions(user.uid);
+  const activeTrial = subs.find(s => s.planType === 'trial' && s.status === 'active');
+  if (!activeTrial) {
+    toast.error('El usuario no tiene un trial activo para terminar.');
+    return;
+  }
+
+  try {
+    const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${activeTrial.id}`);
+    await runTransaction(firestoreDb, async (transaction) => {
+      transaction.update(subRef, {
+        status: 'canceled',
+        cancelReason: 'Trial finalizado por el Administrador'
+      });
+    });
+    toast.success(`Trial finalizado para ${user.name}`);
+  } catch (error) {
+    toast.error(`Error al finalizar trial: ${error}`);
+  }
 }
 
 const cancelUserPlan = async () => {

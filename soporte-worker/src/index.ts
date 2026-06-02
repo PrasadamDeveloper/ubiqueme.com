@@ -277,6 +277,44 @@ export default {
 			}
 		}
 
+		// ── POST /api/account-deletion (notify account cancellation) ──
+		if (url.pathname === '/api/account-deletion') {
+			let body: Record<string, string>;
+			try {
+				body = await request.json<Record<string, string>>();
+			} catch {
+				return json({ error: 'Invalid JSON' }, 400);
+			}
+
+			const fields = {
+				'UID Firebase': body.firebaseUid || 'N/A',
+				'Correo del usuario': body.email || 'N/A',
+				'Nombre del usuario': body.userName || 'N/A',
+				Motivo: body.reason || 'N/A',
+				'Detalle adicional': body.customReason || 'N/A',
+			};
+
+			try {
+				const resend = new Resend(env.RESEND_API_KEY);
+				const notifResult = await resend.emails.send({
+					from: 'Ubiqueme <soporte@ubiqueme.com>',
+					to: ['informes@prasadam.mx'],
+					subject: 'Solicitud de cancelación de cuenta',
+					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Solicitud de cancelación de cuenta', fields)),
+				});
+
+				if (notifResult.error) {
+					console.error('Resend error:', notifResult.error);
+					return json({ error: 'Failed to send email' }, 500);
+				}
+
+				return json({ success: true });
+			} catch (error) {
+				console.error('Resend error:', error);
+				return json({ error: 'Failed to send email' }, 500);
+			}
+		}
+
 		// ── POST /api/physical-request (notify QR shipment) ──
 		if (url.pathname === '/api/physical-request') {
 			let body: Record<string, string>;
