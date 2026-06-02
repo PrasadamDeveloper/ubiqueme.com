@@ -11,7 +11,7 @@
 	"send_email": [
 		{
 			"name": "SEND_EMAIL",
-			"destination_address": "shykandev@gmail.com",
+			"destination_address": "informes@prasadam.mx",
 		},
 	],
 }

@@ -210,6 +210,6 @@ export default {
 	},
 
 	async email(message: ForwardableEmailMessage, env, ctx): Promise<void> {
-		await message.forward('shykandev@gmail.com');
+		await message.forward('informes@prasadam.mx');
 	},
 } satisfies ExportedHandler<Env>;
