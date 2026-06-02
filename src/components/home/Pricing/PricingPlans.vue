@@ -135,9 +135,15 @@ const plans = [
 
         <!-- Price -->
         <div class="mb-8 pb-8 border-b border-white/[0.06]">
+          <!-- ANNUAL badge -->
+          <div
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-orange-500/30 bg-orange-500/15 text-orange-400 text-[10px] font-black uppercase tracking-[0.25em] mb-3 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
+            <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+            ANUAL
+          </div>
           <div class="flex items-baseline gap-2">
             <span class="text-5xl font-black text-white tracking-tighter">{{ plan.price }}</span>
-            <span class="text-white/20 text-xs font-black uppercase tracking-widest">/año</span>
+            <span class="text-orange-400/70 text-sm font-black uppercase tracking-widest">/año</span>
           </div>
           <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-2">{{ plan.priceNote }}</p>
         </div>

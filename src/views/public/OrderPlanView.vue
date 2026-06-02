@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import HomeLayout from '@/layouts/HomeLayout.vue'
+import { toast } from 'vue-sonner'
 
 const route = useRoute()
 const router = useRouter()
@@ -86,23 +87,8 @@ const currentPlan = computed(() => plans.find(p => p.id === selectedPlan.value))
 
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || 'http://localhost:8787'
 
-const errorMsg = ref('')
-const toastVisible = ref(false)
-const toastMessage = ref('')
-const toastType = ref<'success' | 'error'>('success')
-let toastTimer: ReturnType<typeof setTimeout> | null = null
-
-const showToast = (message: string, type: 'success' | 'error') => {
-  toastMessage.value = message
-  toastType.value = type
-  toastVisible.value = true
-  if (toastTimer) clearTimeout(toastTimer)
-  toastTimer = setTimeout(() => { toastVisible.value = false }, 4000)
-}
-
 const handleSubmit = async () => {
   isSubmitting.value = true
-  errorMsg.value = ''
   try {
     const res = await fetch(`${WORKER_URL}/api/purchase-request`, {
       method: 'POST',
@@ -117,11 +103,11 @@ const handleSubmit = async () => {
       }),
     })
     if (!res.ok) throw new Error('Error al enviar la solicitud')
-    showToast('Solicitud enviada correctamente', 'success')
+    toast.success('Solicitud enviada correctamente')
     isSuccess.value = true
   } catch (e) {
-    errorMsg.value = e instanceof Error ? e.message : 'Error de conexión'
-    showToast(errorMsg.value, 'error')
+    const msg = e instanceof Error ? e.message : 'Error de conexión'
+    toast.error(msg)
   } finally {
     isSubmitting.value = false
   }
@@ -144,22 +130,6 @@ const handleSubmit = async () => {
           class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#ff7900]/5 rounded-full blur-[120px] pointer-events-none">
         </div>
 
-        <!-- Toast -->
-        <Teleport to="body">
-          <Transition enter-from-class="opacity-0 translate-y-2" enter-active-class="transition-all duration-300"
-            leave-active-class="transition-all duration-300" leave-to-class="opacity-0 translate-y-2">
-            <div v-if="toastVisible"
-              class="fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl border shadow-lg text-sm font-medium"
-              :class="toastType === 'success' ? 'bg-[#0d1f0d] border-[#2e7d32]/40 text-[#81c784]' : 'bg-[#1f0d0d] border-[#d32f2f]/40 text-[#ef9a9a]'">
-              <span class="material-symbols-outlined text-lg">{{ toastType === 'success' ? 'check_circle' : 'error'
-                }}</span>
-              <span>{{ toastMessage }}</span>
-              <button @click="toastVisible = false" class="ml-2 opacity-50 hover:opacity-100 transition cursor-pointer">
-                <span class="material-symbols-outlined text-lg">close</span>
-              </button>
-            </div>
-          </Transition>
-        </Teleport>
 
         <div class="relative z-10 pt-24 pb-20 px-4 sm:px-6">
           <div class="max-w-5xl mx-auto">
@@ -314,7 +284,7 @@ const handleSubmit = async () => {
                 <h2 class="text-3xl font-black text-white tracking-tight">Suscripción en proceso</h2>
                 <p class="text-white/40 text-sm leading-relaxed max-w-xs mx-auto">
                   Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-white">{{ formData.email
-                  }}</strong>.
+                    }}</strong>.
                 </p>
               </div>
               <button @click="router.push('/')"

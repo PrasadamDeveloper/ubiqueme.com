@@ -13,7 +13,7 @@
           class="relative z-10 w-full max-w-md bg-white/5 border border-white/10 rounded-3xl p-8 sm:p-12 text-center flex flex-col items-center">
 
           <div
-            class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(123,208,255,0.3)]">
+            class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(249,115,22,0.3)]">
             <span class="text-black font-black text-3xl">U</span>
           </div>
 
@@ -22,7 +22,7 @@
           </h1>
 
           <div v-if="status === 'loading'" class="flex flex-col items-center mt-6 space-y-4">
-            <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin"></div>
+            <div class="w-12 h-12 border-4 border-white/10 border-t-orange-500 rounded-full animate-spin"></div>
             <p class="text-white/50 text-sm font-medium tracking-widest uppercase mt-4">Validando credenciales...</p>
           </div>
 
@@ -36,7 +36,7 @@
               gestionar sus QRs con total libertad.
             </p>
             <RouterLink to="/login"
-              class="w-full mt-4 h-14 bg-white text-black rounded-2xl font-black text-base transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] flex items-center justify-center gap-2">
+              class="w-full mt-4 h-14 bg-white text-black rounded-2xl font-black text-base transition-all duration-300 hover:bg-orange-500 hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] flex items-center justify-center gap-2">
               <span>Ir al Login</span>
               <span class="material-symbols-outlined font-black text-xl">arrow_forward</span>
             </RouterLink>

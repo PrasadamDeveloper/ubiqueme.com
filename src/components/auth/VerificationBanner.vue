@@ -1,28 +1,29 @@
 <template>
-  <div class="w-full bg-primary/5 border border-primary/20 rounded-3xl p-8 flex flex-col items-center text-center space-y-5 animate-fade-in">
-    <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 shadow-[0_0_30px_rgba(123,208,255,0.15)]">
+  <div
+    class="w-full bg-primary/5 border border-primary/20 rounded-3xl p-8 flex flex-col items-center text-center space-y-5 animate-fade-in">
+    <div
+      class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 shadow-[0_0_30px_rgba(123,208,255,0.15)]">
       <span class="material-symbols-outlined text-primary text-3xl">mark_email_unread</span>
     </div>
 
     <div class="space-y-2">
       <h3 class="text-white font-black text-2xl tracking-tight">Sólo un paso más</h3>
       <p class="text-white/60 text-sm font-medium leading-relaxed px-2">
-        Por favor verifique su cuenta haciendo clic en el enlace que enviamos a su correo. Si no lo encuentra, recuerde revisar su carpeta de spam.
+        Por favor verifique su cuenta haciendo clic en el enlace que enviamos a su correo. Si no lo encuentra, recuerde
+        revisar su carpeta de spam.
       </p>
     </div>
 
-    <!-- Resend Button -->
-    <div class="w-full pt-2 border-t border-white/5 flex flex-col items-center gap-3">
-      <button
-        @click="handleResend"
-        :disabled="loading || cooldown > 0"
+    <!-- Resend Button (only when credentials are available) -->
+    <div v-if="hasCredentials" class="w-full pt-2 border-t border-white/5 flex flex-col items-center gap-3">
+      <button @click="handleResend" :disabled="loading || cooldown > 0"
         class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 border"
         :class="cooldown > 0
           ? 'bg-white/[0.02] border-white/5 text-white/20 cursor-not-allowed'
-          : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 active:scale-95'"
-      >
+          : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 active:scale-95'">
         <!-- Spinner while loading -->
-        <span v-if="loading" class="w-3.5 h-3.5 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></span>
+        <span v-if="loading"
+          class="w-3.5 h-3.5 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></span>
         <!-- Email icon when idle -->
         <span v-else class="material-symbols-outlined text-[16px]">forward_to_inbox</span>
 
@@ -33,6 +34,13 @@
 
       <p v-if="cooldown > 0" class="text-[10px] text-white/20 font-medium">
         Revisa tu bandeja de entrada y carpeta de spam.
+      </p>
+    </div>
+
+    <!-- Message when no credentials (user came via Google) -->
+    <div v-else class="w-full pt-2 border-t border-white/5 flex flex-col items-center gap-3">
+      <p class="text-white/40 text-sm font-medium leading-relaxed">
+        Para reenviar el correo de verificación, debe iniciar sesión con correo y contraseña.
       </p>
     </div>
   </div>
@@ -47,6 +55,7 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   loading: boolean
+  hasCredentials?: boolean
 }>()
 
 // Cooldown para evitar spam: 60 segundos entre reenvíos
@@ -85,6 +94,7 @@ onUnmounted(() => {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

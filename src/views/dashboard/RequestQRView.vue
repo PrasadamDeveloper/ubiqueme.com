@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
@@ -18,7 +18,19 @@ const qrNameInput = ref('')
 const qrCategory = ref('vehicle')
 const requestType = ref<'digital' | 'physical'>('digital')
 const qrLayout = ref<'compact' | 'detail'>('compact')
-const qrSize = ref('SM (5cm)')
+const compactSizes = ['XS (3×3cm)', 'SM (5×5cm)', 'MD (10×10cm)', 'LG (15×15cm)']
+const detailSizes = ['SM (5×8cm)', 'MD (8×12cm)', 'LG (10×15cm)']
+
+const qrSize = ref('SM (5×5cm)')
+const availableSizes = computed(() => qrLayout.value === 'compact' ? compactSizes : detailSizes)
+
+// Auto-reset size when layout changes to a valid option
+watch(qrLayout, (newLayout) => {
+  const sizes = newLayout === 'compact' ? compactSizes : detailSizes
+  if (!sizes.includes(qrSize.value)) {
+    qrSize.value = sizes[0]
+  }
+})
 const gluePosition = ref<'frontal' | 'trasero'>('trasero')
 const isSubmitting = ref(false)
 
@@ -369,8 +381,7 @@ const handleSubmit = async () => {
                 Tamaño de Impresión
               </label>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button v-for="size in ['XS (3cm)', 'SM (5cm)', 'MD (10cm)', 'LG (15cm)']" :key="size"
-                  @click="qrSize = size"
+                <button v-for="size in availableSizes" :key="size" @click="qrSize = size"
                   class="h-12 rounded-xl border text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                   :class="qrSize === size ? 'border-orange-500/40 bg-orange-500/10 text-orange-400 shadow-[0_0_20px_rgba(249,115,22,0.15)]' : 'border-white/10 bg-black/40 text-white/50 hover:border-white/30'">
                   {{ size }}

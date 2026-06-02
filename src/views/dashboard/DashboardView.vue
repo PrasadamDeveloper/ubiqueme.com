@@ -88,7 +88,7 @@ const changeComponent = (component: ComponentName) => {
           </div>
 
           <!-- Request QR Button -->
-          <button @click="router.push({ name: 'request-qr' })"
+          <button @click="router.push({ name: 'dashboard' })"
             class="mb-4 w-full flex items-center cursor-pointer transition-all duration-300 rounded-2xl px-3 py-3 gap-3 border border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/15 hover:border-orange-500/40 group overflow-hidden">
             <span class="material-symbols-outlined text-orange-400 text-[22px] flex-shrink-0">add_circle</span>
             <span v-if="hoverOnSideBar"
@@ -120,7 +120,7 @@ const changeComponent = (component: ComponentName) => {
             <span class="text-[9px] font-bold tracking-tight uppercase">{{ btn.label }}</span>
           </button>
           <!-- Request QR Shortcut (mobile) -->
-          <button @click="router.push({ name: 'request-qr' })"
+          <button @click="router.push({ name: 'dashboard' })"
             class="flex flex-col items-center justify-center text-center gap-1 cursor-pointer transition-all duration-300 w-12 h-12 rounded-xl active:scale-95 text-orange-400">
             <span class="material-symbols-outlined text-[22px]">add_circle</span>
             <span class="text-[9px] font-bold tracking-tight uppercase">QR</span>

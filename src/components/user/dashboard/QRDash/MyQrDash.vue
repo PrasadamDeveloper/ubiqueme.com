@@ -189,7 +189,12 @@
         <div v-else key="empty" class="flex flex-col items-center justify-center py-20 text-center w-full">
           <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">account_balance_wallet</span>
           <h3 class="text-xl font-semibold text-white mb-2">No tiene suscripciones activas</h3>
-          <p class="text-slate-400">Adquiera un plan para poder registrar códigos QR.</p>
+          <p class="text-slate-400 mb-6">Adquiera un plan para poder registrar códigos QR.</p>
+          <RouterLink to="/pricing"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-500 text-black font-black text-xs uppercase tracking-widest hover:bg-orange-400 transition-all">
+            <span class="material-symbols-outlined text-sm">workspace_premium</span>
+            Ver Planes
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -205,8 +210,7 @@ import { useUserStore } from '@/stores/user'
 import QRCard from './QRCard.vue'
 import RequestQROverlay from './RequestQROverlay.vue'
 import { onMounted, onUnmounted, ref, computed } from 'vue'
-import { collection, getFirestore, onSnapshot, Timestamp, doc, runTransaction, increment, writeBatch } from 'firebase/firestore'
-import QRCardSkeleton from '@/components/ui/user/dashboard/QRCardSkeleton.vue'
+import { collection, getFirestore, onSnapshot, Timestamp, doc, increment, writeBatch } from 'firebase/firestore'
 import { useImageStore } from '@/stores/imageStore'
 
 import type { IMyQR } from '@/interfaces/IMyQR'
@@ -237,92 +241,6 @@ const groupedQRs = computed(() => {
   }))
 })
 
-//Add QR doc to user ATENTION THIS MUST BE ONLY FOR ADMIN ITS CREATED HERE FOR TEST PURPOUSE ONLY
-const createQR = async () => {
-  try {
-    const { getDocs, collection } = await import('firebase/firestore');
-    const subsSnapshot = await getDocs(collection(db, `users/${userId}/subscriptions`));
-    const activeSubDoc = subsSnapshot.docs.find(d => {
-      const data = d.data();
-      return data.status === 'active' && data.totalQRsCreated < data.totalQRsAllowed;
-    });
-
-    if (!activeSubDoc) {
-      toast.error('Límite alcanzado o sin suscripción activa. Por favor, adquiera o actualice un plan para registrar más QRs.');
-      return;
-    }
-
-    const subId = activeSubDoc.id;
-
-    await runTransaction(db, async (transaction) => {
-      const subRef = doc(db, `users/${userId}/subscriptions/${subId}`);
-      const subDocTx = await transaction.get(subRef);
-      if (!subDocTx.exists()) throw new Error("Subscription not found.");
-      const subData = subDocTx.data();
-      if (subData.totalQRsCreated >= subData.totalQRsAllowed) {
-        throw new Error("La suscripción seleccionada ya no tiene capacidad.");
-      }
-
-      const newQRId = nanoid(15);
-      const publicQrRef = doc(db, `publicQR/${newQRId}`);
-      const userQrRef = doc(db, `users/${userId}/qrs/${newQRId}`);
-
-      const qrDoc = await transaction.get(publicQrRef);
-      if (qrDoc.exists()) {
-        throw new Error("Colisión de ID. La transacción se cancelará y puede reintentar.");
-      }
-
-      transaction.set(publicQrRef, {
-        id: newQRId,
-        name: 'Nuevo QR (Prueba)',
-        status: 'Active',
-        lastScan: null,
-        totalScans: 0,
-        isBanned: false,
-        banReason: '',
-        docId: newQRId,
-        uid: userId,
-        tier: 'free',
-        createdAt: Timestamp.now(),
-        freeShipmentUsed: false // Al crear, usa el envío gratuito si está disponible
-
-      });
-
-      transaction.set(userQrRef, {
-        id: newQRId,
-        uid: userId,
-        name: 'Nuevo QR (Prueba)',
-        status: 'Active',
-        scans: 0,
-        lastScan: "",
-        isActive: true,
-        isBanned: false,
-        banReason: '',
-        subscriptionId: subId,
-        createdAt: Timestamp.now(),
-        physicalShipped: false,
-        physicalShippedAt: null,
-        shippingNotes: '',
-        freeShipmentUsed: false
-      });
-
-      const userRootRef = doc(db, `users/${userId}`);
-      transaction.update(userRootRef, {
-        totalQRs: increment(1)
-      });
-
-      transaction.update(subRef, {
-        totalQRsCreated: increment(1)
-      });
-
-    });
-
-    toast.success("¡QR creado con éxito atómicamente y asignado a la suscripción!");
-  } catch (error) {
-    toast.error(`Fallo al crear el QR: ${error}`);
-  }
-}
-
 const selectedSubscription = ref<ISubscription | null>(null);
 
 // Physical QR Overlay state
@@ -347,14 +265,12 @@ const overlayQrs = computed(() => {
 
 //Limit Reached
 const showLimitReached = ref(false);
-const toggleLimitReached = () => {
-  showLimitReached.value = !showLimitReached.value;
-}
 //Show QR creation modal function and variable
 const showCreateQRModal = ref(false);
 const newQrName = ref('');
 const selectedCategory = ref('other');
 const toggleCreateQrModal = async (e: ISubscription) => {
+  showLimitReached.value = false;
   showCreateQRModal.value = !showCreateQRModal.value;
   if (!e.id) {
     toast.error('Suscripción no válida para asignar QR. Por favor, intente nuevamente.');
@@ -426,7 +342,17 @@ const createQRForSubscription = async () => {
       totalQRsCreated: increment(1)
     })
     batch.set(publicDocRef, {
-      ...qrData
+      id: randomId,
+      name: qrData.name,
+      category: qrData.category,
+      status: qrData.status,
+      lastScan: qrData.lastScan,
+      totalScans: qrData.scans,
+      isBanned: qrData.isBanned,
+      banReason: qrData.banReason,
+      uid: userStore.getUserId,
+      tier: selectedSubscription.value.planType ?? 'free',
+      createdAt: qrData.createdAt
     })
 
     await batch.commit();

@@ -2,6 +2,9 @@
 import { useUserStore } from '@/stores/user';
 import { RouterLink, useRouter } from 'vue-router'
 import { onMounted, onUnmounted, ref } from 'vue';
+import { useAuth } from '@/handleAuth'
+
+const { handleLogout } = useAuth()
 
 const navLinks = [
   { name: 'Inicio', pathName: 'home', icon: 'home' },
@@ -65,7 +68,7 @@ onUnmounted(() => {
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
             <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{
               link.icon
-              }}</span>
+            }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
 
             <!-- Indicator Line -->
@@ -82,11 +85,11 @@ onUnmounted(() => {
             <span class="material-symbols-outlined text-sm">dashboard</span>
             Ir al Dashboard del usuario
           </RouterLink>
-          <RouterLink :to="{ name: 'home' }"
+          <button @click="handleLogout"
             class="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
             <span class="material-symbols-outlined text-sm">logout</span>
             Salir del Panel
-          </RouterLink>
+          </button>
         </div>
 
         <!-- Hamburger Button (Mobile Only) -->
@@ -113,11 +116,11 @@ onUnmounted(() => {
 
           <!-- Actions -->
           <div class="flex flex-col gap-4 mt-auto">
-            <RouterLink :to="{ name: 'home' }" @click="isMobileMenuOpen = false"
+            <button @click="handleLogout; isMobileMenuOpen = false"
               class="w-full flex items-center justify-center bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 hover:text-[#09090b] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
               <span class="material-symbols-outlined text-sm">logout</span>
               Salir del Panel
-            </RouterLink>
+            </button>
           </div>
         </div>
       </Transition>

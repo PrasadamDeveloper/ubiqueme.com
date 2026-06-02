@@ -121,6 +121,9 @@ const handleCredentialResponse = async (response: any) => {
       })
     }
 
+    userStore.setUserId(user.uid)
+    userStore.setEmail(user.email || '')
+    userStore.setFullName(user.displayName || '')
     toast.success(`Identificado como ${user.email}`)
     await sendMessageToAPI()
   } catch (error: any) {
@@ -429,12 +432,12 @@ onUnmounted(() => {
                   <div class="space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Serial ID</label>
                     <p class="font-mono text-orange-500 text-sm tracking-widest">{{ qrId.substring(0, 10).toUpperCase()
-                    }}</p>
+                      }}</p>
                   </div>
                   <div class="space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Historial</label>
                     <p class="text-white font-black text-sm uppercase italic tracking-tight">{{ qrData?.totalScans || 0
-                    }} Escaneos totales</p>
+                      }} Escaneos totales</p>
                   </div>
                   <div class="col-span-2 pt-4 border-t border-white/5 flex items-center gap-4">
                     <div class="flex-1 h-[1px] bg-white/5"></div>

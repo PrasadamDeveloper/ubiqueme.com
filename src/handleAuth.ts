@@ -12,7 +12,7 @@ export const useAuth = () => {
     try {
       await signOut(firebaseAuth)
       userStore.clearUser()
-      router.push({ name: 'login' })
+      router.push({ name: 'home' })
     } catch (error) {
       toast.error(`Error while attempting to logout: ${error}`)
     }

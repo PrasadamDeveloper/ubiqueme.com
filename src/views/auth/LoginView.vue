@@ -119,7 +119,7 @@
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
-                      }}</span>
+                        }}</span>
                     </button>
                   </div>
                 </div>
@@ -171,7 +171,8 @@
             </template>
 
             <template v-else>
-              <VerificationBanner :loading="resendLoading" @resend="resendVerification" />
+              <VerificationBanner :loading="resendLoading" :hasCredentials="!!(form.email && form.password)"
+                @resend="resendVerification" />
               <button @click="emailVerified = true"
                 class="w-full mt-6 h-14 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-sm transition-all duration-300 hover:bg-white/10 flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-lg">arrow_back</span>
@@ -192,6 +193,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
 import VerificationBanner from '@/components/auth/VerificationBanner.vue'
 import { signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, sendEmailVerification } from 'firebase/auth'
 import { doc, getFirestore, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
+import { nanoid } from 'nanoid'
 import { auth, db as firestoreDb } from '@/firebase'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
@@ -297,11 +299,6 @@ const handleGoogleAuth = async () => {
         isActive: true,
         isBanned: false,
         banReason: '',
-        plan: 'alpha',
-        subscriptionStatus: 'active',
-        planPurchasedAt: Timestamp.now(),
-        planEndDate: null,
-        paymentProviderId: '',
         totalQRs: 0,
         preferences: {
           emailNotifications: false,
@@ -311,6 +308,22 @@ const handleGoogleAuth = async () => {
         lastLoginAt: Timestamp.now(),
         createdAt: Timestamp.now(),
       })
+
+      const subId = nanoid(15)
+      batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
+        id: subId,
+        userId: user.uid,
+        planType: 'bronce',
+        status: 'active',
+        purchasedAt: Timestamp.now(),
+        endDate: null,
+        paymentProviderId: '',
+        totalQRsAllowed: 1,
+        totalQRsCreated: 0,
+        freeShipmentsAllowed: 1,
+        freeShipmentsUsed: 0
+      })
+
       await batch.commit()
     }
 
