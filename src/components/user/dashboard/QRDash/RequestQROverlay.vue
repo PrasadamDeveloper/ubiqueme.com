@@ -155,8 +155,30 @@ const handleConfirm = async () => {
 
     await batch.commit()
 
-    // TODO: Enviar correo de confirmación de solicitud de envío físico
-    // El worker de email verificará el estado del pedido y enviará notificación
+    // ── Notificar al worker de soporte ──────────────────────
+    const soporteUrl = import.meta.env.VITE_SOPORTE_WORKER_URL
+    if (soporteUrl) {
+      const selectedQrs = props.qrs.filter(qr => selectedQRIds.value.has(qr.id))
+      const qrDetails = selectedQrs.map(qr => {
+        const cust = getQrCust(qr.id)
+        return `${qr.name} (#${qr.id}) → ${cust.layout}/${cust.size}/${cust.gluePosition === 'frontal' ? 'pegamento frontal' : 'pegamento trasero'}`
+      })
+      const cost = hasFreeShipment.value ? 'Gratis (primer envío incluido en el plan)' : '$199 MXN'
+
+      fetch(`${soporteUrl}/api/physical-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firebaseUid: userId,
+          email: userStore.getEmail,
+          userName: userStore.getFullName,
+          planType: props.subscription.planType,
+          qrIds: Array.from(selectedQRIds.value).join(', '),
+          cost,
+          notes: qrDetails.join('\n'),
+        }),
+      }).catch(err => console.error('Error notificando al worker:', err))
+    }
 
     toast.success(
       hasFreeShipment.value
