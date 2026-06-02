@@ -238,6 +238,20 @@
                     <div class="text-[9px] text-white/20 font-mono">
                       Proveedor: {{ sub.paymentProviderId ?? 'N/A' }}
                     </div>
+
+                    <!-- Actions per subscription -->
+                    <div class="flex items-center gap-2 pt-1">
+                      <button v-if="sub.status === 'active'" @click="cancelSubscription(sub.id, sub.userId)"
+                        class="flex-1 h-8 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer">
+                        <span class="material-symbols-outlined text-[12px]">block</span>
+                        Cancelar
+                      </button>
+                      <button v-if="sub.status === 'canceled'" @click="renewSubscription(sub)"
+                        class="flex-1 h-8 rounded-xl border border-green-500/15 bg-green-500/5 text-green-400/80 hover:bg-green-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer">
+                        <span class="material-symbols-outlined text-[12px]">refresh</span>
+                        Renovar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -542,6 +556,56 @@ const endFreeTrial = async (user: IUser) => {
     toast.success(`Trial finalizado para ${user.name}`);
   } catch (error) {
     toast.error(`Error al finalizar trial: ${error}`);
+  }
+}
+
+const cancelSubscription = async (subId: string, userId: string) => {
+  try {
+    const subRef = doc(firestoreDb, `users/${userId}/subscriptions/${subId}`);
+    await runTransaction(firestoreDb, async (transaction) => {
+      transaction.update(subRef, {
+        status: 'canceled',
+        cancelReason: 'Cancelado por el Administrador'
+      });
+    });
+    toast.success('Suscripción cancelada exitosamente');
+  } catch (error) {
+    toast.error(`Error al cancelar suscripción: ${error}`);
+  }
+}
+
+const renewSubscription = async (sub: ISubscription) => {
+  try {
+    const now = new Date();
+    const endDate = new Date(now);
+    if (sub.planType === 'trial') {
+      endDate.setMonth(endDate.getMonth() + 1);
+    } else {
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    }
+
+    const newSubId = nanoid(15);
+    const newSubRef = doc(firestoreDb, `users/${sub.userId}/subscriptions/${newSubId}`);
+
+    await runTransaction(firestoreDb, async (transaction) => {
+      transaction.set(newSubRef, {
+        id: newSubId,
+        userId: sub.userId,
+        planType: sub.planType,
+        status: 'active',
+        purchasedAt: Timestamp.fromDate(now),
+        endDate: Timestamp.fromDate(endDate),
+        paymentProviderId: 'admin',
+        totalQRsAllowed: sub.totalQRsAllowed,
+        totalQRsCreated: 0,
+        freeShipmentsAllowed: 1,
+        freeShipmentsUsed: 0
+      });
+    });
+
+    toast.success(`Suscripción ${sub.planType} renovada exitosamente`);
+  } catch (error) {
+    toast.error(`Error al renovar suscripción: ${error}`);
   }
 }
 
