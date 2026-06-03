@@ -15,7 +15,7 @@
     <div
       class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-8 animate-fade-up">
       <div>
-        <p class="text-amber-500 font-black tracking-[0.4em] text-[10px] uppercase mb-2">Gestión de Activos</p>
+        <p class="text-orange-400 font-black tracking-[0.4em] text-[10px] uppercase mb-2">Gestión de Activos</p>
         <h2 class="text-4xl md:text-5xl font-black tracking-tighter leading-none italic">
           Códigos QR
         </h2>
@@ -28,7 +28,7 @@
 
       <!-- Botón de admin/test (Crear QR) -->
       <RouterLink to="/admin"
-        class="bg-cyan-700 text-white px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer">
+        class="bg-orange-600/20 text-orange-400 border border-orange-500/20 px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer hover:bg-orange-600/30 transition-colors">
         Ir al panel de admin
       </RouterLink>
     </div>
@@ -121,19 +121,19 @@
               @close="showLimitReached = false" />
             <!-- Subscription Header -->
             <div
-              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
+              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#0f0f11] border border-white/5 p-5 rounded-2xl">
               <div>
                 <div class="flex items-center gap-3 mb-1">
                   <h3 class="text-xl font-bold capitalize text-white">
                     Plan {{ group.subscription.planType }}
                   </h3>
                   <span
-                    :class="group.subscription.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'"
+                    :class="group.subscription.status === 'active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-white/10 text-white/50 border-white/10'"
                     class="px-2.5 py-0.5 rounded-full border text-[10px] font-black uppercase tracking-widest">
                     {{ group.subscription.status }}
                   </span>
                 </div>
-                <p class="text-[12px] text-white/40 font-mono">
+                <p class="text-[12px] text-white/30 font-mono">
                   ID: {{ group.subscription.id }}
                 </p>
               </div>
@@ -149,13 +149,13 @@
                 </div>
                 <button @click="toggleCreateQrModal(group.subscription)"
                   v-tooltip="{ content: `Usted puede crear ${group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated} QRs más en este plan` }"
-                  class="mt-2.5 flex items-center bg-[#ca5400] hover:bg-[#E07010] active:scale-95 active:bg-[#c6630d]
-         text-white text-sm font-medium font-['Google_Sans']
-         px-4 py-2 rounded-md
-         transition-colors duration-150 cursor-pointer">
+                  class="mt-2.5 flex items-center bg-orange-600 hover:bg-orange-500 active:scale-[0.98]
+         text-white text-sm font-medium
+         px-4 py-2 rounded-xl
+         transition-all duration-150 cursor-pointer">
                   <span class="material-symbols-outlined text-sm">add</span>
                   Asignar QR
-                  <span class="ml-1.5 text-white/70 text-[10px] ">
+                  <span class="ml-1.5 text-white/60 text-[10px]">
                     ({{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }} restantes)
                   </span>
                 </button>
