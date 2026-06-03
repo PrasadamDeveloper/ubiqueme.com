@@ -149,10 +149,11 @@
                 </div>
                 <button @click="toggleCreateQrModal(group.subscription)"
                   v-tooltip="{ content: `Usted puede crear ${group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated} QRs más en este plan` }"
-                  class="mt-2.5 bg-[#702F02] hover:bg-[#E07010] active:scale-95 active:bg-[#c6630d]
+                  class="mt-2.5 flex items-center bg-[#ca5400] hover:bg-[#E07010] active:scale-95 active:bg-[#c6630d]
          text-white text-sm font-medium font-['Google_Sans']
          px-4 py-2 rounded-md
          transition-colors duration-150 cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">add</span>
                   Asignar QR
                   <span class="ml-1.5 text-white/70 text-[10px] ">
                     ({{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }} restantes)

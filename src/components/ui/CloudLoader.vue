@@ -1,7 +1,7 @@
 <style scoped>
 .loader {
-  --cloud-color: #4387f4;
-  --arrows-color: #80b1ff;
+  --cloud-color: #c86e00;
+  --arrows-color: #fffefc;
   --time-animation: 1s;
   transform: scale(1);
   /* You can change the size */

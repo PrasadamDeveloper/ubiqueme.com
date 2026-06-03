@@ -168,9 +168,9 @@ const formatDate = (timestamp: any) => {
 }
 
 const qrStatusColor = (status: string) => {
-  if (status === 'Active') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-  if (status === 'Paused') return 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-  return 'bg-red-500/10 text-red-400 border-red-500/20'
+  if (status === 'Active') return 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+  if (status === 'Paused') return 'bg-white/10 text-white/50 border-white/10'
+  return 'bg-white/5 text-white/30 border-white/10'
 }
 </script>
 
@@ -207,8 +207,8 @@ const qrStatusColor = (status: string) => {
         <div class="lg:col-span-1 bg-[#0f0f11] rounded-2xl border border-white/5 p-6">
           <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
             <div
-              class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined text-sky-400 text-lg">badge</span>
+              class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-orange-400 text-lg">badge</span>
             </div>
             <div>
               <h3 class="text-white text-sm font-semibold">Identidad</h3>
@@ -263,8 +263,8 @@ const qrStatusColor = (status: string) => {
           <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
             <div class="flex items-center gap-3">
               <div
-                class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 flex items-center justify-center">
-                <span class="material-symbols-outlined text-purple-400 text-lg">qr_code_2</span>
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-orange-400 text-lg">qr_code_2</span>
               </div>
               <div>
                 <h3 class="text-white text-sm font-semibold">Mis Códigos QR</h3>
@@ -307,8 +307,8 @@ const qrStatusColor = (status: string) => {
       <div class="bg-[#0f0f11] rounded-2xl border border-white/5 p-6">
         <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
           <div
-            class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 flex items-center justify-center">
-            <span class="material-symbols-outlined text-green-400 text-lg">workspace_premium</span>
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
+            <span class="material-symbols-outlined text-orange-400 text-lg">workspace_premium</span>
           </div>
           <div>
             <h3 class="text-white text-sm font-semibold">Planes y Suscripción</h3>
@@ -328,7 +328,7 @@ const qrStatusColor = (status: string) => {
                 <div class="flex items-center gap-2">
                   <p class="text-white font-semibold capitalize">{{ sub.planType }}</p>
                   <span
-                    :class="sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'"
+                    :class="sub.status === 'active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-white/10 text-white/50 border-white/10'"
                     class="px-2 py-0.5 rounded-full border text-[9px] font-black uppercase tracking-widest">
                     {{ sub.status }}
                   </span>
@@ -366,8 +366,8 @@ const qrStatusColor = (status: string) => {
         <div class="lg:col-span-2 bg-[#0f0f11] rounded-2xl border border-white/5 p-6">
           <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
             <div
-              class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500/10 to-rose-600/5 border border-rose-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined text-rose-400 text-lg">lock</span>
+              class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-orange-400 text-lg">lock</span>
             </div>
             <div>
               <h3 class="text-white text-sm font-semibold">Seguridad</h3>
@@ -381,9 +381,9 @@ const qrStatusColor = (status: string) => {
               <p class="text-[11px] text-gray-500 mt-0.5">Se enviará un enlace a tu correo electrónico</p>
             </div>
             <button @click="handleResetPassword" :disabled="isResettingPassword"
-              class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-600/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600/20 hover:border-rose-500/40 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2">
+              class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-orange-600/10 border border-orange-500/20 text-orange-400 hover:bg-orange-600/20 hover:border-orange-500/40 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2">
               <span v-if="isResettingPassword"
-                class="w-4 h-4 border-2 border-rose-400/30 border-t-rose-400 rounded-full animate-spin"></span>
+                class="w-4 h-4 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin"></span>
               <span v-else class="material-symbols-outlined text-[16px]">send</span>
               Enviar enlace
             </button>

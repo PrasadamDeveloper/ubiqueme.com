@@ -2,7 +2,7 @@
 .line-wobble {
   --uib-size: 80px;
   --uib-speed: 1.55s;
-  --uib-color: rgb(0, 102, 175);
+  --uib-color: rgb(223, 123, 30);
   --uib-line-weight: 5px;
   position: relative;
   display: flex;

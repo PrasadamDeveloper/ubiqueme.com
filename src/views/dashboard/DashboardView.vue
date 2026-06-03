@@ -5,6 +5,7 @@ import MainLoader from '@/components/ui/MainLoader.vue'
 import { useAuth } from '@/handleAuth'
 import { defineAsyncComponent, ref, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user.ts'
 
 const router = useRouter()
 
@@ -72,12 +73,14 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 🚀 SIDEBAR (OVERLAY MODE) - Desktop Only -->
         <aside @mouseenter="handleSideBarHover" @mouseleave="handleSideBarLeave"
-          :class="{ 'w-[260px]': hoverOnSideBar, 'w-24': !hoverOnSideBar }"
-          class="hidden lg:flex absolute left-0 top-0 z-30 pt-20 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 bg-[#09090b] will-change-[width]">
+          :class="{ 'w-65': hoverOnSideBar, 'w-24': !hoverOnSideBar }"
+          class="hidden lg:flex absolute left-0 top-0 z-30 pt-24 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 bg-[#09090b] will-change-[width]">
 
           <div class="mb-12">
-            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-2xl">
-              <span class="text-black font-black text-xl">U</span>
+            <div class="w-18 h-12 bg-[#060200] rounded-xl flex items-center justify-center shadow-2xl">
+              <span class="text-orange-100 text-xs font-google-sans font-medium">{{
+                useUserStore().getFirstName.charAt(0)
+                }}</span>
             </div>
           </div>
 
@@ -87,14 +90,6 @@ const changeComponent = (component: ComponentName) => {
               :iconActive="btn.iconActive" :active="componentsMap[btn.name] === currentComponent" />
           </div>
 
-          <!-- Request QR Button -->
-          <button @click="router.push({ name: 'dashboard' })"
-            class="mb-4 w-full flex items-center cursor-pointer transition-all duration-300 rounded-2xl px-3 py-3 gap-3 border border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/15 hover:border-orange-500/40 group overflow-hidden">
-            <span class="material-symbols-outlined text-orange-400 text-[22px] flex-shrink-0">add_circle</span>
-            <span v-if="hoverOnSideBar"
-              class="text-orange-400 text-[11px] font-black uppercase tracking-widest whitespace-nowrap transition-all">Solicitar
-              QR</span>
-          </button>
 
           <div class="mt-auto opacity-20 text-[8px] font-black uppercase tracking-[0.3em] font-mono whitespace-nowrap"
             v-if="hoverOnSideBar">
@@ -104,7 +99,7 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 🚀 MAIN CONTENT AREA (FIXED OFFSET) -->
         <div
-          class="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:ml-24 lg:pt-16 pt-24! pb-28 lg:pb-8">
+          class="relative z-10 w-full h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:ml-24 lg:pt-16 pt-24! pb-28 lg:pb-8">
           <section class="w-full ">
             <component :is="currentComponent"></component>
           </section>
@@ -115,7 +110,7 @@ const changeComponent = (component: ComponentName) => {
           class="lg:hidden fixed bottom-4 left-4 right-4 bg-[#09090b]/90 backdrop-blur-xl border border-white/10 rounded-[24px] h-16 px-4 z-40 flex items-center justify-around shadow-[0_8px_32px_0_rgba(249,115,22,0.15)] transition-all duration-300">
           <button v-for="btn in mobileButtons" :key="btn.name" @click="changeComponent(btn.name as ComponentName)"
             class="flex flex-col items-center justify-center text-center gap-1 cursor-pointer transition-all duration-300 w-12 h-12 rounded-xl active:scale-95"
-            :class="componentsMap[btn.name] === currentComponent ? 'text-orange-500 scale-105' : 'text-white/40 hover:text-white/70'">
+            :class="componentsMap[btn.name] === currentComponent ? 'text-orange-800 scale-105' : 'text-white/40 hover:text-white/70'">
             <v-icon :name="componentsMap[btn.name] === currentComponent ? btn.iconActive : btn.icon" scale="1.2" />
             <span class="text-[9px] font-bold tracking-tight uppercase">{{ btn.label }}</span>
           </button>

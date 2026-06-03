@@ -27,28 +27,18 @@ const props = defineProps({
 </script>
 
 <template>
-  <button
-    :class="[
-      'relative flex items-center gap-3 rounded-[10px] transition-all duration-300 overflow-hidden',
-      'min-h-[42px] px-3 cursor-pointer',
-      active
-        ? 'bg-[#ff9800]/10 text-amber-400'
-        : 'text-white/50 hover:bg-[#ff9800]/5 hover:text-white/90',
-    ]"
-    :style="{ width: isHover ? '184px' : '47px' }"
-  >
+  <button :class="[
+    'relative flex items-center gap-3 rounded-[10px] transition-all duration-300 overflow-hidden',
+    'min-h-[42px] px-3 cursor-pointer',
+    active
+      ? 'bg-orange-500/10 text-orange-500'
+      : 'text-white/50 hover:bg-orange-500/5 hover:text-white/90',
+  ]" :style="{ width: isHover ? '184px' : '47px' }">
     <!-- indicador activo -->
-    <span
-      v-if="active"
-      class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-[#ff9800]"
-    ></span>
+    <span v-if="active" class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-orange-500"></span>
 
     <!-- ícono -->
-    <v-icon
-      :name="active ? iconActive : icon"
-      scale="1.3"
-      :class="active ? 'opacity-100' : 'opacity-75'"
-    />
+    <v-icon :name="active ? iconActive : icon" scale="1.3" :class="active ? 'opacity-100' : 'opacity-75'" />
 
     <!-- label con fade + colapso de ancho -->
     <span
@@ -57,8 +47,7 @@ const props = defineProps({
         opacity: isHover ? '1' : '0',
         maxWidth: isHover ? '140px' : '0px',
         overflow: 'hidden',
-      }"
-    >
+      }">
       {{ name }}
     </span>
   </button>
