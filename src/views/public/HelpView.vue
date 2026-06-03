@@ -68,11 +68,11 @@
                 <h4 class="text-2xl font-black text-white tracking-tight mb-3">¿Aún tiene dudas?</h4>
                 <p class="text-white/50 mb-8">Nuestro equipo de soporte está listo para ayudarle con su configuración o
                   resolver problemas específicos.</p>
-                <a href="mailto:soporte@ubiqueme.com"
+                <RouterLink :to="{ name: 'contact' }"
                   class="inline-flex h-12 items-center justify-center gap-2 bg-[#ff7900] text-black px-8 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-[#ff7900]/90 shadow-lg shadow-[#ff7900]/15 active:scale-[0.97]">
                   <span class="material-symbols-outlined text-[16px]">mail</span>
                   <span>Contactar Soporte</span>
-                </a>
+                </RouterLink>
               </div>
             </div>
 

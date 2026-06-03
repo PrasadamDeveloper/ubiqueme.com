@@ -58,6 +58,17 @@ const handleSubmit = async () => {
     isSubmitting.value = false
   }
 }
+
+
+const autoComplete = () => {
+  if (!userStore.getFullName || !userStore.getEmail) {
+    toast.error('No hay información de usuario disponible para autocompletar, inicié sesión o complete manualmente los campos.')
+    return
+  }
+  name.value = userStore.getFullName
+  email.value = userStore.getEmail
+  //pending phone
+}
 </script>
 
 <template>
@@ -80,10 +91,10 @@ const handleSubmit = async () => {
               Contacto
             </div>
             <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
-              Estamos aquí para ayudarte
+              Estamos aquí para ayudarle
             </h1>
             <p class="text-white/40 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-              ¿Tienes dudas, comentarios o necesitas asistencia? Envíanos un mensaje y te responderemos a la brevedad.
+              ¿Tiene dudas, comentarios o necesita asistencia? Envíenos un mensaje y le responderemos a la brevedad.
             </p>
           </div>
         </div>
@@ -138,8 +149,20 @@ const handleSubmit = async () => {
               </div>
             </div>
 
+
+            <div class="relative">
+              <button v-if="userStore.getFullName"
+                v-tooltip:="{ content: 'Como ya inicio sesión, puede autocompletar los campos', placement: 'right' }"
+                type="button"
+                class="  top-0 h-12 px-4 rounded-2xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all"
+                @click="autoComplete">
+                Autocompletar Nombre y Correo
+              </button>
+            </div>
+
             <!-- Name & Email -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+
               <div>
                 <label class="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-1 mb-1.5 block">Nombre
                   *</label>

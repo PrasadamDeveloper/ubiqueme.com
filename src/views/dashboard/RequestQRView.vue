@@ -28,7 +28,7 @@ const availableSizes = computed(() => qrLayout.value === 'compact' ? compactSize
 watch(qrLayout, (newLayout) => {
   const sizes = newLayout === 'compact' ? compactSizes : detailSizes
   if (!sizes.includes(qrSize.value)) {
-    qrSize.value = sizes[0]
+    qrSize.value = sizes[0] ?? 'SM (5×5cm)'
   }
 })
 const gluePosition = ref<'frontal' | 'trasero'>('trasero')

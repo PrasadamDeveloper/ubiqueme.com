@@ -51,14 +51,20 @@ onUnmounted(() => {
             <span
               class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform"
               aria-hidden="true">location_on</span>
-            <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
-              <Transition name="slide-up">
-                <div :key="currentDomainIndex"
-                  class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
-                  <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                  <span class="text-orange-500">.com</span>
-                </div>
-              </Transition>
+            <div class="flex flex-col min-w-[140px] sm:min-w-[200px]">
+              <div class="relative h-9 sm:h-10 overflow-hidden">
+                <Transition name="slide-up">
+                  <div :key="currentDomainIndex"
+                    class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[15px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
+                    <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                    <span class="text-orange-500">.com</span>
+                  </div>
+                </Transition>
+              </div>
+              <div class="text-[9px] sm:text-[10px] text-white/30 font-medium tracking-wider whitespace-nowrap"
+                style="font-variation-settings: normal">
+                por <span class="font-semibold text-orange-400/70">AZIECHRIE PHARMA</span>
+              </div>
             </div>
           </RouterLink>
         </div>
@@ -69,7 +75,7 @@ onUnmounted(() => {
             :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
             <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
-              }}</span>
+            }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
 
             <!-- Indicator Line -->
@@ -160,6 +166,9 @@ onUnmounted(() => {
         </div>
         <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
           ubiqueme.com</span>
+        <span class="text-[9px] text-white/15 font-medium tracking-widest uppercase">
+          Una marca de <span class="text-orange-400/60 font-semibold">AZIECHRIE PHARMA</span>
+        </span>
         <div class="flex items-center mt-2">
           <Transition name="slide-up">
             <div :key="currentDomainIndex"

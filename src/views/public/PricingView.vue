@@ -10,7 +10,7 @@ const plans = [
     name: 'Bronce',
     price: '499',
     currency: 'MXN',
-    period: '/ año',
+    period: 'ANUAL',
     priceNote: '1er envío físico gratis',
     description: 'Protección básica esencial',
     cta: 'Activar Bronce',
@@ -30,7 +30,7 @@ const plans = [
     name: 'Plata',
     price: '999',
     currency: 'MXN',
-    period: '/ año',
+    period: 'ANUAL',
     priceNote: '1er envío físico gratis',
     description: 'Para quienes toman en serio sus bienes',
     featured: true,
@@ -51,7 +51,7 @@ const plans = [
     name: 'Oro',
     price: '1499',
     currency: 'MXN',
-    period: '/ año',
+    period: 'ANUAL',
     priceNote: '1er envío físico gratis',
     description: 'Control total. Sin compromisos.',
     cta: 'Seleccionar Oro',
@@ -155,9 +155,13 @@ const handleSelect = (id: string) => {
                   <!-- Price -->
                   <div class="mb-5 pb-5 border-b border-white/[0.04]">
                     <div class="flex items-baseline gap-2">
-                      <span class="text-4xl font-black text-white tracking-tight font-mono">${{ plan.price }}</span>
-                      <span class="text-white/20 text-[10px] font-mono font-black uppercase tracking-widest">{{
-                        plan.period }}</span>
+                      <span class="text-4xl font-black text-white tracking-tight font-mono">${{ plan.price }} </span>
+                      <span class="text-[10px] text-white">{{ plan.currency }}</span>
+                      <span
+                        class="text-orange-700 rounded-3xl  p-1 text-[10px] bg-orange-100 font-google-sans font-black uppercase tracking-widest">{{
+                          plan.period }}</span>
+                      <span class="text-[10px] text-white/50 font-mono">(${{ (Number(plan.price) / 12).toFixed() }}mxn
+                        /mes)</span>
                     </div>
                     <p class="text-[#ff7900]/60 text-[10px] font-mono font-bold mt-1 uppercase tracking-wider">{{
                       plan.priceNote }}</p>
