@@ -4,6 +4,8 @@ import { RouterLink } from 'vue-router'
 
 import { onMounted, onUnmounted, ref } from 'vue';
 
+const openAziechrie = () => window.open('https://www.aziechriepharma.com', '_blank');
+
 const navLinks = [
   { name: 'Inicio', pathName: 'home', icon: 'home', requiredLogin: false },
   { name: 'Dashboard', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
@@ -13,12 +15,20 @@ const navLinks = [
 
 const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
 const currentDomainIndex = ref(0);
+
+const taglines = [
+  { text: 'por AZIECHRIE PHARMA', clickable: true },
+  { text: '30+ años de experiencia', clickable: false },
+  { text: 'Soluciones tecnológicas', clickable: false },
+];
+const currentTaglineIndex = ref(0);
 const isMobileMenuOpen = ref(false);
 let intervalId: any;
 
 onMounted(() => {
   intervalId = setInterval(() => {
     currentDomainIndex.value = (currentDomainIndex.value + 1) % domains.length;
+    currentTaglineIndex.value = (currentTaglineIndex.value + 1) % taglines.length;
   }, 5000);
 });
 
@@ -52,7 +62,7 @@ onUnmounted(() => {
               class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform"
               aria-hidden="true">location_on</span>
             <div class="flex flex-col min-w-[140px] sm:min-w-[200px]">
-              <div class="relative h-9 sm:h-10 overflow-hidden">
+              <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
                 <Transition name="slide-up">
                   <div :key="currentDomainIndex"
                     class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[15px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
@@ -61,9 +71,21 @@ onUnmounted(() => {
                   </div>
                 </Transition>
               </div>
-              <div class="text-[9px] sm:text-[10px] text-white/30 font-medium tracking-wider whitespace-nowrap"
-                style="font-variation-settings: normal">
-                por <span class="font-semibold text-orange-400/70">AZIECHRIE PHARMA</span>
+              <div class="relative h-4 sm:h-5 overflow-hidden flex items-center">
+                <Transition name="slide-up">
+                  <div :key="currentTaglineIndex"
+                    class="absolute left-0 text-[9px]! sm:text-[10px] text-white/30 font-medium tracking-wider whitespace-nowrap font-google-sans"
+                    style="font-variation-settings: normal">
+                    <template v-if="taglines[currentTaglineIndex]!.clickable">
+                      por <span @click.stop="openAziechrie"
+                        class="font-semibold text-orange-400/60 hover:text-orange-400 transition-colors cursor-pointer">AZIECHRIE
+                        PHARMA</span>
+                    </template>
+                    <template v-else>
+                      {{ taglines[currentTaglineIndex]!.text }}
+                    </template>
+                  </div>
+                </Transition>
               </div>
             </div>
           </RouterLink>
@@ -75,7 +97,7 @@ onUnmounted(() => {
             :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
             <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
-            }}</span>
+              }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
 
             <!-- Indicator Line -->
