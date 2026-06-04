@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import PlanDeleteConfirm from './PlanDeleteConfirm.vue';
 
 const props = defineProps<{
@@ -7,6 +7,7 @@ const props = defineProps<{
   userName: string
   userEmail: string
   currentPlan: string
+  loading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -31,12 +32,12 @@ const handleSubmit = () => {
 const handleCancel = () => {
   emit('cancel')
 }
-const now = new Date();
-const renewalDate = new Date();
-const currentMonth = now.getMonth();
-renewalDate.setMonth(currentMonth + 12)
-
-
+const now = computed(() => new Date());
+const renewalDate = computed(() => {
+  const date = new Date();
+  date.setMonth(date.getMonth() + 12);
+  return date;
+});
 const handleCancelPlan = () => {
   emit('cancelplan')
   showDeleteConfirm.value = false
@@ -54,7 +55,8 @@ const cancelDeletePlan = () => {
 
 
     <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/85  p-4">
-      <PlanDeleteConfirm v-if="showDeleteConfirm" @confirm="handleCancelPlan" @cancel="cancelDeletePlan">
+      <PlanDeleteConfirm v-if="showDeleteConfirm" :loading="loading" @confirm="handleCancelPlan"
+        @cancel="cancelDeletePlan">
       </PlanDeleteConfirm>
 
       <div
@@ -338,9 +340,11 @@ const cancelDeletePlan = () => {
                   Cancelar
                 </button>
 
-                <button @click="handleSubmit" :disabled="selectedPlan === currentPlan"
-                  class="h-14 rounded-[20px] bg-orange-500 hover:bg-orange-600 text-white text-xs uppercase font-black tracking-[0.20em] transition disabled:opacity-50 disabled:cursor-not-allowed">
-                  Guardar
+                <button @click="handleSubmit" :disabled="selectedPlan === currentPlan || loading"
+                  class="h-14 rounded-[20px] bg-orange-500 hover:bg-orange-600 text-white text-xs uppercase font-black tracking-[0.20em] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  <span v-if="loading"
+                    class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span v-else>Guardar</span>
                 </button>
 
               </div>

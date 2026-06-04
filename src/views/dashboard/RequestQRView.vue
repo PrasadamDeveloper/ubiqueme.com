@@ -485,7 +485,9 @@ const handleSubmit = async () => {
 
             <!-- Submit Action -->
             <button @click="handleSubmit" :disabled="isSubmitting || qrsRemaining <= 0"
-              class="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.15em] text-sm hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(249,115,22,0.3)] hover:-translate-y-1 active:translate-y-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+              class="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.15em] text-sm hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(249,115,22,0.3)] hover:-translate-y-1 active:translate-y-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              <span v-if="isSubmitting"
+                class="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
               {{ isSubmitting ? 'Procesando...' : 'Confirmar Registro' }}
             </button>
 

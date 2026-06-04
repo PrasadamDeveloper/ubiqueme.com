@@ -93,11 +93,10 @@
 
         </button>
 
-        <button @click="handleConfirm"
-          class="h-14 rounded-[20px] bg-red-500 hover:bg-red-600 text-white text-xs uppercase tracking-[0.20em] font-black transition">
-
-          Confirmar
-
+        <button @click="handleConfirm" :disabled="loading"
+          class="h-14 rounded-[20px] bg-red-500 hover:bg-red-600 text-white text-xs uppercase tracking-[0.20em] font-black transition disabled:opacity-50 flex items-center justify-center gap-2">
+          <span v-if="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span v-else>Confirmar</span>
         </button>
 
       </div>
@@ -108,6 +107,10 @@
 </template>
 
 <script lang="ts" setup>
+defineProps<{
+  loading?: boolean
+}>()
+
 const emit = defineEmits(['cancel', 'confirm']);
 
 

@@ -20,11 +20,7 @@
           Códigos QR
         </h2>
       </div>
-      <RouterLink to="/dashboard/request-qr"
-        class="w-full  cursor-pointer md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-black text-sm bg-white text-black hover:bg-white/90 transition-colors active:scale-95">
-        <span class="material-symbols-outlined text-[18px]">add</span>
-        Comprar nuevo QR
-      </RouterLink>
+
 
       <!-- Botón de admin/test (Crear QR) -->
       <RouterLink to="/admin"
@@ -50,7 +46,7 @@
                 Crear nuevo QR
               </h3>
               <p class="text-xs text-[#8A8D9E] mt-0.5">
-                Completa los datos para generar tu código
+                Complete los datos para generar su código
               </p>
             </div>
 
@@ -96,9 +92,12 @@
                      transition-colors cursor-pointer bg-transparent rounded">
                 Cancelar
               </button>
-              <button @click="createQRForSubscription" class="px-4 py-1.5 text-sm bg-[#F38020] hover:bg-[#E07010]
-                     text-white rounded transition-colors cursor-pointer">
-                Crear QR
+              <button @click="createQRForSubscription" :disabled="isCreatingQR"
+                class="px-4 py-1.5 text-sm bg-[#F38020] hover:bg-[#E07010]
+                     text-white rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                <span v-if="isCreatingQR"
+                  class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                {{ isCreatingQR ? 'Creando...' : 'Crear QR' }}
               </button>
             </div>
 
@@ -268,6 +267,7 @@ const overlayQrs = computed(() => {
 const showLimitReached = ref(false);
 //Show QR creation modal function and variable
 const showCreateQRModal = ref(false);
+const isCreatingQR = ref(false);
 const newQrName = ref('');
 const selectedCategory = ref('other');
 const toggleCreateQrModal = async (e: ISubscription) => {
@@ -307,6 +307,7 @@ const createQRForSubscription = async () => {
   }
 
 
+  isCreatingQR.value = true;
   try {
     const randomId = nanoid(15);
     const qrData: IQRCard = {
@@ -331,6 +332,7 @@ const createQRForSubscription = async () => {
     }
 
     const userDocRef = doc(db, `users/${userStore.getUserId}/qrs/${randomId}`);
+    const userRef = doc(db, `users/${userStore.getUserId}`);
     const userSubRef = doc(db, `users/${userStore.getUserId}/subscriptions/${selectedSubscription.value.id}`);
     const publicDocRef = doc(db, `publicQR/${randomId}`);
 
@@ -338,6 +340,9 @@ const createQRForSubscription = async () => {
 
     batch.set(userDocRef, {
       ...qrData
+    })
+    batch.update(userRef, {
+      totalQRs: increment(1)
     })
     batch.update(userSubRef, {
       totalQRsCreated: increment(1)
@@ -364,6 +369,8 @@ const createQRForSubscription = async () => {
   catch (error) {
     toast.error(`Fallo al crear el QR: ${error}`);
     console.log(error);
+  } finally {
+    isCreatingQR.value = false;
   }
 }
 

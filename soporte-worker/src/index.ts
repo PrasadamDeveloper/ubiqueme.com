@@ -179,10 +179,46 @@ function json(data: Record<string, unknown>, status = 200): Response {
 	});
 }
 
+// ─── Detect auto-replies / bounces to prevent loops ─────────
+function isAutoReplyOrBounce(headers: Headers): boolean {
+	const autoSubmitted = headers.get('Auto-Submitted');
+	if (autoSubmitted && !['no', undefined].includes(autoSubmitted.toLowerCase())) {
+		return true;
+	}
+
+	const precedence = headers.get('Precedence');
+	if (precedence && ['bulk', 'junk', 'list'].includes(precedence.toLowerCase())) {
+		return true;
+	}
+
+	const xAutoreply = headers.get('X-Autoreply');
+	if (xAutoreply && xAutoreply.toLowerCase() === 'yes') {
+		return true;
+	}
+
+	const xAutoResponseSuppress = headers.get('X-Auto-Response-Suppress');
+	if (xAutoResponseSuppress) {
+		return true;
+	}
+
+	const returnPath = headers.get('Return-Path');
+	if (returnPath && returnPath.trim() === '<>') {
+		return true;
+	}
+
+	return false;
+}
+
 // ─── Main export ──────────────────────────────────────────────
 export default {
 	// ── Incoming email (Email Routing) ────────────────────────
 	async email(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
+		// Ignore auto-replies, bounces, and out-of-office to prevent infinite loops
+		if (isAutoReplyOrBounce(message.headers)) {
+			console.log('Ignored auto-reply/bounce from', message.from);
+			return;
+		}
+
 		const from = message.from;
 		const subject = message.headers.get('subject') || 'Sin asunto';
 
@@ -191,21 +227,9 @@ export default {
 
 		// 2. Send auto-response to the sender via Email Binding
 		const autoReply = new EmailMessage('soporte@ubiqueme.com', from, EMAIL_WRAPPER(AUTO_REPLY_HTML));
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(autoReply as any).setHeader('subject', 'Hemos recibido su mensaje — Ubiqueme');
 		await env.SEND_EMAIL.send(autoReply);
-
-		// 3. Send notification to the support team via Resend (with body preview)
-		try {
-			const resend = new Resend(env.RESEND_API_KEY);
-			await resend.emails.send({
-				from: 'Ubiqueme <soporte@ubiqueme.com>',
-				to: ['informes@prasadam.mx'],
-				subject: `Nuevo mensaje de soporte — ${subject}`,
-				html: EMAIL_WRAPPER(NOTIF_HTML(from, subject, '(Contenido reenviado por Email Routing)')),
-			});
-		} catch (error) {
-			console.error('Resend notification failed:', error);
-		}
 	},
 
 	// ── HTTP endpoint (for contact form frontend) ─────────────

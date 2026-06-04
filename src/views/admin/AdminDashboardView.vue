@@ -126,37 +126,42 @@
                   </div>
                 </div>
 
-                <!-- Actions -->
+                <!-- Actions with loading states -->
                 <div class="flex flex-wrap items-start gap-2 shrink-0 min-w-[140px]">
-                  <button @click="openQRModal(user)" v-tooltip="'Asignar código QR'"
-                    class="h-9 px-3 rounded-xl border border-white/[0.06] bg-white/[0.03] hover:bg-[#ff7900]/10 hover:border-[#ff7900]/20 text-white/60 hover:text-[#ff7900] transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer">
-                    <span class="material-symbols-outlined text-[14px]">qr_code</span>
-                    QR
-                  </button>
-                  <button @click="openPlanModal(user)" v-tooltip="'Gestionar Plan'"
-                    class="h-9 px-3 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer">
-                    <span class="material-symbols-outlined text-[14px]">workspace_premium</span>
-                    Plan
+                  <button @click="openPlanModal(user)" v-tooltip="'Gestionar Plan'" :disabled="processingPlanSubmit"
+                    class="h-9 px-3 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                    <span v-if="processingPlanSubmit"
+                      class="w-3 h-3 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
+                    <span v-else class="material-symbols-outlined text-[14px]">workspace_premium</span>
+                    Asignar Plan
                   </button>
                   <button v-if="hasActiveTrial(user.uid)" @click="endFreeTrial(user)"
-                    v-tooltip="'Finalizar prueba gratuita antes de tiempo'"
-                    class="h-9 px-3 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer">
-                    <span class="material-symbols-outlined text-[14px]">cancel</span>
+                    v-tooltip="'Finalizar prueba gratuita antes de tiempo'" :disabled="processingCancelReason"
+                    class="h-9 px-3 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                    <span v-if="processingCancelReason"
+                      class="w-3 h-3 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
+                    <span v-else class="material-symbols-outlined text-[14px]">cancel</span>
                     Terminar Trial
                   </button>
                   <button v-else @click="addFreeTrial(user)" v-tooltip="'Agregar prueba gratuita de 30 días'"
-                    class="h-9 px-3 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/60 hover:bg-[#ff7900]/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer">
-                    <span class="material-symbols-outlined text-[14px]">rocket_launch</span>
-                    Trial
+                    :disabled="processingAddTrial"
+                    class="h-9 px-3 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/60 hover:bg-[#ff7900]/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                    <span v-if="processingAddTrial"
+                      class="w-3 h-3 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
+                    <span v-else class="material-symbols-outlined text-[14px]">rocket_launch</span>
+                    Asignar Trial
                   </button>
                   <button @click="openBanModal(user)" v-tooltip="'Suspender o reactivar acceso'"
-                    class="h-9 px-3 rounded-xl border transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer"
+                    :disabled="processingBanSubmit"
+                    class="h-9 px-3 rounded-xl border transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     :class="user.isBanned
                       ? 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10'
                       : 'border-red-500/15 bg-red-500/5 text-red-400 hover:bg-red-500/10'">
-                    <span class="material-symbols-outlined text-[14px]">{{ user.isBanned ? 'how_to_reg' : 'gavel'
+                    <span v-if="processingBanSubmit"
+                      class="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin"></span>
+                    <span v-else class="material-symbols-outlined text-[14px]">{{ user.isBanned ? 'how_to_reg' : 'gavel'
                     }}</span>
-                    {{ user.isBanned ? 'Restaurar' : 'Suspender' }}
+                    {{ user.isBanned ? 'Restaurar cuenta' : 'Suspender cuenta' }}
                   </button>
                 </div>
 
@@ -179,7 +184,7 @@
                       <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px] text-[#ff7900]">workspace_premium</span>
                         <span class="font-black text-[#ff7900] uppercase text-[11px] tracking-wider">{{ sub.planType
-                          }}</span>
+                        }}</span>
                       </div>
                       <span
                         :class="sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : sub.status === 'canceled' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/40 border-white/10'"
@@ -198,7 +203,7 @@
                       <div class="flex justify-between text-[10px] mb-1">
                         <span class="text-white/40">Códigos QR</span>
                         <span class="text-white font-mono font-bold">{{ sub.totalQRsCreated }} / {{ sub.totalQRsAllowed
-                          }}</span>
+                        }}</span>
                       </div>
                       <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full rounded-full transition-all duration-500"
@@ -228,9 +233,21 @@
                           {{ formatedDate(sub.endDate) }}
                         </span>
                       </div>
-                      <div v-if="sub.cancelReason" class="flex justify-between">
-                        <span class="text-white/30">Motivo cancelación</span>
-                        <span class="text-red-300/60 font-mono text-right max-w-[120px]">{{ sub.cancelReason }}</span>
+                      <div v-if="sub.canceledByAdmin?.reason" class="pt-2 mt-2 border-t border-white/[0.04] space-y-1">
+                        <div class="flex justify-between">
+                          <span class="text-white/30">Motivo cancelación</span>
+                          <span class="text-red-300/70 font-mono text-right max-w-[130px]">{{ sub.canceledByAdmin.reason
+                            }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-white/30">Cancelado por</span>
+                          <span class="text-white/50 font-mono text-right">{{ sub.canceledByAdmin.name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-white/30">Fecha cancelación</span>
+                          <span class="text-white/50 font-mono text-right">{{
+                            formatedDate(sub.canceledByAdmin.canceledAt) }}</span>
+                        </div>
                       </div>
                     </div>
 
@@ -239,16 +256,31 @@
                       Proveedor: {{ sub.paymentProviderId ?? 'N/A' }}
                     </div>
 
-                    <!-- Actions per subscription -->
+                    <!-- Actions per subscription with loading -->
                     <div class="flex items-center gap-2 pt-1">
+                      <button @click="openQRModal(user, sub)"
+                        v-if="sub.status === 'active' && sub.totalQRsCreated < sub.totalQRsAllowed"
+                        v-tooltip="'Asignar QR a este plan'" :disabled="processingQRSubmit"
+                        class="flex-1 h-8 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                        <span v-if="processingQRSubmit"
+                          class="w-3 h-3 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
+                        <span v-else class="material-symbols-outlined text-[12px]">qr_code</span>
+                        Asignar QR
+                      </button>
                       <button v-if="sub.status === 'active'" @click="cancelSubscription(sub.id, sub.userId)"
-                        class="flex-1 h-8 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer">
-                        <span class="material-symbols-outlined text-[12px]">block</span>
+                        :disabled="processingCancelReason"
+                        class="flex-1 h-8 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                        <span v-if="processingCancelReason"
+                          class="w-3 h-3 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
+                        <span v-else class="material-symbols-outlined text-[12px]">block</span>
                         Cancelar
                       </button>
                       <button v-if="sub.status === 'canceled'" @click="renewSubscription(sub)"
-                        class="flex-1 h-8 rounded-xl border border-green-500/15 bg-green-500/5 text-green-400/80 hover:bg-green-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer">
-                        <span class="material-symbols-outlined text-[12px]">refresh</span>
+                        :disabled="processingRenew"
+                        class="flex-1 h-8 rounded-xl border border-green-500/15 bg-green-500/5 text-green-400/80 hover:bg-green-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                        <span v-if="processingRenew"
+                          class="w-3 h-3 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin"></span>
+                        <span v-else class="material-symbols-outlined text-[12px]">refresh</span>
                         Renovar
                       </button>
                     </div>
@@ -276,17 +308,22 @@
         </div>
 
         <!-- Modales -->
-        <QRNamePrompt :is-open="isQRModalOpen" :user-name="selectedUserForQR?.name || ''" @submit="handleQRSubmit"
-          @cancel="isQRModalOpen = false" />
+        <QRNamePrompt :is-open="isQRModalOpen" :user-name="selectedQRContext?.user.name || ''"
+          :loading="processingQRSubmit" @submit="handleQRSubmit" @cancel="isQRModalOpen = false" />
 
         <BanConfirmPrompt v-if="selectedUserForBan" :is-open="isBanModalOpen" :user="selectedUserForBan"
-          :is-currently-banned="selectedUserForBan.isBanned || false" @submit="handleBanSubmit"
-          @cancel="isBanModalOpen = false" />
+          :is-currently-banned="selectedUserForBan.isBanned || false" :processing="processingBanSubmit"
+          @submit="handleBanSubmit" @cancel="isBanModalOpen = false" />
 
         <ChangePlanPrompt :is-open="isPlanModalOpen" :user-name="selectedUserForPlan?.name || ''"
           :user-email="selectedUserForPlan?.email || ''"
-          :current-plan="selectedUserForPlan ? getActivePlanType(selectedUserForPlan) : ''" @submit="handlePlanSubmit"
-          @cancel="isPlanModalOpen = false" @cancelplan="cancelUserPlan" />
+          :current-plan="selectedUserForPlan ? getActivePlanType(selectedUserForPlan) : ''"
+          :loading="processingPlanSubmit" @submit="handlePlanSubmit" @cancel="isPlanModalOpen = false"
+          @cancelplan="openCancelReasonForPlan" />
+
+        <CancelReasonPrompt :is-open="isCancelReasonOpen" :plan-type="cancelReasonPlanType"
+          :user-name="cancelReasonUserName" :loading="processingCancelReason" @submit="handleCancelReasonConfirm"
+          @cancel="isCancelReasonOpen = false" />
 
       </div>
     </template>
@@ -299,14 +336,24 @@ import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
 import QRNamePrompt from '@/components/admin/QRNamePrompt.vue'
 import BanConfirmPrompt from '@/components/admin/BanConfirmPrompt.vue'
 import ChangePlanPrompt from '@/components/admin/ChangePlanPrompt.vue'
+import CancelReasonPrompt from '@/components/admin/CancelReasonPrompt.vue'
 import { toast } from 'vue-sonner'
 import { collection, doc, increment, onSnapshot, runTransaction, Timestamp, writeBatch, collectionGroup } from 'firebase/firestore'
 import { db as firestoreDb } from '@/firebase'
+import { useUserStore } from '@/stores/user'
 import type { IUser } from '@/interfaces/IUser'
 import type { ISubscription } from '@/interfaces/ISubscription'
 import { nanoid } from 'nanoid'
 
+const userStore = useUserStore()
+
 const loading = ref(true)
+const processingQRSubmit = ref(false)
+const processingBanSubmit = ref(false)
+const processingPlanSubmit = ref(false)
+const processingAddTrial = ref(false)
+const processingCancelReason = ref(false)
+const processingRenew = ref(false)
 
 const usersData = ref<IUser[]>([])
 const subscriptionsData = ref<ISubscription[]>([])
@@ -341,34 +388,37 @@ const getActivePlanType = (user: IUser): string => {
   return activeSub ? activeSub.planType : 'withoutPlan'
 }
 
+interface QRModalContext {
+  user: IUser
+  sub: ISubscription
+}
+
 //ADD QR
 const isQRModalOpen = ref(false)
-const selectedUserForQR = ref<IUser | null>(null)
-const openQRModal = (user: IUser) => {
-  selectedUserForQR.value = user;
+const selectedQRContext = ref<QRModalContext | null>(null)
+
+const openQRModal = (user: IUser, sub: ISubscription) => {
+  selectedQRContext.value = { user, sub };
   isQRModalOpen.value = true;
 }
+
 const handleQRSubmit = async (qrName: string, category: string) => {
-  const user = selectedUserForQR.value
+  const context = selectedQRContext.value
+  if (!context) return
+  const { user, sub } = context
 
   if (!qrName || qrName.trim() === '') return toast.error(`Error al crear código QR: no se especificó un nombre`);
   if (!user?.uid) return toast.error(`Error al crear código QR: no se encontró el usuario`);
 
+  if (sub.totalQRsCreated >= sub.totalQRsAllowed) {
+    toast.error('La suscripción seleccionada ya no tiene capacidad.');
+    return;
+  }
+
+  const subId = sub.id;
+  processingQRSubmit.value = true;
+
   try {
-    const { getDocs, collection: col } = await import('firebase/firestore');
-    const subsSnapshot = await getDocs(col(firestoreDb, `users/${user.uid}/subscriptions`));
-    const activeSubDoc = subsSnapshot.docs.find(d => {
-      const data = d.data();
-      return data.status === 'active' && data.totalQRsCreated < data.totalQRsAllowed;
-    });
-
-    if (!activeSubDoc) {
-      toast.error(`El usuario ${user.name} no tiene suscripciones activas con capacidad disponible.`);
-      return;
-    }
-
-    const subId = activeSubDoc.id;
-
     await runTransaction(firestoreDb, async (transaction) => {
       const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${subId}`);
       const subDocTx = await transaction.get(subRef);
@@ -422,11 +472,13 @@ const handleQRSubmit = async (qrName: string, category: string) => {
       transaction.update(subRef, { totalQRsCreated: increment(1) });
     });
 
-    toast.success(`QR "${qrName}" creado y asignado al plan ${activeSubDoc.data().planType} de ${user.name}`);
+    toast.success(`QR "${qrName}" creado y asignado al plan ${sub.planType} de ${user.name}`);
     isQRModalOpen.value = false;
-    selectedUserForQR.value = null;
+    selectedQRContext.value = null;
   } catch (error) {
     toast.error(`Fallo al crear el QR: ${error}`);
+  } finally {
+    processingQRSubmit.value = false;
   }
 }
 
@@ -439,6 +491,7 @@ const openBanModal = (user: IUser) => {
 const selectedUserForBan = ref<IUser | null>(null)
 const handleBanSubmit = async (reason: string) => {
   if (!selectedUserForBan.value?.uid) return;
+  processingBanSubmit.value = true;
   const userRef = doc(firestoreDb, 'users', selectedUserForBan.value.uid);
   const batch = writeBatch(firestoreDb);
   try {
@@ -452,6 +505,8 @@ const handleBanSubmit = async (reason: string) => {
     selectedUserForBan.value = null;
   } catch (error) {
     toast.error('Error al suspender usuario: ' + error);
+  } finally {
+    processingBanSubmit.value = false;
   }
 }
 
@@ -466,6 +521,7 @@ const openPlanModal = (user: IUser) => {
 const handlePlanSubmit = async (plan: string) => {
   const user = selectedUserForPlan.value;
   if (!user?.uid) return;
+  processingPlanSubmit.value = true;
   const now = new Date();
   const nextYear = new Date(now);
   nextYear.setFullYear(nextYear.getFullYear() + 1);
@@ -495,11 +551,14 @@ const handlePlanSubmit = async (plan: string) => {
     selectedUserForPlan.value = null;
   } catch (error) {
     toast.error('Error al agregar suscripción al usuario: ' + error);
+  } finally {
+    processingPlanSubmit.value = false;
   }
 }
 
 const addFreeTrial = async (user: IUser) => {
   if (!user.uid) return;
+  processingAddTrial.value = true;
   const now = new Date();
   const nextMonth = new Date(now);
   nextMonth.setMonth(nextMonth.getMonth() + 1);
@@ -527,65 +586,188 @@ const addFreeTrial = async (user: IUser) => {
     toast.success('Suscripción Trial agregada exitosamente al usuario ' + user.name);
   } catch (error) {
     toast.error('Error al agregar trial al usuario: ' + error);
+  } finally {
+    processingAddTrial.value = false;
+  }
+}
+
+type CancelActionType = 'subscription' | 'userPlan' | 'trial'
+
+const isCancelReasonOpen = ref(false)
+const cancelReasonPlanType = ref('')
+const cancelReasonUserName = ref('')
+const cancelActionType = ref<CancelActionType>('subscription')
+const cancelPendingSubId = ref('')
+const cancelPendingUserId = ref('')
+const cancelPendingUser = ref<IUser | null>(null)
+
+const openCancelReason = (actionType: CancelActionType, planType: string, userName: string, subId?: string, userId?: string, user?: IUser) => {
+  cancelActionType.value = actionType
+  cancelReasonPlanType.value = planType
+  cancelReasonUserName.value = userName
+  if (subId) cancelPendingSubId.value = subId
+  if (userId) cancelPendingUserId.value = userId
+  if (user) cancelPendingUser.value = user
+  isCancelReasonOpen.value = true
+}
+
+const openCancelReasonForPlan = () => {
+  const user = selectedUserForPlan.value
+  if (!user?.uid) return
+  const subs = getUserSubscriptions(user.uid)
+  const activeSub = subs.find(s => s.status === 'active')
+  if (!activeSub) {
+    toast.error('El usuario no tiene una suscripción activa para cancelar.')
+    return
+  }
+  openCancelReason('userPlan', activeSub.planType, user.name)
+}
+
+const executeCancelWithReason = async (reason: string) => {
+  const adminName = userStore.getFullName || 'Admin'
+  const adminUid = userStore.getUserId || 'unknown'
+  const canceledByAdmin = {
+    name: adminName,
+    uid: adminUid,
+    reason: reason || 'No se especificó motivo',
+    canceledAt: Timestamp.now()
+  }
+
+  if (cancelActionType.value === 'subscription') {
+    const subId = cancelPendingSubId.value
+    const userId = cancelPendingUserId.value
+    if (!subId || !userId) return
+
+    const subRef = doc(firestoreDb, `users/${userId}/subscriptions/${subId}`)
+    const userRef = doc(firestoreDb, `users/${userId}`)
+    await runTransaction(firestoreDb, async (transaction) => {
+      const subDoc = await transaction.get(subRef)
+      if (!subDoc.exists()) throw new Error('Suscripción no encontrada')
+      const subData = subDoc.data()
+
+      transaction.update(subRef, {
+        status: 'canceled',
+        cancelReason: reason || 'No se especificó motivo',
+        canceledByAdmin
+      })
+
+      if (subData.totalQRsCreated > 0) {
+        transaction.update(userRef, {
+          totalQRs: increment(-subData.totalQRsCreated)
+        })
+      }
+    })
+    toast.success('Suscripción cancelada exitosamente')
+  }
+
+  if (cancelActionType.value === 'userPlan') {
+    const user = selectedUserForPlan.value
+    if (!user?.uid) return
+    const subs = getUserSubscriptions(user.uid)
+    const activeSub = subs.find(s => s.status === 'active')
+    if (!activeSub) {
+      toast.error('El usuario no tiene una suscripción activa para cancelar.')
+      return
+    }
+
+    const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${activeSub.id}`)
+    const userRef = doc(firestoreDb, `users/${user.uid}`)
+    await runTransaction(firestoreDb, async (transaction) => {
+      const subDoc = await transaction.get(subRef)
+      if (!subDoc.exists()) throw new Error('Suscripción no encontrada')
+      const subData = subDoc.data()
+
+      transaction.update(subRef, {
+        status: 'canceled',
+        cancelReason: reason || 'No se especificó motivo',
+        canceledByAdmin
+      })
+
+      if (subData.totalQRsCreated > 0) {
+        transaction.update(userRef, {
+          totalQRs: increment(-subData.totalQRsCreated)
+        })
+      }
+    })
+    toast.success(`Suscripción ${activeSub.planType} cancelada para ${user.name}`)
+    isPlanModalOpen.value = false
+    selectedUserForPlan.value = null
+  }
+
+  if (cancelActionType.value === 'trial') {
+    const user = cancelPendingUser.value
+    if (!user?.uid) return
+
+    const subs = getUserSubscriptions(user.uid)
+    const activeTrial = subs.find(s => s.planType === 'trial' && s.status === 'active')
+    if (!activeTrial) {
+      toast.error('El usuario no tiene un trial activo para terminar.')
+      return
+    }
+
+    const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${activeTrial.id}`)
+    const userRef = doc(firestoreDb, `users/${user.uid}`)
+    await runTransaction(firestoreDb, async (transaction) => {
+      const subDoc = await transaction.get(subRef)
+      if (!subDoc.exists()) throw new Error('Suscripción no encontrada')
+      const subData = subDoc.data()
+
+      transaction.update(subRef, {
+        status: 'canceled',
+        cancelReason: reason || 'No se especificó motivo',
+        canceledByAdmin
+      })
+
+      if (subData.totalQRsCreated > 0) {
+        transaction.update(userRef, {
+          totalQRs: increment(-subData.totalQRsCreated)
+        })
+      }
+    })
+    toast.success(`Trial finalizado para ${user.name}`)
+  }
+}
+
+const handleCancelReasonConfirm = async (reason: string) => {
+  processingCancelReason.value = true
+  try {
+    await executeCancelWithReason(reason)
+    isCancelReasonOpen.value = false
+  } catch (error) {
+    toast.error(`Error al cancelar: ${error}`)
+  } finally {
+    processingCancelReason.value = false
   }
 }
 
 const hasActiveTrial = (userId: string): boolean => {
-  const subs = getUserSubscriptions(userId);
-  return subs.some(s => s.planType === 'trial' && s.status === 'active');
+  const subs = getUserSubscriptions(userId)
+  return subs.some(s => s.planType === 'trial' && s.status === 'active')
 }
 
-const endFreeTrial = async (user: IUser) => {
-  if (!user.uid) return;
-
-  const subs = getUserSubscriptions(user.uid);
-  const activeTrial = subs.find(s => s.planType === 'trial' && s.status === 'active');
-  if (!activeTrial) {
-    toast.error('El usuario no tiene un trial activo para terminar.');
-    return;
-  }
-
-  try {
-    const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${activeTrial.id}`);
-    await runTransaction(firestoreDb, async (transaction) => {
-      transaction.update(subRef, {
-        status: 'canceled',
-        cancelReason: 'Trial finalizado por el Administrador'
-      });
-    });
-    toast.success(`Trial finalizado para ${user.name}`);
-  } catch (error) {
-    toast.error(`Error al finalizar trial: ${error}`);
-  }
+const endFreeTrial = (user: IUser) => {
+  openCancelReason('trial', 'trial', user.name, undefined, undefined, user)
 }
 
-const cancelSubscription = async (subId: string, userId: string) => {
-  try {
-    const subRef = doc(firestoreDb, `users/${userId}/subscriptions/${subId}`);
-    await runTransaction(firestoreDb, async (transaction) => {
-      transaction.update(subRef, {
-        status: 'canceled',
-        cancelReason: 'Cancelado por el Administrador'
-      });
-    });
-    toast.success('Suscripción cancelada exitosamente');
-  } catch (error) {
-    toast.error(`Error al cancelar suscripción: ${error}`);
-  }
+const cancelSubscription = (subId: string, userId: string) => {
+  const sub = subscriptionsData.value.find(s => s.id === subId)
+  const planType = sub?.planType || 'desconocido'
+  const user = usersData.value.find(u => u.uid === userId)
+  openCancelReason('subscription', planType, user?.name || 'Usuario', subId, userId)
 }
 
 const renewSubscription = async (sub: ISubscription) => {
+  processingRenew.value = true
   try {
-    const now = new Date();
+    const now = new Date()
 
-    // Calcular duración original: endDate - purchasedAt
-    const purchasedAt = sub.purchasedAt?.toDate ? sub.purchasedAt.toDate() : new Date();
-    const originalEnd = sub.endDate?.toDate ? sub.endDate.toDate() : new Date();
-    const durationMs = originalEnd.getTime() - purchasedAt.getTime();
-    const newEndDate = new Date(now.getTime() + durationMs);
+    const purchasedAt = sub.purchasedAt?.toDate ? sub.purchasedAt.toDate() : new Date()
+    const originalEnd = sub.endDate?.toDate ? sub.endDate.toDate() : new Date()
+    const durationMs = originalEnd.getTime() - purchasedAt.getTime()
+    const newEndDate = new Date(now.getTime() + durationMs)
 
-    const newSubId = nanoid(15);
-    const newSubRef = doc(firestoreDb, `users/${sub.userId}/subscriptions/${newSubId}`);
+    const newSubId = nanoid(15)
+    const newSubRef = doc(firestoreDb, `users/${sub.userId}/subscriptions/${newSubId}`)
 
     await runTransaction(firestoreDb, async (transaction) => {
       transaction.set(newSubRef, {
@@ -600,39 +782,14 @@ const renewSubscription = async (sub: ISubscription) => {
         totalQRsCreated: 0,
         freeShipmentsAllowed: 1,
         freeShipmentsUsed: 0
-      });
-    });
+      })
+    })
 
-    toast.success(`Suscripción ${sub.planType} renovada exitosamente`);
+    toast.success(`Suscripción ${sub.planType} renovada exitosamente`)
   } catch (error) {
-    toast.error(`Error al renovar suscripción: ${error}`);
-  }
-}
-
-const cancelUserPlan = async () => {
-  const user = selectedUserForPlan.value;
-  if (!user?.uid) return;
-
-  const subs = getUserSubscriptions(user.uid);
-  const activeSub = subs.find(s => s.status === 'active');
-  if (!activeSub) {
-    toast.error('El usuario no tiene una suscripción activa para cancelar.');
-    return;
-  }
-
-  try {
-    const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${activeSub.id}`);
-    await runTransaction(firestoreDb, async (transaction) => {
-      transaction.update(subRef, {
-        status: 'canceled',
-        cancelReason: 'Cancelado por el Administrador'
-      });
-    });
-    toast.success(`Suscripción ${activeSub.planType} cancelada para ${user.name}`);
-    isPlanModalOpen.value = false;
-    selectedUserForPlan.value = null;
-  } catch (error) {
-    toast.error(`Error al cancelar suscripción: ${error}`);
+    toast.error(`Error al renovar suscripción: ${error}`)
+  } finally {
+    processingRenew.value = false
   }
 }
 

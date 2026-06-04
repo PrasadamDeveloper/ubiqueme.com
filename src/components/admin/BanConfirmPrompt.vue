@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import type { IUser } from '@/interfaces/IUser';
 import { ref, watch } from 'vue'
-import PlanDeleteConfirm from './PlanDeleteConfirm.vue';
 
 const props = defineProps<{
   isOpen: boolean
   user: IUser
   isCurrentlyBanned: boolean
+  processing?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -269,15 +269,16 @@ const formatDate = (timestamp: any) => {
 
               </button>
 
-              <button @click="handleSubmit"
-                class="flex-1 h-14 rounded-2xl font-black text-xs uppercase tracking-[0.20em]" :class="!isCurrentlyBanned
+              <button @click="handleSubmit" :disabled="processing"
+                class="flex-1 h-14 rounded-2xl font-black text-xs uppercase tracking-[0.20em] disabled:opacity-50 flex items-center justify-center gap-2"
+                :class="!isCurrentlyBanned
                   ? 'bg-red-500 text-white'
                   : 'bg-green-500 text-black'">
-
-                {{ isCurrentlyBanned
-                  ? 'Reactivar usuario'
-                  : 'Suspender usuario' }}
-
+                <span v-if="processing"
+                  class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <span v-else>
+                  {{ isCurrentlyBanned ? 'Reactivar usuario' : 'Suspender usuario' }}
+                </span>
               </button>
 
             </div>

@@ -1,5 +1,12 @@
 import type { Timestamp } from 'firebase/firestore'
 
+export interface ICanceledByAdmin {
+  name: string
+  uid: string
+  reason: string
+  canceledAt: Timestamp
+}
+
 export interface ISubscription {
   id: string // Document ID within users/{uid}/subscriptions
   userId: string // The owner of the subscription
@@ -9,6 +16,7 @@ export interface ISubscription {
   endDate: Timestamp | null
   paymentProviderId: string
   cancelReason?: string
+  canceledByAdmin?: ICanceledByAdmin
   totalQRsAllowed: number // QRs permitidos según el plan
   totalQRsCreated: number // Contador de QRs creados bajo esta suscripción
   freeShipmentsAllowed: number // Siempre 1 por plan (un envío gratuito incluido)
