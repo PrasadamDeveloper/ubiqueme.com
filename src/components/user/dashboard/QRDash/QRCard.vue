@@ -24,7 +24,7 @@ const propsComputed = computed(() => {
 })
 
 const showMenu = ref(false)
-const activePrompt = ref<'cancel' | 'renew' | 'edit' | 'amplify' | null>(null)
+const activePrompt = ref<'cancel' | 'renew' | 'edit' | 'amplify' | 'download' | null>(null)
 
 const qrName = ref(propsComputed.value.name);
 
@@ -54,7 +54,7 @@ const currentStatus = computed(() => {
 
 })
 
-const openPrompt = (type: 'cancel' | 'renew' | 'edit') => {
+const openPrompt = (type: 'cancel' | 'renew' | 'edit' | 'download') => {
   showMenu.value = false
   activePrompt.value = type
 }
@@ -245,6 +245,8 @@ const menuOptions = [
   { label: 'Hacer Público', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
   { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePublic.value ? _setQrPrivate : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
   { divider: true },
+  { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
+  { divider: true },
   { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
   { label: 'Renovar QR', icon: 'autorenew', description: 'Inicia el proceso para renovar este código.', action: () => openPrompt('renew') },
   { divider: true },
@@ -257,6 +259,155 @@ const menuOptions = [
     hoverBg: 'hover:bg-rose-500/10'
   },
 ]
+
+// Download refs
+const downloadQrRef = ref<InstanceType<typeof QrcodeVue> | null>(null)
+const downloadImgRef = ref<HTMLImageElement | null>(null)
+const qrDownloadUrl = computed(() => `${window.location.origin}/qr/${propsComputed.value.id}`)
+
+const handleDownloadPNG = async () => {
+  try {
+    // Load QR image from qrserver.com API (reliable, avoids $el canvas issues)
+    const qrValue = `${window.location.origin}/qr/${propsComputed.value.id}`
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrValue)}`
+
+    const qrImg = new Image()
+    qrImg.crossOrigin = 'anonymous'
+    qrImg.src = qrImageUrl
+    await qrImg.decode()
+
+    // Create horizontal canvas (wider, card/badge format)
+    const w = 600
+    const h = 300
+    const canvas = document.createElement('canvas')
+    canvas.width = w * 2
+    canvas.height = h * 2
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      toast.error('Error al generar la imagen')
+      return
+    }
+    ctx.scale(2, 2)
+
+    // Dark background matching dashboard cards
+    ctx.fillStyle = '#0a0401'
+    ctx.fillRect(0, 0, w, h)
+
+    // Subtle grid pattern
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)'
+    ctx.lineWidth = 1
+    for (let x = 0; x < w; x += 24) {
+      ctx.beginPath()
+      ctx.moveTo(x, 0)
+      ctx.lineTo(x, h)
+      ctx.stroke()
+    }
+    for (let y = 0; y < h; y += 24) {
+      ctx.beginPath()
+      ctx.moveTo(0, y)
+      ctx.lineTo(w, y)
+      ctx.stroke()
+    }
+
+    // Orange glow gradient (top-left)
+    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, w)
+    gradient.addColorStop(0, 'rgba(249,115,22,0.10)')
+    gradient.addColorStop(1, 'rgba(249,115,22,0)')
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, w, h)
+
+    // ─── Left side: QR Code ───
+    const qrBoxSize = 160
+    const qrBoxX = 36
+    const qrBoxY = (h - qrBoxSize) / 2
+    const radius = 16
+    ctx.fillStyle = '#ffffff'
+    ctx.beginPath()
+    ctx.moveTo(qrBoxX + radius, qrBoxY)
+    ctx.lineTo(qrBoxX + qrBoxSize - radius, qrBoxY)
+    ctx.quadraticCurveTo(qrBoxX + qrBoxSize, qrBoxY, qrBoxX + qrBoxSize, qrBoxY + radius)
+    ctx.lineTo(qrBoxX + qrBoxSize, qrBoxY + qrBoxSize - radius)
+    ctx.quadraticCurveTo(qrBoxX + qrBoxSize, qrBoxY + qrBoxSize, qrBoxX + qrBoxSize - radius, qrBoxY + qrBoxSize)
+    ctx.lineTo(qrBoxX + radius, qrBoxY + qrBoxSize)
+    ctx.quadraticCurveTo(qrBoxX, qrBoxY + qrBoxSize, qrBoxX, qrBoxY + qrBoxSize - radius)
+    ctx.lineTo(qrBoxX, qrBoxY + radius)
+    ctx.quadraticCurveTo(qrBoxX, qrBoxY, qrBoxX + radius, qrBoxY)
+    ctx.closePath()
+    ctx.fill()
+
+    // Draw QR inside
+    ctx.drawImage(qrImg, qrBoxX + 14, qrBoxY + 14, qrBoxSize - 28, qrBoxSize - 28)
+
+    // ─── Right side: Info ───
+    const infoX = qrBoxX + qrBoxSize + 28
+
+    // Title: QR name (bold, large)
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 28px "Google Sans", sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(propsComputed.value.name || 'Código QR', infoX, qrBoxY + 16)
+
+    // ID
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 13px monospace'
+    ctx.fillText(`#${propsComputed.value.id}`, infoX, qrBoxY + 46)
+
+    // Divider line
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(infoX, qrBoxY + 80)
+    ctx.lineTo(w - 28, qrBoxY + 80)
+    ctx.stroke()
+
+    // CTA text (multi-line for wrapping)
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 16px "Google Sans", sans-serif'
+    const ctaLine1 = 'Escanee este QR para'
+    const ctaLine2 = 'contactar al dueño de'
+    const ctaLine3 = 'esta pertenencia de'
+    const ctaLine4 = 'forma segura.'
+    ctx.fillText(ctaLine1, infoX, qrBoxY + 108)
+    ctx.fillText(ctaLine2, infoX, qrBoxY + 130)
+    ctx.fillText(ctaLine3, infoX, qrBoxY + 152)
+    ctx.fillText(ctaLine4, infoX, qrBoxY + 174)
+
+    // GPS pin icon + brand (big)
+    const pinX = infoX
+    const pinY = qrBoxY + 200
+    ctx.fillStyle = '#f38020'
+    // GPS pin circle
+    ctx.beginPath()
+    ctx.arc(pinX + 8, pinY - 1, 5, 0, Math.PI * 2)
+    ctx.fill()
+    // GPS pin triangle below
+    ctx.beginPath()
+    ctx.moveTo(pinX + 3, pinY + 2)
+    ctx.lineTo(pinX + 13, pinY + 2)
+    ctx.lineTo(pinX + 8, pinY + 11)
+    ctx.closePath()
+    ctx.fill()
+
+    ctx.font = 'bold 20px "Google Sans", sans-serif'
+    ctx.fillText('ubiqueme.com', infoX + 22, qrBoxY + 208)
+
+    // Bottom: instruction line
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'
+    ctx.font = 'bold 11px "Google Sans", sans-serif'
+    ctx.fillText('Escanee y ayude a devolver esta pertenencia', infoX, qrBoxY + 240)
+
+    // Download
+    const link = document.createElement('a')
+    link.download = `qr-${propsComputed.value.id}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+
+    toast.success('QR descargado como PNG')
+    closeAll()
+  } catch (error) {
+    toast.error(`Error al descargar PNG: ${error}`)
+  }
+}
 
 const qrLogs = ref<IQRLog[]>([]);
 const logsLoaded = ref(false);
@@ -477,7 +628,7 @@ onUnmounted(() => {
       enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
       leave-from-class="opacity-100" leave-to-class="opacity-0">
       <div v-if="activePrompt"
-        class="absolute inset-0 bg-[#0a0a0a]/95 z-40 p-6 flex flex-col justify-center items-center rounded-[2rem]">
+        class="fixed inset-0 bg-[#0a0a0a]/95 z-[100] p-6 flex flex-col justify-center items-center">
 
         <button @click="closeAll"
           class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all cursor-pointer">
@@ -541,6 +692,67 @@ onUnmounted(() => {
                 class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
               <button @click="handleEdit"
                 class="flex-1 py-2.5 bg-white text-black rounded-lg font-medium text-sm hover:bg-white/90 transition-colors active:scale-[0.98] cursor-pointer">Guardar</button>
+            </div>
+          </div>
+        </Transition>
+
+        <!-- Download Prompt -->
+        <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+          <div v-if="activePrompt === 'download'" class="w-full max-w-xs sm:max-w-sm">
+            <div class="flex flex-col items-center">
+              <h3 class="text-white/90 text-lg font-medium mb-4">Descargar QR</h3>
+
+              <!-- Preview Card (horizontal, bold white text) -->
+              <div id="qr-print-area"
+                class="bg-[#0a0401] rounded-xl p-4 w-full flex flex-row items-center gap-4 mb-5 border border-white/10 relative overflow-hidden min-h-[170px]">
+                <!-- Grid pattern -->
+                <div class="absolute inset-0 opacity-[0.04] pointer-events-none"
+                  style="background-image: linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px);background-size:24px 24px;">
+                </div>
+                <!-- Orange glow -->
+                <div
+                  class="absolute top-0 left-0 w-full h-full pointer-events-none bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
+                </div>
+                <!-- QR Code (left) -->
+                <div
+                  class="w-[120px] h-[120px] shrink-0 flex items-center justify-center bg-white p-2.5 rounded-2xl shadow-lg z-10">
+                  <template v-if="propsComputed.img">
+                    <img :src="propsComputed.img" ref="downloadImgRef"
+                      class="w-full h-full object-contain rounded-xl" />
+                  </template>
+                  <template v-else>
+                    <QrcodeVue ref="downloadQrRef" :value="qrDownloadUrl" :size="100" render-as="canvas" />
+                  </template>
+                </div>
+                <!-- Info (right) -->
+                <div class="flex flex-col min-w-0 gap-1 z-10 flex-1">
+                  <p class="text-white font-extrabold text-lg leading-tight">{{ propsComputed.name || 'Código QR' }}</p>
+                  <p class="text-white font-bold text-[10px] font-mono">
+                    #{{ propsComputed.id }}
+                  </p>
+                  <div class="w-full h-px bg-white/10 my-1"></div>
+                  <p class="text-white font-bold text-[11px] leading-tight">
+                    Escanee este QR para contactar al dueño de esta pertenencia de forma segura.
+                  </p>
+                  <div class="flex items-center gap-1 mt-1">
+                    <span class="material-symbols-outlined text-[#f38020] text-[14px]">location_on</span>
+                    <span class="text-[#f38020] text-[11px] font-black tracking-widest uppercase">ubiqueme.com</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <button @click="handleDownloadPNG"
+                class="w-full py-2.5 bg-[#f38020] text-white rounded-lg font-medium text-sm hover:bg-[#e07010] transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">download</span>
+                Descargar
+              </button>
+              <button @click="closeAll"
+                class="mt-3 w-full py-2 bg-white/5 text-white/50 rounded-lg text-xs hover:bg-white/10 hover:text-white/70 transition-colors cursor-pointer">
+                Cerrar
+              </button>
             </div>
           </div>
         </Transition>
