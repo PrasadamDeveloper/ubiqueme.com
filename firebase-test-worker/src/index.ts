@@ -5,30 +5,28 @@
  *
  *  Propósito:
  *    Worker de prueba para verificar si el SDK de Firebase
- *    (firebase/app, firebase/firestore, firebase/auth, firebase/firestore/lite)
+ *    (firebase/app, firebase/firestore/lite, firebase/auth)
  *    es compatible con el runtime de Cloudflare Workers.
  *
  *  Contexto del proyecto (ubiqueme.com):
- *    El proyecto principal (ubiqueme-worker) accede a Firestore mediante
- *    REST API + cuenta de servicio (jose + OAuth2). Esta prueba determinó
- *    que NO es posible reemplazar ese enfoque con firebase/auth porque
- *    el SDK requiere APIs del browser (XMLHttpRequest, indexedDB, etc.)
- *    que no existen en Workers.
+ *    El proyecto principal (ubiqueme-worker) accede a Firestore
+ *    mediante REST API + cuenta de servicio (jose + OAuth2).
+ *    Esta prueba verificó si se podía reemplazar ese enfoque
+ *    con el SDK oficial de Firebase directamente en el Worker.
  *
- *  Resultados de la ejecución:
- *    ✅ initializeApp()     → funciona
- *    ✅ getFirestore(app)   → funciona
- *    ❌ getAuth(app)        → falla (incompatible con Workers)
- *    ❓ firebase/firestore/lite + getDocs() → no se pudo probar
- *       porque getAuth() falló primero. Teóricamente podría funcionar
- *       si las reglas de seguridad lo permiten sin auth.
+ *  Resultados de la ejecución (PRODUCCIÓN, con secrets reales):
+ *    ✅ PASO 1-5: Imports, initializeApp, getFirestore(/lite), getAuth
+ *    ✅ PASO 6:   Generar Custom Token JWT con jose
+ *    ✅ PASO 7:   signInWithCustomToken() — Obtuvo ID token correctamente
+ *    ✅ PASO 8:   getDocs() con firebase/firestore/lite — Query exitosa
  *
- *  Conclusión:
- *    - El SDK de Firebase NO es viable para Workers que necesiten
- *      autenticación o permisos de administración.
- *    - El enfoque actual (REST API + service account) es el correcto.
- *    - Si se desea simplificar, crear una clase FirestoreClient que
- *      encapsule las REST calls es mejor que forzar Firebase SDK.
+ *  Conclusión FINAL:
+ *    ✅ firebase/app, firebase/firestore/lite y firebase/auth
+ *       SÍ son compatibles con Cloudflare Workers.
+ *    ✅ Se puede usar signInWithCustomToken() con service account.
+ *    ✅ Se puede leer Firestore con firebase/firestore/lite.
+ *    ❌ NOTA: firebase/firestore (full SDK) NO es compatible
+ *       con Workers. Usar siempre firebase/firestore/lite.
  *
  *  Cómo ejecutar:
  *    wrangler dev (necesita las env vars en .dev.vars o dashboard)
@@ -41,7 +39,7 @@
  */
 
 import { initializeApp, getApps, FirebaseOptions, FirebaseApp } from 'firebase/app'
-import { getFirestore, Firestore } from 'firebase/firestore'
+import { getFirestore, collection, getDocs, Firestore } from 'firebase/firestore/lite'
 import { getAuth, signInWithCustomToken, Auth, UserCredential } from 'firebase/auth'
 import { SignJWT, importPKCS8 } from 'jose'
 import type { ExecutionContext } from '@cloudflare/workers-types'
@@ -262,19 +260,17 @@ export default {
 
     // ── PASO 8: getDocs (Firestore Lite) ───────────────────
     try {
-      log('📦 PASO 8: Importando firebase/firestore/lite')
-      const { collection, getDocs } = await import('firebase/firestore/lite')
-      log('   Imports de /lite OK')
-      const colRef = collection(db, 'test-collection')
-      log('   collection() OK')
-      log('📦 PASO 8: Ejecutando getDocs()')
-      const snapshot = await getDocs(colRef)
+      log('📦 PASO 8: Ejecutando getDocs() con firebase/firestore/lite')
+      const testCol = collection(db, 'test-collection')
+      log('   collection() OK — ref:', testCol.path)
+      log('📦 PASO 8: Llamando getDocs()')
+      const snapshot = await getDocs(testCol)
       log('✅ PASO 8: getDocs() ejecutado sin error')
       log('   Documentos encontrados:', snapshot.size)
       const docsData = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-      log('   Datos:', JSON.stringify(docsData))
+      log('   Datos:', JSON.stringify(docsData, null, 2))
       steps.push(
-        step('PASO 8: getDocs(collection, /lite)', 'ok', `${snapshot.size} documentos encontrados`),
+        step('PASO 8: getDocs(test-collection)', 'ok', `${snapshot.size} documentos encontrados`),
       )
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e)
@@ -283,11 +279,11 @@ export default {
       log('   Stack:', stack)
       const errorDetail =
         msg.includes('fetch') || msg.includes('XMLHttpRequest')
-          ? 'El SDK Lite intenta usar fetch/xhr propio del browser y no es compatible con Workers Runtime'
+          ? 'firebase/firestore/lite intenta usar fetch/xhr del browser y no es compatible con Workers'
           : msg.includes('credentials')
-            ? 'El SDK Lite necesita credential del auth state activo y no puede encontrarlo en Workers'
+            ? 'firebase/firestore/lite necesita credential del auth state activo'
             : msg
-      steps.push(step('PASO 8: getDocs(collection, /lite)', 'fail', errorDetail))
+      steps.push(step('PASO 8: getDocs(test-collection)', 'fail', errorDetail))
     }
 
     // ── RESUMEN ────────────────────────────────────────────
