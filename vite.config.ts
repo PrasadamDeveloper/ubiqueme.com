@@ -6,12 +6,14 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueDevTools({ launchEditor: 'code' }), tailwindcss()],
+  plugins: [vue(), vueDevTools({ launchEditor: 'code' }), tailwindcss(), cloudflare()],
   server: {
     allowedHosts: true,
   },
