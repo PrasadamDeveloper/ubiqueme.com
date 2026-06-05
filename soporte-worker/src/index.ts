@@ -225,11 +225,18 @@ export default {
 		// 1. Forward the email to the support team
 		await message.forward('informes@prasadam.mx');
 
-		// 2. Send auto-response to the sender via Email Binding
-		const autoReply = new EmailMessage('soporte@ubiqueme.com', from, EMAIL_WRAPPER(AUTO_REPLY_HTML));
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(autoReply as any).setHeader('subject', 'Hemos recibido su mensaje — Ubiqueme');
-		await env.SEND_EMAIL.send(autoReply);
+		// 2. Send auto-response via Resend (not SEND_EMAIL binding, to avoid bounce loops)
+		try {
+			const resend = new Resend(env.RESEND_API_KEY);
+			await resend.emails.send({
+				from: 'Ubiqueme <soporte@ubiqueme.com>',
+				to: [from],
+				subject: 'Hemos recibido su mensaje — Ubiqueme',
+				html: EMAIL_WRAPPER(AUTO_REPLY_HTML),
+			});
+		} catch (error) {
+			console.error('Resend auto-reply error:', error);
+		}
 	},
 
 	// ── HTTP endpoint (for contact form frontend) ─────────────
