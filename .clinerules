@@ -43,3 +43,7 @@
 ## Context Management
 
 - Over 50 tool calls: suggest new chat.
+
+## Finishing Work
+
+-After finishing the response for user (if it requires, run npm run dev) so the user doesn´t need to do it by himself

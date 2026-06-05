@@ -1,5 +1,5 @@
 <template>
-  <div class="font-google-sans text-white  space-y-10 pb-20 relative lg:pl-12 pl-0">
+  <div class="font-google-sans text-white space-y-10 pb-20 relative max-w-6xl mx-auto">
     <!-- Decoración de Fondo (Watermark tipo Home) -->
     <div
       class="absolute top-[5%] right-[-15%] opacity-5 pointer-events-none select-none z-[-1] overflow-hidden rotate-12">

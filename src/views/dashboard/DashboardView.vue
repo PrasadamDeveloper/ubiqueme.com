@@ -74,13 +74,13 @@ const changeComponent = (component: ComponentName) => {
         <!-- 🚀 SIDEBAR (OVERLAY MODE) - Desktop Only -->
         <aside @mouseenter="handleSideBarHover" @mouseleave="handleSideBarLeave"
           :class="{ 'w-65': hoverOnSideBar, 'w-24': !hoverOnSideBar }"
-          class="hidden lg:flex absolute left-0 top-0 z-30 pt-24 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 bg-[#09090b] will-change-[width]">
+          class="hidden lg:flex absolute left-0 top-0 z-30 pt-24 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 bg-[#0c0c0c] will-change-[width]">
 
           <div class="mb-12">
             <div class="w-18 h-12 bg-[#060200] rounded-xl flex items-center justify-center shadow-2xl">
               <span class="text-orange-100 text-xs font-google-sans font-medium">{{
                 useUserStore().getFirstName.charAt(0)
-                }}</span>
+              }}</span>
             </div>
           </div>
 
@@ -99,7 +99,7 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 🚀 MAIN CONTENT AREA (FIXED OFFSET) -->
         <div
-          class="relative z-10 w-full h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:ml-24 lg:pt-16 pt-24! pb-28 lg:pb-8">
+          class="relative z-10 w-full h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:pl-24! lg:pt-16 pt-24! pb-28 lg:pb-8 bg-[#0e0e0e]  flex-1!">
           <section class="w-full ">
             <component :is="currentComponent"></component>
           </section>

@@ -263,11 +263,54 @@ const menuOptions = [
 // Download refs
 const downloadQrRef = ref<InstanceType<typeof QrcodeVue> | null>(null)
 const downloadImgRef = ref<HTMLImageElement | null>(null)
-const qrDownloadUrl = computed(() => `${window.location.origin}/qr/${propsComputed.value.id}`)
+const qrDownloadUrl = computed(() => `https://www.ubiqueme.com/qr/${propsComputed.value.id}`)
+
+const downloadStyle = ref<'normal' | 'compact'>('normal')
+const downloadSize = ref<'sm' | 'md' | 'lg'>('md')
+
+const sizeDimensions = {
+  sm: { normalW: 480, normalH: 280, compact: 280 },
+  md: { normalW: 600, normalH: 400, compact: 420 },
+  lg: { normalW: 800, normalH: 520, compact: 560 },
+} as const
+
+// Preview scaling classes based on selected size
+const previewScale = computed(() => {
+  const s = downloadSize.value
+  if (s === 'sm') return 0.55
+  if (s === 'md') return 0.75
+  return 1 // lg = full
+})
+
+// Normal style preview computed sizes
+const qrPreviewInnerSize = computed(() => Math.round(100 * previewScale.value))
+const qrPreviewSizeStyle = computed(() => {
+  const s = Math.round(120 * previewScale.value)
+  return { width: `${s}px`, height: `${s}px` }
+})
+const titleFontSize = computed(() => `${Math.round(18 * previewScale.value)}px`)
+const idFontSize = computed(() => `${Math.round(10 * previewScale.value)}px`)
+const ctaFontSize = computed(() => `${Math.round(11 * previewScale.value)}px`)
+const pinFontSize = computed(() => `${Math.round(14 * previewScale.value)}px`)
+const brandFontSize = computed(() => `${Math.round(11 * previewScale.value)}px`)
+const previewAspectStyle = computed(() => {
+  const dims = sizeDimensions[downloadSize.value]
+  return { aspectRatio: `${dims.normalW} / ${dims.normalH}` }
+})
+
+// Compact style preview computed sizes
+const qrCompactInnerSize = computed(() => Math.round(80 * previewScale.value))
+const qrCompactSizeStyle = computed(() => {
+  const s = Math.round(100 * previewScale.value)
+  return { width: `${s}px`, height: `${s}px` }
+})
+const compactCtaFontSize = computed(() => `${Math.round(10 * previewScale.value)}px`)
 
 const handleDownloadPNG = async () => {
+  const dims = sizeDimensions[downloadSize.value]
+  const w = dims.normalW
+  const h = dims.normalH
   try {
-    // Load QR image from qrserver.com API (reliable, avoids $el canvas issues)
     const qrValue = `${window.location.origin}/qr/${propsComputed.value.id}`
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrValue)}`
 
@@ -276,18 +319,15 @@ const handleDownloadPNG = async () => {
     qrImg.src = qrImageUrl
     await qrImg.decode()
 
-    // Create horizontal canvas (wider, card/badge format)
-    const w = 600
-    const h = 300
     const canvas = document.createElement('canvas')
-    canvas.width = w * 2
-    canvas.height = h * 2
+    canvas.width = w * 4
+    canvas.height = h * 4
     const ctx = canvas.getContext('2d')
     if (!ctx) {
       toast.error('Error al generar la imagen')
       return
     }
-    ctx.scale(2, 2)
+    ctx.scale(4, 4)
 
     // Dark background matching dashboard cards
     ctx.fillStyle = '#0a0401'
@@ -316,9 +356,9 @@ const handleDownloadPNG = async () => {
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, w, h)
 
-    // ─── Left side: QR Code ───
-    const qrBoxSize = 160
-    const qrBoxX = 36
+    // ─── Left side: QR Code (centered vertically) ───
+    const qrBoxSize = Math.min(160, Math.round(h * 0.55))
+    const qrBoxX = Math.round(w * 0.06)
     const qrBoxY = (h - qrBoxSize) / 2
     const radius = 16
     ctx.fillStyle = '#ffffff'
@@ -340,61 +380,61 @@ const handleDownloadPNG = async () => {
 
     // ─── Right side: Info ───
     const infoX = qrBoxX + qrBoxSize + 28
+    // Top of the info column aligns with top of QR box
+    const infoTopY = qrBoxY
 
     // Title: QR name (bold, large)
     ctx.fillStyle = '#ffffff'
     ctx.font = 'bold 28px "Google Sans", sans-serif'
     ctx.textAlign = 'left'
-    ctx.fillText(propsComputed.value.name || 'Código QR', infoX, qrBoxY + 16)
+    ctx.textBaseline = 'top'
+    ctx.fillText(propsComputed.value.name || 'Código QR', infoX, infoTopY)
 
     // ID
     ctx.fillStyle = '#ffffff'
     ctx.font = 'bold 13px monospace'
-    ctx.fillText(`#${propsComputed.value.id}`, infoX, qrBoxY + 46)
+    ctx.fillText(`#${propsComputed.value.id}`, infoX, infoTopY + 34)
 
     // Divider line
+    const dividerY = infoTopY + 64
     ctx.strokeStyle = 'rgba(255,255,255,0.12)'
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(infoX, qrBoxY + 80)
-    ctx.lineTo(w - 28, qrBoxY + 80)
+    ctx.moveTo(infoX, dividerY)
+    ctx.lineTo(w - 28, dividerY)
     ctx.stroke()
 
-    // CTA text (multi-line for wrapping)
+    // CTA text (2 lines)
     ctx.fillStyle = '#ffffff'
     ctx.font = 'bold 16px "Google Sans", sans-serif'
-    const ctaLine1 = 'Escanee este QR para'
-    const ctaLine2 = 'contactar al dueño de'
-    const ctaLine3 = 'esta pertenencia de'
-    const ctaLine4 = 'forma segura.'
-    ctx.fillText(ctaLine1, infoX, qrBoxY + 108)
-    ctx.fillText(ctaLine2, infoX, qrBoxY + 130)
-    ctx.fillText(ctaLine3, infoX, qrBoxY + 152)
-    ctx.fillText(ctaLine4, infoX, qrBoxY + 174)
+    ctx.textBaseline = 'top'
+    ctx.fillText('Escanee este QR para contactar', infoX, dividerY + 16)
+    ctx.fillText('al dueño de forma segura.', infoX, dividerY + 38)
 
-    // GPS pin icon + brand (big)
-    const pinX = infoX
-    const pinY = qrBoxY + 200
+    // GPS pin icon + brand
+    const pinY = dividerY + 70
     ctx.fillStyle = '#f38020'
+    ctx.textBaseline = 'top'
     // GPS pin circle
     ctx.beginPath()
-    ctx.arc(pinX + 8, pinY - 1, 5, 0, Math.PI * 2)
+    ctx.arc(infoX + 8, pinY + 7, 5, 0, Math.PI * 2)
     ctx.fill()
     // GPS pin triangle below
     ctx.beginPath()
-    ctx.moveTo(pinX + 3, pinY + 2)
-    ctx.lineTo(pinX + 13, pinY + 2)
-    ctx.lineTo(pinX + 8, pinY + 11)
+    ctx.moveTo(infoX + 3, pinY + 10)
+    ctx.lineTo(infoX + 13, pinY + 10)
+    ctx.lineTo(infoX + 8, pinY + 19)
     ctx.closePath()
     ctx.fill()
 
     ctx.font = 'bold 20px "Google Sans", sans-serif'
-    ctx.fillText('ubiqueme.com', infoX + 22, qrBoxY + 208)
+    ctx.fillText('ubiqueme.com', infoX + 22, pinY + 2)
 
     // Bottom: instruction line
+    const bottomY = pinY + 38
     ctx.fillStyle = 'rgba(255,255,255,0.5)'
     ctx.font = 'bold 11px "Google Sans", sans-serif'
-    ctx.fillText('Escanee y ayude a devolver esta pertenencia', infoX, qrBoxY + 240)
+    ctx.fillText('Escanee y ayude a devolver esta pertenencia', infoX, bottomY)
 
     // Download
     const link = document.createElement('a')
@@ -407,6 +447,115 @@ const handleDownloadPNG = async () => {
   } catch (error) {
     toast.error(`Error al descargar PNG: ${error}`)
   }
+}
+
+const handleDownloadCompactPNG = async () => {
+  const dims = sizeDimensions[downloadSize.value]
+  const size = dims.compact
+  const fontSize = Math.round(size * 0.048)
+  const smallFontSize = Math.round(size * 0.036)
+
+  // Layout: white rounded rect with padding, everything inside
+  const outerPad = Math.round(size * 0.07)
+  const innerW = size - outerPad * 2
+  const qrW = Math.round(innerW * 0.55)
+  const textSpacing = Math.round(qrW * 0.06)
+
+  try {
+    const qrValue = `${window.location.origin}/qr/${propsComputed.value.id}`
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrW}x${qrW}&data=${encodeURIComponent(qrValue)}`
+
+    const qrImg = new Image()
+    qrImg.crossOrigin = 'anonymous'
+    qrImg.src = qrImageUrl
+    await qrImg.decode()
+
+    const canvas = document.createElement('canvas')
+    canvas.width = size * 4
+    canvas.height = size * 4
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      toast.error('Error al generar la imagen')
+      return
+    }
+    ctx.scale(4, 4)
+
+    // White background
+    ctx.fillStyle = '#ffffff'
+    ctx.beginPath()
+    const r = Math.round(size * 0.06)
+    ctx.moveTo(r, 0)
+    ctx.lineTo(size - r, 0)
+    ctx.quadraticCurveTo(size, 0, size, r)
+    ctx.lineTo(size, size - r)
+    ctx.quadraticCurveTo(size, size, size - r, size)
+    ctx.lineTo(r, size)
+    ctx.quadraticCurveTo(0, size, 0, size - r)
+    ctx.lineTo(0, r)
+    ctx.quadraticCurveTo(0, 0, r, 0)
+    ctx.closePath()
+    ctx.fill()
+
+    // "Frente": ubiqueme.com (top, centered)
+    ctx.fillStyle = '#f38020'
+    ctx.font = `bold ${fontSize}px "Google Sans", sans-serif`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'bottom'
+    const frenteY = outerPad + textSpacing + fontSize
+    ctx.fillText('ubiqueme.com', size / 2, frenteY)
+
+    // QR code area: centered below "ubiqueme.com", above CTA
+    const availableH = size - outerPad * 2 - textSpacing * 2 - fontSize - smallFontSize
+    const qrMaxSize = Math.min(qrW, availableH)
+    const qrX = (size - qrMaxSize) / 2
+    const qrY = outerPad + textSpacing + fontSize + textSpacing
+    ctx.drawImage(qrImg, qrX, qrY, qrMaxSize, qrMaxSize)
+
+    // Left domain (rotated -90°)
+    ctx.save()
+    ctx.translate(qrX - textSpacing, qrY + qrMaxSize / 2)
+    ctx.rotate(-Math.PI / 2)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = `bold ${smallFontSize}px "Google Sans", sans-serif`
+    ctx.fillStyle = '#f38020'
+    ctx.fillText('localizarme.com', 0, 0)
+    ctx.restore()
+
+    // Right domain (rotated 90°)
+    ctx.save()
+    ctx.translate(qrX + qrMaxSize + textSpacing, qrY + qrMaxSize / 2)
+    ctx.rotate(Math.PI / 2)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = `bold ${smallFontSize}px "Google Sans", sans-serif`
+    ctx.fillStyle = '#f38020'
+    ctx.fillText('contactomio.com', 0, 0)
+    ctx.restore()
+
+    // "Barba": CTA text (bottom, centered)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.font = `bold ${smallFontSize}px "Google Sans", sans-serif`
+    ctx.fillStyle = '#f38020'
+    const barbaY = qrY + qrMaxSize + textSpacing
+    ctx.fillText('Escanee QR para contactar al dueño', size / 2, barbaY)
+
+    // Download
+    const link = document.createElement('a')
+    link.download = `qr-compact-${propsComputed.value.id}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+
+    toast.success('QR compacto descargado como PNG')
+    closeAll()
+  } catch (error) {
+    toast.error(`Error al descargar QR compacto: ${error}`)
+  }
+}
+
+const handlePrint = () => {
+  window.print()
 }
 
 const qrLogs = ref<IQRLog[]>([]);
@@ -570,7 +719,7 @@ onUnmounted(() => {
               <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
             </template>
             <template v-else>
-              <QrcodeVue :value="`http://192.168.100.15:5173/qr/${propsComputed.id}`" :size="110" class="w-full h-full"
+              <QrcodeVue :value="`https://www.ubiqueme.com/qr/${propsComputed.id}`" :size="110" class="w-full h-full"
                 render-as="canvas" />
             </template>
           </div>
@@ -702,11 +851,45 @@ onUnmounted(() => {
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
           <div v-if="activePrompt === 'download'" class="w-full max-w-xs sm:max-w-sm">
             <div class="flex flex-col items-center">
-              <h3 class="text-white/90 text-lg font-medium mb-4">Descargar QR</h3>
+              <h3 class="text-white/90 text-lg font-medium mb-3">Descargar QR</h3>
 
-              <!-- Preview Card (horizontal, bold white text) -->
-              <div id="qr-print-area"
-                class="bg-[#0a0401] rounded-xl p-4 w-full flex flex-row items-center gap-4 mb-5 border border-white/10 relative overflow-hidden min-h-[170px]">
+              <!-- Style selector tabs -->
+              <div class="flex w-full gap-1 mb-4 p-1 bg-white/5 rounded-xl">
+                <button @click="downloadStyle = 'normal'"
+                  class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                  :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-white/50 hover:text-white/80'">
+                  Normal
+                </button>
+                <button @click="downloadStyle = 'compact'"
+                  class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                  :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white' : 'text-white/50 hover:text-white/80'">
+                  Compacto
+                </button>
+              </div>
+
+              <!-- Size selector -->
+              <div class="flex w-full gap-2 mb-4">
+                <button @click="downloadSize = 'sm'"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all cursor-pointer"
+                  :class="downloadSize === 'sm' ? 'bg-orange-500/20 border-orange-500 text-orange-400' : 'border-white/10 text-white/50 hover:border-white/30'">
+                  SM
+                </button>
+                <button @click="downloadSize = 'md'"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all cursor-pointer"
+                  :class="downloadSize === 'md' ? 'bg-orange-500/20 border-orange-500 text-orange-400' : 'border-white/10 text-white/50 hover:border-white/30'">
+                  MD
+                </button>
+                <button @click="downloadSize = 'lg'"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all cursor-pointer"
+                  :class="downloadSize === 'lg' ? 'bg-orange-500/20 border-orange-500 text-orange-400' : 'border-white/10 text-white/50 hover:border-white/30'">
+                  LG
+                </button>
+              </div>
+
+              <!-- Preview Card (Normal) -->
+              <div v-if="downloadStyle === 'normal'" id="qr-print-area"
+                class="bg-[#0a0401] rounded-xl px-3 py-3 w-full flex flex-row items-center gap-3 mb-4 border border-white/10 relative overflow-hidden max-h-[180px]"
+                :style="previewAspectStyle">
                 <!-- Grid pattern -->
                 <div class="absolute inset-0 opacity-[0.04] pointer-events-none"
                   style="background-image: linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px);background-size:24px 24px;">
@@ -716,39 +899,84 @@ onUnmounted(() => {
                   class="absolute top-0 left-0 w-full h-full pointer-events-none bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
                 </div>
                 <!-- QR Code (left) -->
-                <div
-                  class="w-[120px] h-[120px] shrink-0 flex items-center justify-center bg-white p-2.5 rounded-2xl shadow-lg z-10">
+                <div class="shrink-0 flex items-center justify-center bg-white p-1.5 rounded-xl shadow-lg z-10"
+                  :style="qrPreviewSizeStyle">
                   <template v-if="propsComputed.img">
                     <img :src="propsComputed.img" ref="downloadImgRef"
-                      class="w-full h-full object-contain rounded-xl" />
+                      class="w-full h-full object-contain rounded-lg" />
                   </template>
                   <template v-else>
-                    <QrcodeVue ref="downloadQrRef" :value="qrDownloadUrl" :size="100" render-as="canvas" />
+                    <QrcodeVue ref="downloadQrRef" :value="qrDownloadUrl" :size="qrPreviewInnerSize"
+                      render-as="canvas" />
                   </template>
                 </div>
                 <!-- Info (right) -->
-                <div class="flex flex-col min-w-0 gap-1 z-10 flex-1">
-                  <p class="text-white font-extrabold text-lg leading-tight">{{ propsComputed.name || 'Código QR' }}</p>
-                  <p class="text-white font-bold text-[10px] font-mono">
+                <div class="flex flex-col min-w-0 gap-0.5 z-10 flex-1">
+                  <p class="text-white font-extrabold leading-tight truncate" :style="{ fontSize: titleFontSize }">{{
+                    propsComputed.name
+                    || 'Código QR' }}</p>
+                  <p class="text-white font-bold font-mono" :style="{ fontSize: idFontSize }">
                     #{{ propsComputed.id }}
                   </p>
-                  <div class="w-full h-px bg-white/10 my-1"></div>
-                  <p class="text-white font-bold text-[11px] leading-tight">
-                    Escanee este QR para contactar al dueño de esta pertenencia de forma segura.
+                  <div class="w-full h-px bg-white/10 my-0.5"></div>
+                  <p class="text-white font-bold leading-tight" :style="{ fontSize: ctaFontSize }">
+                    Escanee este QR para contactar al dueño de forma segura.
                   </p>
-                  <div class="flex items-center gap-1 mt-1">
-                    <span class="material-symbols-outlined text-[#f38020] text-[14px]">location_on</span>
-                    <span class="text-[#f38020] text-[11px] font-black tracking-widest uppercase">ubiqueme.com</span>
+                  <div class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[#f38020]"
+                      :style="{ fontSize: pinFontSize }">location_on</span>
+                    <span class="text-[#f38020] font-black tracking-widest uppercase"
+                      :style="{ fontSize: brandFontSize }">ubiqueme.com</span>
                   </div>
                 </div>
               </div>
 
+              <!-- Preview Card (Compacto) -->
+              <div v-else id="qr-print-area"
+                class="bg-white rounded-xl px-3 py-3 w-full flex flex-col items-center justify-center gap-2 mb-4 border border-white/10 relative aspect-square max-h-[200px] max-w-[200px] mx-auto">
+                <!-- Ubiqueme.com top -->
+                <span class="text-[#f38020] font-black tracking-widest uppercase"
+                  :style="{ fontSize: brandFontSize }">ubiqueme.com</span>
+                <!-- QR code centered -->
+                <div class="shrink-0 flex items-center justify-center bg-white p-1 rounded-lg shadow-none z-10"
+                  :style="qrCompactSizeStyle">
+                  <template v-if="propsComputed.img">
+                    <img :src="propsComputed.img" ref="downloadImgRef"
+                      class="w-full h-full object-contain rounded-lg" />
+                  </template>
+                  <template v-else>
+                    <QrcodeVue ref="downloadQrRef" :value="qrDownloadUrl" :size="qrCompactInnerSize"
+                      render-as="canvas" />
+                  </template>
+                </div>
+                <!-- Dominios laterales verticales -->
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span class="text-[#f38020] text-[8px] font-bold tracking-wider absolute"
+                    style="left: 4px; top: 50%; transform: translateY(-50%) rotate(180deg); writing-mode: vertical-lr; text-orientation: mixed;">localizarme.com</span>
+                  <span class="text-[#f38020] text-[8px] font-bold tracking-wider absolute"
+                    style="right: 4px; top: 50%; transform: translateY(-50%); writing-mode: vertical-lr; text-orientation: mixed;">contactomio.com</span>
+                </div>
+                <!-- CTA -->
+                <p class="text-[#f38020] font-bold text-center" :style="{ fontSize: compactCtaFontSize }">
+                  Escanee QR para contactar al dueño
+                </p>
+              </div>
+
+              <!-- Print tip -->
+              <p class="text-white/40 text-[10px] text-center leading-relaxed mb-4">
+                💡 Al imprimir, ajuste la <strong class="text-white/60">escala</strong> en las opciones de impresión
+                para
+                evitar que la imagen se agrande o recorte.
+              </p>
+
               <!-- Action Buttons -->
-              <button @click="handleDownloadPNG"
-                class="w-full py-2.5 bg-[#f38020] text-white rounded-lg font-medium text-sm hover:bg-[#e07010] transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px]">download</span>
-                Descargar
-              </button>
+              <div class="flex w-full gap-2">
+                <button @click="downloadStyle === 'normal' ? handleDownloadPNG() : handleDownloadCompactPNG()"
+                  class="flex-1 py-2.5 bg-[#f38020] text-white rounded-lg font-medium text-sm hover:bg-[#e07010] transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px]">download</span>
+                  Descargar
+                </button>
+              </div>
               <button @click="closeAll"
                 class="mt-3 w-full py-2 bg-white/5 text-white/50 rounded-lg text-xs hover:bg-white/10 hover:text-white/70 transition-colors cursor-pointer">
                 Cerrar
@@ -786,5 +1014,37 @@ onUnmounted(() => {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(249, 115, 22, 0.4);
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #qr-print-area,
+  #qr-print-area * {
+    visibility: visible !important;
+  }
+
+  #qr-print-area {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    background: #0a0401 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 24px !important;
+  }
+
+  @page {
+    margin: 0;
+  }
 }
 </style>

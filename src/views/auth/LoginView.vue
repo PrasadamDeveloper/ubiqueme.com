@@ -108,9 +108,9 @@
                 <div class="space-y-2">
                   <div class="flex justify-between items-center px-1">
                     <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Contraseña</label>
-                    <a href="#"
-                      class="text-[10px] font-black text-orange-500 hover:text-white uppercase tracking-widest transition-colors">¿Olvidó
-                      su clave?</a>
+                    <button type="button" @click="handleForgotPassword" :disabled="isResettingPassword"
+                      class="text-[10px] font-black text-orange-500 hover:text-white uppercase tracking-widest transition-colors cursor-pointer">¿Olvidó
+                      su clave?</button>
                   </div>
                   <div class="group relative">
                     <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
@@ -119,7 +119,7 @@
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
-                        }}</span>
+                      }}</span>
                     </button>
                   </div>
                 </div>
@@ -191,7 +191,7 @@
 import { ref, reactive } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import VerificationBanner from '@/components/auth/VerificationBanner.vue'
-import { signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, sendEmailVerification } from 'firebase/auth'
+import { signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth'
 import { doc, getFirestore, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
 import { nanoid } from 'nanoid'
 import { auth, db as firestoreDb } from '@/firebase'
@@ -210,9 +210,32 @@ const form = reactive({
 
 const userStore = useUserStore()
 const loading = ref(false)
+const isResettingPassword = ref(false)
 
 
 const db = firestoreDb
+const handleForgotPassword = async () => {
+  if (!form.email) {
+    toast.error('Por favor, ingrese su correo electrónico primero.')
+    return
+  }
+  isResettingPassword.value = true
+  try {
+    await sendPasswordResetEmail(auth, form.email)
+    toast.success('Se ha enviado un correo para restablecer su contraseña. Revise su bandeja de entrada.')
+  } catch (error: any) {
+    if (error.code === 'auth/user-not-found') {
+      toast.error('No encontramos una cuenta con ese correo electrónico.')
+    } else if (error.code === 'auth/invalid-email') {
+      toast.error('El correo electrónico no es válido.')
+    } else {
+      toast.error('Error al enviar el correo: ' + error.message)
+    }
+    console.error(error)
+  } finally {
+    isResettingPassword.value = false
+  }
+}
 const handleLogin = async () => {
   if (!form.email || !form.password) {
     toast.error('Por favor, complete todos los campos.')

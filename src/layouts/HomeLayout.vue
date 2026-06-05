@@ -49,8 +49,6 @@ onUnmounted(() => {
 
       <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto">
 
-        <img src="../assets/Ubiqueme_Logo_White.webp" alt="Ubiqueme Logo"
-          class="w-20/Users/chemex/Downloads/Ubiqueme_Logo_white.webp  absolute left-0 top-0 h-full  ">
         <!-- Logo -->
         <div class="flex items-center gap-3 relative">
           <!-- SSL Badge (Cloudflare Style) -->
@@ -61,7 +59,7 @@ onUnmounted(() => {
           </div>
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
             <span class="material-symbols-outlined text-orange-500 text-[2.5rem]" aria-hidden="true">location_on</span>
-            <div class="flex flex-col min-w-[140px] sm:min-w-[200px]">
+            <div class="flex flex-col min-w-[140px] sm:min-w-[200px] pr-4 sm:pr-0">
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
                 <Transition name="slide-up">
                   <div :key="currentDomainIndex"
