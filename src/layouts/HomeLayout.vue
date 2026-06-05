@@ -49,18 +49,18 @@ onUnmounted(() => {
 
       <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto">
 
+        <img src="../assets/Ubiqueme_Logo_White.webp" alt="Ubiqueme Logo"
+          class="w-20/Users/chemex/Downloads/Ubiqueme_Logo_white.webp  absolute left-0 top-0 h-full  ">
         <!-- Logo -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 relative">
           <!-- SSL Badge (Cloudflare Style) -->
           <div
-            class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] hover:bg-orange-500/[0.1] hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] transition-all duration-300">
+            class="hidden sm:flex items-center gap-1.5 px-0.5 py-1.5 ml-4 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] hover:bg-orange-500/[0.1] hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] transition-all duration-300">
             <span class="material-symbols-outlined text-orange-400" style="font-size:18px">shield</span>
             <span class="text-[11px] font-black uppercase tracking-[0.2em] text-orange-500/80">SSL</span>
           </div>
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
-            <span
-              class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform"
-              aria-hidden="true">location_on</span>
+            <span class="material-symbols-outlined text-orange-500 text-[2.5rem]" aria-hidden="true">location_on</span>
             <div class="flex flex-col min-w-[140px] sm:min-w-[200px]">
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
                 <Transition name="slide-up">

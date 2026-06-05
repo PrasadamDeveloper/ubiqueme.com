@@ -1,0 +1,300 @@
+// ===============================================================
+// 🔐 UBIQUEME FIREBASE SECURITY RULES
+// ===============================================================
+// Project:    ubiqueme-system
+// Frontend:   Vue 3 + Composition API + Pinia
+// Auth:       Firebase Auth (email/password) + Google One Tap
+// DB:         Firestore (native mode)
+// Roles:      scanner | user | admin
+// ===============================================================
+//
+// ─────────── ROUTE MAP ───────────
+// Route: /                          → No Firestore reads (public landing)
+// Route: /login, /register          → Auth only, no Firestore
+// Route: /verify                    → Auth only, no Firestore
+// Route: /dashboard                 → users/{uid}, users/{uid}/subscriptions, users/{uid}/qrs
+// Route: /admin                     → Full access all collections (admin role required)
+// Route: /qr/:qrId                  → publicQR/{qrId} (public read), publicQR/{qrId}/logs (public create)
+// Route: /checkout/:planId          → No Firestore writes (POST to Cloudflare Worker)
+// Route: /pricing, /help, /privacy  → No Firestore (static content)
+// Route: /contact                   → No Firestore
+// Route: /delete                    → No Firestore
+// ─────────────────────────────────
+//
+// ===============================================================
+// 🛠️ HELPER FUNCTIONS
+// ===============================================================
+
+/**
+ * Checks if the request comes from an authenticated user.
+ * @return {boolean} true if request.auth is not null
+ */
+function isAuth() {
+  return request.auth != null;
+}
+
+/**
+ * Gets the full user document for the authenticated user.
+ * @return {map} user document data
+ */
+function getUserData() {
+  return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+}
+
+/**
+ * Checks if the authenticated user exists in the users collection.
+ * @return {boolean} true if the user document exists
+ */
+function userExists() {
+  return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+}
+
+/**
+ * Checks if the authenticated user has the 'admin' role.
+ * @return {boolean} true if admin
+ */
+function isAdmin() {
+  return isAuth() && userExists() && getUserData().role == 'admin';
+}
+
+/**
+ * Checks if the authenticated user owns the given userId.
+ * @param {string} userId - The user ID to compare against request.auth.uid
+ * @return {boolean} true if owner
+ */
+function isOwner(userId) {
+  return isAuth() && request.auth.uid == userId;
+}
+
+/**
+ * Checks if the authenticated user is either the owner or an admin.
+ * @param {string} userId - The user ID to compare
+ * @return {boolean} true if owner or admin
+ */
+function isOwnerOrAdmin(userId) {
+  return isOwner(userId) || isAdmin();
+}
+
+/**
+ * Validates that the request body has all required fields for user creation.
+ * @param {map} data - The incoming request data
+ * @return {boolean} true if all required fields are present and valid types
+ */
+function isValidUserData(data) {
+  return data.keys().hasAll(['uid', 'name', 'email', 'role', 'isActive', 'isBanned', 'preferences', 'lastLoginAt', 'createdAt'])
+    && data.uid is string
+    && data.name is string
+    && data.email is string
+    && data.role in ['scanner', 'user', 'admin']
+    && data.isActive is bool
+    && data.isBanned is bool;
+}
+
+/**
+ * Validates publicQR document fields on creation.
+ */
+function isValidPublicQRData(data) {
+  return data.keys().hasAll(['id', 'name', 'status', 'lastScan', 'totalScans', 'isBanned', 'banReason', 'docId', 'uid', 'createdAt'])
+    && data.id is string
+    && data.name is string
+    && data.status is string
+    && data.uid is string
+    && data.isBanned is bool
+    && data.banReason is string;
+}
+
+/**
+ * Validates user QR document fields on creation.
+ */
+function isValidUserQRData(data) {
+  return data.keys().hasAll(['id', 'uid', 'name', 'status', 'scans', 'lastScan', 'isActive', 'isBanned', 'banReason', 'subscriptionId', 'createdAt'])
+    && data.id is string
+    && data.uid is string
+    && data.name is string
+    && data.status is string
+    && data.isActive is bool
+    && data.isBanned is bool;
+}
+
+/**
+ * Validates subscription document fields on creation.
+ */
+function isValidSubscriptionData(data) {
+  return data.keys().hasAll(['id', 'userId', 'planType', 'status', 'purchasedAt', 'endDate', 'paymentProviderId', 'totalQRsAllowed', 'totalQRsCreated', 'freeShipmentsAllowed', 'freeShipmentsUsed'])
+    && data.id is string
+    && data.userId is string
+    && data.planType in ['bronce', 'plata', 'oro', 'trial']
+    && data.status in ['active', 'inactive', 'canceled']
+    && data.totalQRsAllowed is number
+    && data.totalQRsCreated is number
+    && data.freeShipmentsAllowed is number
+    && data.freeShipmentsUsed is number;
+}
+
+/**
+ * Validates scan log document fields on creation.
+ */
+function isValidLogData(data) {
+  return data.keys().hasAny(['scanDate', 'scanMetrics', 'interaction', 'img'])
+    && data.scanDate is timestamp;
+}
+
+
+// ===============================================================
+// 📦 COLLECTION: users/{userId}
+// ===============================================================
+// Frontend writes:
+//   - QRScannedView (Google One Tap) → create scanner user
+//   - AdminDashboardView              → update (ban, totalQRs)
+//   - Direct user profile update      → update own data
+// ===============================================================
+
+match /users/{userId} {
+
+  // ── READ ──
+  // Who can read: the user themselves, or any admin
+  allow read: if isOwnerOrAdmin(userId);
+
+  // ── CREATE ──
+  // Who can create: the user themselves (self-registration via Google One Tap), or admin
+  // Validates required fields exist on creation
+  allow create: if isOwner(userId) && isValidUserData(request.resource.data)
+                || isAdmin() && isValidUserData(request.resource.data);
+
+  // ── UPDATE ──
+  // Who can update: the user themselves (limited fields), or admin (any field)
+  // Non-admin users can only update certain fields
+  allow update: if isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(['phone', 'preferences', 'lastLoginAt', 'name'])
+                || isAdmin();
+
+  // ── DELETE ──
+  // Who can delete: only admin
+  allow delete: if isAdmin();
+
+  // ── SUBCOLLECTION: subscriptions ──
+  // ===============================================================
+  // Route: /dashboard, /admin
+  // Frontend writes:
+  //   - AdminDashboardView → create/update/cancel plans and trials
+  //   - DashboardView      → read own subscriptions
+  // ===============================================================
+
+  match /subscriptions/{subId} {
+
+    // ── READ ──
+    // Who can read: the subscription owner, or admin
+    allow read: if isOwner(userId) || isAdmin();
+
+    // ── CREATE ──
+    // Who can create: only admin (plans are assigned by admins)
+    allow create: if isAdmin() && isValidSubscriptionData(request.resource.data)
+                  && request.resource.data.userId == userId;
+
+    // ── UPDATE ──
+    // Who can update: only admin (cancelations, modifications)
+    allow update: if isAdmin();
+
+    // ── DELETE ──
+    // Who can delete: only admin
+    allow delete: if isAdmin();
+  }
+
+  // ── SUBCOLLECTION: qrs ──
+  // ===============================================================
+  // Route: /dashboard, /qr-request
+  // Frontend writes:
+  //   - RequestQRView       → create QR (user self)
+  //   - AdminDashboardView  → create QR on behalf of user
+  //   - DashboardView       → read own QRs
+  // ===============================================================
+
+  match /qrs/{qrId} {
+
+    // ── READ ──
+    // Who can read: the QR owner, or admin
+    allow read: if isOwner(userId) || isAdmin();
+
+    // ── CREATE ──
+    // Who can create: the user themselves (must match uid in doc), or admin
+    allow create: if (isOwner(userId) && request.resource.data.uid == userId
+                      && isValidUserQRData(request.resource.data))
+                    || (isAdmin() && isValidUserQRData(request.resource.data)
+                      && request.resource.data.uid == userId);
+
+    // ── UPDATE ──
+    // Who can update: the owner (limited fields), or admin (any field)
+    allow update: if (isOwner(userId)
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['status', 'name', 'category', 'isActive', 'lastScan', 'scans', 'physicalShipped', 'physicalShippedAt', 'shippingNotes', 'freeShipmentUsed']))
+                    || isAdmin();
+
+    // ── DELETE ──
+    // Who can delete: only admin
+    allow delete: if isAdmin();
+  }
+}
+
+
+// ===============================================================
+// 📦 COLLECTION: publicQR/{qrId}
+// ===============================================================
+// Route: /qr/:qrId
+// Frontend writes:
+//   - QRScannedView       → read (public), create logs
+//   - RequestQRView       → create QR (auth user)
+//   - AdminDashboardView  → create QR on behalf of user
+//   - AdminDashboardView  → update/ban QRs
+// ===============================================================
+
+match /publicQR/{qrId} {
+
+  // ── READ ──
+  // Who can read: ANYONE (public — this is the scanned QR page)
+  allow read: if true;
+
+  // ── CREATE ──
+  // Who can create: the QR owner (uid in doc matches auth), or admin
+  allow create: if (isAuth() && request.resource.data.uid == request.auth.uid
+                    && isValidPublicQRData(request.resource.data))
+                  || (isAdmin() && isValidPublicQRData(request.resource.data));
+
+  // ── UPDATE ──
+  // Who can update: the owner (limited fields), or admin (any field)
+  allow update: if (isAuth() && resource.data.uid == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                      .hasOnly(['status', 'name', 'category', 'lastScan', 'totalScans', 'freeShipmentUsed']))
+                  || isAdmin();
+
+  // ── DELETE ──
+  // Who can delete: only admin
+  allow delete: if isAdmin();
+
+  // ── SUBCOLLECTION: logs ──
+  // ===============================================================
+  // Route: /qr/:qrId (legacy flow)
+  // Frontend writes:
+  //   - QRScannedView (legacy) → create scan log (public write)
+  //   - Admin                  → read logs
+  // ===============================================================
+
+  match /logs/{logId} {
+
+    // ── READ ──
+    // Who can read: only admin
+    allow read: if isAdmin();
+
+    // ── CREATE ──
+    // Who can create: ANYONE (anonymous users can submit scan reports)
+    // Fields validated minimally to allow anonymous submission
+    allow create: if isValidLogData(request.resource.data);
+
+    // ── UPDATE ──
+    // Who can update: only admin
+    allow update: if isAdmin();
+
+    // ── DELETE ──
+    // Who can delete: only admin
+    allow delete: if isAdmin();
+  }
+}
