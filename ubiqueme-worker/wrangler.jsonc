@@ -12,15 +12,6 @@
 	},
 	"upload_source_maps": true,
 	"compatibility_flags": ["nodejs_compat"],
-	"vars": {
-		"FIREBASE_PROJECT_ID": "test-project",
-		"FIREBASE_API_KEY": "test-api-key",
-		"FIREBASE_AUTH_EMAIL": "worker@ubiqueme.com",
-		"FIREBASE_AUTH_PASSWORD": "test-password",
-		"WHATSAPP_PHONE_NUMBER_ID": "123456789",
-		"WHATSAPP_VERIFY_TOKEN": "test_verify_token",
-		"WHATSAPP_ACCESS_TOKEN": "test_access_token",
-	},
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

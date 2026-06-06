@@ -109,14 +109,6 @@ async function getUserData(env: Env, uid: string): Promise<UserData | null> {
 	};
 }
 
-// ─── JSON helper ─────────────────────────────────────────────────
-function json(data: Record<string, unknown>, status = 200): Response {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-	});
-}
-
 // ─── Main handler ───────────────────────────────────────────────
 export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
@@ -153,13 +145,16 @@ export default {
 			}
 		}
 
-		return json({ error: 'Not found or method not allowed' }, 404);
+		return new Response(JSON.stringify({ error: 'Not found or method not allowed' }), {
+			status: 404,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
 	},
 };
 
 /**
- * POST /api/notify — Called from QRScannedView
- * Body: { qrId, message, scannerEmail }
+ * Endpoint /api/notify — Called from QRScannedView
+ * Receives { qrId, message, scannerEmail } and sends WhatsApp to the QR owner.
  */
 async function handleNotify(request: Request, env: Env): Promise<Response> {
 	try {
@@ -167,7 +162,10 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 		const { qrId, message, scannerEmail } = body;
 
 		if (!qrId || !message) {
-			return json({ error: 'qrId and message are required' }, 400);
+			return new Response(JSON.stringify({ error: 'qrId and message are required' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
 		}
 
 		console.log(`[Worker /api/notify] QR: ${qrId}, De: ${scannerEmail || 'anónimo'}`);
@@ -176,14 +174,20 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 		const qrData = await getQRData(env, qrId);
 		if (!qrData || !qrData.uid) {
 			console.log(`[Worker] Error: QR ${qrId} no encontrado en BD.`);
-			return json({ error: 'QR not found' }, 404);
+			return new Response(JSON.stringify({ error: 'QR not found' }), {
+				status: 404,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
 		}
 
 		// Fetch owner data via Firebase SDK
 		const ownerData = await getUserData(env, qrData.uid);
 		if (!ownerData || !ownerData.phone) {
 			console.log(`[Worker] Error: Dueño ${qrData.uid} sin teléfono.`);
-			return json({ error: 'Owner has no phone' }, 400);
+			return new Response(JSON.stringify({ error: 'Owner has no phone' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
 		}
 
 		// Prepare notification
@@ -214,26 +218,35 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 		if (!response.ok) {
 			const result: MetaApiError = await response.json();
 			console.error(`[Worker] Error Meta API:`, result.error?.message || result);
-			return json({ error: 'Meta API Error' }, 502);
+			return new Response(JSON.stringify({ error: 'Meta API Error' }), {
+				status: 502,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
 		}
 
 		console.log(`[Worker /api/notify] Notificación enviada al dueño.`);
-		return json({ success: true });
+		return new Response(JSON.stringify({ success: true }), {
+			status: 200,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
 	} catch (e: unknown) {
 		console.error('[Worker /api/notify] Excepción:', e);
-		return json({ error: 'Internal error' }, 500);
+		return new Response(JSON.stringify({ error: 'Internal error' }), {
+			status: 500,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
 	}
 }
 
 /**
- * POST /api/whatsapp — Incoming webhook from Meta
+ * Endpoint for WhatsApp Webhook (Meta Cloud API Exclusive)
  */
 async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Response> {
 	try {
-		const jsonBody: MetaWebhookPayload = await request.json();
+		const json: MetaWebhookPayload = await request.json();
 
 		// 1. Extract Meta payload
-		const message = jsonBody.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+		const message = json.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 		if (!message) return new Response('No message found', { status: 200 });
 
 		const bodyText: string = message.text?.body || '';
