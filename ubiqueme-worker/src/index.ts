@@ -20,6 +20,13 @@ interface MetaApiError {
 	error?: { message?: string };
 }
 
+// TODO: Create a cron job or endpoint that auto-refreshes WHATSAPP_ACCESS_TOKEN
+// before it expires. Meta tokens last 24h-60d. To implement auto-refresh:
+//   1. Add WHATSAPP_APP_ID and WHATSAPP_APP_SECRET as secrets (Meta dev app)
+//   2. Call GET /oauth/access_token?grant_type=fb_exchange_token&
+//        client_id={APP_ID}&client_secret={APP_SECRET}&
+//        fb_exchange_token={WHATSAPP_ACCESS_TOKEN}
+//   3. Store the new token back into secrets via Workers API
 interface Env {
 	FIREBASE_PROJECT_ID: string;
 	FIREBASE_API_KEY: string;
