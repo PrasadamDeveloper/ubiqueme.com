@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "deploy": "npm run build-only && wrangler deploy",
+    "deploy": "bun run build && touch dist/.nojekyll && gh-pages -d dist --dotfiles",
     "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "npm run build-only && wrangler dev",
+    "preview": "vite preview",
     "test:unit": "vitest",
-    "prepare": "cypress install",
+    "prepare": "bun run cypress:install",
+    "cypress:install": "cypress install",
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
     "build-only": "vite build",
@@ -41,7 +42,6 @@
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.40.0",
     "@tsconfig/node24": "^24.0.4",
     "@types/aos": "^3.0.7",
     "@types/jsdom": "^28.0.0",
@@ -72,8 +72,5 @@
     "vitest": "^4.0.18",
     "vue-tsc": "^3.2.5",
     "wrangler": "^4.98.0"
-  },
-  "engines": {
-    "node": "^20.19.0 || >=22.12.0"
   }
 }

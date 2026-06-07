@@ -46,3 +46,6 @@ __screenshots__/
 !.dev.vars.example
 .env*
 !.env.example
+
+# Windows junk
+nul
