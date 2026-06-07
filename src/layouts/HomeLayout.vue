@@ -4,6 +4,8 @@ import { RouterLink } from 'vue-router'
 
 import { onMounted, onUnmounted, ref } from 'vue';
 
+import UbiquemeLogo from '@/assets/Ubiqueme_Logo_white.webp';
+
 const openAziechrie = () => window.open('https://www.aziechriepharma.com', '_blank');
 
 const navLinks = [
@@ -23,7 +25,7 @@ const taglines = [
 ];
 const currentTaglineIndex = ref(0);
 const isMobileMenuOpen = ref(false);
-let intervalId: any;
+let intervalId: ReturnType<typeof setInterval> | undefined;
 
 onMounted(() => {
   intervalId = setInterval(() => {
@@ -47,7 +49,7 @@ onUnmounted(() => {
         class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent">
       </div>
 
-      <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto">
+      <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto relative">
 
         <!-- Logo -->
         <div class="flex items-center gap-3 relative">
@@ -58,8 +60,10 @@ onUnmounted(() => {
             <span class="text-[11px] font-black uppercase tracking-[0.2em] text-orange-500/80">SSL</span>
           </div>
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
-            <span class="material-symbols-outlined text-orange-500 text-[2.5rem]" aria-hidden="true">location_on</span>
-            <div class="flex flex-col min-w-[140px] sm:min-w-[200px] pr-4 sm:pr-0">
+            <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
+              class="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <!-- Desktop: domains side by side -->
+            <div class="hidden lg:flex flex-col min-w-[140px] sm:min-w-[200px]">
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
                 <Transition name="slide-up">
                   <div :key="currentDomainIndex"
@@ -85,6 +89,37 @@ onUnmounted(() => {
                   </div>
                 </Transition>
               </div>
+            </div>
+          </RouterLink>
+        </div>
+
+        <!-- Mobile: domains centered with absolute positioning to prevent animation jumps -->
+        <div class="lg:hidden flex-1 flex justify-center min-w-0">
+          <RouterLink :to="{ name: 'home' }" class="flex flex-col items-center w-full max-w-fit">
+            <div class="relative h-8 w-full overflow-hidden flex items-center justify-center">
+              <Transition name="slide-up">
+                <div :key="currentDomainIndex"
+                  class="absolute left-0 right-0 flex justify-center items-baseline text-[#dce7ff] font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
+                  <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                  <span class="text-orange-500">.com</span>
+                </div>
+              </Transition>
+            </div>
+            <div class="relative h-3.5 w-full overflow-hidden flex items-center justify-center">
+              <Transition name="slide-up">
+                <div :key="currentTaglineIndex"
+                  class="absolute left-0 right-0 flex justify-center text-[8px] text-white/30 font-medium tracking-wider whitespace-nowrap font-google-sans"
+                  style="font-variation-settings: normal">
+                  <template v-if="taglines[currentTaglineIndex]!.clickable">
+                    por <span @click.stop="openAziechrie"
+                      class="font-semibold text-orange-400/60 hover:text-orange-400 transition-colors cursor-pointer">AZIECHRIE
+                      PHARMA</span>
+                  </template>
+                  <template v-else>
+                    {{ taglines[currentTaglineIndex]!.text }}
+                  </template>
+                </div>
+              </Transition>
             </div>
           </RouterLink>
         </div>
