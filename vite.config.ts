@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueDevTools({ launchEditor: 'code' }), tailwindcss()],
+  plugins: [vue(), vueDevTools(), tailwindcss()],
   server: {
     allowedHosts: true,
   },
