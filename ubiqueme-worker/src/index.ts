@@ -190,16 +190,27 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
 		const scannerContact = scannerEmail || 'Anónimo';
 
-		const notificationText = `*Aviso de ubiqueme.com*\n\nHola ${ownerData.displayName || 'propietario'},\n\nAlguien escaneó su código QR *${qrData.name || 'Desconocido'}* y dejó este mensaje:\n\n_"${message}"_\n\n📧 Contacto del escáner: ${scannerContact}\n\n⚠️ _Interacción segura. Actúe con cuidado si responde._`;
-
-		// Send via Meta API
+		// Send via Meta API using template notif
 		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
 		const payload = {
 			messaging_product: 'whatsapp',
 			recipient_type: 'individual',
 			to: ownerWhatsApp,
-			type: 'text',
-			text: { preview_url: false, body: notificationText },
+			type: 'template',
+			template: {
+				name: 'notif',
+				language: { code: 'es' },
+				components: [
+					{
+						type: 'body',
+						parameters: [
+							{ type: 'text', text: String(ownerData.displayName || 'propietario') },
+							{ type: 'text', text: String(scannerContact || 'Anónimo') },
+							{ type: 'text', text: String(message || 'Sin mensaje') },
+						],
+					},
+				],
+			},
 		};
 
 		const response = await fetch(url, {
@@ -212,8 +223,8 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 		});
 
 		if (!response.ok) {
-			const result: MetaApiError = await response.json();
-			console.error(`[Worker] Error Meta API:`, result.error?.message || result);
+			const result = await response.json();
+			console.error('[Worker] Respuesta completa de Meta:', JSON.stringify(result));
 			return json({ error: 'Meta API Error' }, 502);
 		}
 
@@ -273,16 +284,27 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		const cleanScannerPhone = senderPhone.replace('+', '');
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
 
-		const notificationText = `*Aviso de ubiqueme.com*\n\nHola ${ownerData.displayName || 'propietario'},\n\nEl número *${cleanScannerPhone}* escaneó su código QR *${qrData.name || 'Desconocido'}* y dejó este mensaje:\n\n_"${customMessage}"_\n\n⚠️ _Interacción segura. Actúe con cuidado si responde._`;
-
-		// 6. Send via Meta API
+		// 6. Send via Meta API using template notif
 		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
 		const payload = {
 			messaging_product: 'whatsapp',
 			recipient_type: 'individual',
 			to: ownerWhatsApp,
-			type: 'text',
-			text: { preview_url: false, body: notificationText },
+			type: 'template',
+			template: {
+				name: 'notif',
+				language: { code: 'es' },
+				components: [
+					{
+						type: 'body',
+						parameters: [
+							{ type: 'text', text: String(ownerData.displayName || 'propietario') },
+							{ type: 'text', text: String(cleanScannerPhone || 'Anónimo') },
+							{ type: 'text', text: String(customMessage || 'Sin mensaje') },
+						],
+					},
+				],
+			},
 		};
 
 		const response = await fetch(url, {
@@ -295,8 +317,8 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		});
 
 		if (!response.ok) {
-			const result: MetaApiError = await response.json();
-			console.error(`[Worker] Error Meta API:`, result.error?.message || result);
+			const result = await response.json();
+			console.error('[Worker] Respuesta completa de Meta:', JSON.stringify(result));
 			return new Response('Meta API Error', { status: 200 });
 		}
 
