@@ -195,9 +195,10 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 
 		// Prepare notification
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
-		const scannerContact = scannerEmail || 'Anónimo';
+		const scannerContact = scannerEmail || 'No proporcionado';
+		const currentTime = new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
 
-		// Send via Meta API using template notif
+		// Send via Meta API using template
 		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
 		const payload = {
 			messaging_product: 'whatsapp',
@@ -211,9 +212,11 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 					{
 						type: 'body',
 						parameters: [
-							{ type: 'text', text: String(ownerData.displayName || 'propietario') },
-							{ type: 'text', text: String(scannerContact || 'Anónimo') },
-							{ type: 'text', text: String(message || 'Sin mensaje') },
+							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
+							{ type: 'text', text: String(scannerContact) }, // {{2}} — contacto del scanner
+							{ type: 'text', text: String(message || 'Sin mensaje') }, // {{3}} — mensaje
+							{ type: 'text', text: String(qrData.name || 'objeto') }, // {{4}} — nombre del QR
+							{ type: 'text', text: String(currentTime) }, // {{5}} — hora del escaneo
 						],
 					},
 				],
@@ -261,14 +264,21 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('Missing data', { status: 200 });
 		}
 
-		// 2. Extract QR ID and optional message
+		// 2. Extract QR ID and optional fields
 		const idMatch = bodyText.match(/ID:\s*([A-Za-z0-9_-]+)/i);
 		if (!idMatch || !idMatch[1]) {
 			return new Response('OK', { status: 200 }); // Always 200 so Meta doesn't retry
 		}
 
 		const qrId = idMatch[1];
+		const qrNameMatch = bodyText.match(/QR:\s*(.+)/i);
+		const contactMatch = bodyText.match(/Contacto:\s*(.+)/i);
+		const timeMatch = bodyText.match(/Hora:\s*(.+)/i);
 		const msgMatch = bodyText.match(/Mensaje:\s*([\s\S]*)/i);
+
+		const qrName = qrNameMatch && qrNameMatch[1] ? qrNameMatch[1].trim() : 'objeto';
+		const scannerContact = contactMatch && contactMatch[1] ? contactMatch[1].trim() : 'No proporcionado';
+		const scanTime = timeMatch && timeMatch[1] ? timeMatch[1].trim() : new Date().toLocaleString('es-MX');
 		const customMessage = msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.';
 
 		console.log(`[Worker] QR detectado: ${qrId} (De: ${senderPhone})`);
@@ -291,7 +301,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		const cleanScannerPhone = senderPhone.replace('+', '');
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
 
-		// 6. Send via Meta API using template notif
+		// 6. Send via Meta API using template
 		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
 		const payload = {
 			messaging_product: 'whatsapp',
@@ -305,9 +315,11 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 					{
 						type: 'body',
 						parameters: [
-							{ type: 'text', text: String(ownerData.displayName || 'propietario') },
-							{ type: 'text', text: String(cleanScannerPhone || 'Anónimo') },
-							{ type: 'text', text: String(customMessage || 'Sin mensaje') },
+							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
+							{ type: 'text', text: String(scannerContact || 'No proporcionado') }, // {{2}} — contacto del scanner
+							{ type: 'text', text: String(customMessage || 'Sin mensaje') }, // {{3}} — mensaje
+							{ type: 'text', text: String(qrData.name || qrName || 'objeto') }, // {{4}} — nombre del QR
+							{ type: 'text', text: String(scanTime) }, // {{5}} — hora del escaneo
 						],
 					},
 				],

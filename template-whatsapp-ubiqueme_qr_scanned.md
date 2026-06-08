@@ -42,9 +42,31 @@ Alguien escaneó tu QR
 
 ---
 
-## Cómo se usará en el worker (una vez aprobado)
+## Cómo se usa en el worker
 
-El worker enviará:
+El worker usa el template `ubiqueme_qr_scanned` con **5 parámetros posicionales**:
+
+| Parámetro | Variable Meta | Origen                           |
+| --------- | ------------- | -------------------------------- |
+| `{{1}}`   | Dueño         | `ownerData.displayName`          |
+| `{{2}}`   | Contacto      | `scannerContact` del mensaje     |
+| `{{3}}`   | Mensaje       | `customMessage` del mensaje      |
+| `{{4}}`   | QR name       | `qrName` del mensaje / Firestore |
+| `{{5}}`   | Hora          | `scanTime` del mensaje           |
+
+### Mensaje que envía el escáner
+
+El escáner envía vía WhatsApp un texto con este formato (el worker parsea con regex):
+
+```
+ID: {qrId}
+QR: {QRName}
+Contacto: {scannerContact}
+Hora: {scanTime}
+Mensaje: {mensaje}
+```
+
+### Payload que envía el worker a Meta
 
 ```json
 {
@@ -59,9 +81,11 @@ El worker enviará:
       {
         "type": "body",
         "parameters": [
-          { "type": "text", "text": "Mi Tienda" },
+          { "type": "text", "text": "Nombre del dueño" },
+          { "type": "text", "text": "cliente@email.com" },
           { "type": "text", "text": "Hola, me interesa" },
-          { "type": "text", "text": "cliente@email.com" }
+          { "type": "text", "text": "Mi Tienda" },
+          { "type": "text", "text": "08/06/2026 10:00" }
         ]
       }
     ]

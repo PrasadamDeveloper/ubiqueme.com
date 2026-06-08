@@ -714,7 +714,9 @@ onUnmounted(() => {
 
         <div class="flex flex-col items-center gap-3">
           <!-- QR Container -->
-          <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center bg-white p-2.5 shadow-lg">
+          <div
+            class="w-34 h-34 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center bg-white p-2.5 pt-6 shadow-lg relative">
+            <span class="text-black font-bold absolute top-1 left-1 text-sm">{{ propsComputed.name }}</span>
             <template v-if="propsComputed.img">
               <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
             </template>
