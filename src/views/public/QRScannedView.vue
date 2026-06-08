@@ -1,61 +1,32 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { collection, doc, getDoc, increment, setDoc, serverTimestamp, Timestamp, writeBatch } from 'firebase/firestore'
-import { auth, db } from '@/firebase'
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
+import { collection, doc, getDoc, increment, Timestamp, writeBatch } from 'firebase/firestore'
+import { db } from '@/firebase'
 import imageCompression from 'browser-image-compression'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import type { IPublicQR, IQRScanMetrics } from '@/interfaces/IPublicQR'
 import { toast } from 'vue-sonner'
-import { useUserStore } from '@/stores/user'
-import WhatsappButton from '@/components/home/QRScanned/WhatsappButton.vue'
 
 const route = useRoute()
-const userStore = useUserStore()
 const qrId = route.params.qrId as string
 
 // ========================
 // CURRENT FLOW STATE (WhatsApp + Email)
 // ========================
 const loading = ref(true)
-const isAuthenticating = ref(false)
 const qrData = ref<IPublicQR | null>(null)
 const errorMsg = ref('')
 const QRName = computed(() => qrData.value?.name || 'objeto')
-const customMessage = ref('')
+const messagePrefix = computed(() => `Hola, lo contacto sobre su QR "${QRName.value.trim()}", con el motivo de que: `)
+const userReason = ref('')
+const customMessage = computed(() => `${messagePrefix.value}${userReason.value}`)
 const isSending = ref(false)
 const hasSent = ref(false)
 
 // WhatsApp number from .env
-const whatsappNumber = '+15556322742'
-
-const defaultBody = computed(() => {
-  return `Hola, acabo de encontrar su artículo protegido por Ubiqueme: "${QRName.value ?? 'pertenencia'}".`
-})
-
-watch(QRName, () => {
-  if (!customMessage.value || customMessage.value.startsWith('Hola, acabo de encontrar tu artículo protegido por Ubiqueme: "objeto"')) {
-    customMessage.value = defaultBody.value
-  }
-})
-
-const buttonText = computed(() => {
-  if (isAuthenticating.value) return 'Identificando...'
-  if (isSending.value) return 'Enviando...'
-  if (hasSent.value) return '¡Enviado!'
-  return 'Enviar Mensaje'
-})
-
-const copyToClipboard = async (text: string, field: string) => {
-  try {
-    await navigator.clipboard.writeText(text)
-    toast.success(`${field} copiado al portapapeles`)
-  } catch (err) {
-    toast.error('Error al copiar al portapapeles')
-  }
-}
+const whatsappNumber = '+525652094079'
 
 // ========================
 // LEGACY FLOW STATE (Reasons + Image)
@@ -81,106 +52,6 @@ const loadQRData = async () => {
     errorMsg.value = "No se encontró información sobre este QR"
   } finally {
     loading.value = false
-  }
-}
-
-const handleCredentialResponse = async (response: any) => {
-  try {
-    isAuthenticating.value = true
-    const credential = GoogleAuthProvider.credential(response.credential)
-    const userCredential = await signInWithCredential(auth, credential)
-    const user = userCredential.user
-
-    // Register scanner in DB silently
-    const userRef = doc(db, 'users', user.uid)
-    const userSnap = await getDoc(userRef)
-
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        name: user.displayName || 'Usuario QR',
-        email: user.email,
-        phone: '',
-        role: 'scanner',
-        isActive: true,
-        isBanned: false,
-        banReason: '',
-        plan: 'alpha',
-        subscriptionStatus: 'active',
-        planPurchasedAt: serverTimestamp(),
-        planEndDate: null,
-        paymentProviderId: '',
-        totalQRs: 0,
-        preferences: {
-          emailNotifications: false,
-          smsNotifications: false,
-          whatsappNotifications: false
-        },
-        lastLoginAt: serverTimestamp(),
-        createdAt: serverTimestamp()
-      })
-    }
-
-    userStore.setUserId(user.uid)
-    userStore.setEmail(user.email || '')
-    userStore.setFullName(user.displayName || '')
-    toast.success(`Identificado como ${user.email}`)
-    await sendMessageToAPI()
-  } catch (error: any) {
-    console.error("One Tap Error:", error)
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      toast.error('Este correo ya está registrado con contraseña. Por favor inicie sesión tradicionalmente.')
-    } else {
-      toast.error('Error al identificar la cuenta. Intente de nuevo.')
-    }
-  } finally {
-    isAuthenticating.value = false
-  }
-}
-
-const sendMessageToAPI = async () => {
-  try {
-    isSending.value = true
-    const workerUrl = import.meta.env.VITE_WHATSAPP_WORKER_URL || 'http://127.0.0.1:8787'
-    const res = await fetch(`${workerUrl}/api/notify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        qrId,
-        message: customMessage.value,
-        scannerEmail: userStore.email
-      })
-    })
-
-    if (!res.ok) throw new Error('Error en el servidor')
-
-    hasSent.value = true
-    toast.success('Mensaje enviado exitosamente. El propietario ha sido notificado.')
-  } catch (error) {
-    console.error(error)
-    toast.error('Ocurrió un error al enviar el mensaje. Intente de nuevo.')
-  } finally {
-    isSending.value = false
-  }
-}
-
-const handleSendClick = async () => {
-  if (!customMessage.value.trim()) {
-    toast.error('Por favor escribe un mensaje.')
-    return
-  }
-
-  if (userStore.isAuthenticated) {
-    await sendMessageToAPI()
-    return
-  }
-
-  // @ts-ignore
-  if (window.google && window.google.accounts && window.google.accounts.id) {
-    // @ts-ignore
-    window.google.accounts.id.prompt()
-  } else {
-    toast.error('Error al cargar autenticación. Refresque la página.')
   }
 }
 
@@ -312,23 +183,7 @@ const updateReasons = () => {
 }
 
 onMounted(() => {
-  customMessage.value = defaultBody.value
   loadQRData()
-
-  // Si NO está autenticado, pre-inicializamos Google One Tap
-  if (!userStore.isAuthenticated) {
-    setTimeout(() => {
-      // @ts-ignore
-      if (window.google && window.google.accounts && window.google.accounts.id) {
-        // @ts-ignore
-        window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-          auto_select: false,
-        })
-      }
-    }, 1000)
-  }
 })
 
 onUnmounted(() => {
@@ -453,7 +308,7 @@ onUnmounted(() => {
             <div
               class="bg-transparent md:bg-white/5 border-0 md:border border-white/10 rounded-[2rem] md:rounded-[3rem] p-0 md:p-2 overflow-visible md:overflow-hidden shadow-none md:shadow-2xl relative w-full mt-4 md:mt-0">
               <div
-                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10  md:p-1 space-y-6 md:space-y-10 relative z-10 w-full shadow-2xl md:shadow-none whatsapp-preview">
+                class="bg-[#09090b] md:bg-[#09090b] rounded-[2rem] md:rounded-[2.8rem] border md:border-none border-white/10  md:p-3 space-y-6 md:space-y-10 relative z-10 w-full shadow-2xl md:shadow-none whatsapp-preview">
                 <div class="wa-header">
                   <div class="wa-avatar">
                     {{ QRName?.charAt(0)?.toUpperCase() || 'U' }}
@@ -462,7 +317,7 @@ onUnmounted(() => {
                   <div class="flex flex-col">
                     <span class="wa-name">{{ QRName }}</span>
                     <span class="wa-status">
-                      Recuperación de artículo
+                      Notificación de Ubiqueme
                     </span>
                   </div>
                 </div>
@@ -475,7 +330,7 @@ onUnmounted(() => {
                     <!-- Message Bubble Preview -->
                     <div class="wa-bubble-row">
                       <div class="wa-bubble">
-                        <p class="wa-bubble-text">{{ customMessage || defaultBody }}</p>
+                        <p class="wa-bubble-text">{{ customMessage }}</p>
                         <div class="wa-bubble-meta">
                           <span class="wa-bubble-time">12:34</span>
                           <svg class="wa-double-check" viewBox="0 0 16 11" width="16" height="11">
@@ -490,27 +345,25 @@ onUnmounted(() => {
                       </div>
                     </div>
 
-                    <!-- WhatsApp Button -->
-                    <a :href="`https://wa.me/${whatsappNumber}?text=Hola,%20te%20escribo%20porque%20encontr%C3%A9%20tu%20art%C3%ADculo.%0A%0AID:%20${qrId}%0A%0AMensaje:%20${encodeURIComponent(customMessage)}`"
-                      target="_blank" class="wa-whatsapp-btn">
-                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                      </svg>
-                      Abrir WhatsApp
-                    </a>
-
                     <!-- WhatsApp-style Input Bar -->
-                    <div class="wa-input-bar">
-                      <textarea v-model="customMessage" :disabled="isSending || isAuthenticating" class="wa-input"
-                        placeholder="Escribe un mensaje..." rows="1"></textarea>
-                      <button @click="handleSendClick"
-                        :disabled="isAuthenticating || isSending || !customMessage.trim()" class="wa-send-btn">
-                        <svg viewBox="0 0 24 24" width="20" height="20">
-                          <path d="M1.101 21.757 23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"
-                            fill="currentColor" />
-                        </svg>
-                      </button>
+                    <div class="wa-input-bar-wrapper">
+                      <div class="wa-input-hint">
+                        <span class="wa-input-prefix">{{ messagePrefix }}</span>
+                      </div>
+                      <div class="wa-input-bar" :class="{ 'wa-input-bar--empty': !userReason.trim() && !isSending && !hasSent }">
+                        <textarea v-model="userReason" :disabled="isSending" class="wa-input"
+                          placeholder="Escriba el motivo del contacto..." rows="2"></textarea>
+                       <a :href="`https://wa.me/${whatsappNumber}?text=ID:%20${qrId}%0A%0A${encodeURIComponent(customMessage)}`"
+                        target="_blank" >
+                        <button
+                          :disabled="isSending || !userReason.trim()" class="wa-send-btn">
+                          <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M1.101 21.757 23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"
+                              fill="currentColor" />
+                          </svg>
+                        </button>
+                      </a>
+                      </div>
                     </div>
                   </div>
 
@@ -531,6 +384,28 @@ onUnmounted(() => {
 
                 </Transition>
               </div>
+
+              <!-- External Send Button -->
+              <div class="wa-external-send-wrapper">
+                <a v-if="userReason.trim()"
+                  :href="`https://wa.me/${whatsappNumber}?text=ID:%20${qrId}%0A%0A${encodeURIComponent(customMessage)}`"
+                  target="_blank" class="wa-external-send-btn">
+                  <svg class="wa-external-wa-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                  </svg>
+                  <span class="wa-external-send-text">Enviar mensaje</span>
+                  <span class="material-symbols-outlined wa-external-send-arrow">arrow_forward</span>
+                </a>
+                <button v-else disabled class="wa-external-send-btn wa-external-send-btn--disabled">
+                  <svg class="wa-external-wa-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                  </svg>
+                  <span class="wa-external-send-text">Escriba el motivo para poder enviar el mensaje</span>
+                </button>
+              </div>
+
             </div>
 
 
@@ -925,37 +800,92 @@ onUnmounted(() => {
   display: block;
 }
 
-/* WhatsApp Button */
-.wa-whatsapp-btn {
+/* External Send Button */
+.wa-external-send-wrapper {
+  display: flex;
+  width: 100%;
+  margin-top: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.wa-external-send-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  height: 48px;
+  height: 52px;
   background: #25d366;
   color: #0b141a;
   font-size: 14px;
   font-weight: 700;
-  border-radius: 24px;
-  text-decoration: none;
+  border-radius: 26px;
+  border: none;
+  cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
-  z-index: 1;
   box-shadow: 0 4px 20px rgba(37, 211, 102, 0.25);
+  font-family: inherit;
+  padding: 0 24px;
 }
 
-.wa-whatsapp-btn:hover {
+.wa-external-send-btn:not(.wa-external-send-btn--disabled):hover {
   background: #20bd5a;
   transform: scale(1.02);
   box-shadow: 0 6px 28px rgba(37, 211, 102, 0.35);
 }
 
-.wa-whatsapp-btn:active {
+.wa-external-send-btn:not(.wa-external-send-btn--disabled):active {
   transform: scale(0.98);
 }
 
+.wa-external-send-btn--disabled {
+  background: #374045;
+  color: #8696a0;
+  cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.wa-external-wa-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.wa-external-send-text {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wa-external-send-arrow {
+  font-size: 20px;
+  flex-shrink: 0;
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
 /* Input Bar */
+.wa-input-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.wa-input-hint {
+  padding: 0 4px;
+}
+
+.wa-input-prefix {
+  color: #8696a0;
+  font-size: 12px;
+  line-height: 1.3;
+  user-select: none;
+}
+
 .wa-input-bar {
   display: flex;
   align-items: flex-end;
@@ -965,6 +895,19 @@ onUnmounted(() => {
   padding: 6px 8px;
   position: relative;
   z-index: 1;
+}
+
+.wa-input-bar--empty {
+  animation: wa-pulse-border 2s ease-in-out infinite;
+}
+
+@keyframes wa-pulse-border {
+  0%, 100% {
+    box-shadow: inset 0 0 0 1px rgba(37, 211, 102, 0);
+  }
+  50% {
+    box-shadow: inset 0 0 0 1.5px rgba(37, 211, 102, 0.5);
+  }
 }
 
 .wa-input {
@@ -978,8 +921,8 @@ onUnmounted(() => {
   padding: 6px 4px;
   resize: none;
   font-family: inherit;
-  min-height: 70px;
-  max-height: 100px;
+  min-height: 50px;
+  max-height: 120px;
 }
 
 .wa-input::placeholder {
