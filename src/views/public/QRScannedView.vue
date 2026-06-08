@@ -20,7 +20,6 @@ const qrData = ref<IPublicQR | null>(null)
 const errorMsg = ref('')
 const QRName = computed(() => qrData.value?.name || 'objeto')
 const userReason = ref('')
-const scannerContact = ref('')
 const isSending = ref(false)
 const hasSent = ref(false)
 
@@ -358,21 +357,13 @@ onUnmounted(() => {
                       </div>
                     </div>
 
-                    <!-- Scanner Contact Input -->
-                    <div class="wa-input-bar-wrapper">
-                      <div class="wa-input-bar">
-                        <input v-model="scannerContact" :disabled="isSending" class="wa-input wa-input--contact"
-                          placeholder="Tu email o teléfono (opcional)" type="text" />
-                      </div>
-                    </div>
-
                     <!-- WhatsApp-style Input Bar -->
                     <div class="wa-input-bar-wrapper">
                       <div class="wa-input-bar"
                         :class="{ 'wa-input-bar--empty': !userReason.trim() && !isSending && !hasSent }">
                         <textarea v-model="userReason" :disabled="isSending" class="wa-input"
                           placeholder="Escriba el motivo del contacto..." rows="2"></textarea>
-                        <a :href="`https://wa.me/${whatsappNumber}?text=ID:%20${qrId}%0A%0AQR:%20${encodeURIComponent(QRName)}%0AContacto:%20${encodeURIComponent(scannerContact || 'No proporcionado')}%0AHora:%20${encodeURIComponent(scanTime)}%0A%0A${encodeURIComponent(customMessage)}`"
+                        <a :href="`https://wa.me/${whatsappNumber}?text=ID:%20${qrId}%0A%0AQR:%20${encodeURIComponent(QRName)}%0AHora:%20${encodeURIComponent(scanTime)}%0A%0A${encodeURIComponent(customMessage)}`"
                           target="_blank">
                           <button :disabled="isSending || !userReason.trim()" class="wa-send-btn">
                             <svg viewBox="0 0 24 24" width="20" height="20">
@@ -407,7 +398,7 @@ onUnmounted(() => {
               <!-- External Send Button -->
               <div class="wa-external-send-wrapper">
                 <a v-if="userReason.trim()"
-                  :href="`https://wa.me/${whatsappNumber}?text=ID:%20${qrId}%0A%0AQR:%20${encodeURIComponent(QRName)}%0AContacto:%20${encodeURIComponent(scannerContact || 'No proporcionado')}%0AHora:%20${encodeURIComponent(scanTime)}%0A%0A${encodeURIComponent(customMessage)}`"
+                  :href="`https://wa.me/${whatsappNumber}?text=ID:%20${qrId}%0A%0AQR:%20${encodeURIComponent(QRName)}%0AHora:%20${encodeURIComponent(scanTime)}%0A%0A${encodeURIComponent(customMessage)}`"
                   target="_blank" class="wa-external-send-btn">
                   <svg class="wa-external-wa-icon" fill="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">

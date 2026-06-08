@@ -265,6 +265,12 @@ const downloadQrRef = ref<InstanceType<typeof QrcodeVue> | null>(null)
 const downloadImgRef = ref<HTMLImageElement | null>(null)
 const qrDownloadUrl = computed(() => `https://www.ubiqueme.com/qr/${propsComputed.value.id}`)
 
+// ⚠️ TEMPORAL — Test: QR apunta directo a WhatsApp sin pasar por web
+const whatsappTestUrl = computed(() => {
+  const text = `ID: ${propsComputed.value.id}\nQR: ${propsComputed.value.name || 'Código QR'}\nHora: No disponible (sin flujo web)\nMensaje: Hola vi tu QR y quiero contactarte`
+  return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
+})
+
 const downloadStyle = ref<'normal' | 'compact'>('normal')
 const downloadSize = ref<'sm' | 'md' | 'lg'>('md')
 
@@ -311,7 +317,7 @@ const handleDownloadPNG = async () => {
   const w = dims.normalW
   const h = dims.normalH
   try {
-    const qrValue = `${window.location.origin}/qr/${propsComputed.value.id}`
+    const qrValue = `https://www.ubiqueme.com/qr/${propsComputed.value.id}`
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrValue)}`
 
     const qrImg = new Image()
@@ -462,7 +468,7 @@ const handleDownloadCompactPNG = async () => {
   const textSpacing = Math.round(qrW * 0.06)
 
   try {
-    const qrValue = `${window.location.origin}/qr/${propsComputed.value.id}`
+    const qrValue = `https://www.ubiqueme.com/qr/${propsComputed.value.id}`
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrW}x${qrW}&data=${encodeURIComponent(qrValue)}`
 
     const qrImg = new Image()
@@ -601,6 +607,24 @@ onUnmounted(() => {
   if (unsubscribeLogs) unsubscribeLogs();
 })
 
+type ImageSettings = {
+  src: string            // URL of the logo image
+  x?: number             // Horizontal offset (centers by default)
+  y?: number             // Vertical offset (centers by default)
+  height: number         // Height of the image in pixels
+  width: number          // Width of the image in pixels
+  excavate?: boolean     // Remove modules behind the image
+  borderRadius?: number  // Border radius of the image
+}
+
+import logoText from '@/assets/image33.png'
+const imageSettings: ImageSettings = {
+  src: logoText,
+  height: 60,
+  width: 840,
+  excavate: false,
+  borderRadius: 30,
+}
 
 </script>
 
@@ -711,25 +735,15 @@ onUnmounted(() => {
       <!-- ─── Columna Derecha: QR Code ─── -->
       <div
         class="w-full sm:w-[200px] bg-[#0c0500] border-t sm:border-t-0 sm:border-l border-white/5 flex flex-col items-center justify-center p-6 shrink-0 relative">
-
-        <div class="flex flex-col items-center gap-3">
-          <!-- QR Container -->
-          <div
-            class="w-34 h-34 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center bg-white p-2.5 pt-6 shadow-lg relative">
-            <span class="text-black font-bold absolute top-1 left-1 text-sm">{{ propsComputed.name }}</span>
-            <template v-if="propsComputed.img">
-              <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
-            </template>
-            <template v-else>
-              <QrcodeVue :value="`https://www.ubiqueme.com/qr/${propsComputed.id}`" :size="110" class="w-full h-full"
-                render-as="canvas" />
-            </template>
-          </div>
-          <p class="text-white/40 text-[8px] uppercase tracking-[0.3em] font-black text-center">
-            www.ubiqueme.com
-          </p>
+        <div
+          class="w-34 h-34 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center bg-[#fff7ed] p-2.5 shadow-lg relative border border-[#f7b05c]">
+          <template v-if="propsComputed.img">
+            <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
+          </template>
+          <template v-else>
+            <QrcodeVue :value="whatsappTestUrl" :size="110" render-as="svg" level="H" />
+          </template>
         </div>
-
         <!-- Menu button (desktop only, inside QR column) -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
           class="hidden sm:flex text-orange-500/90 hover:text-white transition-colors cursor-pointer w-9 h-9 items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 absolute top-4 right-4">

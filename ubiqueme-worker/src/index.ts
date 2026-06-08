@@ -43,6 +43,8 @@ const CORS_HEADERS = {
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
+const HEADER_IMAGE_URL = 'https://i.postimg.cc/zfqw0Vm1/A2C8E2DA-A79F-47AA-B795-384EB7304B9A.png';
+
 // ─── Lazy Firebase Singleton ────────────────────────────────────
 let firebaseApp: FirebaseApp | null = null;
 let firestoreDb: Firestore | null = null;
@@ -210,6 +212,15 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 				language: { code: 'es' },
 				components: [
 					{
+						type: 'header',
+						parameters: [
+							{
+								type: 'image',
+								image: { link: HEADER_IMAGE_URL },
+							},
+						],
+					},
+					{
 						type: 'body',
 						parameters: [
 							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
@@ -272,12 +283,10 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 
 		const qrId = idMatch[1];
 		const qrNameMatch = bodyText.match(/QR:\s*(.+)/i);
-		const contactMatch = bodyText.match(/Contacto:\s*(.+)/i);
 		const timeMatch = bodyText.match(/Hora:\s*(.+)/i);
 		const msgMatch = bodyText.match(/Mensaje:\s*([\s\S]*)/i);
 
 		const qrName = qrNameMatch && qrNameMatch[1] ? qrNameMatch[1].trim() : 'objeto';
-		const scannerContact = contactMatch && contactMatch[1] ? contactMatch[1].trim() : 'No proporcionado';
 		const scanTime = timeMatch && timeMatch[1] ? timeMatch[1].trim() : new Date().toLocaleString('es-MX');
 		const customMessage = msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.';
 
@@ -313,10 +322,19 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 				language: { code: 'es' },
 				components: [
 					{
+						type: 'header',
+						parameters: [
+							{
+								type: 'image',
+								image: { link: HEADER_IMAGE_URL },
+							},
+						],
+					},
+					{
 						type: 'body',
 						parameters: [
 							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
-							{ type: 'text', text: String(scannerContact || 'No proporcionado') }, // {{2}} — contacto del scanner
+							{ type: 'text', text: String(cleanScannerPhone) }, // {{2}} — número del scanner
 							{ type: 'text', text: String(customMessage || 'Sin mensaje') }, // {{3}} — mensaje
 							{ type: 'text', text: String(qrData.name || qrName || 'objeto') }, // {{4}} — nombre del QR
 							{ type: 'text', text: String(scanTime) }, // {{5}} — hora del escaneo
