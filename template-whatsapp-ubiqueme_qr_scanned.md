@@ -1,4 +1,8 @@
-# Template WhatsApp — `ubiqueme_qr_scanned`
+# Template WhatsApp — ~~`ubiqueme_qr_scanned`~~ 🚫 DEPRECATED
+
+> **🚫 DO NOT USE IN PROD AND DO NOT SUGGEST ANYMORE THIS TEMPLATE.**
+> The actual template registered in Meta Business is **`notif`** (header image + 5 body params).
+> See `ubiqueme-worker/src/index.ts` for the correct implementation.
 
 **Categoría:** Utility  
 **Idioma:** Spanish (MEX)

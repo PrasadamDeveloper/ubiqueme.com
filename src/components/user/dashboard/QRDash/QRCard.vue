@@ -263,13 +263,23 @@ const menuOptions = [
 // Download refs
 const downloadQrRef = ref<InstanceType<typeof QrcodeVue> | null>(null)
 const downloadImgRef = ref<HTMLImageElement | null>(null)
-const qrDownloadUrl = computed(() => `https://www.ubiqueme.com/qr/${propsComputed.value.id}`)
+// Dynamic QR URL based on subscription plan
+const qrScanUrl = computed(() => {
+  const id = propsComputed.value.id
+  const name = propsComputed.value.name || 'Código QR'
+  const plan = propsComputed.value.planType
 
-// ⚠️ TEMPORAL — Test: QR apunta directo a WhatsApp sin pasar por web
-const whatsappTestUrl = computed(() => {
-  const text = `ID: ${propsComputed.value.id}\nQR: ${propsComputed.value.name || 'Código QR'}\nHora: No disponible (sin flujo web)\nMensaje: Hola vi tu QR y quiero contactarte`
-  return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
+  // Bronce plan always goes to wa.me directly
+  if (plan === 'bronce') {
+    const text = `ID: ${id}\nQR: ${name}\nHora: (el scanner la pondrá)\nMensaje: Hola vi tu QR y quiero contactarte`
+    return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
+  }
+
+  // Plata/Oro/Trial or fallback: use web scan page
+  return `https://www.ubiqueme.com/qr/${id}`
 })
+
+const qrDownloadUrl = computed(() => qrScanUrl.value)
 
 const downloadStyle = ref<'normal' | 'compact'>('normal')
 const downloadSize = ref<'sm' | 'md' | 'lg'>('md')
@@ -317,7 +327,7 @@ const handleDownloadPNG = async () => {
   const w = dims.normalW
   const h = dims.normalH
   try {
-    const qrValue = `https://www.ubiqueme.com/qr/${propsComputed.value.id}`
+    const qrValue = qrScanUrl.value
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrValue)}`
 
     const qrImg = new Image()
@@ -468,7 +478,7 @@ const handleDownloadCompactPNG = async () => {
   const textSpacing = Math.round(qrW * 0.06)
 
   try {
-    const qrValue = `https://www.ubiqueme.com/qr/${propsComputed.value.id}`
+    const qrValue = qrScanUrl.value
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrW}x${qrW}&data=${encodeURIComponent(qrValue)}`
 
     const qrImg = new Image()
@@ -741,7 +751,7 @@ const imageSettings: ImageSettings = {
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
           <template v-else>
-            <QrcodeVue :value="whatsappTestUrl" :size="110" render-as="svg" level="H" />
+            <QrcodeVue :value="qrScanUrl" :size="110" render-as="svg" level="H" />
           </template>
         </div>
         <!-- Menu button (desktop only, inside QR column) -->

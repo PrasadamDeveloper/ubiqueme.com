@@ -1,5 +1,5 @@
 import { initializeApp, FirebaseOptions, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore, doc, getDoc } from 'firebase/firestore/lite';
+import { getFirestore, Firestore, doc, getDoc, writeBatch, increment, Timestamp, collection } from 'firebase/firestore/lite';
 import { getAuth, Auth, signInWithEmailAndPassword } from 'firebase/auth';
 
 // ─── Meta Webhook Types ─────────────────────────────────────────
@@ -9,7 +9,9 @@ interface MetaWebhookPayload {
 			value?: {
 				messages?: Array<{
 					from?: string;
+					type?: string;
 					text?: { body?: string };
+					image?: { id?: string; mime_type?: string };
 				}>;
 			};
 		}>;
@@ -43,7 +45,7 @@ const CORS_HEADERS = {
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-const HEADER_IMAGE_URL = 'https://i.postimg.cc/zfqw0Vm1/A2C8E2DA-A79F-47AA-B795-384EB7304B9A.png';
+const HEADER_IMAGE_URL = 'https://files.catbox.moe/w1lz5a.jpg';
 
 // ─── Lazy Firebase Singleton ────────────────────────────────────
 let firebaseApp: FirebaseApp | null = null;
@@ -83,6 +85,7 @@ async function ensureAuthenticated(env: Env) {
 interface QRData {
 	uid?: string;
 	name?: string;
+	status?: string;
 }
 
 interface UserData {
@@ -101,6 +104,7 @@ async function getQRData(env: Env, qrId: string): Promise<QRData | null> {
 	return {
 		uid: data.uid,
 		name: data.name,
+		status: data.status,
 	};
 }
 
@@ -116,6 +120,25 @@ async function getUserData(env: Env, uid: string): Promise<UserData | null> {
 		displayName: data.displayName || data.name,
 		phone: data.phone,
 	};
+}
+
+// ─── Scan logging helper ────────────────────────────────────────
+async function logScan(env: Env, qrId: string, logData: Record<string, unknown>): Promise<void> {
+	const { db } = getFirebase(env);
+	await ensureAuthenticated(env);
+
+	const batch = writeBatch(db!);
+	const qrRef = doc(db!, 'publicQR', qrId);
+	const logRef = doc(collection(db!, 'publicQR', qrId, 'logs'), Date.now().toString());
+
+	batch.update(qrRef, {
+		totalScans: increment(1),
+		lastScan: Timestamp.now(),
+	});
+	batch.set(logRef, logData);
+	await batch.commit();
+
+	console.log(`[Worker] Scan log escrito para QR ${qrId}: totalScans incrementado.`);
 }
 
 // ─── JSON helper ─────────────────────────────────────────────────
@@ -188,12 +211,25 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 			return json({ error: 'QR not found' }, 404);
 		}
 
+		// Validate QR status
+		if (qrData.status !== 'Active') {
+			console.log(`[Worker /api/notify] QR ${qrId} inactivo (status: ${qrData.status}).`);
+			return json({ error: 'QR is not active' }, 400);
+		}
+
 		// Fetch owner data via Firebase SDK
 		const ownerData = await getUserData(env, qrData.uid);
 		if (!ownerData || !ownerData.phone) {
 			console.log(`[Worker] Error: Dueño ${qrData.uid} sin teléfono.`);
 			return json({ error: 'Owner has no phone' }, 400);
 		}
+
+		// Log scan to Firestore BEFORE sending notification
+		await logScan(env, qrId, {
+			scanDate: Timestamp.now(),
+			scanMetrics: { country: '', city: '', region: '' },
+			interaction: { type: 'web_scan', message },
+		});
 
 		// Prepare notification
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
@@ -258,6 +294,73 @@ async function handleNotify(request: Request, env: Env): Promise<Response> {
 }
 
 /**
+ * Handles image messages from WhatsApp webhook.
+ * Downloads the image from Meta's media endpoint, converts to base64,
+ * and stores a separate log entry in Firestore.
+ */
+async function handleImageMessage(env: Env, mediaId: string, senderPhone: string): Promise<Response> {
+	try {
+		console.log(`[Worker] Imagen recibida de ${senderPhone}, media_id: ${mediaId}`);
+
+		// 1. Get the image URL from Meta's media endpoint
+		const mediaUrlResponse = await fetch(`https://graph.facebook.com/v20.0/${mediaId}`, {
+			headers: { Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}` },
+		});
+
+		if (!mediaUrlResponse.ok) {
+			console.error('[Worker] Error obteniendo URL de imagen de Meta:', mediaUrlResponse.status);
+			return new Response('Media fetch failed', { status: 200 });
+		}
+
+		const mediaData = (await mediaUrlResponse.json()) as { url?: string; mime_type?: string };
+		const imageUrl = mediaData.url;
+		if (!imageUrl) {
+			console.error('[Worker] Meta no devolvió URL de imagen.');
+			return new Response('No media URL', { status: 200 });
+		}
+
+		// 2. Download the image
+		const imageResponse = await fetch(imageUrl, {
+			headers: { Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}` },
+		});
+		if (!imageResponse.ok) {
+			console.error('[Worker] Error descargando imagen:', imageResponse.status);
+			return new Response('Image download failed', { status: 200 });
+		}
+
+		// 3. Convert to base64
+		const imageBuffer = await imageResponse.arrayBuffer();
+		const mimeType = mediaData.mime_type || 'image/jpeg';
+		const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+		const dataUrl = `data:${mimeType};base64,${base64}`;
+
+		// 4. Store as a separate log entry (simplest approach for image correlation)
+		// We don't know which QR this image belongs to, so we log it by senderPhone.
+		// The dashboard can correlate by timestamp proximity with text scans.
+		const { db } = getFirebase(env);
+		await ensureAuthenticated(env);
+
+		// Store in a generic images collection scoped to senderPhone
+		const logRef = doc(collection(db!, 'whatsapp_images'), Date.now().toString());
+		const batch = writeBatch(db!);
+		batch.set(logRef, {
+			senderPhone: senderPhone,
+			scanDate: Timestamp.now(),
+			interaction: { type: 'image' },
+			mimeType,
+			img: dataUrl,
+		});
+		await batch.commit();
+
+		console.log(`[Worker] Imagen almacenada para ${senderPhone}.`);
+		return new Response('Image stored', { status: 200 });
+	} catch (e: unknown) {
+		console.error('[Worker] Excepción en handleImageMessage:', e);
+		return new Response('Image error', { status: 200 });
+	}
+}
+
+/**
  * POST /api/whatsapp — Incoming webhook from Meta
  */
 async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Response> {
@@ -268,11 +371,27 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		const message = jsonBody.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 		if (!message) return new Response('No message found', { status: 200 });
 
-		const bodyText: string = message.text?.body || '';
 		const senderPhone: string = message.from || '';
+		if (!senderPhone) {
+			return new Response('Missing sender', { status: 200 });
+		}
 
-		if (!bodyText || !senderPhone) {
-			return new Response('Missing data', { status: 200 });
+		// 🚧 TEMPORARY: Only accept messages from test number
+		const ALLOWED_TEST_PHONE = '5215635752789';
+		if (senderPhone !== ALLOWED_TEST_PHONE) {
+			console.log(`[Worker] Rechazado número no autorizado: ${senderPhone}`);
+			return new Response('OK', { status: 200 });
+		}
+
+		// 1b. Branch: image vs text
+		if (message.type === 'image' && message.image?.id) {
+			return await handleImageMessage(env, message.image.id, senderPhone);
+		}
+
+		// ─── TEXT MESSAGE FLOW ──────────────────────────────────
+		const bodyText: string = message.text?.body || '';
+		if (!bodyText) {
+			return new Response('No text body', { status: 200 });
 		}
 
 		// 2. Extract QR ID and optional fields
@@ -299,6 +418,26 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('QR not found', { status: 200 });
 		}
 
+		// 3b. Validate QR status
+		if (qrData.status !== 'Active') {
+			console.log(`[Worker] QR ${qrId} inactivo (status: ${qrData.status}). Respondiendo al scanner.`);
+			await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					messaging_product: 'whatsapp',
+					recipient_type: 'individual',
+					to: senderPhone,
+					type: 'text',
+					text: { body: 'Este código QR ya no está activo. El propietario lo ha desactivado.' },
+				}),
+			});
+			return new Response('QR inactive', { status: 200 });
+		}
+
 		// 4. Fetch Owner Data via Firebase SDK
 		const ownerData = await getUserData(env, qrData.uid);
 		if (!ownerData || !ownerData.phone) {
@@ -306,9 +445,18 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('Owner missing phone', { status: 200 });
 		}
 
+		// 4b. Log scan to Firestore BEFORE sending notification
+		await logScan(env, qrId, {
+			scanDate: Timestamp.now(),
+			scanMetrics: { country: '', city: '', region: '' },
+			interaction: { type: 'whatsapp_scan', message: customMessage },
+		});
+
 		// 5. Prepare Notification
 		const cleanScannerPhone = senderPhone.replace('+', '');
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
+
+		console.log(`[Worker] Owner WhatsApp (after clean): "${ownerWhatsApp}" (raw: "${ownerData.phone}")`);
 
 		// 6. Send via Meta API using template
 		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
@@ -353,13 +501,45 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			body: JSON.stringify(payload),
 		});
 
+		// Always log Meta's response body — even 200 can hide errors
+		const result = (await response.json()) as { messages?: Array<{ id: string }>; error?: { message: string } };
+		console.log(`[Worker] Meta response status: ${response.status}, body: ${JSON.stringify(result)}`);
+
 		if (!response.ok) {
-			const result = await response.json();
-			console.error('[Worker] Respuesta completa de Meta:', JSON.stringify(result));
+			console.error('[Worker] Meta API error — notification NOT sent to owner.');
 			return new Response('Meta API Error', { status: 200 });
 		}
 
-		console.log(`[Worker] Éxito: Notificación entregada al dueño.`);
+		const msgStatus = result.messages?.[0]?.id ? 'ACEPTADO por Meta (message_id presente)' : 'POSIBLE FALLO SILENCIOSO';
+		console.log(`[Worker] Notificación al dueño: ${msgStatus}. message_id: ${result.messages?.[0]?.id || 'N/A'}`);
+
+		// 7. Send scanner confirmation reply
+		const scannerReplyPayload = {
+			messaging_product: 'whatsapp',
+			recipient_type: 'individual',
+			to: senderPhone,
+			type: 'text',
+			text: {
+				body: `✅ Gracias por tu mensaje. El propietario de "${qrData.name || 'objeto'}" ha sido notificado. Pronto se pondrá en contacto contigo.`,
+			},
+		};
+
+		const scannerResponse = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(scannerReplyPayload),
+		});
+
+		if (!scannerResponse.ok) {
+			const result = await scannerResponse.json();
+			console.error('[Worker] Error enviando confirmación al scanner:', JSON.stringify(result));
+		} else {
+			console.log(`[Worker] Confirmación enviada al scanner ${senderPhone}.`);
+		}
+
 		return new Response('OK', { status: 200 });
 	} catch (e: unknown) {
 		console.error('[Worker] Excepción en Webhook:', e);

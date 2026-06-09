@@ -16,12 +16,13 @@ const plans = [
     badge: 'Básico',
     cta: 'Activar Bronce',
     features: [
+      { label: 'Escaneo vía WhatsApp directo', included: true },
+      { label: 'Notificación instantánea al dueño', included: true },
       { label: 'Hasta 1 código QR activo', included: true },
       { label: 'Contador de escaneos básico', included: true },
-      { label: 'Mensajes predefinidos de contacto', included: true },
+      { label: 'Mensaje de contacto vía WhatsApp', included: true },
       { label: 'Pausar o reactivar QR', included: false },
       { label: 'Historial de escaneos', included: false },
-      { label: 'Ubicación con Mapa dinámico', included: false },
       { label: 'Evidencia fotográfica adjunta', included: false },
       { label: 'Notificaciones por correo', included: false },
     ]
@@ -41,6 +42,7 @@ const plans = [
       { label: 'Hasta 3 códigos QR activos', included: true },
       { label: 'Contador de escaneos en tiempo real', included: true },
       { label: '3 Regeneraciones digitales sin costo', included: true },
+      { label: 'Página de escaneo personalizada', included: true },
       { label: 'Pausar o reactivar QR', included: true },
       { label: 'Historial de escaneos (últimos 30 días)', included: true },
       { label: 'Ubicación aproximada del escaneo', included: true },
@@ -62,8 +64,8 @@ const plans = [
     features: [
       { label: 'Hasta 5 códigos QR activos', included: true },
       { label: 'Ubicación con Mapa dinámico incluido', included: true },
-      { label: 'Ubicación aproximada del escaneo', included: true },
       { label: '5 Regeneraciones digitales sin costo', included: true },
+      { label: 'Página de escaneo premium personalizada', included: true },
       { label: 'Mensajes predefinidos y personalizados', included: true },
       { label: 'Pausar o reactivar QR', included: true },
       { label: 'Historial de escaneos ilimitado', included: true },
