@@ -30,9 +30,9 @@ const formatDate = (timestamp?: any) => {
 
 const dateStr = computed(() => formatDate(props.scanDate))
 
-const reasonMap: Record<string, { label: string, icon: string, color: string }> = {
+const reasonMap: Record<string, { label: string, icon: string, color: string, isWhatsApp?: boolean }> = {
   emergency: { label: 'EMERGENCIA', icon: 'emergency', color: 'text-rose-500' },
-  communication: { label: 'CONTACTO', icon: 'chat', color: 'text-amber-500' },
+  communication: { label: 'CONTACTO', icon: 'chat', color: 'text-amber-500', isWhatsApp: true },
   informative: { label: 'INFO', icon: 'info', color: 'text-sky-400' },
   other: { label: 'PERSONALIZADO', icon: 'edit_note', color: 'text-orange-400' }
 }
@@ -84,107 +84,112 @@ import { ref } from 'vue'
 </script>
 
 <template>
-  <li
-    class="group relative bg-[#151414] border border-white/10 rounded-[1.5rem] hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans">
+  <li class="group animate-fade-up">
+    <!-- Chat message bubble (received-style) -->
+    <div class="flex items-start gap-2.5">
 
-    <!-- Grid Pattern Background -->
-    <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none hidden"
-      style="background-image: linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px); background-size: 24px 24px;">
-    </div>
+      <!-- Avatar column -->
+      <div class="shrink-0 pt-1">
+        <div class="w-7 h-7 rounded-full bg-orange-500/20 border border-orange-500/20 flex items-center justify-center">
+          <span class="material-symbols-outlined text-orange-400 text-[14px]">qr_code_scanner</span>
+        </div>
+      </div>
 
-    <!-- Orange Glow -->
-    <div
-      class="absolute top-0 left-0 w-full h-full z-0 opacity-10 pointer-events-none bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
-    </div>
+      <!-- Bubble -->
+      <div class="flex-1 min-w-0 max-w-[85%] sm:max-w-[75%]">
+        <div class="bg-[#1c1e22] border border-white/5 rounded-2xl rounded-tl-sm p-3.5 space-y-2.5 shadow-sm">
 
-    <!-- Content -->
-    <div class="relative z-10 p-5 space-y-4">
+          <!-- Top row: interaction badge + location -->
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+              <!-- Interaction badge -->
+              <div v-if="interactionDetail"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-[0.15em]"
+                :class="[
+                  interactionDetail.color,
+                  `${interactionDetail.color.replace('text-', 'bg-')}/10`,
+                  `${interactionDetail.color.replace('text-', 'border-')}/20`
+                ]">
+                <!-- WhatsApp SVG icon for communication reason -->
+                <svg v-if="interactionDetail.isWhatsApp" class="w-3 h-3 shrink-0" fill="currentColor"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                </svg>
+                <span v-else class="material-symbols-outlined text-[11px] font-black">{{ interactionDetail.icon
+                  }}</span>
+                {{ interactionDetail.label }}
+              </div>
+            </div>
 
-      <!-- 1️⃣ HEADER ROW: Interaction type badge + Location + Date -->
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-2 flex-wrap min-w-0">
-          <!-- Interaction Badge -->
-          <div v-if="interactionDetail"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-[0.2em]"
-            :class="[interactionDetail.color, `${interactionDetail.color.replace('text-', 'bg-')}/10`, `${interactionDetail.color.replace('text-', 'border-')}/20`]">
-            <span class="material-symbols-outlined text-[14px] font-black">{{ interactionDetail.icon }}</span>
-            {{ interactionDetail.label }}
+            <!-- Location -->
+            <div v-if="scanMetrics.city || scanMetrics.country" class="shrink-0">
+              <span class="text-[8px] font-black uppercase tracking-wider text-white/35 whitespace-nowrap">
+                {{ scanMetrics.city }}{{ scanMetrics.city && scanMetrics.country ? ', ' : '' }}{{ scanMetrics.country }}
+              </span>
+            </div>
           </div>
 
-          <!-- Location Badge -->
-          <div v-if="scanMetrics.city || scanMetrics.country"
-            class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-wider text-white/50">
-            <span class="material-symbols-outlined text-[12px] text-orange-500/60">location_on</span>
-            <span>{{ scanMetrics.city }}{{ scanMetrics.city && scanMetrics.country ? ', ' : '' }}{{ scanMetrics.country
-              }}</span>
+          <!-- Message text (like a WhatsApp quote bubble) -->
+          <div v-if="interaction?.message" class="bg-black/20 rounded-xl px-3 py-2.5 border-l-2 border-orange-500/30">
+            <p class="text-white/80 text-[11px] leading-relaxed italic font-light tracking-wide">
+              "{{ interaction.message }}"
+            </p>
           </div>
+
+          <!-- Evidence image -->
+          <div v-if="img"
+            class="relative rounded-xl overflow-hidden border border-white/5 bg-black/30 group/image cursor-pointer"
+            @click="openImage(img)">
+            <img :src="img" alt="Log evidence"
+              class="w-full h-36 object-cover opacity-80 group-hover/image:opacity-100 group-hover/image:scale-[1.02] transition-all duration-500" />
+            <div
+              class="absolute top-2 right-2 bg-black/70 px-2 py-0.5 rounded-lg border border-white/10 text-[7px] text-white/40 font-black tracking-widest uppercase">
+              Evidencia
+            </div>
+            <div
+              class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
+              <div class="w-8 h-8 rounded-full bg-black/60 border border-white/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-white/70 text-[16px]">zoom_in</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map section -->
+          <div v-if="scanMetrics.lat && scanMetrics.lon" class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <p class="text-white/25 text-[7px] font-black uppercase tracking-[0.15em] flex items-center gap-1">
+                <span class="material-symbols-outlined text-[12px] text-amber-500/50">location_on</span>
+                Ubicación aproximada
+              </p>
+              <button v-if="!isMapActive" @click="activateMap"
+                class="text-[7px] font-black text-amber-500/60 uppercase tracking-[0.15em] hover:text-amber-500 transition-colors cursor-pointer">
+                Cargar mapa
+              </button>
+            </div>
+
+            <div class="relative w-full h-[180px] rounded-xl overflow-hidden border border-white/5 bg-black/30">
+              <div v-if="!isMapActive" @click="activateMap"
+                class="absolute inset-0 flex flex-col items-center justify-center gap-1.5 cursor-pointer group/map hover:bg-white/[0.02] transition-colors">
+                <div
+                  class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover/map:scale-110 group-hover/map:bg-amber-500/20 transition-all duration-300">
+                  <span class="material-symbols-outlined text-amber-500 text-[16px]">map</span>
+                </div>
+                <span class="text-[8px] text-white/25 font-black uppercase tracking-[0.1em]">Ver mapa interactivo</span>
+              </div>
+              <div :id="`map-${id}`" v-show="isMapActive" class="w-full h-full"></div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Date -->
-        <div class="shrink-0 text-right">
-          <span class="text-[10px] font-mono font-bold text-white/30 tracking-tight whitespace-nowrap">
+        <!-- Timestamp (below bubble, right-aligned like WA) -->
+        <div class="text-right pr-1 mt-0.5">
+          <span class="text-[9px] font-mono font-bold text-white/20 tracking-tight">
             {{ dateStr }}
           </span>
         </div>
       </div>
-
-      <!-- 2️⃣ EVIDENCE IMAGE -->
-      <div v-if="img"
-        class="relative rounded-xl overflow-hidden border border-white/10 bg-black/40 group/image cursor-pointer"
-        @click="openImage(img)">
-        <img :src="img" alt="Log evidence"
-          class="w-full h-48 object-cover opacity-80 group-hover/image:opacity-100 group-hover/image:scale-[1.02] transition-all duration-500" />
-        <div
-          class="absolute top-3 right-3 bg-black/70 px-2.5 py-1 rounded-lg border border-white/10 text-[8px] text-white/50 font-black tracking-widest uppercase">
-          Evidencia
-        </div>
-        <!-- Zoom icon overlay -->
-        <div
-          class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
-          <div
-            class="w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center backdrop-blur-none">
-            <span class="material-symbols-outlined text-white/70 text-lg">zoom_in</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3️⃣ MESSAGE -->
-      <div v-if="interaction?.message"
-        class="bg-[#0c0500] rounded-xl p-4 border-l-2 border-orange-500/30 border border-white/5">
-        <p class="text-white/70 text-[12px] leading-relaxed italic tracking-wide">
-          "{{ interaction.message }}"
-        </p>
-      </div>
-
-      <!-- 4️⃣ MAP SECTION (On-Demand) -->
-      <div v-if="scanMetrics.lat && scanMetrics.lon" class="space-y-2">
-        <div class="flex items-center justify-between">
-          <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-1">
-            <span class="material-symbols-outlined text-[14px] text-amber-500/60">location_on</span>
-            Ubicación aproximada
-          </p>
-          <button v-if="!isMapActive" @click="activateMap"
-            class="text-[9px] font-black text-amber-500/70 uppercase tracking-[0.2em] hover:text-amber-500 transition-colors cursor-pointer">
-            Cargar mapa
-          </button>
-        </div>
-
-        <div class="relative w-full h-[260px] rounded-xl overflow-hidden border border-white/10 bg-black/40">
-          <!-- Placeholder -->
-          <div v-if="!isMapActive" @click="activateMap"
-            class="absolute inset-0 flex flex-col items-center justify-center gap-2.5 cursor-pointer group/map hover:bg-white/[0.02] transition-colors">
-            <div
-              class="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover/map:scale-110 group-hover/map:bg-amber-500/20 transition-all duration-300">
-              <span class="material-symbols-outlined text-amber-500 text-xl">map</span>
-            </div>
-            <span class="text-[9px] text-white/30 font-black uppercase tracking-[0.15em]">Ver mapa interactivo</span>
-          </div>
-
-          <!-- Leaflet Container -->
-          <div :id="`map-${id}`" v-show="isMapActive" class="w-full h-full"></div>
-        </div>
-      </div>
-
     </div>
   </li>
 </template>

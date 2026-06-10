@@ -8,7 +8,7 @@
 
     <!-- Radial glow (estilo admin) -->
     <div
-      class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#ff7900]/5 rounded-full blur-[120px] pointer-events-none">
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#f15400]/10 rounded-full blur-[120px] pointer-events-none">
     </div>
 
     <div class="relative z-10 px-4 sm:px-6 lg:px-8 pt-5 pb-20  mx-auto space-y-10">
