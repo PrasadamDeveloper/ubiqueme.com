@@ -140,6 +140,17 @@ async function logScan(env: Env, qrId: string, logData: Record<string, unknown>)
 	console.log(`[Worker] Scan log escrito para QR ${qrId}: totalScans incrementado.`);
 }
 
+// ─── ArrayBuffer to base64 (chunked to avoid stack overflow) ────
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+	const bytes = new Uint8Array(buffer);
+	let binary = '';
+	const chunkSize = 8192;
+	for (let i = 0; i < bytes.length; i += chunkSize) {
+		binary += String.fromCharCode(...bytes.slice(i, i + chunkSize));
+	}
+	return btoa(binary);
+}
+
 // ─── JSON helper ─────────────────────────────────────────────────
 function json(data: Record<string, unknown>, status = 200): Response {
 	return new Response(JSON.stringify(data), {
@@ -221,7 +232,7 @@ async function handleImageWithCaption(
 		}
 		const imageBuffer = await imageResponse.arrayBuffer();
 		const imgMimeType = mimeType || mediaData.mime_type || 'image/jpeg';
-		const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+		const base64 = arrayBufferToBase64(imageBuffer);
 		const dataUrl = `data:${imgMimeType};base64,${base64}`;
 
 		// 2. Extract QR data from caption
@@ -387,7 +398,7 @@ async function handleImageMessage(env: Env, mediaId: string, senderPhone: string
 		// 3. Convert to base64
 		const imageBuffer = await imageResponse.arrayBuffer();
 		const mimeType = mediaData.mime_type || 'image/jpeg';
-		const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+		const base64 = arrayBufferToBase64(imageBuffer);
 		const dataUrl = `data:${mimeType};base64,${base64}`;
 
 		// 4. Store as a separate log entry (simplest approach for image correlation)
@@ -433,13 +444,20 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		}
 
 		// 🚧 TEMPORARY: Only accept messages from test number
-		const ALLOWED_TEST_PHONE = '5215659170677';
+		const ALLOWED_TEST_PHONE = '5215635752789';
 		if (senderPhone !== ALLOWED_TEST_PHONE) {
 			console.log(`[Worker] Rechazado número no autorizado: ${senderPhone}`);
 			return new Response('OK', { status: 200 });
 		}
 
-		// 1b. Branch: image with caption containing QR ID, image without caption, or text
+		// 1b. Reject unsupported message types (video, audio, document, sticker, etc.)
+		const SUPPORTED_TYPES = ['text', 'image'];
+		if (!SUPPORTED_TYPES.includes(message.type || '')) {
+			console.log(`[Worker] Tipo no soportado ignorado: ${message.type}`);
+			return new Response('OK', { status: 200 });
+		}
+
+		// 1c. Branch: image with caption containing QR ID, image without caption, or text
 		if (message.type === 'image' && message.image?.id) {
 			const caption = message.image.caption || '';
 			const idMatch = caption.match(/ID:\s*([A-Za-z0-9_-]+)/i);
@@ -460,7 +478,25 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		// 2. Extract QR ID and optional fields
 		const idMatch = bodyText.match(/ID:\s*([A-Za-z0-9_-]+)/i);
 		if (!idMatch || !idMatch[1]) {
-			return new Response('OK', { status: 200 }); // Always 200 so Meta doesn't retry
+			// Send instructive reply so the scanner knows the correct format
+			await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					messaging_product: 'whatsapp',
+					recipient_type: 'individual',
+					to: senderPhone,
+					type: 'text',
+					text: {
+						body: '❌ Formato incorrecto\n\nPara notificar al propietario, envía el mensaje EXACTAMENTE como aparece al escanear el QR:\n\nID: [código del QR]\nQR: [nombre del objeto]\nMensaje: [tu mensaje]\n\nEjemplo:\nID: abc123\nQR: Mochila negra\nMensaje: Encontré tu mochila, contáctame por favor\n\nGracias por usar Ubiqueme',
+					},
+				}),
+			});
+			console.log(`[Worker] Formato incorrecto, se instruyó al usuario ${senderPhone}`);
+			return new Response('OK', { status: 200 });
 		}
 
 		const qrId = idMatch[1];
