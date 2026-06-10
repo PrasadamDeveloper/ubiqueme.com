@@ -267,16 +267,8 @@ const downloadImgRef = ref<HTMLImageElement | null>(null)
 const qrScanUrl = computed(() => {
   const id = propsComputed.value.id
   const name = propsComputed.value.name || 'Código QR'
-  const plan = propsComputed.value.planType
-
-  // Bronce plan always goes to wa.me directly
-  if (plan === 'bronce') {
-    const text = `ID: ${id}\nQR: ${name}\nHora: (el scanner la pondrá)\nMensaje: Hola vi tu QR y quiero contactarte`
-    return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
-  }
-
-  // Plata/Oro/Trial or fallback: use web scan page
-  return `https://www.ubiqueme.com/qr/${id}`
+  const text = `ID: ${id}\nQR: ${name}\nHora: (el scanner la pondrá)\nMensaje: Hola vi tu QR y quiero contactarte`
+  return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
 })
 
 const qrDownloadUrl = computed(() => qrScanUrl.value)
@@ -689,7 +681,7 @@ const imageSettings: ImageSettings = {
           {{ propsComputed.name || 'Código QR' }}
         </h3>
         <div class="flex items-center gap-2 mb-3">
-          <span class="text-white/30 text-[9px] uppercase tracking-[0.2em] font-black font-mono">
+          <span class="text-white/30 text-[9px]  tracking-[0.2em] font-black font-mono">
             #{{ propsComputed.id }}
           </span>
         </div>

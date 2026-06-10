@@ -520,7 +520,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			to: senderPhone,
 			type: 'text',
 			text: {
-				body: `✅ Gracias por tu mensaje. El propietario de "${qrData.name || 'objeto'}" ha sido notificado. Pronto se pondrá en contacto contigo.`,
+				body: `Notificación enviada exitosamente\n\nSu mensaje ha sido recibido y enviado al propietario de "${qrData.name || 'objeto'}". Él podrá ver su información de contacto y responderle directamente.\n\nAgradecemos mucho que haya utilizado los servicios de Ubiqueme para facilitar esta conexión.\n\nSi desea proteger sus pertenencias, familia, hogar y más, visítenos en:\nhttps://ubiqueme.com\n\nNo espere a perder algo para protegerlo — _únase a los miles que ya confían en nosotros para proteger lo que más les importa._\n\n_-ubiqueme_`,
 			},
 		};
 
