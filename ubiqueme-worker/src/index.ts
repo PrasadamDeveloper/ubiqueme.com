@@ -11,7 +11,7 @@ interface MetaWebhookPayload {
 					from?: string;
 					type?: string;
 					text?: { body?: string };
-					image?: { id?: string; mime_type?: string };
+					image?: { id?: string; mime_type?: string; caption?: string };
 				}>;
 			};
 		}>;
@@ -22,7 +22,6 @@ interface MetaApiError {
 	error?: { message?: string };
 }
 
-// TODO: Create a cron job or endpoint that auto-refreshes WHATSAPP_ACCESS_TOKEN
 // before it expires. Meta tokens last 24h-60d. To implement auto-refresh:
 //   1. Add WHATSAPP_APP_ID and WHATSAPP_APP_SECRET as secrets (Meta dev app)
 //   2. Call GET /oauth/access_token?grant_type=fb_exchange_token&
@@ -185,7 +184,173 @@ export default {
 };
 
 /**
- * Handles image messages from WhatsApp webhook.
+ * Handles an image WITH caption containing QR ID.
+ * Downloads the image, parses the caption for QR data, notifies the owner,
+ * and logs the scan with the image in Firestore.
+ */
+async function handleImageWithCaption(
+	env: Env,
+	mediaId: string,
+	senderPhone: string,
+	caption: string,
+	mimeType?: string,
+): Promise<Response> {
+	try {
+		console.log(`[Worker] Imagen con caption recibida de ${senderPhone}, media_id: ${mediaId}`);
+
+		// 1. Download the image
+		const mediaUrlResponse = await fetch(`https://graph.facebook.com/v20.0/${mediaId}`, {
+			headers: { Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}` },
+		});
+		if (!mediaUrlResponse.ok) {
+			console.error('[Worker] Error obteniendo URL de imagen de Meta:', mediaUrlResponse.status);
+			return new Response('Media fetch failed', { status: 200 });
+		}
+		const mediaData = (await mediaUrlResponse.json()) as { url?: string; mime_type?: string };
+		const imageUrl = mediaData.url;
+		if (!imageUrl) {
+			console.error('[Worker] Meta no devolvió URL de imagen.');
+			return new Response('No media URL', { status: 200 });
+		}
+		const imageResponse = await fetch(imageUrl, {
+			headers: { Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}` },
+		});
+		if (!imageResponse.ok) {
+			console.error('[Worker] Error descargando imagen:', imageResponse.status);
+			return new Response('Image download failed', { status: 200 });
+		}
+		const imageBuffer = await imageResponse.arrayBuffer();
+		const imgMimeType = mimeType || mediaData.mime_type || 'image/jpeg';
+		const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+		const dataUrl = `data:${imgMimeType};base64,${base64}`;
+
+		// 2. Extract QR data from caption
+		const idMatch = caption.match(/ID:\s*([A-Za-z0-9_-]+)/i);
+		const qrId = idMatch![1];
+		const qrNameMatch = caption.match(/QR:\s*(.+)/i);
+		const timeMatch = caption.match(/Hora:\s*(.+)/i);
+		const msgMatch = caption.match(/Mensaje:\s*([\s\S]*)/i);
+
+		const qrName = qrNameMatch && qrNameMatch[1] ? qrNameMatch[1].trim() : 'objeto';
+		const scanTime = timeMatch && timeMatch[1] ? timeMatch[1].trim() : new Date().toLocaleString('es-MX');
+		const customMessage = msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.';
+
+		console.log(`[Worker] QR detectado en caption: ${qrId} (De: ${senderPhone})`);
+
+		// 3. Fetch QR Data via Firebase SDK
+		const qrData = await getQRData(env, qrId);
+		if (!qrData || !qrData.uid) {
+			console.log(`[Worker] Error: QR ${qrId} no encontrado en BD.`);
+			return new Response('QR not found', { status: 200 });
+		}
+		if (qrData.status !== 'Active') {
+			console.log(`[Worker] QR ${qrId} inactivo (status: ${qrData.status}).`);
+			await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					messaging_product: 'whatsapp',
+					recipient_type: 'individual',
+					to: senderPhone,
+					type: 'text',
+					text: { body: 'Este código QR ya no está activo, intentelo de nuevo más tarde.' },
+				}),
+			});
+			return new Response('QR inactive', { status: 200 });
+		}
+
+		// 4. Fetch Owner Data via Firebase SDK
+		const ownerData = await getUserData(env, qrData.uid);
+		if (!ownerData || !ownerData.phone) {
+			console.log(`[Worker] Error: Dueño ${qrData.uid} sin teléfono.`);
+			return new Response('Owner missing phone', { status: 200 });
+		}
+
+		// 5. Log scan to Firestore WITH the image included
+		await logScan(env, qrId, {
+			scanDate: Timestamp.now(),
+			scanMetrics: { country: '', city: '', region: '' },
+			interaction: { type: 'whatsapp_scan', message: customMessage },
+			img: dataUrl,
+		});
+
+		// 6. Notify the owner
+		const cleanScannerPhone = senderPhone.replace('+', '');
+		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
+		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+		const payload = {
+			messaging_product: 'whatsapp',
+			recipient_type: 'individual',
+			to: ownerWhatsApp,
+			type: 'template',
+			template: {
+				name: 'notif',
+				language: { code: 'es' },
+				components: [
+					{
+						type: 'header',
+						parameters: [{ type: 'image', image: { link: HEADER_IMAGE_URL } }],
+					},
+					{
+						type: 'body',
+						parameters: [
+							{ type: 'text', text: String(ownerData.displayName || 'propietario') },
+							{ type: 'text', text: String(cleanScannerPhone) },
+							{ type: 'text', text: String(customMessage) },
+							{ type: 'text', text: String(qrData.name || qrName || 'objeto') },
+							{ type: 'text', text: String(scanTime) },
+						],
+					},
+				],
+			},
+		};
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(payload),
+		});
+		const result = (await response.json()) as { messages?: Array<{ id: string }>; error?: { message: string } };
+		console.log(`[Worker] Meta response status: ${response.status}, body: ${JSON.stringify(result)}`);
+		if (!response.ok) {
+			console.error('[Worker] Meta API error — notification NOT sent to owner.');
+			return new Response('Meta API Error', { status: 200 });
+		}
+
+		// 7. Send scanner confirmation reply
+		const scannerReplyPayload = {
+			messaging_product: 'whatsapp',
+			recipient_type: 'individual',
+			to: senderPhone,
+			type: 'text',
+			text: {
+				body: `Notificación enviada exitosamente\n\nSu mensaje ha sido recibido y enviado al propietario de "${qrData.name?.trim() || 'objeto'}". Él podrá ver su información de contacto y responderle directamente.\n\nAgradecemos mucho que haya utilizado los servicios de Ubiqueme para facilitar esta notificación.\n\nSi desea proteger sus pertenencias, familia, hogar y más, visítenos en:\nhttps://ubiqueme.com\n\n*No espere a perder algo para protegerlo*  _únase a los miles que ya confían en nosotros para proteger lo que más les importa._\n\n_-ubiqueme_`,
+			},
+		};
+		await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(scannerReplyPayload),
+		});
+		console.log(`[Worker] Confirmación enviada al scanner ${senderPhone}.`);
+
+		return new Response('OK', { status: 200 });
+	} catch (e: unknown) {
+		console.error('[Worker] Excepción en handleImageWithCaption:', e);
+		return new Response('Error', { status: 200 });
+	}
+}
+
+/**
+ * Handles image messages from WhatsApp webhook (WITHOUT caption or without QR ID).
  * Downloads the image from Meta's media endpoint, converts to base64,
  * and stores a separate log entry in Firestore.
  */
@@ -274,8 +439,15 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('OK', { status: 200 });
 		}
 
-		// 1b. Branch: image vs text
+		// 1b. Branch: image with caption containing QR ID, image without caption, or text
 		if (message.type === 'image' && message.image?.id) {
+			const caption = message.image.caption || '';
+			const idMatch = caption.match(/ID:\s*([A-Za-z0-9_-]+)/i);
+			if (idMatch && idMatch[1]) {
+				// Image with caption that contains QR ID → process full flow
+				return await handleImageWithCaption(env, message.image.id, senderPhone, caption, message.image.mime_type);
+			}
+			// Image without caption or without QR ID → store generically
 			return await handleImageMessage(env, message.image.id, senderPhone);
 		}
 
