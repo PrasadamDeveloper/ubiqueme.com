@@ -39,7 +39,7 @@ const reasonMap: Record<string, { label: string, icon: string, color: string }> 
 
 const interactionDetail = computed(() => {
   if (!props.interaction) return null
-  return reasonMap[props.interaction.reason] || { label: 'ESCANEADO', icon: 'visibility', color: 'text-white/40' }
+  return reasonMap[props.interaction.reason] || { label: 'ESCANEADO', icon: 'chat_bubble', color: 'text-white/40' }
 })
 
 const imageStore = useImageStore();
@@ -137,8 +137,7 @@ import { ref } from 'vue'
           </button>
         </div>
 
-        <div
-          class="relative w-full h-[280px] rounded-xl overflow-hidden border border-white/10 bg-black/40">
+        <div class="relative w-full h-[280px] rounded-xl overflow-hidden border border-white/10 bg-black/40">
           <!-- Placeholder State -->
           <div v-if="!isMapActive" @click="activateMap"
             class="absolute inset-0 flex flex-col items-center justify-center gap-3 cursor-pointer group/map hover:bg-white/2 transition-colors">

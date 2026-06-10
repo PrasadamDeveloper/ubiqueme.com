@@ -45,7 +45,7 @@ const CORS_HEADERS = {
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-const HEADER_IMAGE_URL = 'https://files.catbox.moe/w1lz5a.jpg';
+const HEADER_IMAGE_URL = 'https://files.catbox.moe/rhrrcc.png'; //Still is important to migrate to R2 for hosting this image, but for now we keep it in catbox for simplicity. This image is used in the WhatsApp template header.
 
 // ─── Lazy Firebase Singleton ────────────────────────────────────
 let firebaseApp: FirebaseApp | null = null;
@@ -160,11 +160,6 @@ export default {
 			return new Response(null, { headers: CORS_HEADERS });
 		}
 
-		// Notify endpoint (called from QRScannedView to send WhatsApp to owner)
-		if (cleanPath === '/api/notify' && request.method === 'POST') {
-			return await handleNotify(request, env);
-		}
-
 		// Webhook routing (Exclusively for Meta)
 		if (cleanPath === '/api/whatsapp') {
 			if (request.method === 'GET') {
@@ -188,110 +183,6 @@ export default {
 		return json({ error: 'Not found or method not allowed' }, 404);
 	},
 };
-
-/**
- * POST /api/notify — Called from QRScannedView
- * Body: { qrId, message, scannerEmail }
- */
-async function handleNotify(request: Request, env: Env): Promise<Response> {
-	try {
-		const body: { qrId?: string; message?: string; scannerEmail?: string } = await request.json();
-		const { qrId, message, scannerEmail } = body;
-
-		if (!qrId || !message) {
-			return json({ error: 'qrId and message are required' }, 400);
-		}
-
-		console.log(`[Worker /api/notify] QR: ${qrId}, De: ${scannerEmail || 'anónimo'}`);
-
-		// Fetch QR data via Firebase SDK
-		const qrData = await getQRData(env, qrId);
-		if (!qrData || !qrData.uid) {
-			console.log(`[Worker] Error: QR ${qrId} no encontrado en BD.`);
-			return json({ error: 'QR not found' }, 404);
-		}
-
-		// Validate QR status
-		if (qrData.status !== 'Active') {
-			console.log(`[Worker /api/notify] QR ${qrId} inactivo (status: ${qrData.status}).`);
-			return json({ error: 'QR is not active' }, 400);
-		}
-
-		// Fetch owner data via Firebase SDK
-		const ownerData = await getUserData(env, qrData.uid);
-		if (!ownerData || !ownerData.phone) {
-			console.log(`[Worker] Error: Dueño ${qrData.uid} sin teléfono.`);
-			return json({ error: 'Owner has no phone' }, 400);
-		}
-
-		// Log scan to Firestore BEFORE sending notification
-		await logScan(env, qrId, {
-			scanDate: Timestamp.now(),
-			scanMetrics: { country: '', city: '', region: '' },
-			interaction: { type: 'web_scan', message },
-		});
-
-		// Prepare notification
-		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
-		const scannerContact = scannerEmail || 'No proporcionado';
-		const currentTime = new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
-
-		// Send via Meta API using template
-		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
-		const payload = {
-			messaging_product: 'whatsapp',
-			recipient_type: 'individual',
-			to: ownerWhatsApp,
-			type: 'template',
-			template: {
-				name: 'notif',
-				language: { code: 'es' },
-				components: [
-					{
-						type: 'header',
-						parameters: [
-							{
-								type: 'image',
-								image: { link: HEADER_IMAGE_URL },
-							},
-						],
-					},
-					{
-						type: 'body',
-						parameters: [
-							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
-							{ type: 'text', text: String(scannerContact) }, // {{2}} — contacto del scanner
-							{ type: 'text', text: String(message || 'Sin mensaje') }, // {{3}} — mensaje
-							{ type: 'text', text: String(qrData.name || 'objeto') }, // {{4}} — nombre del QR
-							{ type: 'text', text: String(currentTime) }, // {{5}} — hora del escaneo
-						],
-					},
-				],
-			},
-		};
-
-		const response = await fetch(url, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(payload),
-		});
-
-		if (!response.ok) {
-			const result = await response.json();
-			console.error('[Worker] Respuesta completa de Meta:', JSON.stringify(result));
-			return json({ error: 'Meta API Error' }, 502);
-		}
-
-		console.log(`[Worker /api/notify] Notificación enviada al dueño.`);
-		return json({ success: true });
-	} catch (e: unknown) {
-		console.error('[Worker /api/notify] Excepción:', e);
-		return json({ error: 'Internal error' }, 500);
-	}
-}
 
 /**
  * Handles image messages from WhatsApp webhook.
