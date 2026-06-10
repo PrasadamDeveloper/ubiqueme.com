@@ -47,7 +47,7 @@ const currentStatus = computed(() => {
   }
   return statusConfig[propsComputed.value.status] || {
     bg: 'bg-slate-500/10',
-    text: 'text-slate-400',
+    text: 'text-slate-100',
     dot: 'bg-slate-400',
     label: 'Desconocido'
   }
@@ -663,9 +663,9 @@ const imageSettings: ImageSettings = {
             <span
               class="text-white font-black tracking-widest text-[10px] uppercase whitespace-nowrap">ubiqueme.com</span>
             <span
-              class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
+              class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-white"
               :class="currentStatus.bg">
-              <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
+              <span :class="['w-1.5 h-1.5 rounded-full text-white!', currentStatus.dot]"></span>
               {{ currentStatus.label }}
             </span>
           </div>
@@ -711,7 +711,7 @@ const imageSettings: ImageSettings = {
         <!-- Logs Section (scrollable, max-h fijo) -->
         <div class="flex-1 min-h-0">
           <button v-if="!logsLoaded" @click="loadLogs"
-            class="text-xs text-orange-400/60 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group">
+            class="text-xs text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group border-spacing-0.5 border-dotted border-2 border-orange-500 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
             <span
               class="material-symbols-outlined text-[16px] group-hover:scale-110 transition-transform">history</span>
             <span class="font-medium">Ver registros de escaneo</span>

@@ -80,7 +80,7 @@ const changeComponent = (component: ComponentName) => {
             <div class="w-18 h-12 bg-[#060200] rounded-xl flex items-center justify-center shadow-2xl">
               <span class="text-orange-100 text-xs font-google-sans font-medium">{{
                 useUserStore().getFirstName.charAt(0)
-              }}</span>
+                }}</span>
             </div>
           </div>
 
@@ -99,7 +99,7 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 🚀 MAIN CONTENT AREA (FIXED OFFSET) -->
         <div
-          class="relative z-10 w-full h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:pl-24! lg:pt-16 pt-24! pb-28 lg:pb-8 bg-[#0e0e0e]  flex-1!">
+          class="relative z-10 w-full h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:pl-24! lg:pt-15 pt-20! pb-28 lg:pb-8 bg-[#0e0e0e]  flex-1!">
           <section class="w-full ">
             <component :is="currentComponent"></component>
           </section>

@@ -33,13 +33,13 @@ const dateStr = computed(() => formatDate(props.scanDate))
 const reasonMap: Record<string, { label: string, icon: string, color: string }> = {
   emergency: { label: 'EMERGENCIA', icon: 'emergency', color: 'text-rose-500' },
   communication: { label: 'CONTACTO', icon: 'chat', color: 'text-amber-500' },
-  informative: { label: 'INFO', icon: 'info', color: 'text-white/40' },
-  other: { label: 'PERSONALIZADO', icon: 'edit_note', color: 'text-white/60' }
+  informative: { label: 'INFO', icon: 'info', color: 'text-sky-400' },
+  other: { label: 'PERSONALIZADO', icon: 'edit_note', color: 'text-orange-400' }
 }
 
 const interactionDetail = computed(() => {
   if (!props.interaction) return null
-  return reasonMap[props.interaction.reason] || { label: 'ESCANEADO', icon: 'chat_bubble', color: 'text-white/40' }
+  return reasonMap[props.interaction.reason] || { label: 'ESCANEADO', icon: 'chat_bubble', color: 'text-white/60' }
 })
 
 const imageStore = useImageStore();
@@ -85,73 +85,103 @@ import { ref } from 'vue'
 
 <template>
   <li
-    class="group relative bg-[#0f0f11] border border-white/5 rounded-2xl p-5 transition-all duration-300 hover:bg-black/60 hover:border-white/10 font-google-sans">
+    class="group relative bg-[#151414] border border-white/10 rounded-[1.5rem] hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans">
 
-    <div class="flex flex-col space-y-4">
+    <!-- Grid Pattern Background -->
+    <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none hidden"
+      style="background-image: linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px); background-size: 24px 24px;">
+    </div>
 
-      <!-- 1️⃣ HEADER: Tipo de interacción y Ubicación -->
-      <div class="flex justify-between items-start">
-        <div class="flex flex-col">
-          <div v-if="interactionDetail" class="flex items-center gap-1.5 mb-1" :class="interactionDetail.color">
-            <span class="material-symbols-outlined text-[16px] font-black">{{ interactionDetail.icon }}</span>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em]">{{ interactionDetail.label }}</span>
+    <!-- Orange Glow -->
+    <div
+      class="absolute top-0 left-0 w-full h-full z-0 opacity-10 pointer-events-none bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 p-5 space-y-4">
+
+      <!-- 1️⃣ HEADER ROW: Interaction type badge + Location + Date -->
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-2 flex-wrap min-w-0">
+          <!-- Interaction Badge -->
+          <div v-if="interactionDetail"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-[0.2em]"
+            :class="[interactionDetail.color, `${interactionDetail.color.replace('text-', 'bg-')}/10`, `${interactionDetail.color.replace('text-', 'border-')}/20`]">
+            <span class="material-symbols-outlined text-[14px] font-black">{{ interactionDetail.icon }}</span>
+            {{ interactionDetail.label }}
           </div>
-          <p class="text-white/90 text-[12px] font-normal font-poppins">
-            <span class="font-bold font-google-sans text-white/40">ZONA:</span> {{ scanMetrics.city }}, {{
-              scanMetrics.country }}
-          </p>
+
+          <!-- Location Badge -->
+          <div v-if="scanMetrics.city || scanMetrics.country"
+            class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-wider text-white/50">
+            <span class="material-symbols-outlined text-[12px] text-orange-500/60">location_on</span>
+            <span>{{ scanMetrics.city }}{{ scanMetrics.city && scanMetrics.country ? ', ' : '' }}{{ scanMetrics.country
+              }}</span>
+          </div>
         </div>
-        <div class="text-right">
-          <small class="text-white text-[10px] uppercase font-poppins font-bold tracking-wider">{{ new
-            Date(props.scanDate.toMillis()).toLocaleString() }}</small>
+
+        <!-- Date -->
+        <div class="shrink-0 text-right">
+          <span class="text-[10px] font-mono font-bold text-white/30 tracking-tight whitespace-nowrap">
+            {{ dateStr }}
+          </span>
         </div>
       </div>
 
-      <!-- 2️⃣ IMAGEN DE EVIDENCIA -->
-      <div v-if="img" class="w-full h-48 rounded-xl overflow-hidden border border-white/10 bg-black/40 relative">
-        <img :src="img" @click="openImage(img)" alt="Log evidence"
-          class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-all cursor-pointer" />
+      <!-- 2️⃣ EVIDENCE IMAGE -->
+      <div v-if="img"
+        class="relative rounded-xl overflow-hidden border border-white/10 bg-black/40 group/image cursor-pointer"
+        @click="openImage(img)">
+        <img :src="img" alt="Log evidence"
+          class="w-full h-48 object-cover opacity-80 group-hover/image:opacity-100 group-hover/image:scale-[1.02] transition-all duration-500" />
         <div
-          class="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded-md border border-white/10 text-[9px] text-white/60 font-bold tracking-widest uppercase">
+          class="absolute top-3 right-3 bg-black/70 px-2.5 py-1 rounded-lg border border-white/10 text-[8px] text-white/50 font-black tracking-widest uppercase">
           Evidencia
         </div>
+        <!-- Zoom icon overlay -->
+        <div
+          class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
+          <div
+            class="w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center backdrop-blur-none">
+            <span class="material-symbols-outlined text-white/70 text-lg">zoom_in</span>
+          </div>
+        </div>
       </div>
 
-      <!-- 3️⃣ MENSAJE -->
-      <div v-if="interaction?.message" class="bg-white/5 rounded-xl p-4 border border-white/10">
-        <p class="text-white/70 text-[12px] leading-relaxed italic">
+      <!-- 3️⃣ MESSAGE -->
+      <div v-if="interaction?.message"
+        class="bg-[#0c0500] rounded-xl p-4 border-l-2 border-orange-500/30 border border-white/5">
+        <p class="text-white/70 text-[12px] leading-relaxed italic tracking-wide">
           "{{ interaction.message }}"
         </p>
       </div>
 
-      <!-- 4️⃣ SECCIÓN DE MAPA (On-Demand) -->
+      <!-- 4️⃣ MAP SECTION (On-Demand) -->
       <div v-if="scanMetrics.lat && scanMetrics.lon" class="space-y-2">
         <div class="flex items-center justify-between">
-          <p class="text-white/40 text-[10px] font-normal flex items-center gap-1 ">
-            <span class="material-symbols-outlined text-[16px] font-black">location_on</span>
+          <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px] text-amber-500/60">location_on</span>
             Ubicación aproximada
           </p>
           <button v-if="!isMapActive" @click="activateMap"
-            class="text-[9px] font-black text-amber-500 uppercase tracking-widest hover:underline transition-all cursor-pointer">
-            Ver Mapa de Ubicación
+            class="text-[9px] font-black text-amber-500/70 uppercase tracking-[0.2em] hover:text-amber-500 transition-colors cursor-pointer">
+            Cargar mapa
           </button>
         </div>
 
-        <div class="relative w-full h-[280px] rounded-xl overflow-hidden border border-white/10 bg-black/40">
-          <!-- Placeholder State -->
+        <div class="relative w-full h-[260px] rounded-xl overflow-hidden border border-white/10 bg-black/40">
+          <!-- Placeholder -->
           <div v-if="!isMapActive" @click="activateMap"
-            class="absolute inset-0 flex flex-col items-center justify-center gap-3 cursor-pointer group/map hover:bg-white/2 transition-colors">
+            class="absolute inset-0 flex flex-col items-center justify-center gap-2.5 cursor-pointer group/map hover:bg-white/[0.02] transition-colors">
             <div
-              class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover/map:scale-110 group-hover/map:bg-amber-500/20 transition-all">
-              <span class="material-symbols-outlined text-amber-500 text-2xl">location_on</span>
+              class="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover/map:scale-110 group-hover/map:bg-amber-500/20 transition-all duration-300">
+              <span class="material-symbols-outlined text-amber-500 text-xl">map</span>
             </div>
-            <span
-              class="text-[9px] text-white/30 font-black uppercase tracking-[0.2em] group-hover/map:text-white/50">Cargar
-              Mapa Interactivo</span>
+            <span class="text-[9px] text-white/30 font-black uppercase tracking-[0.15em]">Ver mapa interactivo</span>
           </div>
 
           <!-- Leaflet Container -->
-          <div :id="`map-${id}`" v-show="isMapActive" class="w-full h-full "></div>
+          <div :id="`map-${id}`" v-show="isMapActive" class="w-full h-full"></div>
         </div>
       </div>
 

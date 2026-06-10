@@ -433,7 +433,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		}
 
 		// 🚧 TEMPORARY: Only accept messages from test number
-		const ALLOWED_TEST_PHONE = '5215635752789';
+		const ALLOWED_TEST_PHONE = '5215659170677';
 		if (senderPhone !== ALLOWED_TEST_PHONE) {
 			console.log(`[Worker] Rechazado número no autorizado: ${senderPhone}`);
 			return new Response('OK', { status: 200 });
@@ -547,7 +547,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
 							{ type: 'text', text: String(cleanScannerPhone) }, // {{2}} — número del scanner
 							{ type: 'text', text: String(customMessage || 'Sin mensaje') }, // {{3}} — mensaje
-							{ type: 'text', text: String(qrData.name || qrName || 'objeto') }, // {{4}} — nombre del QR
+							{ type: 'text', text: String(qrData.name || qrName.trim() || 'objeto') }, // {{4}} — nombre del QR
 							{ type: 'text', text: String(scanTime) }, // {{5}} — hora del escaneo
 						],
 					},
