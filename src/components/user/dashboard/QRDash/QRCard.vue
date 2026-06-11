@@ -727,14 +727,14 @@ const hiddeLogsHandle = () => {
               class="material-symbols-outlined text-[16px] group-hover:scale-110 transition-transform">history</span>
             <span class="font-medium">Ver registros de escaneo</span>
             <span v-if="isLogsLoading"
-              class="w-3 h-3 border border-orange-400/40 border-t-transparent rounded-full animate-spin ml-1"></span>
+              class="material-symbols-outlined text-sm animate-spin ml-1">progress_activity</span>
           </button>
           <button v-if="logsLoaded && showLogs" @click="hiddeLogsHandle"
             class="text-xs text-orange-600 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group border-spacing-0.5 border-dotted border-2 border-orange-600 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
             <span class="material-symbols-outlined text-[16px]! group-hover:scale-110 transition-transform">hide</span>
             <span class="font-medium">Ocultar registros</span>
             <span v-if="isLogsLoading"
-              class="w-3 h-3 border border-orange-400/40 border-t-transparent rounded-full animate-spin ml-1"></span>
+              class="material-symbols-outlined text-sm animate-spin ml-1">progress_activity</span>
           </button>
 
           <div v-if="logsLoaded && isLogsLoading" class="flex items-center gap-2 text-xs text-white/30 py-2">
