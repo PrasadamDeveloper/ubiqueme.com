@@ -29,6 +29,7 @@ import {
   MdHelpSharp,
   BiPersonFill,
   BiPersonCircle,
+  BiWhatsapp,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -50,6 +51,7 @@ addIcons(
   MdHelpSharp,
   BiPersonFill,
   BiPersonCircle,
+  BiWhatsapp,
 )
 
 const app = createApp(App)

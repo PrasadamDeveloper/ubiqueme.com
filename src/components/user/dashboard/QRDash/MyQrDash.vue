@@ -17,16 +17,17 @@
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-8 animate-fade-up">
         <div>
-          <p class="text-[#ebf2ff] font-poppins font-semibold  italic text-2xl mb-2">Mis Códigos QR <span
+          <p class="text-[#ebf2ff] font-poppins font-medium  text-2xl mb-2">Mis Códigos QR <span
               class="material-symbols-outlined text-5xl md:text-6xl text-amber-50 align-middle">qr_code</span>
           </p>
 
           <div class="flex items-center gap-2">
-            <h2 class="text-4xl md:text-5xl font-black tracking-tighter leading-none italic text-white animate-fade-up">
+            <h2
+              class="text-4xl md:text-5xl font-semibold font-google-sans tracking-tighter leading-none italic text-white animate-fade-up">
               Hola de nuevo,
             </h2>
             <span
-              class="text-orange-500 text-4xl md:text-5xl font-black tracking-tighter leading-none italic animate-fade-up animate-delay-[.3s]">{{
+              class="text-orange-500 text-4xl md:text-5xl font-semibold tracking-tighter leading-none italic animate-fade-up animate-delay-[.3s]">{{
                 useUserStore().getFirstName }}</span><span
               class="text-4xl md:text-5xl font-black tracking-tighter leading-none italic text-white animate-fade-up animate-delay-[.38s]">!</span>
           </div>
