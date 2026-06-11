@@ -292,6 +292,7 @@ async function handleImageWithCaption(
 		const cleanScannerPhone = senderPhone.replace('+', '');
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
 		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+		const qrNameParam = String(qrData.name || qrName || 'objeto');
 		const payload = {
 			messaging_product: 'whatsapp',
 			recipient_type: 'individual',
@@ -311,9 +312,15 @@ async function handleImageWithCaption(
 							{ type: 'text', text: String(ownerData.displayName || 'propietario') },
 							{ type: 'text', text: String(cleanScannerPhone) },
 							{ type: 'text', text: String(customMessage) },
-							{ type: 'text', text: String(qrData.name || qrName || 'objeto') },
+							{ type: 'text', text: qrNameParam },
 							{ type: 'text', text: String(scanTime) },
 						],
+					},
+					{
+						type: 'button',
+						sub_type: 'url',
+						index: 0,
+						parameters: [{ type: 'text', text: qrNameParam }],
 					},
 				],
 			},
@@ -559,6 +566,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 
 		// 6. Send via Meta API using template
 		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+		const qrNameParam = String(qrData.name || qrName.trim() || 'objeto');
 		const payload = {
 			messaging_product: 'whatsapp',
 			recipient_type: 'individual',
@@ -583,9 +591,15 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
 							{ type: 'text', text: String(cleanScannerPhone) }, // {{2}} — número del scanner
 							{ type: 'text', text: String(customMessage || 'Sin mensaje') }, // {{3}} — mensaje
-							{ type: 'text', text: String(qrData.name || qrName.trim() || 'objeto') }, // {{4}} — nombre del QR
+							{ type: 'text', text: qrNameParam }, // {{4}} — nombre del QR
 							{ type: 'text', text: String(scanTime) }, // {{5}} — hora del escaneo
 						],
+					},
+					{
+						type: 'button',
+						sub_type: 'url',
+						index: 0,
+						parameters: [{ type: 'text', text: qrNameParam }],
 					},
 				],
 			},
