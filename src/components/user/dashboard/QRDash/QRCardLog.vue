@@ -86,7 +86,7 @@ import { ref } from 'vue'
 <template>
   <li class="group animate-fade-up mb-10">
     <!-- Chat message bubble (received-style) -->
-    <div class="flex items-start gap-2.5">
+    <div class="flex items-start gap-2.5 ">
 
       <!-- Avatar column -->
       <div class="shrink-0 pt-1">
@@ -155,10 +155,10 @@ import { ref } from 'vue'
             </div>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <button
-              class="bg-transparent border border-green-500/50 text-green-500/80 text-[9px] font-bold  rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors">
+            <a href="https://wa.me/525652094079" target="_blank" rel="noopener noreferrer"
+              class="bg-transparent border border-green-500/50 text-green-500/80 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center">
               Abrir WhatsApp
-            </button>
+            </a>
           </div>
 
 

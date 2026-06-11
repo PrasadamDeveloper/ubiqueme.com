@@ -275,9 +275,11 @@ const qrStatusColor = (status: string) => {
           </div>
 
           <!-- QR Grid -->
-          <div v-if="userQrs.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            <div v-for="qr in userQrs" :key="qr.id"
-              class="bg-[#161618] border border-white/5 rounded-xl p-3 hover:border-white/10 transition-all group cursor-default">
+          <div v-if="userQrs.filter(q => q.status === 'Active').length > 0"
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <router-link v-for="qr in userQrs.filter(q => q.status === 'Active')" :key="qr.id"
+              :to="{ name: 'dashboard' }"
+              class="bg-[#161618] border border-white/5 rounded-xl p-3 hover:border-orange-500/20 transition-all group cursor-pointer block">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-mono text-white/20 truncate max-w-[80px]">{{ qr.id?.slice(0, 8)
                 }}...</span>
@@ -288,11 +290,18 @@ const qrStatusColor = (status: string) => {
               </div>
               <p class="text-sm font-medium text-white/80 truncate group-hover:text-white transition-colors">{{ qr.name
               }}</p>
-              <div class="flex items-center gap-2 mt-2">
-                <span class="material-symbols-outlined text-[12px] text-white/20">visibility</span>
-                <span class="text-[10px] text-white/30 font-mono">{{ qr.scans ?? 0 }} escaneos</span>
+              <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[12px] text-white/20">visibility</span>
+                  <span class="text-[10px] text-white/30 font-mono">{{ qr.scans ?? 0 }} escaneos</span>
+                </div>
+                <span
+                  class="text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-0.5 group-hover:text-orange-300 transition-colors">
+                  Ver QR
+                  <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                </span>
               </div>
-            </div>
+            </router-link>
           </div>
 
           <div v-else class="flex flex-col items-center justify-center py-12 text-center">

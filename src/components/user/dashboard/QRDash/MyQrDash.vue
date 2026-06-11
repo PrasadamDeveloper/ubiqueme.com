@@ -252,8 +252,7 @@
 import { useUserStore } from '@/stores/user'
 import QRCard from './QRCard.vue'
 import RequestQROverlay from './RequestQROverlay.vue'
-import { onMounted, onUnmounted, ref, computed, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { collection, getFirestore, onSnapshot, Timestamp, doc, increment, writeBatch } from 'firebase/firestore'
 import { useImageStore } from '@/stores/imageStore'
 
@@ -278,17 +277,9 @@ const subscriptionsCollection = collection(db, `users/${userId}/subscriptions`);
 
 // Search
 const searchQuery = ref('')
-const route = useRoute()
 
 // Filtro de planes por estado
 const plansView = ref<'active' | 'inactive' | 'canceled'>('active')
-
-// Leer ?qrname de la URL (ej: desde WhatsApp)
-const qrnameFromUrl = route.query.qrname
-if (qrnameFromUrl && typeof qrnameFromUrl === 'string') {
-  searchQuery.value = qrnameFromUrl
-  plansView.value = 'active'
-}
 
 const filterOptions = [
   { value: 'active', label: 'Activos' },

@@ -742,7 +742,8 @@ const hiddeLogsHandle = () => {
             Cargando registros...
           </div>
 
-          <div v-if="logsLoaded && !isLogsLoading" class="space-y-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
+          <div v-if="logsLoaded && !isLogsLoading"
+            class="space-y-2 lg:max-h-72 max-h-96 overflow-y-auto pr-1 scrollbar-thin">
             <div v-if="qrLogs.length === 0" class="text-white/20 text-xs py-3 text-center">
               <span class="material-symbols-outlined text-[20px] block mb-1">history_off</span>
               Sin registros de escaneo aún
