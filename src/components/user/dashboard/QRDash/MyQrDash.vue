@@ -53,6 +53,18 @@
         </button>
       </div>
 
+      <!-- Search Bar -->
+      <div class="relative animate-fade-up">
+        <span
+          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-xl pointer-events-none">search</span>
+        <input v-model="searchQuery" type="text" placeholder="Buscar QR por nombre, categoría o ID..."
+          class="w-full bg-[#1f1f2367] border border-white/5 rounded-xl pl-10 pr-10 py-3 text-sm text-white/80 placeholder:text-white/30 focus:outline-none focus:border-orange-500/30 focus:ring-1 focus:ring-orange-500/10 transition-all" />
+        <button v-if="searchQuery" @click="searchQuery = ''"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
       <!-- Content Section -->
       <div class="space-y-10">
         <div class="relative min-h-[300px]">
@@ -263,6 +275,9 @@ const userId = userStore.getUserId ?? '';
 const userQrsCollection = collection(db, `users/${userId}/qrs`);
 const subscriptionsCollection = collection(db, `users/${userId}/subscriptions`);
 
+// Search
+const searchQuery = ref('')
+
 // Filtro de planes por estado
 const plansView = ref<'active' | 'inactive' | 'canceled'>('active')
 
@@ -281,9 +296,27 @@ const groupedQRs = computed(() => {
   }))
 })
 
-// Filtrar grupos según el estado seleccionado
+// Filtrar grupos según el estado seleccionado y búsqueda
 const filteredGroups = computed(() => {
-  return groupedQRs.value.filter((group) => group.subscription.status === plansView.value)
+  const statusFiltered = groupedQRs.value.filter((group) => group.subscription.status === plansView.value)
+
+  if (!searchQuery.value.trim()) {
+    return statusFiltered
+  }
+
+  const query = searchQuery.value.toLowerCase().trim()
+
+  return statusFiltered
+    .map((group) => ({
+      ...group,
+      qrs: group.qrs.filter(
+        (qr) =>
+          qr.name.toLowerCase().includes(query) ||
+          qr.category.toLowerCase().includes(query) ||
+          qr.id.toLowerCase().includes(query)
+      ),
+    }))
+    .filter((group) => group.qrs.length > 0)
 })
 
 const selectedSubscription = ref<ISubscription | null>(null);
@@ -307,6 +340,8 @@ const overlayQrs = computed(() => {
   const group = groupedQRs.value.find(g => g.subscription.id === overlaySubscription.value?.id)
   return group?.qrs ?? []
 })
+
+const imageStore = useImageStore();
 
 //Limit Reached
 const showLimitReached = ref(false);
@@ -420,8 +455,8 @@ const createQRForSubscription = async () => {
 }
 
 // Listeners
-let unsubQRs: any;
-let unsubSubs: any;
+let unsubQRs: (() => void) | undefined;
+let unsubSubs: (() => void) | undefined;
 
 onMounted(() => {
   // Listener de Suscripciones
@@ -467,9 +502,6 @@ onUnmounted(() => {
   isLoading.value = true;
   imageStore.clearImages();
 })
-
-const imageStore = useImageStore();
-const images = imageStore.getImages;
 
 </script>
 

@@ -569,6 +569,7 @@ const handlePrint = () => {
 const qrLogs = ref<IQRLog[]>([]);
 const logsLoaded = ref(false);
 const isLogsLoading = ref(false);
+const showLogs = ref(false);
 
 let unsubscribeLogs: Unsubscribe;
 
@@ -586,10 +587,12 @@ const loadLogs = () => {
     if (querySnapshot.empty) {
       toast.info(`Registros del QR vacíos`);
       qrLogs.value = [];
+      showLogs.value = true;
       return;
     }
 
     qrLogs.value = [];
+    showLogs.value = true;
     qrLogs.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       scanDate: doc.data().scanDate,
@@ -601,6 +604,7 @@ const loadLogs = () => {
     loadCount.value++;
   }, (error) => {
     isLogsLoading.value = false;
+    showLogs.value = false;
     toast.error(`Error al obtener datos de registros: ${error}`);
   });
 }
@@ -626,6 +630,13 @@ const imageSettings: ImageSettings = {
   width: 840,
   excavate: false,
   borderRadius: 30,
+}
+
+const hiddeLogsHandle = () => {
+  qrLogs.value = [];
+  if (unsubscribeLogs) unsubscribeLogs();
+  logsLoaded.value = false;
+  showLogs.value = false;
 }
 
 </script>
@@ -710,11 +721,18 @@ const imageSettings: ImageSettings = {
 
         <!-- Logs Section (scrollable, max-h fijo) -->
         <div class="flex-1 min-h-0">
-          <button v-if="!logsLoaded" @click="loadLogs"
+          <button v-if="!logsLoaded && !showLogs" @click="loadLogs"
             class="text-xs text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group border-spacing-0.5 border-dotted border-2 border-orange-500 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
             <span
               class="material-symbols-outlined text-[16px] group-hover:scale-110 transition-transform">history</span>
             <span class="font-medium">Ver registros de escaneo</span>
+            <span v-if="isLogsLoading"
+              class="w-3 h-3 border border-orange-400/40 border-t-transparent rounded-full animate-spin ml-1"></span>
+          </button>
+          <button v-if="logsLoaded && showLogs" @click="hiddeLogsHandle"
+            class="text-xs text-orange-600 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group border-spacing-0.5 border-dotted border-2 border-orange-600 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
+            <span class="material-symbols-outlined text-[16px]! group-hover:scale-110 transition-transform">hide</span>
+            <span class="font-medium">Ocultar registros</span>
             <span v-if="isLogsLoading"
               class="w-3 h-3 border border-orange-400/40 border-t-transparent rounded-full animate-spin ml-1"></span>
           </button>
