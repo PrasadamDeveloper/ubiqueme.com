@@ -624,6 +624,7 @@ type ImageSettings = {
 }
 
 import logoText from '@/assets/image33.png'
+import WatchLogsBtn from '../homeDash/WatchLogsBtn.vue'
 const imageSettings: ImageSettings = {
   src: logoText,
   height: 60,
@@ -720,12 +721,12 @@ const hiddeLogsHandle = () => {
         <div class="border-t border-white/10 mb-3"></div>
 
         <!-- Logs Section (scrollable, max-h fijo) -->
-        <div class="flex-1 min-h-0">
+        <div class="min-h-0 w-full ">
           <button v-if="!logsLoaded && !showLogs" @click="loadLogs"
-            class="text-xs text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group border-spacing-0.5 border-dotted border-2 border-orange-500 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
+            class="text-xs w-full text-center justify-center text-orange-500 hover:text-orange-400 transition-colors flex items-center bg-amber-900 gap-1.5 cursor-pointer group border-spacing-0.5  border border-orange-500 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
             <span
               class="material-symbols-outlined text-[16px] group-hover:scale-110 transition-transform">history</span>
-            <span class="font-medium">Ver registros de escaneo</span>
+            <span class="font-medium text-white">Ver registros de escaneo</span>
             <span v-if="isLogsLoading"
               class="material-symbols-outlined text-sm animate-spin ml-1">progress_activity</span>
           </button>
