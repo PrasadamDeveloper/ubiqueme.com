@@ -3,9 +3,10 @@ import ButtonDash from '@/components/user/dashboard/ButtonDash.vue'
 import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
 import MainLoader from '@/components/ui/MainLoader.vue'
 import { useAuth } from '@/handleAuth'
-import { defineAsyncComponent, ref, shallowRef } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.ts'
+import { useComponentsStore } from '@/stores/components.ts'
 
 const router = useRouter()
 
@@ -46,14 +47,18 @@ const withLoader = (viewPath: () => Promise<any>) => {
     delay: 200,
   })
 }
+const componentsStore = useComponentsStore();
 
 const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   'Mis QR': withLoader(() => import('../../components/user/dashboard/QRDash/MyQrDash.vue')),
-  Configuración: withLoader(() => import('../../components/user/dashboard/settings/SettingsDash.vue')),
-  Soporte: defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
+  'Configuración': withLoader(() => import('../../components/user/dashboard/settings/SettingsDash.vue')),
+  'Soporte': defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
 }
 
-const currentComponent = shallowRef(componentsMap['Mis QR'])
+const currentComponent = computed(() => {
+  const name = componentsStore.getCurrentComponent
+  return componentsMap[name] ?? componentsMap['Mis QR']
+})
 const { handleLogout } = useAuth()
 
 const changeComponent = (component: ComponentName) => {
@@ -61,8 +66,9 @@ const changeComponent = (component: ComponentName) => {
     handleLogout()
     return
   }
-  currentComponent.value = componentsMap[component] ?? componentsMap['Inicio']
+  componentsStore.changeComponent(component)
 }
+
 </script>
 
 <template>
@@ -80,14 +86,14 @@ const changeComponent = (component: ComponentName) => {
             <div class="w-18 h-12 bg-[#060200] rounded-xl flex items-center justify-center shadow-2xl">
               <span class="text-orange-100 text-xs font-google-sans font-medium">{{
                 useUserStore().getFirstName.charAt(0)
-                }}</span>
+              }}</span>
             </div>
           </div>
 
           <div class="flex-1 w-full space-y-2 px-4 overflow-hidden justify-evenly h-full flex flex-col">
             <ButtonDash @click="changeComponent(btn.name as ComponentName)" v-for="(btn, index) in dashButtons"
               :key="btn.name" :name="btn.name" :isHover="hoverOnSideBar" :index="index" :icon="btn.icon"
-              :iconActive="btn.iconActive" :active="componentsMap[btn.name] === currentComponent" />
+              :iconActive="btn.iconActive" :active="componentsStore.getCurrentComponent === btn.name" />
           </div>
 
 
@@ -110,16 +116,11 @@ const changeComponent = (component: ComponentName) => {
           class="lg:hidden fixed bottom-4 left-4 right-4 bg-[#09090b]/90 backdrop-blur-xl border border-white/10 rounded-[24px] h-16 px-4 z-40 flex items-center justify-around shadow-[0_8px_32px_0_rgba(249,115,22,0.15)] transition-all duration-300">
           <button v-for="btn in mobileButtons" :key="btn.name" @click="changeComponent(btn.name as ComponentName)"
             class="flex flex-col items-center justify-center text-center gap-1 cursor-pointer transition-all duration-300 w-12 h-12 rounded-xl active:scale-95"
-            :class="componentsMap[btn.name] === currentComponent ? 'text-orange-800 scale-105' : 'text-white/40 hover:text-white/70'">
-            <v-icon :name="componentsMap[btn.name] === currentComponent ? btn.iconActive : btn.icon" scale="1.2" />
+            :class="componentsStore.getCurrentComponent === btn.name ? 'text-orange-800 scale-105' : 'text-white/40 hover:text-white/70'">
+            <v-icon :name="componentsStore.getCurrentComponent === btn.name ? btn.iconActive : btn.icon" scale="1.2" />
             <span class="text-[9px] font-bold tracking-tight uppercase">{{ btn.label }}</span>
           </button>
-          <!-- Request QR Shortcut (mobile) -->
-          <button @click="router.push({ name: 'dashboard' })"
-            class="flex flex-col items-center justify-center text-center gap-1 cursor-pointer transition-all duration-300 w-12 h-12 rounded-xl active:scale-95 text-orange-400">
-            <span class="material-symbols-outlined text-[22px]">add_circle</span>
-            <span class="text-[9px] font-bold tracking-tight uppercase">QR</span>
-          </button>
+
         </nav>
 
       </div>

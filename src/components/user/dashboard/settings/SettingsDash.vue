@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { toast } from 'vue-sonner'
 import { auth } from '@/firebase'
 import { sendPasswordResetEmail } from 'firebase/auth'
@@ -12,6 +12,8 @@ import {
   getFirestore,
   updateDoc,
 } from 'firebase/firestore'
+import MainLoader from '@/components/ui/MainLoader.vue'
+import { useComponentsStore } from '@/stores/components'
 
 const userStore = useUserStore()
 const db = getFirestore()
@@ -172,6 +174,28 @@ const qrStatusColor = (status: string) => {
   if (status === 'Paused') return 'bg-white/10 text-white/50 border-white/10'
   return 'bg-white/5 text-white/30 border-white/10'
 }
+
+const componentsStore = useComponentsStore();
+
+const withLoader = (viewPath: () => Promise<any>) => {
+  return defineAsyncComponent({
+    loader: viewPath,
+    loadingComponent: MainLoader,
+    delay: 200,
+  })
+}
+
+
+const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
+  'Mis QR': withLoader(() => import('@/components/user/dashboard/QRDash/MyQrDash.vue')),
+  'Configuración': withLoader(() => import('@/components/user/dashboard/settings/SettingsDash.vue')),
+  'Soporte': defineAsyncComponent(() => import('@/components/user/dashboard/support/SupportDash.vue')),
+}
+
+const goToMYQR = () => {
+  componentsStore.changeComponent('Mis QR');
+}
+
 </script>
 
 <template>
@@ -277,31 +301,27 @@ const qrStatusColor = (status: string) => {
           <!-- QR Grid -->
           <div v-if="userQrs.filter(q => q.status === 'Active').length > 0"
             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            <router-link v-for="qr in userQrs.filter(q => q.status === 'Active')" :key="qr.id"
+            <button @click="goToMYQR" v-for="qr in userQrs.filter(q => q.status === 'Active')" :key="qr.id"
               :to="{ name: 'dashboard' }"
               class="bg-[#161618] border border-white/5 rounded-xl p-3 hover:border-orange-500/20 transition-all group cursor-pointer block">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-mono text-white/20 truncate max-w-[80px]">{{ qr.id?.slice(0, 8)
-                }}...</span>
+                  }}...</span>
                 <span :class="qrStatusColor(qr.status)"
                   class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border">
                   {{ qr.status }}
                 </span>
               </div>
               <p class="text-sm font-medium text-white/80 truncate group-hover:text-white transition-colors">{{ qr.name
-              }}</p>
+                }}</p>
               <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-[12px] text-white/20">visibility</span>
                   <span class="text-[10px] text-white/30 font-mono">{{ qr.scans ?? 0 }} escaneos</span>
                 </div>
-                <span
-                  class="text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-0.5 group-hover:text-orange-300 transition-colors">
-                  Ver QR
-                  <span class="material-symbols-outlined text-[10px]">chevron_right</span>
-                </span>
+
               </div>
-            </router-link>
+            </button>
           </div>
 
           <div v-else class="flex flex-col items-center justify-center py-12 text-center">
