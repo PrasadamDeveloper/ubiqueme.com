@@ -320,7 +320,7 @@ async function handleImageWithCaption(
 						type: 'button',
 						sub_type: 'url',
 						index: 0,
-						parameters: [{ type: 'text', text: qrNameParam }],
+						parameters: [{ type: 'text', text: encodeURIComponent(qrNameParam) }],
 					},
 				],
 			},
@@ -451,11 +451,11 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		}
 
 		// 🚧 TEMPORARY: Only accept messages from test number
-		const ALLOWED_TEST_PHONE = '5215635752789';
-		if (senderPhone !== ALLOWED_TEST_PHONE) {
-			console.log(`[Worker] Rechazado número no autorizado: ${senderPhone}`);
-			return new Response('OK', { status: 200 });
-		}
+		// const ALLOWED_TEST_PHONE = '5215635752789';
+		// if (senderPhone !== ALLOWED_TEST_PHONE) {
+		// 	console.log(`[Worker] Rechazado número no autorizado: ${senderPhone}`);
+		// 	return new Response('OK', { status: 200 });
+		// }
 
 		// 1b. Reject unsupported message types (video, audio, document, sticker, etc.)
 		const SUPPORTED_TYPES = ['text', 'image'];
@@ -599,7 +599,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 						type: 'button',
 						sub_type: 'url',
 						index: 0,
-						parameters: [{ type: 'text', text: qrNameParam }],
+						parameters: [{ type: 'text', text: encodeURIComponent(qrNameParam) }],
 					},
 				],
 			},
