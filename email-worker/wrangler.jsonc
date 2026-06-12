@@ -8,10 +8,4 @@
 	},
 	"upload_source_maps": true,
 	"compatibility_flags": ["nodejs_compat"],
-	"send_email": [
-		{
-			"name": "SEND_EMAIL",
-			"destination_address": "informes@prasadam.mx",
-		},
-	],
 }

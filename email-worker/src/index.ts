@@ -172,6 +172,11 @@ export default {
 			return json({ error: 'Missing required fields' }, 400);
 		}
 
+		const VALID_PLANS = ['bronce', 'plata', 'oro'];
+		if (!VALID_PLANS.includes(plan)) {
+			return json({ error: 'Invalid plan' }, 400);
+		}
+
 		const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
 		const resend = new Resend(env.RESEND_API_KEY);
 
@@ -184,32 +189,46 @@ export default {
 			'Notas adicionales': body.notes || 'Ninguna',
 		};
 
-		const [notifResult] = await Promise.all([
-			resend.emails.send({
-				from: 'Ubiqueme <pagos@ubiqueme.com>',
-				to: ['pagos@ubiqueme.com'],
-				subject: `Nueva solicitud de suscripción — ${planLabel}`,
-				html: EMAIL_WRAPPER(NOTIF_HTML(planLabel, fields)),
-			}),
-			resend.emails
-				.send({
-					from: 'Ubiqueme <pagos@ubiqueme.com>',
-					to: [email],
-					subject: 'Hemos recibido su solicitud de suscripción',
-					html: EMAIL_WRAPPER(CONFIRM_HTML),
-				})
-				.catch(() => null),
-		]);
+		// 1. Send notification to staff (mandatory)
+		const notifResult = await resend.emails.send({
+			from: 'Ubiqueme <pagos@ubiqueme.com>',
+			to: ['pagos@ubiqueme.com'],
+			subject: `Nueva solicitud de suscripción — ${planLabel}`,
+			html: EMAIL_WRAPPER(NOTIF_HTML(planLabel, fields)),
+		});
 
 		if (notifResult?.error) {
 			console.error('Resend error:', notifResult.error);
 			return json({ error: 'Failed to send email' }, 500);
 		}
 
+		// 2. Send confirmation to user (non-critical, fire-and-forget)
+		await resend.emails
+			.send({
+				from: 'Ubiqueme <pagos@ubiqueme.com>',
+				to: [email],
+				subject: 'Hemos recibido su solicitud de suscripción',
+				html: EMAIL_WRAPPER(CONFIRM_HTML),
+			})
+			.catch((err) => console.error('Failed to send user confirmation:', err));
+
 		return json({ success: true });
 	},
 
 	async email(message: ForwardableEmailMessage, env, ctx): Promise<void> {
 		await message.forward('informes@prasadam.mx');
+
+		// Auto-response via Resend
+		try {
+			const resend = new Resend(env.RESEND_API_KEY);
+			await resend.emails.send({
+				from: 'Ubiqueme <pagos@ubiqueme.com>',
+				to: [message.from],
+				subject: 'Hemos recibido su solicitud de suscripción',
+				html: EMAIL_WRAPPER(CONFIRM_HTML),
+			});
+		} catch (error) {
+			console.error('Resend auto-reply error:', error);
+		}
 	},
 } satisfies ExportedHandler<Env>;
