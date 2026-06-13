@@ -100,6 +100,8 @@ import { ref } from 'vue'
 
         <div class="log-card border border-white/5 rounded-2xl rounded-tl-sm p-2.5 space-y-2.5 shadow-sm">
 
+          <small class="text-white text-[10px] font-poppins">{{ interaction?.scannerPhone ?? '+ 52 ******1234'
+            }}</small>
 
           <!-- Message text (like a WhatsApp quote bubble) -->
           <div v-if="interaction?.message" class="bg-[#242625] rounded-xl px-3 py-2.5 relative">

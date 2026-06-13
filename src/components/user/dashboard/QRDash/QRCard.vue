@@ -613,25 +613,7 @@ onUnmounted(() => {
   if (unsubscribeLogs) unsubscribeLogs();
 })
 
-type ImageSettings = {
-  src: string            // URL of the logo image
-  x?: number             // Horizontal offset (centers by default)
-  y?: number             // Vertical offset (centers by default)
-  height: number         // Height of the image in pixels
-  width: number          // Width of the image in pixels
-  excavate?: boolean     // Remove modules behind the image
-  borderRadius?: number  // Border radius of the image
-}
-
-import logoText from '@/assets/image33.png'
 import WatchLogsBtn from '../homeDash/WatchLogsBtn.vue'
-const imageSettings: ImageSettings = {
-  src: logoText,
-  height: 60,
-  width: 840,
-  excavate: false,
-  borderRadius: 30,
-}
 
 const hiddeLogsHandle = () => {
   qrLogs.value = [];

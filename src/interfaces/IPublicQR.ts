@@ -37,6 +37,7 @@ export interface IQRLog {
     type: string
     email?: string
     phone?: string
+    scannerPhone?: string
   }
   img?: string
 }
