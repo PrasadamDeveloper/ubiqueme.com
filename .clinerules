@@ -1,0 +1,27 @@
+# Cline Rules
+
+## Cache Optimization
+
+- Stable content first, dynamic last — keeps the cache prefix intact and maximizes DeepSeek cache hits.
+- Never add timestamps, task IDs, or session metadata to prompts.
+- Prefer replace_in_file over full file reads — fewer input tokens, stable prefix unchanged.
+- Read each file once per task. Re-read only if it changed or new evidence requires it.
+- Skip environment_details, directory trees, and broad scans unless the task explicitly needs them.
+- Avoid /compact mid-task — only use it when switching to a completely separate task.
+
+## Editing
+
+- replace_in_file for all edits. Full rewrites only if explicitly asked.
+- Files over 100 lines: edit only the affected block.
+- Change only what is required. Reuse existing patterns and architecture.
+- Never expose API keys in frontend code.
+
+## Communication
+
+- Concise. No restating requests or summarizing actions.
+- Max one clarifying question per reply.
+- Text-only if no changes requested.
+
+## Vue / Ionic / Firebase
+
+- Composition API only. Incremental UI edits — no full redesigns.

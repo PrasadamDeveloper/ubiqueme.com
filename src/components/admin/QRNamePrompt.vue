@@ -1,0 +1,138 @@
+<script lang="ts" setup>
+import { ref, watch } from 'vue'
+
+const props = defineProps<{
+  isOpen: boolean
+  userName: string
+  loading?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'submit', qrName: string, category: string): void
+  (e: 'cancel'): void
+}>()
+
+const qrNameInput = ref('')
+
+// Focus and clear input when modal opens
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    qrNameInput.value = ''
+  }
+})
+
+const handleSubmit = () => {
+  if (!qrNameInput.value.trim()) return
+  emit('submit', qrNameInput.value.trim(), qrCategory.value)
+}
+
+const handleCancel = () => {
+  emit('cancel')
+}
+const qrCategory = ref('other')
+</script>
+
+<template>
+  <Transition name="fade-scale">
+
+    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4">
+
+      <div class="bg-[#09090b] border border-white/10 w-full max-w-lg rounded-xl p-5 relative overflow-hidden">
+
+        <!-- Grid Pattern -->
+        <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
+          style="background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:22px 22px;">
+        </div>
+
+        <div class="relative z-10 space-y-5">
+
+          <!-- Header -->
+          <div class="flex gap-4">
+            <div
+              class="w-12 h-12 rounded-2xl border border-orange-500/15 bg-orange-500/5 flex items-center justify-center">
+              <span class="material-symbols-outlined text-orange-400">qr_code_scanner</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Asignar QR</h3>
+              <p class="text-xs text-white/40">
+                Crear nuevo QR para
+                <span class="text-white">{{ userName }}</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- FORM -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- NAME -->
+            <div class="space-y-2">
+              <label class="text-[10px] uppercase tracking-widest text-white/40">Nombre</label>
+              <input v-model="qrNameInput" placeholder="Ej. Llaves del auto" @keyup.enter="handleSubmit"
+                class="w-full h-11 px-4 rounded-xl border border-white/10 bg-white/5 text-white placeholder:text-white/20 outline-none focus:border-orange-500">
+            </div>
+
+            <!-- CATEGORY -->
+            <div class="space-y-2">
+              <label class="text-[10px] uppercase tracking-widest text-white/40">Categoría</label>
+              <select v-model="qrCategory"
+                class="w-full h-11 px-4 rounded-xl border border-white/10 bg-white/5 text-white outline-none">
+                <option value="vehicle">Vehículos</option>
+                <option value="home">Hogares</option>
+                <option value="phone">Celulares</option>
+                <option value="laptop">Laptops</option>
+                <option value="bags">Mochilas / Maletas</option>
+                <option value="keys">Llaves</option>
+                <option value="pets">Mascotas</option>
+                <option value="people">Personas</option>
+                <option value="wallet">Carteras</option>
+                <option value="documents">Documentos</option>
+                <option value="bike">Bicicletas</option>
+                <option value="other">Otro</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="grid grid-cols-2 gap-2">
+            <button @click="handleCancel"
+              class="h-10 rounded-xl border border-white/10 bg-white/5 text-xs uppercase text-white/70 cursor-pointer">
+              Cancelar
+            </button>
+            <button @click="handleSubmit" :disabled="!qrNameInput.trim() || loading"
+              class="h-10 rounded-xl bg-orange-500 hover:bg-orange-600 text-black text-xs uppercase font-semibold disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
+              <span v-if="loading"
+                class="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
+              <span v-else>Crear QR</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </Transition>
+</template>
+
+<style scoped>
+.font-google-sans {
+  font-family: 'Google Sans', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+.fade-scale-enter-active,
+.fade-scale-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-scale-enter-from,
+.fade-scale-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+</style>

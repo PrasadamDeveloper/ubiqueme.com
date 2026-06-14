@@ -42,66 +42,45 @@ onUnmounted(() => {
 <template>
   <div class="font-google-sans">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-[#07070d] border-b border-white/[0.03] transition-all duration-300">
+    <nav class="fixed top-0 w-full z-50 bg-[#09090b] border-b border-white/5 transition-all duration-300">
 
-      <!-- Animated Grid Background -->
-      <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03]">
-        <div class="absolute inset-0"
-          style="background-image: linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 60px 60px;">
-        </div>
-      </div>
-
-      <!-- Sweeping Glow Border -->
-      <div class="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"></div>
-        <div class="absolute inset-0 w-[60%] h-full bg-gradient-to-r from-transparent via-orange-500/70 to-transparent animate-sweep-glow"
-          style="filter: blur(1px);"></div>
+      <!-- Subtle Orange Top Line -->
+      <div
+        class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent">
       </div>
 
       <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto relative">
 
-        <!-- Logo Section -->
+        <!-- Logo -->
         <div class="flex items-center gap-3 relative">
-          <!-- SSL Badge (Cyberpunk Style) -->
+          <!-- SSL Badge (Cloudflare Style) -->
           <div
-            class="hidden sm:flex items-center gap-1.5 px-0.5 py-1.5 ml-4 rounded-lg border border-orange-500/15 bg-gradient-to-br from-orange-500/[0.04] to-rose-500/[0.04] hover:from-orange-500/[0.1] hover:to-rose-500/[0.1] hover:shadow-[0_0_24px_rgba(255,107,53,0.2)] transition-all duration-500 group relative overflow-hidden">
-            <!-- Scanline Effect on hover -->
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700">
-            </div>
-            <span class="material-symbols-outlined text-orange-400/80 group-hover:text-orange-300 relative z-10" style="font-size:18px">verified</span>
-            <span class="text-[11px] font-black uppercase tracking-[0.2em] text-orange-500/60 group-hover:text-orange-400/80 relative z-10">SECURE</span>
-            <span class="w-1.5 h-1.5 rounded-full bg-green-400/60 animate-pulse relative z-10"></span>
+            class="hidden sm:flex items-center gap-1.5 px-0.5 py-1.5 ml-4 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] hover:bg-orange-500/[0.1] hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] transition-all duration-300">
+            <span class="material-symbols-outlined text-orange-400" style="font-size:18px">shield</span>
+            <span class="text-[11px] font-black uppercase tracking-[0.2em] text-orange-500/80">SSL</span>
           </div>
-
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
-            <!-- Logo with glow -->
-            <div class="relative">
-              <div
-                class="absolute -inset-2 bg-orange-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500">
-              </div>
-              <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
-                class="w-10 h-10 sm:w-12 sm:h-12 object-contain relative z-10" />
-            </div>
+            <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
+              class="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
             <!-- Desktop: domains side by side -->
             <div class="hidden lg:flex flex-col min-w-[140px] sm:min-w-[200px]">
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
-                <Transition name="glitch">
+                <Transition name="slide-up">
                   <div :key="currentDomainIndex"
                     class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[15px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
                     <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500">.com</span>
+                    <span class="text-orange-500">.com</span>
                   </div>
                 </Transition>
               </div>
               <div class="relative h-4 sm:h-5 overflow-hidden flex items-center">
                 <Transition name="slide-up">
                   <div :key="currentTaglineIndex"
-                    class="absolute left-0 text-[9px]! sm:text-[10px] text-white/25 font-medium tracking-wider whitespace-nowrap font-google-sans"
+                    class="absolute left-0 text-[9px]! sm:text-[10px] text-white/30 font-medium tracking-wider whitespace-nowrap font-google-sans"
                     style="font-variation-settings: normal">
                     <template v-if="taglines[currentTaglineIndex]!.clickable">
                       por <span @click.stop="openAziechrie"
-                        class="font-semibold bg-gradient-to-r from-orange-400/70 to-rose-400/70 bg-clip-text text-transparent hover:from-orange-400 hover:to-rose-400 transition-all duration-300 cursor-pointer">AZIECHRIE
+                        class="font-semibold text-orange-400/60 hover:text-orange-400 transition-colors cursor-pointer">AZIECHRIE
                         PHARMA</span>
                     </template>
                     <template v-else>
@@ -114,26 +93,26 @@ onUnmounted(() => {
           </RouterLink>
         </div>
 
-        <!-- Mobile: domains centered -->
+        <!-- Mobile: domains centered with absolute positioning to prevent animation jumps -->
         <div class="lg:hidden flex-1 flex justify-center min-w-0">
           <RouterLink :to="{ name: 'home' }" class="flex flex-col items-center w-full max-w-fit">
             <div class="relative h-8 w-full overflow-hidden flex items-center justify-center">
-              <Transition name="glitch">
+              <Transition name="slide-up">
                 <div :key="currentDomainIndex"
                   class="absolute left-0 right-0 flex justify-center items-baseline text-[#dce7ff] font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
                   <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500">.com</span>
+                  <span class="text-orange-500">.com</span>
                 </div>
               </Transition>
             </div>
             <div class="relative h-3.5 w-full overflow-hidden flex items-center justify-center">
               <Transition name="slide-up">
                 <div :key="currentTaglineIndex"
-                  class="absolute left-0 right-0 flex justify-center text-[8px] text-white/25 font-medium tracking-wider whitespace-nowrap font-google-sans"
+                  class="absolute left-0 right-0 flex justify-center text-[8px] text-white/30 font-medium tracking-wider whitespace-nowrap font-google-sans"
                   style="font-variation-settings: normal">
                   <template v-if="taglines[currentTaglineIndex]!.clickable">
                     por <span @click.stop="openAziechrie"
-                      class="font-semibold bg-gradient-to-r from-orange-400/70 to-rose-400/70 bg-clip-text text-transparent hover:from-orange-400 hover:to-rose-400 transition-all duration-300 cursor-pointer">AZIECHRIE
+                      class="font-semibold text-orange-400/60 hover:text-orange-400 transition-colors cursor-pointer">AZIECHRIE
                       PHARMA</span>
                   </template>
                   <template v-else>
@@ -145,28 +124,19 @@ onUnmounted(() => {
           </RouterLink>
         </div>
 
-        <!-- Nav Menu (Desktop) -->
-        <div class="hidden lg:flex items-center space-x-1 tracking-tight">
+        <!-- Menu -->
+        <div class="hidden lg:flex items-center space-x-2 tracking-tight">
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
             :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
-            class="group relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 overflow-hidden">
-            <!-- Glass background -->
+            class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
+            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
+              }}</span>
+            <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
+
+            <!-- Indicator Line -->
             <div
-              class="absolute inset-0 bg-white/[0.02] rounded-xl opacity-0 group-hover:opacity-100 active-glass transition-opacity duration-300 border border-white/[0.03] group-hover:border-orange-500/20 active-border">
+              class="absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-center">
             </div>
-            <!-- Glow on hover -->
-            <div
-              class="absolute -inset-2 bg-gradient-to-r from-orange-500/10 to-rose-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            </div>
-            <!-- Content -->
-            <span
-              class="material-symbols-outlined text-[20px] relative z-10 text-white/30 group-hover:text-orange-400 active-icon transition-all duration-300">
-              {{ link.icon }}
-            </span>
-            <span
-              class="text-[11px] font-black uppercase tracking-widest relative z-10 text-white/30 group-hover:text-white/80 active-text transition-colors duration-300">
-              {{ link.name }}
-            </span>
           </RouterLink>
         </div>
 
@@ -174,101 +144,64 @@ onUnmounted(() => {
         <div class="hidden lg:flex items-center space-x-4 z-50">
           <template v-if="!useUserStore().getUserId">
             <RouterLink :to="{ name: 'login' }"
-              class="text-white/40 hover:text-white transition-colors duration-300 text-[11px] font-black uppercase tracking-widest px-4 py-2 cursor-pointer group relative">
+              class="text-white/40 hover:text-white transition-colors duration-300 text-[11px] font-black uppercase tracking-widest px-4 py-2 cursor-pointer">
               Iniciar sesión
-              <span
-                class="absolute -bottom-0.5 left-4 right-4 h-[1px] bg-gradient-to-r from-orange-500 to-rose-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-center"></span>
             </RouterLink>
 
             <RouterLink :to="{ name: 'register' }"
-              class="relative bg-gradient-to-r from-orange-500 to-rose-500 text-[#07070d] px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:from-orange-400 hover:to-rose-400 transition-all duration-300 active:scale-95 cursor-pointer overflow-hidden group">
-              <!-- Shine effect -->
-              <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700">
-              </div>
-              <!-- Outer glow -->
-              <div
-                class="absolute -inset-1 bg-gradient-to-r from-orange-500/30 to-rose-500/30 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              </div>
-              <span class="relative z-10">Registrarse</span>
+              class="bg-orange-500 text-[#09090b] px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
+              Registrarse
             </RouterLink>
           </template>
           <template v-else>
             <RouterLink :to="{ name: 'dashboard' }"
-              class="relative bg-white/[0.03] border border-white/[0.06] text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-gradient-to-r hover:from-orange-500/20 hover:to-rose-500/20 hover:border-orange-500/30 transition-all duration-300 cursor-pointer flex items-center gap-2 group overflow-hidden">
-              <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700">
-              </div>
-              <span class="material-symbols-outlined text-sm relative z-10">dashboard</span>
-              <span class="relative z-10">Panel</span>
+              class="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">dashboard</span>
+              Panel
             </RouterLink>
           </template>
         </div>
 
-        <!-- Hamburger Button (Mobile) -->
+        <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-          class="lg:hidden flex items-center justify-center p-2 text-white/50 hover:text-orange-400 transition-colors z-50 cursor-pointer group">
-          <span class="material-symbols-outlined text-[28px] transition-transform duration-300"
-            :class="{ 'rotate-90': isMobileMenuOpen }">
-            {{ isMobileMenuOpen ? 'close' : 'menu' }}
-          </span>
+          class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
+          <span class="material-symbols-outlined text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
         </button>
 
       </div>
 
-      <!-- Mobile Menu Overlay (Cyberpunk Glass) -->
+      <!-- Mobile Menu Overlay -->
       <Transition name="fade-slide">
         <div v-if="isMobileMenuOpen"
-          class="fixed top-20 left-0 w-full h-[calc(100vh-80px)] bg-gradient-to-b from-[#07070d]/98 to-[#0a0a16]/98 backdrop-blur-2xl z-40 border-t border-white/[0.03] flex flex-col justify-between p-8 lg:hidden relative overflow-hidden">
-          <!-- Grid background -->
-          <div class="absolute inset-0 pointer-events-none opacity-[0.02]"
-            style="background-image: linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 40px 40px;">
-          </div>
-          <!-- Gradient overlay -->
-          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent">
-          </div>
-
+          class="fixed top-20 left-0 w-full h-[calc(100vh-80px)] bg-[#09090b]/95 backdrop-blur-xl z-40 border-t border-white/5 flex flex-col justify-between p-8 lg:hidden">
           <!-- Links -->
-          <div class="flex flex-col space-y-3 relative z-10">
+          <div class="flex flex-col space-y-4">
             <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
               @click="isMobileMenuOpen = false" :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
-              class="group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 bg-white/[0.02] hover:bg-gradient-to-r hover:from-orange-500/[0.08] hover:to-rose-500/[0.08] border border-white/[0.03] hover:border-orange-500/20">
-              <span
-                class="material-symbols-outlined text-[22px] text-white/30 group-hover:text-orange-400 transition-colors duration-300">{{ link.icon }}</span>
-              <span class="text-xs font-black uppercase tracking-widest text-white/50 group-hover:text-white/90 transition-colors duration-300">{{ link.name }}</span>
-              <span class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span class="material-symbols-outlined text-orange-400/50 text-sm">chevron_right</span>
-              </span>
+              class="flex items-center gap-3 text-white/60 hover:text-orange-500 py-3.5 border-b border-white/[0.03] transition-all duration-300">
+              <span class="material-symbols-outlined text-[22px]">{{ link.icon }}</span>
+              <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
             </RouterLink>
           </div>
 
           <!-- Actions -->
-          <div class="flex flex-col gap-4 mt-auto relative z-10">
+          <div class="flex flex-col gap-4 mt-auto">
             <template v-if="!useUserStore().getUserId">
               <RouterLink :to="{ name: 'login' }" @click="isMobileMenuOpen = false"
-                class="w-full flex items-center justify-center border border-white/[0.08] hover:border-white/20 text-white/60 hover:text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer group relative overflow-hidden">
-                <div
-                  class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700">
-                </div>
-                <span class="relative z-10">Iniciar sesión</span>
+                class="w-full flex items-center justify-center border border-white/10 hover:border-white/20 text-white/80 hover:text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-colors duration-300 cursor-pointer">
+                Iniciar sesión
               </RouterLink>
 
               <RouterLink :to="{ name: 'register' }" @click="isMobileMenuOpen = false"
-                class="w-full flex items-center justify-center bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 text-[#07070d] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 active:scale-[0.98] cursor-pointer relative overflow-hidden group shadow-[0_10px_30px_rgba(249,115,22,0.15)]">
-                <div
-                  class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700">
-                </div>
-                <span class="relative z-10">Registrarse</span>
+                class="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-[#09090b] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
+                Registrarse
               </RouterLink>
             </template>
             <template v-else>
               <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
-                class="w-full flex items-center justify-center bg-white/[0.03] border border-white/[0.06] hover:border-orange-500/30 hover:bg-gradient-to-r hover:from-orange-500/20 hover:to-rose-500/20 text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2 relative overflow-hidden group">
-                <div
-                  class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700">
-                </div>
-                <span class="material-symbols-outlined text-sm relative z-10">dashboard</span>
-                <span class="relative z-10">Panel de Control</span>
+                class="w-full flex items-center justify-center bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 hover:text-[#09090b] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
+                <span class="material-symbols-outlined text-sm">dashboard</span>
+                Panel de Control
               </RouterLink>
             </template>
           </div>
@@ -279,87 +212,77 @@ onUnmounted(() => {
     <main>
       <slot name="main"></slot>
     </main>
-
     <footer
-      class="bg-[#07070d] border-t border-white/[0.03] w-full flex flex-col justify-center items-center gap-8 px-12 py-8 text-slate-500 relative overflow-hidden">
-      <!-- Grid -->
-      <div class="absolute inset-0 pointer-events-none opacity-[0.015]"
-        style="background-image: linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 60px 60px;">
-      </div>
-      <!-- Top glow border -->
-      <div class="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent">
-      </div>
-
-      <div class="flex flex-col items-center space-y-2 relative z-10">
+      class="bg-[#09090b] border-t border-white/5 w-full flex flex-col justify-center items-center gap-8 px-12 py-8 text-slate-500 relative">
+      <div class="flex flex-col items-center space-y-2">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-white/50 text-[1.2rem] group-hover:text-orange-400 transition-colors" aria-hidden="true">verified</span>
-          <span class="text-xs uppercase tracking-widest text-white/40">SSL Secure</span>
+          <span class="material-symbols-outlined text-white/70 text-[1.2rem]" aria-hidden="true">shield</span>
+          <span class="text-xs uppercase tracking-widest">SSL Secure</span>
         </div>
-        <span class="font-body text-xs uppercase tracking-widest text-slate-600">©{{ new Date().getFullYear() }}
+        <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
           ubiqueme.com</span>
         <span class="text-[9px] text-white/15 font-medium tracking-widest uppercase">
-          Una marca de <span class="bg-gradient-to-r from-orange-400/60 to-rose-400/60 bg-clip-text text-transparent font-semibold">AZIECHRIE PHARMA</span>
+          Una marca de <span class="text-orange-400/60 font-semibold">AZIECHRIE PHARMA</span>
         </span>
         <div class="flex items-center mt-2">
-          <Transition name="glitch">
+          <Transition name="slide-up">
             <div :key="currentDomainIndex"
               class="text-[#dce7ff] font-black text-[17px] sm:text-[22px] lowercase whitespace-nowrap">
-              <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span><span
-                class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500">.com</span>
+              <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span><span class="text-orange-500">.com</span>
             </div>
           </Transition>
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center justify-center relative z-10">
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center justify-center">
         <RouterLink
-          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
           :to="{ name: 'home' }">
           <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">home</span> Inicio
         </RouterLink>
         <RouterLink
-          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
           :to="{ name: 'help' }">
           <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">help</span> Ayuda
         </RouterLink>
         <RouterLink
-          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
           :to="{ name: 'pricing' }">
           <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">attach_money</span> Precios
         </RouterLink>
         <template v-if="!useUserStore().getUserId">
           <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'login' }">
             <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">login</span> Iniciar sesión
           </RouterLink>
           <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'register' }">
             <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">person_add</span> Registrarse
           </RouterLink>
         </template>
       </div>
-      <div class="flex flex-col items-center space-y-2 relative z-10">
+      <div class="flex flex-col items-center space-y-2">
         <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
           <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'privacy' }">
             <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">privacy_tip</span> Política de
             Privacidad
           </RouterLink>
           <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'terms' }">
             <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">gavel</span> Términos de Servicio
           </RouterLink>
           <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors duration-300 cursor-pointer"
+            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'contact' }">
             <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">contact_mail</span> Contacto
           </RouterLink>
         </div>
-        <div class="flex items-center gap-2 text-xs text-slate-600">
+        <div class="flex items-center gap-2 text-xs text-slate-500">
           <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">public</span>
           <span class="font-body">{{ domains[currentDomainIndex] }}</span>
         </div>
@@ -373,103 +296,31 @@ onUnmounted(() => {
   font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
 }
 
-/* ── Sweeping Glow Animation ── */
-@keyframes sweep-glow {
-  0% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(200%);
-  }
-}
-.animate-sweep-glow {
-  animation: sweep-glow 4s ease-in-out infinite;
-}
-
-/* ── Slide Up Transitions (Tagline) ── */
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .slide-up-enter-from {
   opacity: 0;
   transform: translateY(20px);
 }
+
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(-20px);
 }
 
-/* ── Glitch Transition (Domain) ── */
-.glitch-enter-active {
-  animation: glitch-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.glitch-leave-active {
-  animation: glitch-out 0.3s cubic-bezier(0.55, 0, 1, 0.45) forwards;
-}
-@keyframes glitch-in {
-  0% {
-    opacity: 0;
-    clip-path: inset(40% 0 60% 0);
-    transform: translateX(-10px) skewX(-5deg);
-  }
-  20% {
-    clip-path: inset(20% 0 80% 0);
-    transform: translateX(5px) skewX(3deg);
-  }
-  40% {
-    clip-path: inset(60% 0 40% 0);
-    transform: translateX(-3px) skewX(-2deg);
-  }
-  60% {
-    clip-path: inset(10% 0 30% 0);
-    transform: translateX(2px) skewX(1deg);
-  }
-  100% {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: translateX(0) skewX(0);
-  }
-}
-@keyframes glitch-out {
-  0% {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: translateX(0) skewX(0);
-  }
-  100% {
-    opacity: 0;
-    clip-path: inset(80% 0 20% 0);
-    transform: translateX(10px) skewX(5deg);
-  }
-}
-
-/* ── Router Link Active States ── */
-:deep(.router-link-active) .active-glass {
-  opacity: 1 !important;
-}
-:deep(.router-link-active) .active-border {
-  border-color: rgba(249, 115, 22, 0.2) !important;
-}
-:deep(.router-link-active) .active-icon {
-  color: rgb(251, 146, 60) !important;
-}
-:deep(.router-link-active) .active-text {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* ── Fade Slide (Mobile Menu) ── */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .fade-slide-enter-from {
   opacity: 0;
   transform: translateY(-15px);
 }
+
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-15px);

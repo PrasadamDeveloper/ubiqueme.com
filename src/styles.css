@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Linear+A&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Grotesk:wght@300..700&display=swap');
+/* tailwind css v4.x */
+@import 'tailwindcss';
+@import 'tailwindcss-animated';
+
+@theme {
+  --font-rubik: 'Rubik', sans-serif;
+  --font-google-sans: 'Google Sans', sans-serif;
+  --font-inter-tight: 'Inter Tight', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+  --font-jost: 'Jost', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-noto-sans-linear-a: 'Noto Sans Linear A', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
+  --color-surface-bright: #33394c;
+  --color-on-tertiary-fixed: #0d1c2d;
+  --color-secondary-fixed: #d3e4fe;
+  --color-secondary-fixed-dim: #b7c8e1;
+  --color-primary: #7bd0ff;
+  --color-on-surface-variant: #c6c6cd;
+  --color-tertiary: #b9c8de;
+  --color-surface-tint: #7bd0ff;
+  --color-tertiary-fixed: #d4e4fa;
+  --color-surface: #0c1324;
+  --color-on-secondary: #213145;
+  --color-on-primary: #00354a;
+  --color-outline: #909097;
+  --color-surface-variant: #2e3447;
+  --color-secondary: #b7c8e1;
+  --color-surface-container-low: #151b2d;
+  --color-error: #ffb4ab;
+  --color-on-surface: #dce1fb;
+  --color-surface-container: #191f31;
+  --color-primary-container: #001a27;
+  --color-background: #0c1324;
+  --color-surface-container-lowest: #070d1f;
+  --color-secondary-container: #3a4a5f;
+  --color-surface-container-highest: #2e3447;
+  --color-surface-container-high: #23293c;
+}
+
+/* Floating Vue Custom Theme */
+.v-popper--theme-tooltip .v-popper__inner {
+  background: #0c0500 !important;
+  border: 1px solid rgba(249, 115, 22, 0.2) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  box-shadow: 0 8px 30px rgba(249, 115, 22, 0.1) !important;
+  font-family: var(--font-google-sans) !important;
+  font-size: 11px !important;
+}
+.v-popper--theme-tooltip .v-popper__arrow-inner {
+  border-color: #0c0500 !important;
+}
+.v-popper--theme-tooltip .v-popper__arrow-outer {
+  border-color: rgba(249, 115, 22, 0.2) !important;
+}
