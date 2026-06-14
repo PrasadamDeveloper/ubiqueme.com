@@ -52,3 +52,5 @@ nul
 
 # WhatsApp guide (personal docs)
 docs/whatsapp-worker-guide.md
+
+.git_disabled/
