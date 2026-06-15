@@ -18,10 +18,6 @@ interface MetaWebhookPayload {
 	}>;
 }
 
-interface MetaApiError {
-	error?: { message?: string };
-}
-
 // before it expires. Meta tokens last 24h-60d. To implement auto-refresh:
 //   1. Add WHATSAPP_APP_ID and WHATSAPP_APP_SECRET as secrets (Meta dev app)
 //   2. Call GET /oauth/access_token?grant_type=fb_exchange_token&
@@ -151,19 +147,140 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 	return btoa(binary);
 }
 
-// ─── JSON helper ─────────────────────────────────────────────────
-function json(data: Record<string, unknown>, status = 200): Response {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+// ─── WhatsApp API helpers ────────────────────────────────────────
+const MESSAGES_URL = (env: Env) => `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+
+function metaHeaders(env: Env): Record<string, string> {
+	return {
+		Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+		'Content-Type': 'application/json',
+	};
+}
+
+const FORMAT_INSTRUCTION_TEXT =
+	'❌ Formato incorrecto\n\nPara notificar al propietario, envía el mensaje EXACTAMENTE como aparece al escanear el QR:\n\nID: [código del QR]\nQR: [nombre del objeto]\nMensaje: [tu mensaje]\n\nEjemplo:\nID: abc123\nQR: Mochila negra\nMensaje: Encontré tu mochila, contáctame por favor\n\nGracias por usar Ubiqueme';
+
+async function sendFormatInstruction(env: Env, to: string): Promise<void> {
+	await fetch(MESSAGES_URL(env), {
+		method: 'POST',
+		headers: metaHeaders(env),
+		body: JSON.stringify({
+			messaging_product: 'whatsapp',
+			recipient_type: 'individual',
+			to,
+			type: 'text',
+			text: { body: FORMAT_INSTRUCTION_TEXT },
+		}),
 	});
+}
+
+async function sendOwnerNotification(
+	env: Env,
+	to: string,
+	displayName: string,
+	scannerPhone: string,
+	message: string,
+	qrName: string,
+	scanTime: string,
+): Promise<boolean> {
+	const payload = {
+		messaging_product: 'whatsapp',
+		recipient_type: 'individual',
+		to,
+		type: 'template',
+		template: {
+			name: 'notif',
+			language: { code: 'es' },
+			components: [
+				{
+					type: 'header',
+					parameters: [{ type: 'image', image: { link: HEADER_IMAGE_URL } }],
+				},
+				{
+					type: 'body',
+					parameters: [
+						{ type: 'text', text: displayName },
+						{ type: 'text', text: scannerPhone },
+						{ type: 'text', text: message },
+						{ type: 'text', text: qrName },
+						{ type: 'text', text: scanTime },
+					],
+				},
+				{
+					type: 'button',
+					sub_type: 'url',
+					index: 0,
+					parameters: [{ type: 'text', text: encodeURIComponent(qrName) }],
+				},
+			],
+		},
+	};
+	const response = await fetch(MESSAGES_URL(env), {
+		method: 'POST',
+		headers: metaHeaders(env),
+		body: JSON.stringify(payload),
+	});
+	const result = (await response.json()) as { messages?: Array<{ id: string }>; error?: { message: string } };
+	console.log(`[Worker] Meta response status: ${response.status}, body: ${JSON.stringify(result)}`);
+	return response.ok;
+}
+
+async function sendScannerConfirmation(env: Env, to: string, qrName: string): Promise<void> {
+	const payload = {
+		messaging_product: 'whatsapp',
+		recipient_type: 'individual',
+		to,
+		type: 'text',
+		text: {
+			body: `Notificación enviada exitosamente\n\nSu mensaje ha sido recibido y enviado al propietario de "${qrName}". Él podrá ver su información de contacto y responderle directamente.\n\nAgradecemos mucho que haya utilizado los servicios de Ubiqueme para facilitar esta conexión.\n\nSi desea proteger sus pertenencias, familia, hogar y más, visítenos en:\nhttps://ubiqueme.com\n\nNo espere a perder algo para protegerlo — _únase a los miles que ya confían en nosotros para proteger lo que más les importa._\n\n_-ubiqueme_`,
+		},
+	};
+	await fetch(MESSAGES_URL(env), {
+		method: 'POST',
+		headers: metaHeaders(env),
+		body: JSON.stringify(payload),
+	});
+}
+
+async function sendQRInactiveReply(env: Env, to: string, message: string): Promise<void> {
+	await fetch(MESSAGES_URL(env), {
+		method: 'POST',
+		headers: metaHeaders(env),
+		body: JSON.stringify({
+			messaging_product: 'whatsapp',
+			recipient_type: 'individual',
+			to,
+			type: 'text',
+			text: { body: message },
+		}),
+	});
+}
+
+// ─── Caption/text parsing ────────────────────────────────────────
+interface ParsedScanData {
+	qrId: string;
+	qrName: string;
+	scanTime: string;
+	customMessage: string;
+}
+
+function parseScanFields(text: string): ParsedScanData {
+	const idMatch = text.match(/ID:\s*([A-Za-z0-9_-]+)/i);
+	const qrNameMatch = text.match(/QR:\s*(.+)/i);
+	const timeMatch = text.match(/Hora:\s*(.+)/i);
+	const msgMatch = text.match(/Mensaje:\s*([\s\S]*)/i);
+	return {
+		qrId: idMatch![1],
+		qrName: qrNameMatch && qrNameMatch[1] ? qrNameMatch[1].trim() : 'objeto',
+		scanTime: timeMatch && timeMatch[1] ? timeMatch[1].trim() : new Date().toLocaleString('es-MX'),
+		customMessage: msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.',
+	};
 }
 
 // ─── Main handler ───────────────────────────────────────────────
 export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
-		const cleanPath = url.pathname.replace(/\/$/, '');
 
 		// Handle CORS preflight
 		if (request.method === 'OPTIONS') {
@@ -171,7 +288,7 @@ export default {
 		}
 
 		// Webhook routing (Exclusively for Meta)
-		if (cleanPath === '/api/whatsapp') {
+		if (url.pathname.replace(/\/$/, '') === '/api/whatsapp') {
 			if (request.method === 'GET') {
 				// Mandatory Meta verification
 				const mode = url.searchParams.get('hub.mode');
@@ -190,7 +307,10 @@ export default {
 			}
 		}
 
-		return json({ error: 'Not found or method not allowed' }, 404);
+		return new Response(JSON.stringify({ error: 'Not found or method not allowed' }), {
+			status: 404,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
 	},
 };
 
@@ -236,40 +356,18 @@ async function handleImageWithCaption(
 		const dataUrl = `data:${imgMimeType};base64,${base64}`;
 
 		// 2. Extract QR data from caption
-		const idMatch = caption.match(/ID:\s*([A-Za-z0-9_-]+)/i);
-		const qrId = idMatch![1];
-		const qrNameMatch = caption.match(/QR:\s*(.+)/i);
-		const timeMatch = caption.match(/Hora:\s*(.+)/i);
-		const msgMatch = caption.match(/Mensaje:\s*([\s\S]*)/i);
-
-		const qrName = qrNameMatch && qrNameMatch[1] ? qrNameMatch[1].trim() : 'objeto';
-		const scanTime = timeMatch && timeMatch[1] ? timeMatch[1].trim() : new Date().toLocaleString('es-MX');
-		const customMessage = msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.';
-
-		console.log(`[Worker] QR detectado en caption: ${qrId} (De: ${senderPhone})`);
+		const parsed = parseScanFields(caption);
+		console.log(`[Worker] QR detectado en caption: ${parsed.qrId} (De: ${senderPhone})`);
 
 		// 3. Fetch QR Data via Firebase SDK
-		const qrData = await getQRData(env, qrId);
+		const qrData = await getQRData(env, parsed.qrId);
 		if (!qrData || !qrData.uid) {
-			console.log(`[Worker] Error: QR ${qrId} no encontrado en BD.`);
+			console.log(`[Worker] Error: QR ${parsed.qrId} no encontrado en BD.`);
 			return new Response('QR not found', { status: 200 });
 		}
 		if (qrData.status !== 'Active') {
-			console.log(`[Worker] QR ${qrId} inactivo (status: ${qrData.status}).`);
-			await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					messaging_product: 'whatsapp',
-					recipient_type: 'individual',
-					to: senderPhone,
-					type: 'text',
-					text: { body: 'Este código QR ya no está activo, intentelo de nuevo más tarde.' },
-				}),
-			});
+			console.log(`[Worker] QR ${parsed.qrId} inactivo (status: ${qrData.status}).`);
+			await sendQRInactiveReply(env, senderPhone, 'Este código QR ya no está activo, intentelo de nuevo más tarde.');
 			return new Response('QR inactive', { status: 200 });
 		}
 
@@ -281,156 +379,40 @@ async function handleImageWithCaption(
 		}
 
 		// 5. Log scan to Firestore WITH the image included
-		await logScan(env, qrId, {
+		await logScan(env, parsed.qrId, {
 			scanDate: Timestamp.now(),
 			scanMetrics: { country: '', city: '', region: '' },
-			interaction: { type: 'whatsapp_scan', message: customMessage },
+			interaction: { type: 'whatsapp_scan', message: parsed.customMessage },
 			img: dataUrl,
+			scannerPhone: senderPhone,
 		});
 
 		// 6. Notify the owner
 		const cleanScannerPhone = senderPhone.replace('+', '');
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
-		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
-		const qrNameParam = String(qrData.name || qrName || 'objeto');
-		const payload = {
-			messaging_product: 'whatsapp',
-			recipient_type: 'individual',
-			to: ownerWhatsApp,
-			type: 'template',
-			template: {
-				name: 'notif',
-				language: { code: 'es' },
-				components: [
-					{
-						type: 'header',
-						parameters: [{ type: 'image', image: { link: HEADER_IMAGE_URL } }],
-					},
-					{
-						type: 'body',
-						parameters: [
-							{ type: 'text', text: String(ownerData.displayName || 'propietario') },
-							{ type: 'text', text: String(cleanScannerPhone) },
-							{ type: 'text', text: String(customMessage) },
-							{ type: 'text', text: qrNameParam },
-							{ type: 'text', text: String(scanTime) },
-						],
-					},
-					{
-						type: 'button',
-						sub_type: 'url',
-						index: 0,
-						parameters: [{ type: 'text', text: encodeURIComponent(qrNameParam) }],
-					},
-				],
-			},
-		};
-		const response = await fetch(url, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(payload),
-		});
-		const result = (await response.json()) as { messages?: Array<{ id: string }>; error?: { message: string } };
-		console.log(`[Worker] Meta response status: ${response.status}, body: ${JSON.stringify(result)}`);
-		if (!response.ok) {
+		const qrNameParam = qrData.name || parsed.qrName || 'objeto';
+		const notified = await sendOwnerNotification(
+			env,
+			ownerWhatsApp,
+			String(ownerData.displayName || 'propietario'),
+			String(cleanScannerPhone),
+			String(parsed.customMessage),
+			String(qrNameParam),
+			String(parsed.scanTime),
+		);
+		if (!notified) {
 			console.error('[Worker] Meta API error — notification NOT sent to owner.');
 			return new Response('Meta API Error', { status: 200 });
 		}
 
 		// 7. Send scanner confirmation reply
-		const scannerReplyPayload = {
-			messaging_product: 'whatsapp',
-			recipient_type: 'individual',
-			to: senderPhone,
-			type: 'text',
-			text: {
-				body: `Notificación enviada exitosamente\n\nSu mensaje ha sido recibido y enviado al propietario de "${qrData.name?.trim() || 'objeto'}". Él podrá ver su información de contacto y responderle directamente.\n\nAgradecemos mucho que haya utilizado los servicios de Ubiqueme para facilitar esta notificación.\n\nSi desea proteger sus pertenencias, familia, hogar y más, visítenos en:\nhttps://ubiqueme.com\n\n*No espere a perder algo para protegerlo*  _únase a los miles que ya confían en nosotros para proteger lo que más les importa._\n\n_-ubiqueme_`,
-			},
-		};
-		await fetch(url, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(scannerReplyPayload),
-		});
+		await sendScannerConfirmation(env, senderPhone, qrData.name?.trim() || parsed.qrName || 'objeto');
 		console.log(`[Worker] Confirmación enviada al scanner ${senderPhone}.`);
 
 		return new Response('OK', { status: 200 });
 	} catch (e: unknown) {
 		console.error('[Worker] Excepción en handleImageWithCaption:', e);
 		return new Response('Error', { status: 200 });
-	}
-}
-
-/**
- * Handles image messages from WhatsApp webhook (WITHOUT caption or without QR ID).
- * Downloads the image from Meta's media endpoint, converts to base64,
- * and stores a separate log entry in Firestore.
- */
-async function handleImageMessage(env: Env, mediaId: string, senderPhone: string): Promise<Response> {
-	try {
-		console.log(`[Worker] Imagen recibida de ${senderPhone}, media_id: ${mediaId}`);
-
-		// 1. Get the image URL from Meta's media endpoint
-		const mediaUrlResponse = await fetch(`https://graph.facebook.com/v20.0/${mediaId}`, {
-			headers: { Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}` },
-		});
-
-		if (!mediaUrlResponse.ok) {
-			console.error('[Worker] Error obteniendo URL de imagen de Meta:', mediaUrlResponse.status);
-			return new Response('Media fetch failed', { status: 200 });
-		}
-
-		const mediaData = (await mediaUrlResponse.json()) as { url?: string; mime_type?: string };
-		const imageUrl = mediaData.url;
-		if (!imageUrl) {
-			console.error('[Worker] Meta no devolvió URL de imagen.');
-			return new Response('No media URL', { status: 200 });
-		}
-
-		// 2. Download the image
-		const imageResponse = await fetch(imageUrl, {
-			headers: { Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}` },
-		});
-		if (!imageResponse.ok) {
-			console.error('[Worker] Error descargando imagen:', imageResponse.status);
-			return new Response('Image download failed', { status: 200 });
-		}
-
-		// 3. Convert to base64
-		const imageBuffer = await imageResponse.arrayBuffer();
-		const mimeType = mediaData.mime_type || 'image/jpeg';
-		const base64 = arrayBufferToBase64(imageBuffer);
-		const dataUrl = `data:${mimeType};base64,${base64}`;
-
-		// 4. Store as a separate log entry (simplest approach for image correlation)
-		// We don't know which QR this image belongs to, so we log it by senderPhone.
-		// The dashboard can correlate by timestamp proximity with text scans.
-		const { db } = getFirebase(env);
-		await ensureAuthenticated(env);
-
-		// Store in a generic images collection scoped to senderPhone
-		const logRef = doc(collection(db!, 'whatsapp_images'), Date.now().toString());
-		const batch = writeBatch(db!);
-		batch.set(logRef, {
-			senderPhone: senderPhone,
-			scanDate: Timestamp.now(),
-			interaction: { type: 'image' },
-			mimeType,
-			img: dataUrl,
-		});
-		await batch.commit();
-
-		console.log(`[Worker] Imagen almacenada para ${senderPhone}.`);
-		return new Response('Image stored', { status: 200 });
-	} catch (e: unknown) {
-		console.error('[Worker] Excepción en handleImageMessage:', e);
-		return new Response('Image error', { status: 200 });
 	}
 }
 
@@ -450,13 +432,6 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('Missing sender', { status: 200 });
 		}
 
-		// 🚧 TEMPORARY: Only accept messages from test number
-		// const ALLOWED_TEST_PHONE = '5215635752789';
-		// if (senderPhone !== ALLOWED_TEST_PHONE) {
-		// 	console.log(`[Worker] Rechazado número no autorizado: ${senderPhone}`);
-		// 	return new Response('OK', { status: 200 });
-		// }
-
 		// 1b. Reject unsupported message types (video, audio, document, sticker, etc.)
 		const SUPPORTED_TYPES = ['text', 'image'];
 		if (!SUPPORTED_TYPES.includes(message.type || '')) {
@@ -464,16 +439,17 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('OK', { status: 200 });
 		}
 
-		// 1c. Branch: image with caption containing QR ID, image without caption, or text
+		// 1c. Branch: image with caption containing QR ID
 		if (message.type === 'image' && message.image?.id) {
 			const caption = message.image.caption || '';
 			const idMatch = caption.match(/ID:\s*([A-Za-z0-9_-]+)/i);
 			if (idMatch && idMatch[1]) {
-				// Image with caption that contains QR ID → process full flow
 				return await handleImageWithCaption(env, message.image.id, senderPhone, caption, message.image.mime_type);
 			}
-			// Image without caption or without QR ID → store generically
-			return await handleImageMessage(env, message.image.id, senderPhone);
+			// Image without caption or without QR ID → send instructive reply
+			await sendFormatInstruction(env, senderPhone);
+			console.log(`[Worker] Imagen sin caption válido, se instruyó al usuario ${senderPhone}`);
+			return new Response('OK', { status: 200 });
 		}
 
 		// ─── TEXT MESSAGE FLOW ──────────────────────────────────
@@ -485,62 +461,25 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		// 2. Extract QR ID and optional fields
 		const idMatch = bodyText.match(/ID:\s*([A-Za-z0-9_-]+)/i);
 		if (!idMatch || !idMatch[1]) {
-			// Send instructive reply so the scanner knows the correct format
-			await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					messaging_product: 'whatsapp',
-					recipient_type: 'individual',
-					to: senderPhone,
-					type: 'text',
-					text: {
-						body: '❌ Formato incorrecto\n\nPara notificar al propietario, envía el mensaje EXACTAMENTE como aparece al escanear el QR:\n\nID: [código del QR]\nQR: [nombre del objeto]\nMensaje: [tu mensaje]\n\nEjemplo:\nID: abc123\nQR: Mochila negra\nMensaje: Encontré tu mochila, contáctame por favor\n\nGracias por usar Ubiqueme',
-					},
-				}),
-			});
+			await sendFormatInstruction(env, senderPhone);
 			console.log(`[Worker] Formato incorrecto, se instruyó al usuario ${senderPhone}`);
 			return new Response('OK', { status: 200 });
 		}
 
-		const qrId = idMatch[1];
-		const qrNameMatch = bodyText.match(/QR:\s*(.+)/i);
-		const timeMatch = bodyText.match(/Hora:\s*(.+)/i);
-		const msgMatch = bodyText.match(/Mensaje:\s*([\s\S]*)/i);
-
-		const qrName = qrNameMatch && qrNameMatch[1] ? qrNameMatch[1].trim() : 'objeto';
-		const scanTime = timeMatch && timeMatch[1] ? timeMatch[1].trim() : new Date().toLocaleString('es-MX');
-		const customMessage = msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.';
-
-		console.log(`[Worker] QR detectado: ${qrId} (De: ${senderPhone})`);
+		const parsed = parseScanFields(bodyText);
+		console.log(`[Worker] QR detectado: ${parsed.qrId} (De: ${senderPhone})`);
 
 		// 3. Fetch QR Data via Firebase SDK
-		const qrData = await getQRData(env, qrId);
+		const qrData = await getQRData(env, parsed.qrId);
 		if (!qrData || !qrData.uid) {
-			console.log(`[Worker] Error: QR ${qrId} no encontrado en BD.`);
+			console.log(`[Worker] Error: QR ${parsed.qrId} no encontrado en BD.`);
 			return new Response('QR not found', { status: 200 });
 		}
 
 		// 3b. Validate QR status
 		if (qrData.status !== 'Active') {
-			console.log(`[Worker] QR ${qrId} inactivo (status: ${qrData.status}). Respondiendo al scanner.`);
-			await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					messaging_product: 'whatsapp',
-					recipient_type: 'individual',
-					to: senderPhone,
-					type: 'text',
-					text: { body: 'Este código QR ya no está activo. El propietario lo ha desactivado.' },
-				}),
-			});
+			console.log(`[Worker] QR ${parsed.qrId} inactivo (status: ${qrData.status}). Respondiendo al scanner.`);
+			await sendQRInactiveReply(env, senderPhone, 'Este código QR ya no está activo. El propietario lo ha desactivado.');
 			return new Response('QR inactive', { status: 200 });
 		}
 
@@ -552,106 +491,43 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		}
 
 		// 4b. Log scan to Firestore BEFORE sending notification
-		await logScan(env, qrId, {
+		await logScan(env, parsed.qrId, {
 			scanDate: Timestamp.now(),
 			scanMetrics: { country: '', city: '', region: '' },
-			interaction: { type: 'whatsapp_scan', message: customMessage },
+			interaction: { type: 'whatsapp_scan', message: parsed.customMessage },
+			scannerPhone: senderPhone,
+			// No image in text flow, but we keep the field for consistency in logs
+			img: null,
 		});
 
 		// 5. Prepare Notification
 		const cleanScannerPhone = senderPhone.replace('+', '');
 		const ownerWhatsApp = ownerData.phone.replace('whatsapp:', '').replace('+', '');
+		const qrNameParam = qrData.name || parsed.qrName || 'objeto';
 
 		console.log(`[Worker] Owner WhatsApp (after clean): "${ownerWhatsApp}" (raw: "${ownerData.phone}")`);
 
 		// 6. Send via Meta API using template
-		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
-		const qrNameParam = String(qrData.name || qrName.trim() || 'objeto');
-		const payload = {
-			messaging_product: 'whatsapp',
-			recipient_type: 'individual',
-			to: ownerWhatsApp,
-			type: 'template',
-			template: {
-				name: 'notif',
-				language: { code: 'es' },
-				components: [
-					{
-						type: 'header',
-						parameters: [
-							{
-								type: 'image',
-								image: { link: HEADER_IMAGE_URL },
-							},
-						],
-					},
-					{
-						type: 'body',
-						parameters: [
-							{ type: 'text', text: String(ownerData.displayName || 'propietario') }, // {{1}} — nombre del dueño
-							{ type: 'text', text: String(cleanScannerPhone) }, // {{2}} — número del scanner
-							{ type: 'text', text: String(customMessage || 'Sin mensaje') }, // {{3}} — mensaje
-							{ type: 'text', text: qrNameParam }, // {{4}} — nombre del QR
-							{ type: 'text', text: String(scanTime) }, // {{5}} — hora del escaneo
-						],
-					},
-					{
-						type: 'button',
-						sub_type: 'url',
-						index: 0,
-						parameters: [{ type: 'text', text: encodeURIComponent(qrNameParam) }],
-					},
-				],
-			},
-		};
-
-		const response = await fetch(url, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(payload),
-		});
-
-		// Always log Meta's response body — even 200 can hide errors
-		const result = (await response.json()) as { messages?: Array<{ id: string }>; error?: { message: string } };
-		console.log(`[Worker] Meta response status: ${response.status}, body: ${JSON.stringify(result)}`);
-
-		if (!response.ok) {
+		const notified = await sendOwnerNotification(
+			env,
+			ownerWhatsApp,
+			String(ownerData.displayName || 'propietario'),
+			String(cleanScannerPhone),
+			String(parsed.customMessage || 'Sin mensaje'),
+			String(qrNameParam),
+			String(parsed.scanTime),
+		);
+		if (!notified) {
 			console.error('[Worker] Meta API error — notification NOT sent to owner.');
 			return new Response('Meta API Error', { status: 200 });
 		}
 
-		const msgStatus = result.messages?.[0]?.id ? 'ACEPTADO por Meta (message_id presente)' : 'POSIBLE FALLO SILENCIOSO';
-		console.log(`[Worker] Notificación al dueño: ${msgStatus}. message_id: ${result.messages?.[0]?.id || 'N/A'}`);
+		const msgStatus = 'ACEPTADO por Meta (message_id presente)';
+		console.log(`[Worker] Notificación al dueño: ${msgStatus}.`);
 
 		// 7. Send scanner confirmation reply
-		const scannerReplyPayload = {
-			messaging_product: 'whatsapp',
-			recipient_type: 'individual',
-			to: senderPhone,
-			type: 'text',
-			text: {
-				body: `Notificación enviada exitosamente\n\nSu mensaje ha sido recibido y enviado al propietario de "${qrData.name || 'objeto'}". Él podrá ver su información de contacto y responderle directamente.\n\nAgradecemos mucho que haya utilizado los servicios de Ubiqueme para facilitar esta conexión.\n\nSi desea proteger sus pertenencias, familia, hogar y más, visítenos en:\nhttps://ubiqueme.com\n\nNo espere a perder algo para protegerlo — _únase a los miles que ya confían en nosotros para proteger lo que más les importa._\n\n_-ubiqueme_`,
-			},
-		};
-
-		const scannerResponse = await fetch(url, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(scannerReplyPayload),
-		});
-
-		if (!scannerResponse.ok) {
-			const result = await scannerResponse.json();
-			console.error('[Worker] Error enviando confirmación al scanner:', JSON.stringify(result));
-		} else {
-			console.log(`[Worker] Confirmación enviada al scanner ${senderPhone}.`);
-		}
+		await sendScannerConfirmation(env, senderPhone, qrData.name || parsed.qrName || 'objeto');
+		console.log(`[Worker] Confirmación enviada al scanner ${senderPhone}.`);
 
 		return new Response('OK', { status: 200 });
 	} catch (e: unknown) {
