@@ -598,7 +598,8 @@ const loadLogs = () => {
       scanDate: doc.data().scanDate,
       scanMetrics: doc.data().scanMetrics,
       interaction: doc.data().interaction,
-      img: doc.data().img
+      img: doc.data().img,
+      scannerPhone: doc.data().scannerPhone
     }));
     // toast.success(`Registros del QR actualizados`) // Silencing this as it fires on load
     loadCount.value++;

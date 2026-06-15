@@ -3,6 +3,7 @@ import type { IQRLog } from '@/interfaces/IPublicQR'
 import { useImageStore } from '@/stores/imageStore';
 import { useUserStore } from '@/stores/user';
 import { computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -37,10 +38,6 @@ const reasonMap: Record<string, { label: string, icon: string, color: string, is
   other: { label: 'PERSONALIZADO', icon: 'edit_note', color: 'text-orange-400' }
 }
 
-const interactionDetail = computed(() => {
-  if (!props.interaction) return null
-  return reasonMap[props.interaction.reason] || { label: 'ESCANEADO', icon: 'chat_bubble', color: 'text-white/60' }
-})
 
 const imageStore = useImageStore();
 
@@ -80,7 +77,12 @@ const activateMap = () => {
   }, 100); // Pequeño delay para asegurar el renderizado del DOM
 }
 
-import { ref } from 'vue'
+const scannerPhoneFormated = (scannerPhone: string | undefined) => {
+  if (!scannerPhone) return 'Número no disponible';
+  const countryCode = scannerPhone.slice(0, 2).padStart(3, '+');
+
+  return countryCode + '****' + scannerPhone.slice(7)
+}
 </script>
 
 <template>
@@ -100,8 +102,13 @@ import { ref } from 'vue'
 
         <div class="log-card border border-white/5 rounded-2xl rounded-tl-sm p-2.5 space-y-2.5 shadow-sm">
 
-          <small class="text-white text-[10px] font-poppins">{{ interaction?.scannerPhone ?? '+ 52 ******1234'
-            }}</small>
+          <div class="flex gap-2 items-center">
+            <span class="material-symbols-outlined text-green-400">contact_page</span>
+            <small
+              class="text-xs font-google-sans font-bold text-green-100 bg-emerald-900 border border-emerald-700 p-1 rounded-2xl">{{
+                scannerPhoneFormated(scannerPhone)
+              }}</small>
+          </div>
 
           <!-- Message text (like a WhatsApp quote bubble) -->
           <div v-if="interaction?.message" class="bg-[#242625] rounded-xl px-3 py-2.5 relative">
@@ -157,10 +164,14 @@ import { ref } from 'vue'
             </div>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <a href="https://wa.me/525652094079" target="_blank" rel="noopener noreferrer"
-              class="bg-transparent border border-green-500/50 text-green-500/80 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center">
-              Abrir WhatsApp
+            <a v-if="scannerPhone" :href="`https://wa.me/${scannerPhone}`" target="_blank" rel="noopener noreferrer"
+              class="bg-transparent border border-green-400/80 text-green-400/90 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center">
+              Contactar a {{ scannerPhoneFormated(scannerPhone) }}
             </a>
+            <span v-else
+              class="bg-transparent border border-green-500/50 text-gray-200/80 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center">
+              Contacto no disponible
+            </span>
           </div>
 
 
