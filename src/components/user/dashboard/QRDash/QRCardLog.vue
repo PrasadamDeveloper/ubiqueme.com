@@ -4,6 +4,7 @@ import { useImageStore } from '@/stores/imageStore';
 import { useUserStore } from '@/stores/user';
 import { computed, onMounted } from 'vue'
 import { ref } from 'vue'
+import DisclaimerPopup from '@/components/ui/DisclaimerPopup.vue'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -82,6 +83,14 @@ const scannerPhoneFormated = (scannerPhone: string | undefined) => {
   const countryCode = scannerPhone.slice(0, 2).padStart(3, '+');
 
   return countryCode + '****' + scannerPhone.slice(7)
+}
+
+const showDisclaimer = ref(false)
+const disclaimerUrl = ref('')
+
+const openDisclaimer = (phone: string) => {
+  disclaimerUrl.value = `https://wa.me/${phone}`
+  showDisclaimer.value = true
 }
 </script>
 
@@ -164,10 +173,10 @@ const scannerPhoneFormated = (scannerPhone: string | undefined) => {
             </div>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <a v-if="scannerPhone" :href="`https://wa.me/${scannerPhone}`" target="_blank" rel="noopener noreferrer"
-              class="bg-transparent border border-green-400/80 text-green-400/90 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center">
+            <button v-if="scannerPhone" @click="openDisclaimer(scannerPhone)"
+              class="bg-transparent border border-green-400/80 text-green-400/90 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center cursor-pointer">
               Contactar a {{ scannerPhoneFormated(scannerPhone) }}
-            </a>
+            </button>
             <span v-else
               class="bg-transparent border border-green-500/50 text-gray-200/80 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center">
               Contacto no disponible
@@ -183,6 +192,8 @@ const scannerPhoneFormated = (scannerPhone: string | undefined) => {
 
     </div>
   </li>
+
+  <DisclaimerPopup v-if="showDisclaimer" :whatsapp-url="disclaimerUrl" @close="showDisclaimer = false" />
 </template>
 
 <style scoped>

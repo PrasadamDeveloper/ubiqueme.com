@@ -144,7 +144,7 @@ onMounted(() => {
                   <div class="space-y-1">
                     <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Historial</label>
                     <p class="text-white font-black text-sm uppercase italic tracking-tight">{{ qrData?.totalScans || 0
-                    }} Escaneos totales</p>
+                      }} Escaneos totales</p>
                   </div>
                   <div class="col-span-2 pt-4 border-t border-white/5 flex items-center gap-4">
                     <div class="flex-1 h-[1px] bg-white/5"></div>
@@ -225,8 +225,17 @@ onMounted(() => {
             </div>
 
           </div>
-
         </div>
+
+        <!-- Deprecation Banner -->
+        <div
+          class="fixed bottom-0 left-0 right-0 z-50 bg-amber-500/10 border-t border-amber-500/20 backdrop-blur-md px-4 py-3 text-center">
+          <div class="flex items-center justify-center gap-2 text-amber-400 text-xs font-medium">
+            <span class="material-symbols-outlined text-[14px]">info</span>
+            <span>Esta vista está deprecated. El manejo ahora se hace directamente vía WhatsApp.</span>
+          </div>
+        </div>
+
       </main>
     </template>
   </HomeLayout>
