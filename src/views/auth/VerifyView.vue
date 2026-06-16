@@ -21,9 +21,65 @@
             Verificación
           </h1>
 
-          <div v-if="status === 'loading'" class="flex flex-col items-center mt-6 space-y-4">
-            <div class="w-12 h-12 border-4 border-white/10 border-t-orange-500 rounded-full animate-spin"></div>
-            <p class="text-white/50 text-sm font-medium tracking-widest uppercase mt-4">Validando credenciales...</p>
+          <div v-if="status === 'loading'" class="flex flex-col items-center mt-6 w-full">
+            <!-- Reset Password Form -->
+            <template v-if="action === 'resetPassword'">
+              <div class="w-full space-y-6">
+                <p class="text-white/50 text-sm font-medium leading-relaxed">
+                  Ingrese su nueva contraseña para restablecer el acceso a su cuenta.
+                </p>
+
+                <div class="space-y-2">
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Nueva
+                    Contraseña</label>
+                  <div class="relative">
+                    <input v-model="resetForm.newPassword" :type="showNewPassword ? 'text' : 'password'"
+                      placeholder="••••••••" :disabled="isResetting"
+                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
+                    <button type="button" @click="showNewPassword = !showNewPassword"
+                      class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
+                      <span class="material-symbols-outlined text-xl">{{ showNewPassword ? 'visibility' :
+                        'visibility_off'
+                      }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Confirmar
+                    Contraseña</label>
+                  <div class="relative">
+                    <input v-model="resetForm.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'"
+                      placeholder="••••••••" :disabled="isResetting"
+                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
+                    <button type="button" @click="showConfirmPassword = !showConfirmPassword"
+                      class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
+                      <span class="material-symbols-outlined text-xl">{{ showConfirmPassword ? 'visibility' :
+                        'visibility_off'
+                      }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <button @click="handleResetPassword" :disabled="isResetting"
+                  class="group w-full h-14 bg-orange-500 text-[#070b14] rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
+                  <span v-if="!isResetting">Restablecer Contraseña</span>
+                  <span v-else class="flex items-center gap-2">
+                    <span class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
+                    Procesando...
+                  </span>
+                </button>
+              </div>
+            </template>
+
+            <!-- Spinner for verifyEmail -->
+            <template v-else>
+              <div class="flex flex-col items-center space-y-4">
+                <div class="w-12 h-12 border-4 border-white/10 border-t-orange-500 rounded-full animate-spin"></div>
+                <p class="text-white/50 text-sm font-medium tracking-widest uppercase mt-4">Validando credenciales...
+                </p>
+              </div>
+            </template>
           </div>
 
           <div v-else-if="status === 'success'" class="flex flex-col items-center mt-6 space-y-6 w-full">
@@ -64,8 +120,8 @@
 <script lang="ts" setup>
 import { auth } from '@/firebase';
 import HomeLayout from '@/layouts/HomeLayout.vue';
-import { applyActionCode } from 'firebase/auth';
-import { onMounted, ref } from 'vue';
+import { applyActionCode, confirmPasswordReset } from 'firebase/auth';
+import { onMounted, ref, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { toast } from 'vue-sonner';
 
@@ -76,6 +132,15 @@ const oobCode = query.oobCode as string ?? '';
 const action = query.mode as string ?? '';
 
 const status = ref<'loading' | 'success' | 'error'>('loading');
+
+// ─── Reset Password state ────────────────────────────────────────
+const resetForm = reactive({
+  newPassword: '',
+  confirmPassword: '',
+});
+const showNewPassword = ref(false);
+const showConfirmPassword = ref(false);
+const isResetting = ref(false);
 
 const handleValidateEmail = async () => {
   try {
@@ -89,11 +154,49 @@ const handleValidateEmail = async () => {
   }
 }
 
+const handleResetPassword = async () => {
+  if (!resetForm.newPassword || !resetForm.confirmPassword) {
+    toast.error('Por favor complete ambos campos de contraseña.');
+    return;
+  }
+
+  if (resetForm.newPassword.length < 6) {
+    toast.error('La contraseña debe tener al menos 6 caracteres.');
+    return;
+  }
+
+  if (resetForm.newPassword !== resetForm.confirmPassword) {
+    toast.error('Las contraseñas no coinciden.');
+    return;
+  }
+
+  try {
+    isResetting.value = true;
+    await confirmPasswordReset(auth, oobCode, resetForm.newPassword);
+    status.value = 'success';
+    toast.success('Contraseña restablecida exitosamente.');
+  } catch (error: unknown) {
+    status.value = 'error';
+    const fbError = error as { code?: string; message?: string };
+    if (fbError.code === 'auth/expired-action-code') {
+      toast.error('El enlace de recuperación ha expirado. Solicite uno nuevo.');
+    } else if (fbError.code === 'auth/invalid-action-code') {
+      toast.error('El enlace de recuperación no es válido. Solicite uno nuevo.');
+    } else if (fbError.code === 'auth/weak-password') {
+      toast.error('La contraseña es demasiado débil. Use al menos 6 caracteres.');
+    } else {
+      toast.error(`Error al restablecer la contraseña: ${fbError.message}`);
+    }
+  } finally {
+    isResetting.value = false;
+  }
+};
+
 const handleActivateAccount = async (action: string) => {
   switch (action) {
     case 'resetPassword':
-      toast.info('Action: Reset Password');
-      status.value = 'error'; // To be implemented later if needed
+      // Show the password reset form (no API call yet)
+      status.value = 'loading';
       break;
     case 'verifyEmail':
       await handleValidateEmail();
