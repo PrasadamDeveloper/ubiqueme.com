@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "deploy": "bun run build && touch dist/.nojekyll && gh-pages -d dist --dotfiles",
+    "deploy": "npm run build && touch dist/.nojekyll && gh-pages -d dist --dotfiles",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "prepare": "bun run cypress:install",
+    "prepare": "npm run cypress:install",
     "cypress:install": "cypress install",
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
@@ -21,6 +21,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "vue": "^3.5.13",
     "@tailwindcss/vite": "^4.2.2",
     "animate.css": "^4.1.1",
     "aos": "^3.0.0-beta.6",
