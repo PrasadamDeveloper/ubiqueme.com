@@ -1,7 +1,19 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
+const router = useRouter()
+const userStore = useUserStore()
 const hoveredPlan = ref<string | null>(null)
+
+const handlePlanClick = (planId: string) => {
+  if (userStore.isAuthenticated) {
+    router.push({ name: 'checkout', params: { planId } })
+  } else {
+    router.push({ name: 'login', query: { redirect: `/checkout/${planId}` } })
+  }
+}
 
 const plans = [
   {
@@ -169,7 +181,7 @@ const plans = [
         </ul>
 
         <!-- CTA Button -->
-        <button @click="$router.push({ name: 'checkout', params: { planId: plan.id } })"
+        <button @click="handlePlanClick(plan.id)"
           class="w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-[0.97] border cursor-pointer"
           :style="plan.id === 'bronce'
             ? { background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.15)', color: '#ffffff' }

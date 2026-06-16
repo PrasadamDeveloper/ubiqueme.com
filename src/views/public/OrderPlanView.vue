@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import HomeLayout from '@/layouts/HomeLayout.vue'
@@ -10,6 +10,13 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const selectedPlan = ref(route.params.planId as string || 'plata')
+
+onMounted(() => {
+  if (!userStore.isAuthenticated) {
+    const planId = route.params.planId || 'plata'
+    router.replace({ name: 'login', query: { redirect: `/checkout/${planId}` } })
+  }
+})
 const isSubmitting = ref(false)
 const isSuccess = ref(false)
 
@@ -284,7 +291,7 @@ const handleSubmit = async () => {
                 <h2 class="text-3xl font-black text-white tracking-tight">Suscripción en proceso</h2>
                 <p class="text-white/40 text-sm leading-relaxed max-w-xs mx-auto">
                   Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-white">{{ formData.email
-                    }}</strong>.
+                  }}</strong>.
                 </p>
               </div>
               <button @click="router.push('/')"

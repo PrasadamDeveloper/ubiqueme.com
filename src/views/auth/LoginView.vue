@@ -195,11 +195,12 @@ import { signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopu
 import { doc, getFirestore, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
 import { nanoid } from 'nanoid'
 import { auth, db as firestoreDb } from '@/firebase'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { toast } from 'vue-sonner'
 
-const router = useRouter();
+const router = useRouter()
+const route = useRoute()
 const showPassword = ref(false)
 const emailVerified = ref(true)
 const resendLoading = ref(false)
@@ -212,8 +213,8 @@ const userStore = useUserStore()
 const loading = ref(false)
 const isResettingPassword = ref(false)
 
-
 const db = firestoreDb
+
 const handleForgotPassword = async () => {
   if (!form.email) {
     toast.error('Por favor, ingrese su correo electrónico primero.')
@@ -223,19 +224,31 @@ const handleForgotPassword = async () => {
   try {
     await sendPasswordResetEmail(auth, form.email)
     toast.success('Se ha enviado un correo para restablecer su contraseña. Revise su bandeja de entrada.')
-  } catch (error: any) {
-    if (error.code === 'auth/user-not-found') {
-      toast.error('No encontramos una cuenta con ese correo electrónico.')
-    } else if (error.code === 'auth/invalid-email') {
-      toast.error('El correo electrónico no es válido.')
-    } else {
-      toast.error('Error al enviar el correo: ' + error.message)
+  } catch (error) {
+    if (error instanceof Error) {
+      const errCode = (error as any).code
+      if (errCode === 'auth/user-not-found') {
+        toast.error('No encontramos una cuenta con ese correo electrónico.')
+      } else if (errCode === 'auth/invalid-email') {
+        toast.error('El correo electrónico no es válido.')
+      } else {
+        toast.error('Error al enviar el correo: ' + error.message)
+      }
     }
-    console.error(error)
   } finally {
     isResettingPassword.value = false
   }
 }
+
+const navigateAfterAuth = () => {
+  const redirect = route.query.redirect as string | undefined
+  if (redirect) {
+    router.push(redirect)
+  } else {
+    router.push({ name: 'dashboard' })
+  }
+}
+
 const handleLogin = async () => {
   if (!form.email || !form.password) {
     toast.error('Por favor, complete todos los campos.')
@@ -245,7 +258,6 @@ const handleLogin = async () => {
   try {
     loading.value = true
     const user = await signInWithEmailAndPassword(auth, form.email, form.password)
-
 
     // Check if email is verified
     if (!user.user.emailVerified) {
@@ -268,7 +280,7 @@ const handleLogin = async () => {
     userStore.setCreationDate(user.user.metadata?.creationTime || '')
     userStore.setUserId(user.user.uid)
     userStore.setEmail(user.user.email || '')
-    router.push({ name: 'dashboard' });
+    navigateAfterAuth()
   } catch (error) {
     console.error(error)
     toast.error('Error al iniciar sesión. Verifique sus credenciales.')
@@ -293,7 +305,7 @@ const resendVerification = async () => {
     // Volvemos a cerrar sesión de inmediato
     await signOut(auth)
     toast.success('¡Listo! Revisae su bandeja de entrada, le enviamos un nuevo enlace de verificación.')
-  } catch (error: any) {
+  } catch (error) {
     // Si las credenciales ya no son válidas o expiró la sesión
     toast.error('No pudimos reenviar el correo. Verifica tus credenciales e inténtalo de nuevo.')
     console.error(error)
@@ -354,10 +366,10 @@ const handleGoogleAuth = async () => {
     userStore.setCreationDate(user.metadata?.creationTime || '')
     userStore.setUserId(user.uid)
     userStore.setEmail(user.email || '')
-    router.push({ name: 'dashboard' })
-  } catch (error: any) {
+    navigateAfterAuth()
+  } catch (error) {
     console.error(error)
-    if (error.code !== 'auth/popup-closed-by-user') {
+    if ((error as any).code !== 'auth/popup-closed-by-user') {
       toast.error('Error al autenticar con Google.')
     }
   } finally {
