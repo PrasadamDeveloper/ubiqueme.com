@@ -245,6 +245,9 @@
       <RequestQROverlay :visible="showPhysicalOverlay" :subscription="overlaySubscription" :qrs="overlayQrs"
         @close="closePhysicalOverlay" @confirm="closePhysicalOverlay" />
     </div>
+
+    <!-- WhatsApp Phone Prompt (persistent until user saves their number) -->
+    <PhonePrompt v-if="showPhonePrompt" @saved="showPhonePrompt = false" @dismiss="showPhonePrompt = false" />
   </div>
 </template>
 
@@ -253,7 +256,7 @@ import { useUserStore } from '@/stores/user'
 import QRCard from './QRCard.vue'
 import RequestQROverlay from './RequestQROverlay.vue'
 import { onMounted, onUnmounted, ref, computed } from 'vue'
-import { collection, getFirestore, onSnapshot, Timestamp, doc, increment, writeBatch } from 'firebase/firestore'
+import { collection, getFirestore, onSnapshot, Timestamp, doc, increment, writeBatch, getDoc } from 'firebase/firestore'
 import { useImageStore } from '@/stores/imageStore'
 
 import type { IMyQR } from '@/interfaces/IMyQR'
@@ -263,6 +266,7 @@ import { nanoid } from 'nanoid'
 import LineLoader from '@/components/ui/LineLoader.vue'
 import { toast } from 'vue-sonner'
 import LimitReached from './LimitReached.vue'
+import PhonePrompt from './PhonePrompt.vue'
 
 const userQRs = ref<IMyQR[]>([])
 const userSubscriptions = ref<ISubscription[]>([])
@@ -343,7 +347,10 @@ const overlayQrs = computed(() => {
 
 const imageStore = useImageStore();
 
-//Limit Reached
+// ─── Phone Prompt ───────────────────────────────────────────────
+const showPhonePrompt = ref(false)
+
+// ─── Limit Reached ──────────────────────────────────────────────
 const showLimitReached = ref(false);
 //Show QR creation modal function and variable
 const showCreateQRModal = ref(false);
@@ -458,7 +465,22 @@ const createQRForSubscription = async () => {
 let unsubQRs: (() => void) | undefined;
 let unsubSubs: (() => void) | undefined;
 
-onMounted(() => {
+onMounted(async () => {
+  // Check if user has a phone number registered
+  if (userId) {
+    try {
+      const userSnap = await getDoc(doc(db, 'users', userId))
+      if (userSnap.exists()) {
+        const userData = userSnap.data()
+        const phone = userData?.phone ?? ''
+        userStore.setUserPhone(phone)
+        showPhonePrompt.value = !phone
+      }
+    } catch (e) {
+      console.error('[PhonePrompt] Error fetching user phone:', e)
+    }
+  }
+
   // Listener de Suscripciones
   unsubSubs = onSnapshot(subscriptionsCollection, (snapshot) => {
     userSubscriptions.value = snapshot.docs.map(doc => ({
