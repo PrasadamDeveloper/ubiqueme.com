@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
-import { collection, doc, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
+import { collection, doc, getDoc, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
@@ -45,13 +45,21 @@ const currentStatus = computed(() => {
       label: 'Baneado'
     }
   }
+  // BUG #5: Bronce QR with 'Active' status but no publicQR doc → "Sin publicar"
+  if (propsComputed.value.planType === 'bronce' && !qrStatusLoaded.value && propsComputed.value.status === 'Active') {
+    return {
+      bg: 'bg-slate-500/10',
+      text: 'text-slate-400',
+      dot: 'bg-slate-400',
+      label: 'Sin publicar'
+    }
+  }
   return statusConfig[propsComputed.value.status] || {
     bg: 'bg-slate-500/10',
     text: 'text-slate-100',
     dot: 'bg-slate-400',
     label: 'Desconocido'
   }
-
 })
 
 const openPrompt = (type: 'cancel' | 'renew' | 'edit' | 'download') => {
@@ -78,14 +86,15 @@ const handleEdit = async () => {
     isLoading.value = true;
     const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`)
     const publicQrDoc = doc(db, 'publicQR', props.id);
-
     const batch = writeBatch(db);
-    batch.update(userQRDoc, {
-      name: qrName.value
-    })
-    batch.update(publicQrDoc, {
-      name: qrName.value
-    })
+
+    batch.update(userQRDoc, { name: qrName.value })
+
+    const publicSnap = await getDoc(publicQrDoc)
+    if (publicSnap.exists()) {
+      batch.update(publicQrDoc, { name: qrName.value })
+    }
+
     await batch.commit();
     closeAll();
     toast.success(`Nombre de QR actualizado`);
@@ -139,15 +148,22 @@ const _setQrPrivate = async () => {
     isLoading.value = true;
     const batch = writeBatch(db);
     const publicQrRef = doc(db, 'publicQR', props.id);
-    batch.update(publicQrRef, {
-      isPublic: false,
-      status: 'Paused',
-    });
     const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`)
+
+    // Only update publicQR doc if it exists (bronce may not have one)
+    const publicSnap = await getDoc(publicQrRef)
+    if (publicSnap.exists()) {
+      batch.update(publicQrRef, {
+        isPublic: false,
+        status: 'Paused',
+      });
+    }
+
     batch.update(qrDoc, {
       status: 'Paused',
     })
     await batch.commit();
+    qrStatusLoaded.value = false;
     isLoading.value = false;
     toast.success(`QR establecido como privado`);
   } catch (error) {
@@ -160,6 +176,8 @@ const _setQrPrivate = async () => {
 let unsubscribe: Unsubscribe;
 
 
+
+const qrStatusLoaded = ref(false)
 
 const qrStatus = reactive({
   totalScans: 0,
@@ -175,6 +193,7 @@ onMounted(() => {
       // Doc may not exist if never made public, or was just made private (isPublic: false)
       return;
     }
+    qrStatusLoaded.value = true;
     qrStatus.totalScans = docSnapshot.data().totalScans ?? 0;
     qrStatus.lastScan = docSnapshot.data().lastScan ?? 'No se ha escaneado aún';
     // toast.success(`Estado del QR actualizado`); // Silencing this success as it fires frequently
@@ -183,6 +202,7 @@ onMounted(() => {
   }
     , (error) => {
       toast.error(`Error al obtener datos: ${error}`);
+      if (unsubscribe) unsubscribe();
     }
   )
 })
@@ -199,7 +219,12 @@ const handleCancelQR = async () => {
     const publicQrDoc = doc(db, 'publicQR', props.id);
 
     batch.update(userQRDoc, { status: 'Canceled' });
-    batch.update(publicQrDoc, { status: 'Canceled' });
+
+    const publicSnap = await getDoc(publicQrDoc)
+    if (publicSnap.exists()) {
+      batch.update(publicQrDoc, { status: 'Canceled' });
+    }
+
     await batch.commit();
     closeAll();
     toast.success(`QR desactivado permanentemente`);
@@ -223,11 +248,16 @@ const handleRenewQR = async () => {
       scans: 0,
       lastScan: null,
     });
-    batch.update(publicQrDoc, {
-      status: 'Active',
-      totalScans: 0,
-      lastScan: null,
-    });
+
+    const publicSnap = await getDoc(publicQrDoc)
+    if (publicSnap.exists()) {
+      batch.update(publicQrDoc, {
+        status: 'Active',
+        totalScans: 0,
+        lastScan: null,
+      });
+    }
+
     await batch.commit();
     closeAll();
     toast.success(`QR renovado exitosamente`);
@@ -241,11 +271,13 @@ const handleRenewQR = async () => {
 
 
 const canMakePublic = computed(() => propsComputed.value.planType && propsComputed.value.planType !== 'bronce')
+// BUG #4: Allow "Hacer Privado" if QR was previously made public, regardless of plan
+const canMakePrivate = computed(() => qrStatusLoaded.value || canMakePublic.value)
 
 const menuOptions = [
   { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId) },
   { label: 'Hacer Público', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
-  { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePublic.value ? _setQrPrivate : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+  { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
   { divider: true },
   { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
   { divider: true },
