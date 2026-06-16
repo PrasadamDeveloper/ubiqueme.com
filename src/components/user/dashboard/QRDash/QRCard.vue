@@ -107,6 +107,7 @@ const _setQrPublic = async () => {
       id: props.id,
       name: props.name,
       status: 'Active',
+      isPublic: true,
       isBanned: false,
       banReason: '',
       totalScans: props.scans,
@@ -138,7 +139,10 @@ const _setQrPrivate = async () => {
     isLoading.value = true;
     const batch = writeBatch(db);
     const publicQrRef = doc(db, 'publicQR', props.id);
-    batch.delete(publicQrRef);
+    batch.update(publicQrRef, {
+      isPublic: false,
+      status: 'Paused',
+    });
     const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`)
     batch.update(qrDoc, {
       status: 'Paused',
@@ -168,9 +172,7 @@ const loadCount = ref(0);
 onMounted(() => {
   unsubscribe = onSnapshot(doc(db, 'publicQR', props.id), (docSnapshot) => {
     if (!docSnapshot.exists()) {
-      toast.error(`QR no encontrado`);
-      //errorMsg.value = "No se encontro informacion sobre este QR";
-      //loading.value = false;
+      // Doc may not exist if never made public, or was just made private (isPublic: false)
       return;
     }
     qrStatus.totalScans = docSnapshot.data().totalScans ?? 0;

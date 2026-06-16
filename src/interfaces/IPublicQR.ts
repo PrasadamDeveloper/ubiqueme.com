@@ -5,6 +5,7 @@ import type { Timestamp } from 'firebase/firestore'
 export interface IPublicQR {
   id: string
   status: string
+  isPublic: boolean
   lastScan: Timestamp | null
   totalScans: number | null
   name?: string

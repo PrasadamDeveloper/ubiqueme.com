@@ -81,6 +81,7 @@ interface QRData {
 	uid?: string;
 	name?: string;
 	status?: string;
+	isPublic?: boolean;
 }
 
 interface UserData {
@@ -100,6 +101,7 @@ async function getQRData(env: Env, qrId: string): Promise<QRData | null> {
 		uid: data.uid,
 		name: data.name,
 		status: data.status,
+		isPublic: data.isPublic,
 	};
 }
 
@@ -365,8 +367,8 @@ async function handleImageWithCaption(
 			console.log(`[Worker] Error: QR ${parsed.qrId} no encontrado en BD.`);
 			return new Response('QR not found', { status: 200 });
 		}
-		if (qrData.status !== 'Active') {
-			console.log(`[Worker] QR ${parsed.qrId} inactivo (status: ${qrData.status}).`);
+		if (qrData.status !== 'Active' || qrData.isPublic === false) {
+			console.log(`[Worker] QR ${parsed.qrId} inactivo (status: ${qrData.status}, isPublic: ${qrData.isPublic}).`);
 			await sendQRInactiveReply(env, senderPhone, 'Este código QR ya no está activo, intentelo de nuevo más tarde.');
 			return new Response('QR inactive', { status: 200 });
 		}
@@ -476,9 +478,9 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('QR not found', { status: 200 });
 		}
 
-		// 3b. Validate QR status
-		if (qrData.status !== 'Active') {
-			console.log(`[Worker] QR ${parsed.qrId} inactivo (status: ${qrData.status}). Respondiendo al scanner.`);
+		// 3b. Validate QR status and isPublic flag
+		if (qrData.status !== 'Active' || qrData.isPublic === false) {
+			console.log(`[Worker] QR ${parsed.qrId} inactivo (status: ${qrData.status}, isPublic: ${qrData.isPublic}). Respondiendo al scanner.`);
 			await sendQRInactiveReply(env, senderPhone, 'Este código QR ya no está activo. El propietario lo ha desactivado.');
 			return new Response('QR inactive', { status: 200 });
 		}
