@@ -1,5 +1,17 @@
 import { initializeApp, FirebaseOptions, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore, doc, getDoc, writeBatch, increment, Timestamp, collection } from 'firebase/firestore/lite';
+import {
+	getFirestore,
+	Firestore,
+	doc,
+	getDoc,
+	writeBatch,
+	increment,
+	Timestamp,
+	collection,
+	query,
+	where,
+	getDocs,
+} from 'firebase/firestore/lite';
 import { getAuth, Auth, signInWithEmailAndPassword } from 'firebase/auth';
 
 // ─── Meta Webhook Types ─────────────────────────────────────────
@@ -88,6 +100,8 @@ interface UserData {
 	email?: string;
 	displayName?: string;
 	phone?: string;
+	trialActive?: boolean;
+	trialEndsAt?: Timestamp;
 }
 
 async function getQRData(env: Env, qrId: string): Promise<QRData | null> {
@@ -116,7 +130,73 @@ async function getUserData(env: Env, uid: string): Promise<UserData | null> {
 		email: data.email,
 		displayName: data.displayName || data.name,
 		phone: data.phone,
+		trialActive: data.trialActive,
+		trialEndsAt: data.trialEndsAt,
 	};
+}
+
+/**
+ * Expires a user's trial and deactivates all their QRs.
+ * Called when a scan is attempted but the trial has ended.
+ */
+async function expireUserTrial(env: Env, uid: string): Promise<void> {
+	await ensureAuthenticated(env);
+	const { db } = getFirebase(env);
+	const now = Timestamp.now();
+
+	const batch = writeBatch(db!);
+
+	// 1. Update user document — mark trial as expired
+	const userRef = doc(db!, 'users', uid);
+	batch.update(userRef, {
+		trialActive: false,
+		isTrialUsed: true,
+	});
+
+	// 2. Find and deactivate the user's trial subscription
+	const subsQuery = query(
+		collection(db!, 'users', uid, 'subscriptions'),
+		where('planType', '==', 'trial'),
+		where('status', '==', 'active'),
+	);
+	const subsSnap = await getDocs(subsQuery);
+	subsSnap.forEach((subDoc) => {
+		const subRef = doc(db!, 'users', uid, 'subscriptions', subDoc.id);
+		batch.update(subRef, {
+			status: 'inactive',
+			autoExpiredAt: now,
+		});
+	});
+
+	// 3. Deactivate all QRs owned by this user
+	const qrQuery = query(collection(db!, 'publicQR'), where('uid', '==', uid), where('status', '==', 'Active'));
+	const qrSnap = await getDocs(qrQuery);
+	qrSnap.forEach((qrDoc) => {
+		const qrRef = doc(db!, 'publicQR', qrDoc.id);
+		batch.update(qrRef, {
+			status: 'Inactive',
+			isPublic: false,
+		});
+	});
+
+	await batch.commit();
+	console.log(`[Worker] Trial expirado automáticamente para usuario ${uid}: ${subsSnap.size} sub(s), ${qrSnap.size} QR(s) desactivados.`);
+}
+
+/**
+ * Checks if a user's trial has ended. If so, expires the trial and returns true.
+ * Returns false if trial is still valid or not applicable.
+ */
+async function checkAndExpireTrial(env: Env, uid: string, ownerData: UserData): Promise<boolean> {
+	if (ownerData.trialActive && ownerData.trialEndsAt) {
+		const trialEndDate = ownerData.trialEndsAt.toDate();
+		if (trialEndDate < new Date()) {
+			console.log(`[Worker] Trial expirado detectado para usuario ${uid}. Ejecutando expireUserTrial...`);
+			await expireUserTrial(env, uid);
+			return true;
+		}
+	}
+	return false;
 }
 
 // ─── Scan logging helper ────────────────────────────────────────
@@ -380,6 +460,13 @@ async function handleImageWithCaption(
 			return new Response('Owner missing phone', { status: 200 });
 		}
 
+		// 4a. Check if owner's trial has expired — if so, expire it and deny the scan
+		const trialExpired = await checkAndExpireTrial(env, qrData.uid, ownerData);
+		if (trialExpired) {
+			await sendQRInactiveReply(env, senderPhone, 'Este código QR ha expirado. El periodo de prueba del propietario ha finalizado.');
+			return new Response('Trial expired', { status: 200 });
+		}
+
 		// 5. Log scan to Firestore WITH the image included
 		await logScan(env, parsed.qrId, {
 			scanDate: Timestamp.now(),
@@ -490,6 +577,13 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		if (!ownerData || !ownerData.phone) {
 			console.log(`[Worker] Error: Dueño ${qrData.uid} sin teléfono.`);
 			return new Response('Owner missing phone', { status: 200 });
+		}
+
+		// 4a. Check if owner's trial has expired — if so, expire it and deny the scan
+		const trialExpired = await checkAndExpireTrial(env, qrData.uid, ownerData);
+		if (trialExpired) {
+			await sendQRInactiveReply(env, senderPhone, 'Este código QR ha expirado. El periodo de prueba del propietario ha finalizado.');
+			return new Response('Trial expired', { status: 200 });
 		}
 
 		// 4b. Log scan to Firestore BEFORE sending notification
