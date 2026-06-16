@@ -36,7 +36,7 @@
 
         <!-- Botón de admin/test (Crear QR) -->
         <RouterLink to="/admin"
-          class="bg-orange-600/20 text-orange-400 border border-orange-500/20 px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer hover:bg-orange-600/30 transition-colors">
+          class="hidden bg-orange-600/20 text-orange-400 border border-orange-500/20 px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer hover:bg-orange-600/30 transition-colors">
           Ir al panel de admin
         </RouterLink>
       </div>

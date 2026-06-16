@@ -1,19 +1,28 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 
 const router = useRouter()
 
+const currencies = [
+  { key: 'MXN' as const, label: 'MXN', flag: '🇲🇽' },
+  { key: 'USD' as const, label: 'USD', flag: '🇺🇸' },
+  { key: 'CLP' as const, label: 'CLP', flag: '🇨🇱' },
+]
+const selectedCurrency = ref<'MXN' | 'USD' | 'CLP'>('MXN')
+
 const plans = [
   {
     id: 'bronce',
     name: 'Bronce',
-    price: '499',
-    currency: 'MXN',
-    period: 'ANUAL',
-    priceNote: '1er envío físico gratis',
     description: 'Protección básica esencial',
     cta: 'Activar Bronce',
+    prices: {
+      MXN: { price: '499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '42' },
+      USD: { price: '29', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '2.4' },
+      CLP: { price: '25000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '2100' },
+    },
     features: [
       { label: 'Hasta 1 código QR activo', included: true },
       { label: 'Contador de escaneos básico', included: true },
@@ -28,13 +37,14 @@ const plans = [
   {
     id: 'plata',
     name: 'Plata',
-    price: '999',
-    currency: 'MXN',
-    period: 'ANUAL',
-    priceNote: '1er envío físico gratis',
     description: 'Para quienes toman en serio sus bienes',
     featured: true,
     cta: 'Activar Plata',
+    prices: {
+      MXN: { price: '999', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '83' },
+      USD: { price: '59', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '4.9' },
+      CLP: { price: '49000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '4100' },
+    },
     features: [
       { label: 'Hasta 3 códigos QR activos', included: true },
       { label: 'Contador de escaneos en tiempo real', included: true },
@@ -49,12 +59,13 @@ const plans = [
   {
     id: 'oro',
     name: 'Oro',
-    price: '1499',
-    currency: 'MXN',
-    period: 'ANUAL',
-    priceNote: '1er envío físico gratis',
     description: 'Control total. Sin compromisos.',
     cta: 'Seleccionar Oro',
+    prices: {
+      MXN: { price: '1499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '125' },
+      USD: { price: '89', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '7.4' },
+      CLP: { price: '75000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '6300' },
+    },
     features: [
       { label: 'Hasta 5 códigos QR activos', included: true },
       { label: 'Ubicación con Mapa dinámico incluido', included: true },
@@ -93,7 +104,7 @@ const handleSelect = (id: string) => {
           <div class="max-w-6xl mx-auto">
 
             <!-- Header -->
-            <header class="text-center mb-20 space-y-5">
+            <header class="text-center mb-16 space-y-5">
               <div
                 class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ff7900]/10 rounded-full border border-[#ff7900]/20">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#ff7900]"></span>
@@ -108,6 +119,20 @@ const handleSelect = (id: string) => {
                 Sin complicaciones. Sin contratos forzosos. Solo la protección que usted necesita.
               </p>
             </header>
+
+            <!-- Currency Selector -->
+            <div class="flex justify-center mb-12">
+              <div class="inline-flex bg-[#121212] rounded-xl border border-white/[0.06] p-1 gap-0.5">
+                <button v-for="c in currencies" :key="c.key" @click="selectedCurrency = c.key"
+                  class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer"
+                  :class="selectedCurrency === c.key
+                    ? 'bg-[#ff7900] text-black shadow-lg shadow-[#ff7900]/20'
+                    : 'text-white/40 hover:text-white/70'">
+                  <span class="text-sm">{{ c.flag }}</span>
+                  {{ c.label }}
+                </button>
+              </div>
+            </div>
 
             <!-- Pricing Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 items-stretch">
@@ -155,16 +180,18 @@ const handleSelect = (id: string) => {
                   <!-- Price -->
                   <div class="mb-5 pb-5 border-b border-white/[0.04]">
                     <div class="flex items-baseline gap-2">
-                      <span class="text-4xl font-black text-white tracking-tight font-mono">${{ plan.price }} </span>
-                      <span class="text-[10px] text-white">{{ plan.currency }}</span>
+                      <span class="text-4xl font-black text-white tracking-tight font-mono">{{
+                        plan.prices[selectedCurrency].symbol }}{{ plan.prices[selectedCurrency].price }} </span>
+                      <span class="text-[10px] text-white">{{ plan.prices[selectedCurrency].label }}</span>
                       <span
-                        class="text-orange-700 rounded-3xl  p-1 text-[10px] bg-orange-100 font-google-sans font-black uppercase tracking-widest">{{
-                          plan.period }}</span>
-                      <span class="text-[10px] text-white/50 font-mono">(${{ (Number(plan.price) / 12).toFixed() }}mxn
+                        class="text-orange-700 rounded-3xl p-1 text-[10px] bg-orange-100 font-google-sans font-black uppercase tracking-widest">{{
+                          plan.prices[selectedCurrency].period }}</span>
+                      <span class="text-[10px] text-white/50 font-mono">(~&thinsp;${{
+                        plan.prices[selectedCurrency].monthly }}
                         /mes)</span>
                     </div>
                     <p class="text-[#ff7900]/60 text-[10px] font-mono font-bold mt-1 uppercase tracking-wider">{{
-                      plan.priceNote }}</p>
+                      plan.prices[selectedCurrency].note }}</p>
                   </div>
 
                   <!-- Features -->

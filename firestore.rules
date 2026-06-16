@@ -81,7 +81,7 @@ function isOwnerOrAdmin(userId) {
  * @return {boolean} true if all required fields are present and valid types
  */
 function isValidUserData(data) {
-  return data.keys().hasAll(['uid', 'name', 'email', 'role', 'isActive', 'isBanned', 'preferences', 'lastLoginAt', 'createdAt'])
+  return data.keys().hasAll(['uid', 'name', 'email', 'role', 'isActive', 'isBanned', 'preferences', 'lastLoginAt', 'createdAt', 'phone', 'totalQRs', 'banReason', 'trialActive', 'trialStartsAt', 'trialEndsAt', 'isTrialUsed'])
     && data.uid is string
     && data.name is string
     && data.email is string
@@ -94,7 +94,7 @@ function isValidUserData(data) {
  * Validates publicQR document fields on creation.
  */
 function isValidPublicQRData(data) {
-  return data.keys().hasAll(['id', 'name', 'status', 'lastScan', 'totalScans', 'isBanned', 'banReason', 'docId', 'uid', 'createdAt'])
+  return data.keys().hasAll(['id', 'name', 'status', 'lastScan', 'totalScans', 'isBanned', 'banReason', 'docId', 'uid', 'createdAt', 'isPublic', 'category', 'tier'])
     && data.id is string
     && data.name is string
     && data.status is string
@@ -135,7 +135,7 @@ function isValidSubscriptionData(data) {
  * Validates scan log document fields on creation.
  */
 function isValidLogData(data) {
-  return data.keys().hasAny(['scanDate', 'scanMetrics', 'interaction', 'img'])
+  return data.keys().hasAll(['scanDate', 'scanMetrics', 'interaction', 'img', 'scannerPhone'])
     && data.scanDate is timestamp;
 }
 

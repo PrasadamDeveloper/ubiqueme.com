@@ -7,6 +7,13 @@ const router = useRouter()
 const userStore = useUserStore()
 const hoveredPlan = ref<string | null>(null)
 
+const currencies = [
+  { key: 'MXN' as const, label: 'MXN', flag: '🇲🇽' },
+  { key: 'USD' as const, label: 'USD', flag: '🇺🇸' },
+  { key: 'CLP' as const, label: 'CLP', flag: '🇨🇱' },
+]
+const selectedCurrency = ref<'MXN' | 'USD' | 'CLP'>('MXN')
+
 const handlePlanClick = (planId: string) => {
   if (userStore.isAuthenticated) {
     router.push({ name: 'checkout', params: { planId } })
@@ -20,13 +27,16 @@ const plans = [
     id: 'bronce',
     name: 'Bronce',
     tagline: 'Protección básica esencial',
-    price: '$499',
-    priceNote: 'MXN / año · 1er Envío Físico Gratis',
     accent: 'rgba(255,255,255,0.15)',
     accentBorder: 'rgba(255,255,255,0.1)',
     accentText: '#ffffff',
     badge: 'Básico',
     cta: 'Activar Bronce',
+    prices: {
+      MXN: { price: '499', symbol: '$', label: 'MXN', period: '/año', note: '1er Envío Físico Gratis', monthly: '42' },
+      USD: { price: '29', symbol: '$', label: 'USD', period: '/año', note: '1er Envío Físico Gratis', monthly: '2.4' },
+      CLP: { price: '25000', symbol: '$', label: 'CLP', period: '/año', note: '1er Envío Físico Gratis', monthly: '2100' },
+    },
     features: [
       { label: 'Escaneo vía WhatsApp directo', included: true },
       { label: 'Notificación instantánea al dueño', included: true },
@@ -43,13 +53,16 @@ const plans = [
     id: 'plata',
     name: 'Plata',
     tagline: 'Para quienes toman en serio sus bienes',
-    price: '$999',
-    priceNote: 'MXN / año · 1er Envío Físico Gratis',
     accent: 'rgba(249,115,22,0.12)',
     accentBorder: 'rgba(249,115,22,0.35)',
     accentText: '#f97316',
     badge: 'Más Popular',
     cta: 'Activar Plata',
+    prices: {
+      MXN: { price: '999', symbol: '$', label: 'MXN', period: '/año', note: '1er Envío Físico Gratis', monthly: '83' },
+      USD: { price: '59', symbol: '$', label: 'USD', period: '/año', note: '1er Envío Físico Gratis', monthly: '4.9' },
+      CLP: { price: '49000', symbol: '$', label: 'CLP', period: '/año', note: '1er Envío Físico Gratis', monthly: '4100' },
+    },
     features: [
       { label: 'Escaneo vía WhatsApp directo', included: true },
       { label: 'Notificación instantánea al dueño', included: true },
@@ -66,13 +79,16 @@ const plans = [
     id: 'oro',
     name: 'Oro',
     tagline: 'Control total. Sin compromisos.',
-    price: '$1499',
-    priceNote: 'MXN / año · 1er Envío Físico Gratis',
     accent: 'rgba(255,210,100,0.08)',
     accentBorder: 'rgba(255,210,100,0.3)',
     accentText: '#ffd264',
     badge: 'Premium',
     cta: 'Activar Oro',
+    prices: {
+      MXN: { price: '1499', symbol: '$', label: 'MXN', period: '/año', note: '1er Envío Físico Gratis', monthly: '125' },
+      USD: { price: '89', symbol: '$', label: 'USD', period: '/año', note: '1er Envío Físico Gratis', monthly: '7.4' },
+      CLP: { price: '75000', symbol: '$', label: 'CLP', period: '/año', note: '1er Envío Físico Gratis', monthly: '6300' },
+    },
     features: [
       { label: 'Escaneo vía WhatsApp directo', included: true },
       { label: 'Notificación instantánea al dueño', included: true },
@@ -92,7 +108,7 @@ const plans = [
   <section class="relative z-10 px-6 md:px-24 py-28 mx-auto max-w-7xl">
 
     <!-- Section Header -->
-    <div class="text-center space-y-6 mb-20">
+    <div class="text-center space-y-6 mb-14">
       <div class="inline-flex items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-lg border border-orange-500/20">
         <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
         <span class="text-[9px] font-black uppercase tracking-[0.4em] text-orange-500">Planes de Protección</span>
@@ -104,6 +120,20 @@ const plans = [
       <p class="text-white/40 text-lg max-w-xl mx-auto font-medium leading-relaxed">
         Desde protección básica hasta control total de tus bienes. Sin contratos, sin complicaciones.
       </p>
+    </div>
+
+    <!-- Currency Selector -->
+    <div class="flex justify-center mb-12">
+      <div class="inline-flex bg-black/40 rounded-2xl border border-white/[0.08] p-1 gap-0.5">
+        <button v-for="c in currencies" :key="c.key" @click="selectedCurrency = c.key"
+          class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer"
+          :class="selectedCurrency === c.key
+            ? 'bg-orange-500 text-black shadow-lg shadow-orange-500/20'
+            : 'text-white/40 hover:text-white/70'">
+          <span class="text-sm">{{ c.flag }}</span>
+          {{ c.label }}
+        </button>
+      </div>
     </div>
 
     <!-- Plans Grid -->
@@ -156,10 +186,14 @@ const plans = [
             ANUAL
           </div>
           <div class="flex items-baseline gap-2">
-            <span class="text-5xl font-black text-white tracking-tighter">{{ plan.price }}</span>
-            <span class="text-orange-400/70 text-sm font-black uppercase tracking-widest">/año</span>
+            <span class="text-5xl font-black text-white tracking-tighter">{{ plan.prices[selectedCurrency].symbol }}{{
+              plan.prices[selectedCurrency].price }}</span>
+            <span class="text-orange-400/70 text-sm font-black uppercase tracking-widest">{{
+              plan.prices[selectedCurrency].label }} / año</span>
           </div>
-          <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-2">{{ plan.priceNote }}</p>
+          <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-2">~&thinsp;${{
+            plan.prices[selectedCurrency].monthly }} /mes · {{
+              plan.prices[selectedCurrency].note }}</p>
         </div>
 
         <!-- Features -->
