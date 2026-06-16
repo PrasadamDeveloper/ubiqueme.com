@@ -182,6 +182,8 @@ En `QRCard.vue:192`, `handleCancelQR()` intenta hacer `batch.update(publicQrDoc,
 
 ---
 
+d
+
 ## 🟠 BUG #3 (Nivel 2) — `handleRenewQR()` falla si `publicQR/{id}` no existe
 
 ### 🎯 Descripción
