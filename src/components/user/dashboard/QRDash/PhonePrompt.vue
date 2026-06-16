@@ -57,7 +57,7 @@
         <!-- Save button -->
         <button @click="handleSave" :disabled="isSaving || !isValid"
           class="group w-full h-14 bg-orange-500 text-[#070b14] rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed">
-          <span v-if="!isSaving">
+          <span class="flex items-center gap-2" v-if="!isSaving">
             <span class="material-symbols-outlined text-lg">save</span>
             Guardar
           </span>
