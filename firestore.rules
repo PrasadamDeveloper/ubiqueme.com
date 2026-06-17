@@ -178,7 +178,7 @@ match /users/{userId} {
   // Who can update: the user themselves (limited fields), or admin (any field)
   // Non-admin users can only update certain fields
   allow update: if isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys()
-                  .hasOnly(['phone', 'preferences', 'lastLoginAt', 'name'])
+                  .hasOnly(['phone', 'preferences', 'lastLoginAt', 'name', 'totalQRs'])
                 || isAdmin();
 
   // ── DELETE ──
