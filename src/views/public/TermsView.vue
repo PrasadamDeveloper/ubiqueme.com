@@ -17,14 +17,17 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
             <section>
               <h3>Aceptación del Servicio</h3>
               <p>
-                Al utilizar los servicios de Ubiqueme, usted acepta quedar vinculado por los términos aquí descritos. Este acuerdo rige el uso de la tecnología de retransmisión y gestión de códigos QR.
+                Al utilizar los servicios de Ubiqueme, usted acepta quedar vinculado por los términos aquí descritos.
+                Este acuerdo rige el uso de la tecnología de retransmisión y gestión de códigos QR.
               </p>
             </section>
 
             <section>
               <h3>Naturaleza del Servicio</h3>
               <p>
-                Ubiqueme proporciona una plataforma de intermediación tecnológica para facilitar el contacto privado entre propietarios y terceros. El servicio se limita a la retransmisión de notificaciones y no implica responsabilidad sobre los objetos físicos o las acciones de terceros.
+                Ubiqueme proporciona una plataforma de intermediación tecnológica para facilitar el contacto privado
+                entre propietarios y terceros. El servicio se limita a la retransmisión de notificaciones y no implica
+                responsabilidad sobre los objetos físicos o las acciones de terceros.
               </p>
             </section>
 
@@ -34,28 +37,47 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
               <ul>
                 <li>Proporcionar información de contacto válida para el funcionamiento de las alertas.</li>
                 <li>Utilizar la plataforma exclusivamente para los fines previstos de recuperación y seguridad.</li>
-                <li>No utilizar el sistema para comunicaciones no deseadas o actividades que contravengan la ética del servicio.</li>
+                <li>No utilizar el sistema para comunicaciones no deseadas o actividades que contravengan la ética del
+                  servicio.</li>
               </ul>
             </section>
 
             <section>
               <h3>Propiedad Intelectual</h3>
               <p>
-                Todo el software, diseños y marcas asociados a Ubiqueme son propiedad exclusiva de la plataforma. Se concede una licencia de uso personal y no transferible para la gestión de sus códigos QR.
+                Todo el software, diseños y marcas asociados a Ubiqueme son propiedad exclusiva de la plataforma. Se
+                concede una licencia de uso personal y no transferible para la gestión de sus códigos QR.
               </p>
             </section>
 
             <section>
               <h3>Modificaciones del Servicio</h3>
               <p>
-                Nos reservamos el derecho de actualizar las funcionalidades y estos términos para mejorar la calidad y seguridad de la retransmisión. Los cambios serán notificados a través de nuestros canales oficiales.
+                Nos reservamos el derecho de actualizar las funcionalidades y estos términos para mejorar la calidad y
+                seguridad de la retransmisión. Los cambios serán notificados a través de nuestros canales oficiales.
+              </p>
+            </section>
+
+            <section>
+              <h3>Contacto entre las Partes</h3>
+              <p>
+                Al contactar al propietario de un código QR a través de WhatsApp, usted está saliendo de la plataforma
+                ubiqueme.com. Una vez redirigido, Ubiqueme no participa, supervisa ni tiene control alguno sobre las
+                conversaciones, acuerdos o interacciones que surjan entre las partes. Toda comunicación posterior es
+                responsabilidad exclusiva de los involucrados.
+              </p>
+              <p>
+                Recomendamos actuar con responsabilidad, respeto y siguiendo buenas prácticas de seguridad en toda
+                interacción.
               </p>
             </section>
 
             <section>
               <h3>Limitación de Responsabilidad</h3>
               <p>
-                Ubiqueme actúa como un canal de comunicación. La recuperación efectiva de pertenencias depende de factores externos fuera del control de la plataforma. El servicio se proporciona bajo un modelo de "mejor esfuerzo" técnico.
+                Ubiqueme actúa como un canal de comunicación. La recuperación efectiva de pertenencias depende de
+                factores externos fuera del control de la plataforma. El servicio se proporciona bajo un modelo de
+                "mejor esfuerzo" técnico.
               </p>
             </section>
           </div>
@@ -144,7 +166,12 @@ li::before {
 }
 
 @media (max-width: 768px) {
-  h1 { font-size: 2rem; }
-  .legal-page { padding-top: 100px; }
+  h1 {
+    font-size: 2rem;
+  }
+
+  .legal-page {
+    padding-top: 100px;
+  }
 }
 </style>

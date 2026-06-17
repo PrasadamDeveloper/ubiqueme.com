@@ -298,8 +298,9 @@ match /publicQR/{qrId} {
   match /logs/{logId} {
 
     // ── READ ──
-    // Who can read: only admin
-    allow read: if isAdmin();
+    // Who can read: admin, or the QR owner (uid matches parent publicQR doc)
+    allow read: if isAdmin()
+      || (isAuth() && get(/databases/$(database)/documents/publicQR/$(qrId)).data.uid == request.auth.uid);
 
     // ── CREATE ──
     // Who can create: ANYONE (anonymous users can submit scan reports)

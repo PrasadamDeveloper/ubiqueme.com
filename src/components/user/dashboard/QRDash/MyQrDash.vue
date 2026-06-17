@@ -397,6 +397,10 @@ const createQRForSubscription = async () => {
   isCreatingQR.value = true;
   try {
     const randomId = nanoid(15);
+    console.log('[createQR] selectedSubscription:', JSON.parse(JSON.stringify(selectedSubscription.value)));
+    console.log('[createQR] newQrName:', newQrName.value, 'selectedCategory:', selectedCategory.value);
+    console.log('[createQR] userStore.getUserId:', userStore.getUserId);
+
     const qrData: IQRCard = {
       banReason: '',
       createdAt: Timestamp.now(),
@@ -417,24 +421,40 @@ const createQRForSubscription = async () => {
       link: '',
       category: selectedCategory.value
     }
+    console.log('[createQR] qrData:', JSON.parse(JSON.stringify(qrData)));
 
     const userDocRef = doc(db, `users/${userStore.getUserId}/qrs/${randomId}`);
     const userRef = doc(db, `users/${userStore.getUserId}`);
     const userSubRef = doc(db, `users/${userStore.getUserId}/subscriptions/${selectedSubscription.value.id}`);
     const publicDocRef = doc(db, `publicQR/${randomId}`);
+    console.log('[createQR] refs:', {
+      userDocRef: userDocRef.path,
+      userRef: userRef.path,
+      userSubRef: userSubRef.path,
+      publicDocRef: publicDocRef.path
+    });
 
     const batch = writeBatch(db);
 
-    batch.set(userDocRef, {
-      ...qrData
-    })
+    const userQrData = {
+      ...qrData,
+      uid: userStore.getUserId
+    };
+    console.log('[createQR] userDoc batch.set data:', JSON.parse(JSON.stringify(userQrData)));
+
+    batch.set(userDocRef, userQrData)
+
+    console.log('[createQR] userRef batch.update: totalQRs increment(1)');
     batch.update(userRef, {
       totalQRs: increment(1)
     })
+
+    console.log('[createQR] userSubRef batch.update: totalQRsCreated increment(1)');
     batch.update(userSubRef, {
       totalQRsCreated: increment(1)
     })
-    batch.set(publicDocRef, {
+
+    const publicQrData = {
       id: randomId,
       name: qrData.name,
       category: qrData.category,
@@ -445,19 +465,27 @@ const createQRForSubscription = async () => {
       banReason: qrData.banReason,
       uid: userStore.getUserId,
       tier: selectedSubscription.value.planType ?? 'free',
-      createdAt: qrData.createdAt
-    })
+      createdAt: qrData.createdAt,
+      docId: randomId,
+      isPublic: true
+    };
+    console.log('[createQR] publicDoc batch.set data:', JSON.parse(JSON.stringify(publicQrData)));
 
+    batch.set(publicDocRef, publicQrData)
+
+    console.log('[createQR] calling batch.commit()...');
     await batch.commit();
+    console.log('[createQR] batch.commit() SUCCESS');
     toast.success('QR creado y asignado a la suscripción exitosamente.');
     showCreateQRModal.value = false;
     newQrName.value = '';
   }
   catch (error) {
+    console.log('[createQR] ERROR:', error);
     toast.error(`Fallo al crear el QR: ${error}`);
-    console.log(error);
   } finally {
     isCreatingQR.value = false;
+    console.log('[createQR] FINALLY - isCreatingQR set to false');
   }
 }
 

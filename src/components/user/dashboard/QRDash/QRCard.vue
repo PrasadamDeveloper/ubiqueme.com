@@ -301,7 +301,7 @@ const downloadImgRef = ref<HTMLImageElement | null>(null)
 const qrScanUrl = computed(() => {
   const id = propsComputed.value.id
   const name = propsComputed.value.name || 'Código QR'
-  const text = `ID: ${id}\nQR: ${name}\nMensaje: Lo contacto porque...`
+  const text = `ID: ${id}\nQR: ${name}\nMensaje: Escaneé su QR *_"${name.trim()}"_* para contactarlo `
   return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
 })
 

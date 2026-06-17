@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   whatsappUrl: string
@@ -8,6 +9,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'close'): void
 }>()
+
+const router = useRouter()
 
 const isVisible = ref(true)
 const isLeaving = ref(false)
@@ -22,6 +25,10 @@ const close = () => {
 const accept = () => {
   window.open(props.whatsappUrl, '_blank')
   close()
+}
+
+const goToTerms = () => {
+  router.push('/terminos')
 }
 </script>
 
@@ -74,12 +81,16 @@ const accept = () => {
               <!-- Title -->
               <div class="text-center space-y-2">
                 <h3 class="text-white font-black text-lg sm:text-xl tracking-tight">
-                  Aviso de Privacidad
+                  Está a punto de salir de ubiqueme.com
                 </h3>
                 <p class="text-white/70 text-xs sm:text-sm leading-relaxed max-w-xs mx-auto">
-                  Está a punto de contactar al dueño por WhatsApp. A partir del momento en que acepte, deberá proceder
-                  con cautela, ya que la otra persona podrá ver su número de teléfono. Contáctelo solo si lo considera
-                  necesario.
+                  Será redirigido a WhatsApp para contactar al propietario. Una vez fuera de nuestra plataforma,
+                  Ubiqueme no participa ni tiene control sobre las conversaciones o acuerdos entre las partes.
+                  Actúe con responsabilidad y respeto, conforme a nuestros
+                  <button @click="goToTerms"
+                    class="text-orange-400 hover:text-orange-300 underline underline-offset-2 transition-colors font-medium cursor-pointer">
+                    Términos de Servicio
+                  </button>.
                 </p>
               </div>
 

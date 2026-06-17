@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type { IQRLog } from '@/interfaces/IPublicQR'
+import type { Timestamp } from 'firebase/firestore'
 import { useImageStore } from '@/stores/imageStore';
-import { useUserStore } from '@/stores/user';
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { ref } from 'vue'
 import DisclaimerPopup from '@/components/ui/DisclaimerPopup.vue'
 import L from 'leaflet';
@@ -24,21 +24,13 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const props = defineProps<IQRLog>()
 
-const formatDate = (timestamp?: any) => {
+const formatDate = (timestamp?: Timestamp) => {
   if (!timestamp || typeof timestamp.toDate !== 'function') return '---'
   const d = timestamp.toDate()
   return `${d.toLocaleString('es-MX', { dateStyle: 'short', 'timeStyle': 'short' })}`
 }
 
 const dateStr = computed(() => formatDate(props.scanDate))
-
-const reasonMap: Record<string, { label: string, icon: string, color: string, isWhatsApp?: boolean }> = {
-  emergency: { label: 'EMERGENCIA', icon: 'emergency', color: 'text-rose-500' },
-  communication: { label: 'CONTACTO', icon: 'chat', color: 'text-amber-500', isWhatsApp: true },
-  informative: { label: 'INFO', icon: 'info', color: 'text-sky-400' },
-  other: { label: 'PERSONALIZADO', icon: 'edit_note', color: 'text-orange-400' }
-}
-
 
 const imageStore = useImageStore();
 
@@ -85,6 +77,46 @@ const scannerPhoneFormated = (scannerPhone: string | undefined) => {
   return countryCode + '****' + scannerPhone.slice(7)
 }
 
+const showPhone = ref(false)
+
+const countryFlag = computed(() => {
+  const countryMap: Record<string, string> = {
+    'México': '🇲🇽', 'Mexico': '🇲🇽',
+    'Estados Unidos': '🇺🇸', 'United States': '🇺🇸',
+    'Canadá': '🇨🇦', 'Canada': '🇨🇦',
+    'Argentina': '🇦🇷', 'Colombia': '🇨🇴', 'Chile': '🇨🇱',
+    'Perú': '🇵🇪', 'Peru': '🇵🇪', 'Brasil': '🇧🇷', 'Brazil': '🇧🇷',
+    'Ecuador': '🇪🇨', 'Venezuela': '🇻🇪', 'Guatemala': '🇬🇹',
+    'Costa Rica': '🇨🇷', 'Panamá': '🇵🇦', 'Panama': '🇵🇦',
+    'República Dominicana': '🇩🇴', 'Dominican Republic': '🇩🇴',
+    'Puerto Rico': '🇵🇷', 'Honduras': '🇭🇳', 'El Salvador': '🇸🇻',
+    'Nicaragua': '🇳🇮', 'Bolivia': '🇧🇴', 'Paraguay': '🇵🇾',
+    'Uruguay': '🇺🇾', 'España': '🇪🇸', 'Spain': '🇪🇸'
+  }
+  if (props.scanMetrics?.country) {
+    return countryMap[props.scanMetrics.country] || ''
+  }
+  // Fallback: try to match by phone country code
+  if (props.scannerPhone) {
+    const code = props.scannerPhone.slice(0, 2)
+    const codeMap: Record<string, string> = {
+      '52': '🇲🇽', '1': '🇺🇸', '34': '🇪🇸', '54': '🇦🇷', '57': '🇨🇴',
+      '56': '🇨🇱', '51': '🇵🇪', '55': '🇧🇷', '593': '🇪🇨', '58': '🇻🇪',
+      '502': '🇬🇹', '506': '🇨🇷', '507': '🇵🇦', '504': '🇭🇳',
+      '503': '🇸🇻', '505': '🇳🇮', '591': '🇧🇴', '595': '🇵🇾', '598': '🇺🇾'
+    }
+    return codeMap[code] || ''
+  }
+  return ''
+})
+
+const fullPhone = computed(() => {
+  if (!props.scannerPhone) return ''
+  const code = props.scannerPhone.slice(0, 2)
+  const rest = props.scannerPhone.slice(2)
+  return `+${code} ${rest}`
+})
+
 const showDisclaimer = ref(false)
 const disclaimerUrl = ref('')
 
@@ -113,10 +145,20 @@ const openDisclaimer = (phone: string) => {
 
           <div class="flex gap-2 items-center">
             <span class="material-symbols-outlined text-green-400">contact_page</span>
-            <small
-              class="text-xs font-google-sans font-bold text-green-100 bg-emerald-900 border border-emerald-700 p-1 rounded-2xl">{{
-                scannerPhoneFormated(scannerPhone)
-              }}</small>
+            <div class="flex items-center gap-1">
+              <small
+                class="text-xs font-google-sans font-bold text-green-100 bg-emerald-900 border border-emerald-700 p-1 rounded-2xl flex items-center gap-0.5">
+                <span v-if="countryFlag" class="text-sm leading-none">{{ countryFlag }}</span>
+                <span class="leading-none">{{ showPhone && fullPhone ? fullPhone : scannerPhoneFormated(scannerPhone)
+                  }}</span>
+              </small>
+              <button v-if="scannerPhone" @click="showPhone = !showPhone"
+                class="p-1 rounded-lg hover:bg-emerald-900/50 transition-colors cursor-pointer border border-emerald-800/50 flex items-center justify-center"
+                :title="showPhone ? 'Ocultar número' : 'Mostrar número completo'">
+                <span class="material-symbols-outlined text-[12px] text-green-400/70">{{ showPhone ? 'visibility_off' :
+                  'visibility' }}</span>
+              </button>
+            </div>
           </div>
 
           <!-- Message text (like a WhatsApp quote bubble) -->
