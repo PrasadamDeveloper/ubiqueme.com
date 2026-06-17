@@ -3,16 +3,143 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ubiqueme.com</title>
+
+  <title>Ubiqueme — Códigos QR para proteger a su familia y pertenencias</title>
+
+  <!-- SEO Meta -->
+  <meta name="description"
+    content="Etiquetas y pulseras QR inteligentes. Si pierde sus llaves, su mascota o un familiar, quien lo encuentre puede escanear el código y contactarlo al instante. Privacidad total, sin apps.">
+  <meta name="keywords"
+    content="código QR, etiquetas QR, pulseras QR, rastreo mascotas, localizar niños, alertas de pertenencias, etiquetas para llaves, ubiqueme, seguridad QR">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Ubiqueme">
+  <meta name="theme-color" content="#09090b">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://ubiqueme.com/">
+
+  <!-- Hreflang -->
+  <link rel="alternate" href="https://ubiqueme.com/" hreflang="es" />
+  <link rel="alternate" href="https://ubiqueme.com/" hreflang="en" />
+  <link rel="alternate" href="https://ubiqueme.com/" hreflang="pt" />
+  <link rel="alternate" href="https://ubiqueme.com/" hreflang="x-default" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Ubiqueme — Códigos QR inteligentes para proteger lo que más le importa">
+  <meta property="og:description"
+    content="Etiquetas y pulseras QR que permiten recibir alertas al instante si alguien encuentra sus artículos perdidos, mascotas, niños o adultos mayores. Su información 100% privada.">
+  <meta property="og:url" content="https://ubiqueme.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Ubiqueme">
+  <meta property="og:locale" content="es_MX">
+  <meta property="og:image" content="https://ubiqueme.com/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Ubiqueme — Códigos QR inteligentes">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ubiqueme — Códigos QR inteligentes para proteger lo que más le importa">
+  <meta name="twitter:description"
+    content="Etiquetas y pulseras QR que permiten recibir alertas al instante si alguien encuentra sus artículos perdidos. Privacidad total.">
+  <meta name="twitter:image" content="https://ubiqueme.com/og-image.jpg">
+
+  <!-- Preconnect / DNS-Prefetch -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://cdn.gtranslate.net">
+  <link rel="dns-prefetch" href="https://accounts.google.com">
+  <link rel="dns-prefetch" href="https://cdn.gtranslate.net">
+
+  <!-- Favicon / Icons -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Google Sign-In -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Ubiqueme",
+      "url": "https://ubiqueme.com/",
+      "logo": "https://ubiqueme.com/og-image.jpg",
+      "description": "Códigos QR inteligentes para proteger pertenencias, mascotas y familiares.",
+      "foundingDate": "2024",
+      "sameAs": []
+    }
+  </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Ubiqueme",
+      "url": "https://ubiqueme.com/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://ubiqueme.com/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Cómo funciona Ubiqueme?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Coloca una etiqueta o pulsera con código QR en sus pertenencias, mascota o familiar. Cuando alguien lo escanea, usted recibe una alerta inmediata sin exponer sus datos personales."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Necesito instalar una aplicación?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Cualquier persona con un smartphone puede escanear el código QR directamente con la cámara. Usted solo necesita un navegador web para gestionar sus alertas."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Mis datos personales están protegidos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí. La persona que encuentra su artículo nunca ve su información de contacto. Nosotros actuamos como intermediario seguro mediante un chat anónimo."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Funciona fuera de México?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí. Ubiqueme funciona en cualquier parte del mundo donde se pueda escanear un código QR."
+          }
+        }
+      ]
+    }
+  </script>
+
+  <!-- Google Site Verification (placeholder) -->
+  <meta name="google-site-verification" content="VERIFICATION_CODE" />
 </head>
 
 <body class="">
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
+  <div class="gtranslate_wrapper"></div>
+  <script>window.gtranslateSettings = { "default_language": "es", "detect_browser_language": true, "languages": ["es", "pt", "en"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "float_switcher_open_direction": "right", "alt_flags": { "es": "mexico" } }</script>
+  <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
 </body>
 
 </html>

@@ -139,6 +139,64 @@ const toggleSound = (index: number) => {
               mascotas, niños y adultos mayores al instante, manteniendo su información de contacto 100% oculta.
             </p>
 
+            <!-- Premium Feature Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl mb-10">
+              <!-- Card 1: Alertas Inmediatas -->
+              <div
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03]  border border-white/[0.08] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-amber-500/[0.08] hover:to-transparent hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] cursor-default">
+                <span
+                  class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">01</span>
+                <span
+                  class="material-symbols-outlined text-4xl text-amber-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all duration-500">notifications_active</span>
+                <h3 class="text-white font-bold text-base tracking-wide mt-3">Alertas Inmediatas</h3>
+                <p class="text-white/60 text-sm leading-relaxed mt-1.5">Se activa al instante cuando alguien escanea su
+                  código. Usted recibe la notificación al segundo, sin importar dónde se encuentre.</p>
+              </div>
+              <!-- Card 2: Privacidad Total -->
+              <div
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03]  border border-white/[0.08] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-blue-500/[0.08] hover:to-transparent hover:border-blue-500/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] cursor-default">
+                <span
+                  class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">02</span>
+                <span
+                  class="material-symbols-outlined text-4xl text-blue-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-500">vpn_key</span>
+                <h3 class="text-white font-bold text-base tracking-wide mt-3">Privacidad Total</h3>
+                <p class="text-white/60 text-sm leading-relaxed mt-1.5">Su información personal nunca queda expuesta.
+                  Nosotros actuamos como puente seguro entre usted y quien encuentra sus pertenencias.</p>
+              </div>
+              <!-- Card 3: Notificaciones por WhatsApp -->
+              <div
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03]  border border-white/[0.08] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-green-500/[0.08] hover:to-transparent hover:border-green-500/40 hover:shadow-[0_0_30px_rgba(34,197,94,0.15)] cursor-default">
+                <span
+                  class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">03</span>
+                <span
+                  class="material-symbols-outlined text-4xl text-green-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(34,197,94,0.5)] transition-all duration-500">whatsapp</span>
+                <h3 class="text-white font-bold text-base tracking-wide mt-3">Notificaciones por WhatsApp</h3>
+                <p class="text-white/60 text-sm leading-relaxed mt-1.5">En el momento en que alguien escanea su código,
+                  usted recibe una alerta directa por WhatsApp. Sin necesidad de revisar correos ni otras apps.</p>
+              </div>
+              <!-- Card 4: Cobertura Global -->
+              <div
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03]  border border-white/[0.08] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-emerald-500/[0.08] hover:to-transparent hover:border-emerald-500/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] cursor-default">
+                <span
+                  class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">04</span>
+                <span
+                  class="material-symbols-outlined text-4xl text-emerald-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-500">public</span>
+                <h3 class="text-white font-bold text-base tracking-wide mt-3">Cobertura Global</h3>
+                <p class="text-white/60 text-sm leading-relaxed mt-1.5">Sin importar dónde esté, si hay señal, su código
+                  funciona. Así de simple, en cualquier rincón del mundo.</p>
+              </div>
+            </div>
+
+            <!-- Free Trial Banner -->
+            <div
+              class="w-full max-w-2xl mb-8 p-4 rounded-xl bg-gradient-to-r from-amber-500/[0.06] to-amber-500/[0.02] border border-amber-500/20 flex items-center gap-3">
+              <span class="material-symbols-outlined text-2xl text-amber-400 shrink-0">rocket_launch</span>
+              <p class="text-white/70 text-sm leading-relaxed">
+                <strong class="text-amber-400 font-semibold">30 días gratis, sin tarjeta de crédito.</strong>
+                Active su código QR hoy y pruebe todas las funciones sin compromiso.
+              </p>
+            </div>
+
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <router-link :to="{ name: 'pricing' }"
