@@ -54,7 +54,7 @@ onUnmounted(() => {
               <Transition name="slide-up">
                 <div :key="currentDomainIndex"
                   class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
-                  <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                  <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                   <span class="text-orange-500">.com</span>
                 </div>
               </Transition>
@@ -66,8 +66,9 @@ onUnmounted(() => {
         <div class="hidden lg:flex items-center space-x-2 tracking-tight">
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
-            <span class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
-              link.icon
+            <span
+              class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
+                link.icon
               }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
 
@@ -95,7 +96,8 @@ onUnmounted(() => {
         <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
-          <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
+          <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
+            }}</span>
         </button>
 
       </div>

@@ -60,15 +60,14 @@ onUnmounted(() => {
             <span class="text-[11px] font-black uppercase tracking-[0.2em] text-orange-500/80">SSL</span>
           </div>
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
-            <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
-              class="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <img :src="UbiquemeLogo" alt="Ubiqueme Logo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
             <!-- Desktop: domains side by side -->
             <div class="hidden lg:flex flex-col min-w-[140px] sm:min-w-[200px]">
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
                 <Transition name="slide-up">
                   <div :key="currentDomainIndex"
                     class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[15px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
-                    <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                    <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                     <span class="text-orange-500">.com</span>
                   </div>
                 </Transition>
@@ -129,7 +128,9 @@ onUnmounted(() => {
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
             :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
-            <span class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
+            <span
+              class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
+                link.icon
               }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
 
@@ -165,7 +166,8 @@ onUnmounted(() => {
         <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
-          <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
+          <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
+            }}</span>
         </button>
 
       </div>
@@ -216,7 +218,8 @@ onUnmounted(() => {
       class="bg-[#09090b] border-t border-white/5 w-full flex flex-col justify-center items-center gap-8 px-12 py-8 text-slate-500 relative">
       <div class="flex flex-col items-center space-y-2">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined notranslate text-white/70 text-[1.2rem]" aria-hidden="true">shield</span>
+          <span class="material-symbols-outlined notranslate text-white/70 text-[1.2rem]"
+            aria-hidden="true">shield</span>
           <span class="text-xs uppercase tracking-widest">SSL Secure</span>
         </div>
         <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
@@ -254,12 +257,14 @@ onUnmounted(() => {
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'login' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">login</span> Iniciar sesión
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">login</span> Iniciar
+            sesión
           </RouterLink>
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'register' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">person_add</span> Registrarse
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">person_add</span>
+            Registrarse
           </RouterLink>
         </template>
       </div>
@@ -268,23 +273,27 @@ onUnmounted(() => {
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'privacy' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">privacy_tip</span> Política de
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">privacy_tip</span>
+            Política
+            de
             Privacidad
           </RouterLink>
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'terms' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">gavel</span> Términos de Servicio
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">gavel</span> Términos de
+            Servicio
           </RouterLink>
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'contact' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">contact_mail</span> Contacto
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">contact_mail</span>
+            Contacto
           </RouterLink>
         </div>
         <div class="flex items-center gap-2 text-xs text-slate-500">
           <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">public</span>
-          <span class="font-body">{{ domains[currentDomainIndex] }}</span>
+          <span translate="no" class="font-body">{{ domains[currentDomainIndex] }}</span>
         </div>
       </div>
     </footer>
