@@ -238,6 +238,7 @@ const handleRegister = async () => {
       },
       lastLoginAt: Timestamp.now(),
       createdAt: Timestamp.now(),
+      trialActive: false, trialStartsAt: null, trialEndsAt: null, isTrialUsed: false,
     });
 
     const subId = generateRandomId();
@@ -294,6 +295,7 @@ const handleGoogleAuth = async () => {
         },
         lastLoginAt: Timestamp.now(),
         createdAt: Timestamp.now(),
+        trialActive: false, trialStartsAt: null, trialEndsAt: null, isTrialUsed: false,
       })
 
       const subId = generateRandomId();

@@ -118,6 +118,14 @@ const router = createRouter({
       component: () => import('@/views/public/DeleteAccountView.vue'),
     },
     {
+      path: '/security-test',
+      name: 'security-test',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/SecurityTestView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       meta: {

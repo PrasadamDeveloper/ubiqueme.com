@@ -141,6 +141,19 @@ function isValidLogData(data) {
 
 
 // ===============================================================
+// 📦 COLLECTION GROUP: subscriptions/{subId} (admin only)
+// ===============================================================
+// Route: /admin → collectionGroup query
+// Required because path-wildcard rules (match /users/{userId}/subscriptions/{subId})
+// do not apply to collectionGroup requests — Firestore doesn't resolve {userId}
+// for collectionGroup queries.
+// ===============================================================
+
+match /{path=**}/subscriptions/{subId} {
+  allow read: if isAdmin();
+}
+
+// ===============================================================
 // 📦 COLLECTION: users/{userId}
 // ===============================================================
 // Frontend writes:
@@ -187,9 +200,11 @@ match /users/{userId} {
     allow read: if isOwner(userId) || isAdmin();
 
     // ── CREATE ──
-    // Who can create: only admin (plans are assigned by admins)
-    allow create: if isAdmin() && isValidSubscriptionData(request.resource.data)
-                  && request.resource.data.userId == userId;
+    // Who can create: admin (any plan) or the owner themselves (bronce plan only, at registration)
+    allow create: if (isAdmin() && isValidSubscriptionData(request.resource.data)
+                      && request.resource.data.userId == userId)
+                    || (isOwner(userId) && request.resource.data.planType == 'bronce'
+                      && request.resource.data.status == 'active');
 
     // ── UPDATE ──
     // Who can update: only admin (cancelations, modifications)
