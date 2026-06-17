@@ -121,6 +121,8 @@ const _setQrPublic = async () => {
     const publicQRData: Record<string, unknown> = {
       id: props.id,
       name: props.name,
+      docId: props.id,
+      createdAt: Timestamp.now(),
       status: 'Active',
       isPublic: true,
       isBanned: false,
@@ -137,7 +139,7 @@ const _setQrPublic = async () => {
     batch.update(qrDoc, {
       status: 'Active',
     })
-    batch.set(publicQrRef, publicQRData);
+    batch.set(publicQrRef, publicQRData, { merge: true });
     await batch.commit();
     isLoading.value = false;
     toast.success(`QR establecido como público`);
@@ -796,7 +798,8 @@ const hiddeLogsHandle = () => {
           </button>
           <button v-if="logsLoaded && showLogs" @click="hiddeLogsHandle"
             class="text-xs text-orange-600 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group border-spacing-0.5 border-dotted border-2 border-orange-600 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
-            <span class="material-symbols-outlined notranslate text-[16px]! group-hover:scale-110 transition-transform">hide</span>
+            <span
+              class="material-symbols-outlined notranslate text-[16px]! group-hover:scale-110 transition-transform">hide</span>
             <span class="font-medium">Ocultar registros</span>
             <span v-if="isLogsLoading"
               class="material-symbols-outlined notranslate text-sm animate-spin ml-1">progress_activity</span>

@@ -203,7 +203,7 @@ match /users/{userId} {
     // Who can create: admin (any plan) or the owner themselves (bronce plan only, at registration)
     allow create: if (isAdmin() && isValidSubscriptionData(request.resource.data)
                       && request.resource.data.userId == userId)
-                    || (isOwner(userId) && request.resource.data.planType == 'bronce'
+                    || (isOwner(userId) && request.resource.data.planType in ['bronce', 'trial']
                       && request.resource.data.status == 'active');
 
     // ── UPDATE ──
@@ -280,7 +280,7 @@ match /publicQR/{qrId} {
   // Who can update: the owner (limited fields), or admin (any field)
   allow update: if (isAuth() && resource.data.uid == request.auth.uid
                     && request.resource.data.diff(resource.data).affectedKeys()
-                      .hasOnly(['status', 'name', 'category', 'lastScan', 'totalScans', 'freeShipmentUsed']))
+                      .hasOnly(['status', 'name', 'category', 'lastScan', 'totalScans', 'freeShipmentUsed', 'isPublic']))
                   || isAdmin();
 
   // ── DELETE ──
