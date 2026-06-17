@@ -105,6 +105,8 @@ const handleSubmit = async () => {
         docId: newQRId,
         uid: userId.value,
         tier: activeSub.planType,
+        isPublic: true,
+        category: qrCategory.value,
         createdAt: Timestamp.now(),
         freeShipmentUsed: requestType.value === 'physical'
       })

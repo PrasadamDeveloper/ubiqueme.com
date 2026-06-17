@@ -160,7 +160,7 @@
                     <span v-if="processingBanSubmit"
                       class="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin"></span>
                     <span v-else class="material-symbols-outlined text-[14px]">{{ user.isBanned ? 'how_to_reg' : 'gavel'
-                    }}</span>
+                      }}</span>
                     {{ user.isBanned ? 'Restaurar cuenta' : 'Suspender cuenta' }}
                   </button>
                 </div>
@@ -184,7 +184,7 @@
                       <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px] text-[#ff7900]">workspace_premium</span>
                         <span class="font-black text-[#ff7900] uppercase text-[11px] tracking-wider">{{ sub.planType
-                        }}</span>
+                          }}</span>
                       </div>
                       <span
                         :class="sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : sub.status === 'canceled' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/40 border-white/10'"
@@ -203,7 +203,7 @@
                       <div class="flex justify-between text-[10px] mb-1">
                         <span class="text-white/40">Códigos QR</span>
                         <span class="text-white font-mono font-bold">{{ sub.totalQRsCreated }} / {{ sub.totalQRsAllowed
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full rounded-full transition-all duration-500"
@@ -237,7 +237,7 @@
                         <div class="flex justify-between">
                           <span class="text-white/30">Motivo cancelación</span>
                           <span class="text-red-300/70 font-mono text-right max-w-[130px]">{{ sub.canceledByAdmin.reason
-                            }}</span>
+                          }}</span>
                         </div>
                         <div class="flex justify-between">
                           <span class="text-white/30">Cancelado por</span>
@@ -449,6 +449,7 @@ const handleQRSubmit = async (qrName: string, category: string) => {
         docId: newQRId,
         uid: user.uid,
         tier: subData.planType ?? 'free',
+        isPublic: true,
         createdAt: Timestamp.now()
       });
 

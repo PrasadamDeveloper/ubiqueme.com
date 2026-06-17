@@ -207,8 +207,10 @@ match /users/{userId} {
                       && request.resource.data.status == 'active');
 
     // ── UPDATE ──
-    // Who can update: only admin (cancelations, modifications)
-    allow update: if isAdmin();
+    // Who can update: only admin (cancelations, modifications), or owner (counters only)
+    allow update: if isAdmin()
+      || (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['totalQRsCreated', 'freeShipmentUsed']));
 
     // ── DELETE ──
     // Who can delete: only admin

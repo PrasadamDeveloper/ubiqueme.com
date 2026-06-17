@@ -71,6 +71,8 @@ const handleCreate = async () => {
         docId: newQRId,
         uid: props.userId,
         tier: activeSub.planType,
+        isPublic: true,
+        category: qrCategory.value,
         createdAt: Timestamp.now(),
         freeShipmentUsed: false
       })
@@ -116,8 +118,9 @@ const handleCreate = async () => {
 <template>
   <Transition name="fade">
     <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div class="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#0b0b0d] p-6 shadow-2xl space-y-6 font-google-sans">
-        
+      <div
+        class="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#0b0b0d] p-6 shadow-2xl space-y-6 font-google-sans">
+
         <!-- Background Ornament -->
         <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
           style="background-image: linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px); background-size: 20px 20px;">
@@ -189,6 +192,7 @@ const handleCreate = async () => {
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

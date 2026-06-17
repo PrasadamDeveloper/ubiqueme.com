@@ -119,7 +119,7 @@
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
-                      }}</span>
+                        }}</span>
                     </button>
                   </div>
                 </div>
@@ -342,6 +342,7 @@ const handleGoogleAuth = async () => {
         },
         lastLoginAt: Timestamp.now(),
         createdAt: Timestamp.now(),
+        trialActive: false, trialStartsAt: null, trialEndsAt: null, isTrialUsed: false,
       })
 
       const subId = nanoid(15)
