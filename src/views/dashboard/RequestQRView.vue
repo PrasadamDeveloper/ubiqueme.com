@@ -181,7 +181,7 @@ const handleSubmit = async () => {
         <header class="mb-2">
           <div
             class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/10 text-orange-400 text-[10px] font-black uppercase tracking-[0.2em] mb-3">
-            <span class="material-symbols-outlined text-[14px]">qr_code_2</span>
+            <span class="material-symbols-outlined notranslate text-[14px]">qr_code_2</span>
             Solicitar Envio
           </div>
           <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
@@ -197,7 +197,7 @@ const handleSubmit = async () => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="p-5 rounded-[24px] border border-orange-500/10 bg-orange-500/5 space-y-2">
             <div class="flex items-center gap-2 text-orange-400 font-bold text-xs uppercase tracking-wider">
-              <span class="material-symbols-outlined text-[16px]">info</span>
+              <span class="material-symbols-outlined notranslate text-[16px]">info</span>
               Cupos de Códigos QR
             </div>
             <div class="flex justify-between items-baseline">
@@ -212,7 +212,7 @@ const handleSubmit = async () => {
 
           <div class="p-5 rounded-[24px] border border-blue-500/10 bg-blue-500/5 space-y-2">
             <div class="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wider">
-              <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+              <span class="material-symbols-outlined notranslate text-[16px]">local_shipping</span>
               Recomendación de Envío
             </div>
             <p class="text-[11px] text-white/60 leading-relaxed">
@@ -272,7 +272,7 @@ const handleSubmit = async () => {
                     <p class="text-sm font-bold text-white mb-1">Código Digital Gratis</p>
                     <p class="text-xs text-white/40">Se genera de inmediato en su panel para descarga directa.</p>
                   </div>
-                  <span class="material-symbols-outlined text-2xl"
+                  <span class="material-symbols-outlined notranslate text-2xl"
                     :class="requestType === 'digital' ? 'text-orange-400' : 'text-white/20'">qr_code</span>
                 </div>
               </button>
@@ -285,7 +285,7 @@ const handleSubmit = async () => {
                     <p class="text-sm font-bold text-white mb-1">Etiqueta Física Impresa</p>
                     <p class="text-xs text-white/40">Impresión física premium autoadherible enviada a domicilio.</p>
                   </div>
-                  <span class="material-symbols-outlined text-2xl"
+                  <span class="material-symbols-outlined notranslate text-2xl"
                     :class="requestType === 'physical' ? 'text-orange-400' : 'text-white/20'">local_shipping</span>
                 </div>
               </button>
@@ -311,7 +311,7 @@ const handleSubmit = async () => {
                       <p class="text-sm font-bold text-white mb-1">Diseño Compacto</p>
                       <p class="text-xs text-white/40">Solo incluye el recuadro del código QR.</p>
                     </div>
-                    <span class="material-symbols-outlined text-2xl"
+                    <span class="material-symbols-outlined notranslate text-2xl"
                       :class="qrLayout === 'compact' ? 'text-orange-400' : 'text-white/20'">qr_code_2</span>
                   </div>
                 </button>
@@ -324,7 +324,7 @@ const handleSubmit = async () => {
                       <p class="text-sm font-bold text-white mb-1">Diseño Detallado</p>
                       <p class="text-xs text-white/40">Incluye su nombre, descripción y el QR.</p>
                     </div>
-                    <span class="material-symbols-outlined text-2xl"
+                    <span class="material-symbols-outlined notranslate text-2xl"
                       :class="qrLayout === 'detail' ? 'text-orange-400' : 'text-white/20'">article</span>
                   </div>
                 </button>
@@ -338,7 +338,7 @@ const handleSubmit = async () => {
               <label
                 class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">
                 Posición del Pegamento
-                <span class="material-symbols-outlined text-[14px] text-blue-400"
+                <span class="material-symbols-outlined notranslate text-[14px] text-blue-400"
                   v-tooltip="'Elige de qué lado quieres que el QR tenga adhesivo.'">info</span>
               </label>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -354,7 +354,7 @@ const handleSubmit = async () => {
                         exterior.
                       </p>
                     </div>
-                    <span class="material-symbols-outlined text-3xl transition-transform group-hover:scale-110"
+                    <span class="material-symbols-outlined notranslate text-3xl transition-transform group-hover:scale-110"
                       :class="gluePosition === 'frontal' ? 'text-blue-400' : 'text-white/20'">flip_to_front</span>
                   </div>
                 </button>
@@ -368,7 +368,7 @@ const handleSubmit = async () => {
                       <p class="text-xs text-white/40 leading-relaxed pr-4">Etiqueta tradicional. Ideal para pegar
                         sobre <strong>superficies opacas</strong> (ej. laptops, llaves, maletas).</p>
                     </div>
-                    <span class="material-symbols-outlined text-3xl transition-transform group-hover:scale-110"
+                    <span class="material-symbols-outlined notranslate text-3xl transition-transform group-hover:scale-110"
                       :class="gluePosition === 'trasero' ? 'text-blue-400' : 'text-white/20'">flip_to_back</span>
                   </div>
                 </button>
@@ -450,7 +450,7 @@ const handleSubmit = async () => {
               <div v-if="qrLayout === 'compact' || requestType === 'digital'"
                 class="relative z-10 w-20 h-20 bg-white rounded-lg flex items-center justify-center shadow-2xl transition-all duration-500"
                 :class="{ 'opacity-80 rotate-3': gluePosition === 'frontal' && requestType === 'physical' }">
-                <span class="material-symbols-outlined text-black text-[52px]">qr_code_2</span>
+                <span class="material-symbols-outlined notranslate text-black text-[52px]">qr_code_2</span>
               </div>
 
               <!-- DETAIL -->
@@ -460,7 +460,7 @@ const handleSubmit = async () => {
                 <!-- Card header -->
                 <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
                   <div class="w-5 h-5 rounded bg-orange-500 flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-white" style="font-size:11px">location_on</span>
+                    <span class="material-symbols-outlined notranslate text-white" style="font-size:11px">location_on</span>
                   </div>
                   <div class="flex-1 overflow-hidden">
                     <div class="w-3/4 h-1.5 bg-gray-200 rounded mb-1"></div>
@@ -471,7 +471,7 @@ const handleSubmit = async () => {
                 <div class="p-2">
                   <div
                     class="w-full aspect-square bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                    <span class="material-symbols-outlined text-gray-300" style="font-size:52px">qr_code_2</span>
+                    <span class="material-symbols-outlined notranslate text-gray-300" style="font-size:52px">qr_code_2</span>
                   </div>
                 </div>
               </div>

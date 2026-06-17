@@ -268,7 +268,7 @@ const handleClose = () => {
       <!-- Close button -->
       <button @click="handleClose"
         class="absolute top-4 right-4 z-20 w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all cursor-pointer">
-        <span class="material-symbols-outlined text-[20px]">close</span>
+        <span class="material-symbols-outlined notranslate text-[20px]">close</span>
       </button>
 
       <div class="relative z-10 p-6 md:p-8 max-h-[85vh] overflow-y-auto">
@@ -277,7 +277,7 @@ const handleClose = () => {
         <div class="mb-6">
           <div
             class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/10 text-orange-400 text-[10px] font-black uppercase tracking-[0.2em] mb-3">
-            <span class="material-symbols-outlined text-[14px]">local_shipping</span>
+            <span class="material-symbols-outlined notranslate text-[14px]">local_shipping</span>
             Solicitar Envío Físico
           </div>
           <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight leading-tight">
@@ -295,7 +295,7 @@ const handleClose = () => {
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center"
               :class="hasFreeShipment ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'">
-              <span class="material-symbols-outlined text-[22px]">
+              <span class="material-symbols-outlined notranslate text-[22px]">
                 {{ hasFreeShipment ? 'redeem' : 'payments' }}
               </span>
             </div>
@@ -326,7 +326,7 @@ const handleClose = () => {
         <div class="mb-6 p-4 rounded-2xl border border-white/10 bg-white/[0.02]">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
-              <span class="material-symbols-outlined text-[20px]">workspace_premium</span>
+              <span class="material-symbols-outlined notranslate text-[20px]">workspace_premium</span>
             </div>
             <div>
               <p class="text-sm font-bold text-white capitalize">
@@ -348,7 +348,7 @@ const handleClose = () => {
         <!-- Address Section -->
         <div class="mb-6 p-4 rounded-2xl border border-white/10 bg-white/[0.02]">
           <div class="flex items-center gap-2 mb-4">
-            <span class="material-symbols-outlined text-[16px] text-white/50">location_on</span>
+            <span class="material-symbols-outlined notranslate text-[16px] text-white/50">location_on</span>
             <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Dirección de entrega</label>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
@@ -417,7 +417,7 @@ const handleClose = () => {
                   :class="isSelected(qr.id)
                     ? 'bg-orange-500 border-orange-500'
                     : 'border-white/20 bg-transparent'">
-                  <span v-if="isSelected(qr.id)" class="material-symbols-outlined text-black text-[14px]">check</span>
+                  <span v-if="isSelected(qr.id)" class="material-symbols-outlined notranslate text-black text-[14px]">check</span>
                 </div>
 
                 <!-- QR Info -->
@@ -441,7 +441,7 @@ const handleClose = () => {
 
                 <!-- Expand / collapse arrow -->
                 <span
-                  class="material-symbols-outlined text-white/30 text-[18px] transition-transform duration-200 shrink-0"
+                  class="material-symbols-outlined notranslate text-white/30 text-[18px] transition-transform duration-200 shrink-0"
                   :class="expandedQR === qr.id ? 'rotate-180' : ''">
                   expand_more
                 </span>
@@ -461,7 +461,7 @@ const handleClose = () => {
                         : 'border-white/10 bg-black/30 hover:bg-white/[0.04]'">
                       <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-white">Compacto</p>
-                        <span class="material-symbols-outlined text-[16px]"
+                        <span class="material-symbols-outlined notranslate text-[16px]"
                           :class="getQrCust(qr.id).layout === 'compact' ? 'text-orange-400' : 'text-white/20'">qr_code_2</span>
                       </div>
                       <p class="text-[9px] text-white/40 mt-0.5">Solo el código QR</p>
@@ -472,7 +472,7 @@ const handleClose = () => {
                         : 'border-white/10 bg-black/30 hover:bg-white/[0.04]'">
                       <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-white">Detallado</p>
-                        <span class="material-symbols-outlined text-[16px]"
+                        <span class="material-symbols-outlined notranslate text-[16px]"
                           :class="getQrCust(qr.id).layout === 'detail' ? 'text-orange-400' : 'text-white/20'">article</span>
                       </div>
                       <p class="text-[9px] text-white/40 mt-0.5">Nombre + QR</p>
@@ -508,7 +508,7 @@ const handleClose = () => {
                         : 'border-white/10 bg-black/30 hover:bg-white/[0.04]'">
                       <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-white">Frontal</p>
-                        <span class="material-symbols-outlined text-[16px]"
+                        <span class="material-symbols-outlined notranslate text-[16px]"
                           :class="getQrCust(qr.id).gluePosition === 'frontal' ? 'text-blue-400' : 'text-white/20'">flip_to_front</span>
                       </div>
                       <p class="text-[9px] text-white/40">Para pegar por dentro de cristales</p>
@@ -519,7 +519,7 @@ const handleClose = () => {
                         : 'border-white/10 bg-black/30 hover:bg-white/[0.04]'">
                       <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-white">Trasero</p>
-                        <span class="material-symbols-outlined text-[16px]"
+                        <span class="material-symbols-outlined notranslate text-[16px]"
                           :class="getQrCust(qr.id).gluePosition === 'trasero' ? 'text-blue-400' : 'text-white/20'">flip_to_back</span>
                       </div>
                       <p class="text-[9px] text-white/40">Etiqueta tradicional</p>

@@ -11,7 +11,7 @@ const props = defineProps<{
     class="bg-surface-container-lowest p-10 rounded-4xl border border-orange-950 hover:border-orange-500/30 transition-all group"
   >
     <span
-      class="material-symbols-outlined text-on-surface-variant mb-6 text-3xl group-hover:text-amber-500 transition-colors"
+      class="material-symbols-outlined notranslate text-on-surface-variant mb-6 text-3xl group-hover:text-amber-500 transition-colors"
       :data-icon="props.feature.icon"
     >
       {{ props.feature.icon }}

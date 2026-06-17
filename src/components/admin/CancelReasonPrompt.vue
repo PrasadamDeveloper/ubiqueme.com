@@ -42,7 +42,7 @@ const handleCancel = () => {
           <div class="flex gap-4 items-start">
             <div
               class="w-12 h-12 rounded-2xl border border-red-500/15 bg-red-500/5 flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-red-400">block</span>
+              <span class="material-symbols-outlined notranslate text-red-400">block</span>
             </div>
             <div>
               <h3 class="text-xl font-semibold text-white">Cancelar suscripción</h3>

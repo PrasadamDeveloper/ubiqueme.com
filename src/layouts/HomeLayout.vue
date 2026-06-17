@@ -56,7 +56,7 @@ onUnmounted(() => {
           <!-- SSL Badge (Cloudflare Style) -->
           <div
             class="hidden sm:flex items-center gap-1.5 px-0.5 py-1.5 ml-4 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] hover:bg-orange-500/[0.1] hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] transition-all duration-300">
-            <span class="material-symbols-outlined text-orange-400" style="font-size:18px">shield</span>
+            <span class="material-symbols-outlined notranslate text-orange-400" style="font-size:18px">shield</span>
             <span class="text-[11px] font-black uppercase tracking-[0.2em] text-orange-500/80">SSL</span>
           </div>
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
@@ -129,7 +129,7 @@ onUnmounted(() => {
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
             :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
-            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
+            <span class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
               }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
 
@@ -156,7 +156,7 @@ onUnmounted(() => {
           <template v-else>
             <RouterLink :to="{ name: 'dashboard' }"
               class="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
-              <span class="material-symbols-outlined text-sm">dashboard</span>
+              <span class="material-symbols-outlined notranslate text-sm">dashboard</span>
               Panel
             </RouterLink>
           </template>
@@ -165,7 +165,7 @@ onUnmounted(() => {
         <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
-          <span class="material-symbols-outlined text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
+          <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
         </button>
 
       </div>
@@ -179,7 +179,7 @@ onUnmounted(() => {
             <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
               @click="isMobileMenuOpen = false" :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
               class="flex items-center gap-3 text-white/60 hover:text-orange-500 py-3.5 border-b border-white/[0.03] transition-all duration-300">
-              <span class="material-symbols-outlined text-[22px]">{{ link.icon }}</span>
+              <span class="material-symbols-outlined notranslate text-[22px]">{{ link.icon }}</span>
               <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
             </RouterLink>
           </div>
@@ -200,7 +200,7 @@ onUnmounted(() => {
             <template v-else>
               <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
                 class="w-full flex items-center justify-center bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 hover:text-[#09090b] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
-                <span class="material-symbols-outlined text-sm">dashboard</span>
+                <span class="material-symbols-outlined notranslate text-sm">dashboard</span>
                 Panel de Control
               </RouterLink>
             </template>
@@ -216,7 +216,7 @@ onUnmounted(() => {
       class="bg-[#09090b] border-t border-white/5 w-full flex flex-col justify-center items-center gap-8 px-12 py-8 text-slate-500 relative">
       <div class="flex flex-col items-center space-y-2">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-white/70 text-[1.2rem]" aria-hidden="true">shield</span>
+          <span class="material-symbols-outlined notranslate text-white/70 text-[1.2rem]" aria-hidden="true">shield</span>
           <span class="text-xs uppercase tracking-widest">SSL Secure</span>
         </div>
         <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
@@ -238,28 +238,28 @@ onUnmounted(() => {
         <RouterLink
           class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
           :to="{ name: 'home' }">
-          <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">home</span> Inicio
+          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">home</span> Inicio
         </RouterLink>
         <RouterLink
           class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
           :to="{ name: 'help' }">
-          <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">help</span> Ayuda
+          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">help</span> Ayuda
         </RouterLink>
         <RouterLink
           class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
           :to="{ name: 'pricing' }">
-          <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">attach_money</span> Precios
+          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">attach_money</span> Precios
         </RouterLink>
         <template v-if="!useUserStore().getUserId">
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'login' }">
-            <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">login</span> Iniciar sesión
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">login</span> Iniciar sesión
           </RouterLink>
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'register' }">
-            <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">person_add</span> Registrarse
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">person_add</span> Registrarse
           </RouterLink>
         </template>
       </div>
@@ -268,22 +268,22 @@ onUnmounted(() => {
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'privacy' }">
-            <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">privacy_tip</span> Política de
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">privacy_tip</span> Política de
             Privacidad
           </RouterLink>
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'terms' }">
-            <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">gavel</span> Términos de Servicio
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">gavel</span> Términos de Servicio
           </RouterLink>
           <RouterLink
             class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
             :to="{ name: 'contact' }">
-            <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">contact_mail</span> Contacto
+            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">contact_mail</span> Contacto
           </RouterLink>
         </div>
         <div class="flex items-center gap-2 text-xs text-slate-500">
-          <span class="material-symbols-outlined text-[1rem]" aria-hidden="true">public</span>
+          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">public</span>
           <span class="font-body">{{ domains[currentDomainIndex] }}</span>
         </div>
       </div>

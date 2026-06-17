@@ -36,7 +36,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
               
               <RouterLink to="/" class="group flex items-center justify-center gap-4 w-full h-16 bg-white text-black rounded-2xl font-black text-sm uppercase tracking-widest transition-all hover:bg-primary active:scale-95 shadow-2xl">
                 REDIRECCIONAR AL NODO 0
-                <span class="material-symbols-outlined font-black transition-transform group-hover:-translate-x-1">home</span>
+                <span class="material-symbols-outlined notranslate font-black transition-transform group-hover:-translate-x-1">home</span>
               </RouterLink>
            </div>
         </div>

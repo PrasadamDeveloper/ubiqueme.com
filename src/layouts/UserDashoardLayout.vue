@@ -44,12 +44,12 @@ onUnmounted(() => {
         <div class="flex items-center gap-3">
           <!-- SSL Badge -->
           <div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md border border-white/8 bg-white/[0.03]">
-            <span class="material-symbols-outlined text-white/30" style="font-size:13px">shield</span>
+            <span class="material-symbols-outlined notranslate text-white/30" style="font-size:13px">shield</span>
             <span class="text-[9px] font-black uppercase tracking-[0.15em] text-white/25">SSL</span>
           </div>
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
             <span
-              class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform">location_on</span>
+              class="material-symbols-outlined notranslate text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform">location_on</span>
             <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
               <Transition name="slide-up">
                 <div :key="currentDomainIndex"
@@ -66,7 +66,7 @@ onUnmounted(() => {
         <div class="hidden lg:flex items-center space-x-2 tracking-tight">
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
             class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
-            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{
+            <span class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
               link.icon
               }}</span>
             <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
@@ -82,12 +82,12 @@ onUnmounted(() => {
         <div class="hidden lg:flex items-center space-x-4 z-50">
           <RouterLink v-if="$route.name !== 'dashboard'" :to="{ name: 'dashboard' }"
             class="bg-blue/5 border border-blue/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
-            <span class="material-symbols-outlined text-sm">dashboard</span>
+            <span class="material-symbols-outlined notranslate text-sm">dashboard</span>
             Ir al Dashboard del usuario
           </RouterLink>
           <button @click="handleLogout"
             class="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
-            <span class="material-symbols-outlined text-sm">logout</span>
+            <span class="material-symbols-outlined notranslate text-sm">logout</span>
             Cerrar sesión
           </button>
         </div>
@@ -95,7 +95,7 @@ onUnmounted(() => {
         <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
-          <span class="material-symbols-outlined text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
+          <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
         </button>
 
       </div>
@@ -109,7 +109,7 @@ onUnmounted(() => {
             <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 text-white/60 hover:text-orange-500 py-3.5 border-b border-white/[0.03] transition-all duration-300">
-              <span class="material-symbols-outlined text-[22px]">{{ link.icon }}</span>
+              <span class="material-symbols-outlined notranslate text-[22px]">{{ link.icon }}</span>
               <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
             </RouterLink>
           </div>
@@ -118,7 +118,7 @@ onUnmounted(() => {
           <div class="flex flex-col gap-4 mt-auto">
             <button @click="handleLogout; isMobileMenuOpen = false"
               class="w-full flex items-center justify-center bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 hover:text-[#09090b] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
-              <span class="material-symbols-outlined text-sm">logout</span>
+              <span class="material-symbols-outlined notranslate text-sm">logout</span>
               Salir del Panel
             </button>
           </div>

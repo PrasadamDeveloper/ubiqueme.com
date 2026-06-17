@@ -38,7 +38,7 @@
                       class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
                     <button type="button" @click="showNewPassword = !showNewPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
-                      <span class="material-symbols-outlined text-xl">{{ showNewPassword ? 'visibility' :
+                      <span class="material-symbols-outlined notranslate text-xl">{{ showNewPassword ? 'visibility' :
                         'visibility_off'
                       }}</span>
                     </button>
@@ -54,7 +54,7 @@
                       class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
                     <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
-                      <span class="material-symbols-outlined text-xl">{{ showConfirmPassword ? 'visibility' :
+                      <span class="material-symbols-outlined notranslate text-xl">{{ showConfirmPassword ? 'visibility' :
                         'visibility_off'
                       }}</span>
                     </button>
@@ -85,7 +85,7 @@
           <div v-else-if="status === 'success'" class="flex flex-col items-center mt-6 space-y-6 w-full">
             <div
               class="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined text-green-500 text-3xl">check_circle</span>
+              <span class="material-symbols-outlined notranslate text-green-500 text-3xl">check_circle</span>
             </div>
             <p class="text-white/70 text-base font-medium">
               Su cuenta ha sido verificada exitosamente. Le damos la bienvenida a ubiqueme.com, ahora podra crear y
@@ -94,13 +94,13 @@
             <RouterLink to="/login"
               class="w-full mt-4 h-14 bg-white text-black rounded-2xl font-black text-base transition-all duration-300 hover:bg-orange-500 hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] flex items-center justify-center gap-2">
               <span>Ir al Login</span>
-              <span class="material-symbols-outlined font-black text-xl">arrow_forward</span>
+              <span class="material-symbols-outlined notranslate font-black text-xl">arrow_forward</span>
             </RouterLink>
           </div>
 
           <div v-else-if="status === 'error'" class="flex flex-col items-center mt-6 space-y-6 w-full">
             <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined text-red-500 text-3xl">error</span>
+              <span class="material-symbols-outlined notranslate text-red-500 text-3xl">error</span>
             </div>
             <p class="text-white/70 text-base font-medium">
               El enlace de verificación es inválido o ha expirado. Por favor, solicite uno nuevo.

@@ -79,7 +79,7 @@ const cancelDeletePlan = () => {
 
               <div
                 class="w-16 h-16 rounded-3xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-orange-400 text-[30px]">
+                <span class="material-symbols-outlined notranslate text-orange-400 text-[30px]">
                   workspace_premium
                 </span>
               </div>
@@ -126,7 +126,7 @@ const cancelDeletePlan = () => {
 
                   <div
                     class="h-14 w-14 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined">
+                    <span class="material-symbols-outlined notranslate">
                       calendar_month
                     </span>
                   </div>
@@ -173,7 +173,7 @@ const cancelDeletePlan = () => {
 
                   <div
                     class="h-14 w-14 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined animate-spin animate-duration-8000">
+                    <span class="material-symbols-outlined notranslate animate-spin animate-duration-8000">
                       autorenew
                     </span>
                   </div>
@@ -213,7 +213,7 @@ const cancelDeletePlan = () => {
             <div class="rounded-[28px] border border-orange-500/10 bg-orange-500/[0.03] p-5 flex gap-4">
 
               <div class="h-12 w-12 rounded-2xl bg-orange-500/10 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-orange-400">
+                <span class="material-symbols-outlined notranslate text-orange-400">
                   mail
                 </span>
               </div>
@@ -267,7 +267,7 @@ const cancelDeletePlan = () => {
 
                   </div>
 
-                  <span v-if="selectedPlan === 'bronce'" class="material-symbols-outlined text-orange-400">
+                  <span v-if="selectedPlan === 'bronce'" class="material-symbols-outlined notranslate text-orange-400">
                     check_circle
                   </span>
 
@@ -295,7 +295,7 @@ const cancelDeletePlan = () => {
 
                   </div>
 
-                  <span v-if="selectedPlan === 'plata'" class="material-symbols-outlined text-orange-400">
+                  <span v-if="selectedPlan === 'plata'" class="material-symbols-outlined notranslate text-orange-400">
                     check_circle
                   </span>
 
@@ -323,7 +323,7 @@ const cancelDeletePlan = () => {
 
                   </div>
 
-                  <span v-if="selectedPlan === 'oro'" class="material-symbols-outlined text-orange-400">
+                  <span v-if="selectedPlan === 'oro'" class="material-symbols-outlined notranslate text-orange-400">
                     check_circle
                   </span>
 

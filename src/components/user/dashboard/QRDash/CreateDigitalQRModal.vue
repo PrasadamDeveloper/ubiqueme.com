@@ -129,11 +129,11 @@ const handleCreate = async () => {
         <div class="relative z-10 space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-xl font-black text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-orange-400">qr_code</span>
+              <span class="material-symbols-outlined notranslate text-orange-400">qr_code</span>
               Crear QR Digital
             </h3>
             <button @click="emit('close')" class="text-white/40 hover:text-white transition-colors cursor-pointer">
-              <span class="material-symbols-outlined">close</span>
+              <span class="material-symbols-outlined notranslate">close</span>
             </button>
           </div>
 

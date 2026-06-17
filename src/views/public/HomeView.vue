@@ -66,31 +66,31 @@ const toggleSound = (index: number) => {
         <div class="absolute inset-0 pointer-events-none overflow-hidden z-[5] select-none">
           <!-- QR Icon Top Left -->
           <span
-            class="material-symbols-outlined absolute top-[15%] left-[5%] text-amber-500/20 text-8xl animate-float-slow">qr_code_2</span>
+            class="material-symbols-outlined notranslate absolute top-[15%] left-[5%] text-amber-500/20 text-8xl animate-float-slow">qr_code_2</span>
           <!-- Smartphone Mid Right -->
           <span
-            class="material-symbols-outlined absolute top-[40%] right-[8%] text-red-500/20 text-9xl animate-float-medium">smartphone</span>
+            class="material-symbols-outlined notranslate absolute top-[40%] right-[8%] text-red-500/20 text-9xl animate-float-medium">smartphone</span>
           <!-- Alert Bottom Left -->
           <span
-            class="material-symbols-outlined absolute bottom-[20%] left-[10%] text-amber-500/20 text-7xl animate-float-fast">notifications_active</span>
+            class="material-symbols-outlined notranslate absolute bottom-[20%] left-[10%] text-amber-500/20 text-7xl animate-float-fast">notifications_active</span>
           <!-- Security Top Right -->
           <span
-            class="material-symbols-outlined absolute top-[10%] right-[15%] text-white/10 text-[12rem] animate-float-slow">security</span>
+            class="material-symbols-outlined notranslate absolute top-[10%] right-[15%] text-white/10 text-[12rem] animate-float-slow">security</span>
           <!-- Location Mid Left -->
           <span
-            class="material-symbols-outlined absolute top-[60%] left-[15%] text-amber-500/15 text-6xl animate-float-medium">location_on</span>
+            class="material-symbols-outlined notranslate absolute top-[60%] left-[15%] text-amber-500/15 text-6xl animate-float-medium">location_on</span>
           <!-- Pets Bottom Right -->
           <span
-            class="material-symbols-outlined absolute bottom-[10%] right-[12%] text-red-500/20 text-8xl animate-float-slow">pets</span>
+            class="material-symbols-outlined notranslate absolute bottom-[10%] right-[12%] text-red-500/20 text-8xl animate-float-slow">pets</span>
           <!-- Shopping Bag scattered -->
           <span
-            class="material-symbols-outlined absolute top-[25%] right-[30%] text-white/10 text-5xl animate-float-fast">shopping_bag</span>
+            class="material-symbols-outlined notranslate absolute top-[25%] right-[30%] text-white/10 text-5xl animate-float-fast">shopping_bag</span>
           <!-- Emergency scattered -->
           <span
-            class="material-symbols-outlined absolute bottom-[45%] left-[5%] text-amber-500/20 text-[10rem] animate-float-medium">emergency_share</span>
+            class="material-symbols-outlined notranslate absolute bottom-[45%] left-[5%] text-amber-500/20 text-[10rem] animate-float-medium">emergency_share</span>
           <!-- Shield Mid Right -->
           <span
-            class="material-symbols-outlined absolute top-[75%] right-[25%] text-white/10 text-7xl animate-float-slow">verified_user</span>
+            class="material-symbols-outlined notranslate absolute top-[75%] right-[25%] text-white/10 text-7xl animate-float-slow">verified_user</span>
         </div>
 
 
@@ -113,7 +113,7 @@ const toggleSound = (index: number) => {
             <!-- Subtle Badge -->
             <div
               class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 rounded-full border border-amber-500/20 mb-8 transition-colors hover:bg-amber-500/20 cursor-default">
-              <span class="material-symbols-outlined text-amber-500 text-sm">enhanced_encryption</span>
+              <span class="material-symbols-outlined notranslate text-amber-500 text-sm">enhanced_encryption</span>
               <span class="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500">Privacidad Absoluta</span>
             </div>
 
@@ -147,7 +147,7 @@ const toggleSound = (index: number) => {
                 <span
                   class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">01</span>
                 <span
-                  class="material-symbols-outlined text-4xl text-amber-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all duration-500">notifications_active</span>
+                  class="material-symbols-outlined notranslate text-4xl text-amber-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all duration-500">notifications_active</span>
                 <h3 class="text-white font-bold text-base tracking-wide mt-3">Alertas Inmediatas</h3>
                 <p class="text-white/60 text-sm leading-relaxed mt-1.5">Se activa al instante cuando alguien escanea su
                   código. Usted recibe la notificación al segundo, sin importar dónde se encuentre.</p>
@@ -158,7 +158,7 @@ const toggleSound = (index: number) => {
                 <span
                   class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">02</span>
                 <span
-                  class="material-symbols-outlined text-4xl text-blue-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-500">vpn_key</span>
+                  class="material-symbols-outlined notranslate text-4xl text-blue-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-500">vpn_key</span>
                 <h3 class="text-white font-bold text-base tracking-wide mt-3">Privacidad Total</h3>
                 <p class="text-white/60 text-sm leading-relaxed mt-1.5">Su información personal nunca queda expuesta.
                   Nosotros actuamos como puente seguro entre usted y quien encuentra sus pertenencias.</p>
@@ -168,8 +168,8 @@ const toggleSound = (index: number) => {
                 class="group relative overflow-hidden rounded-xl bg-white/[0.03]  border border-white/[0.08] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-green-500/[0.08] hover:to-transparent hover:border-green-500/40 hover:shadow-[0_0_30px_rgba(34,197,94,0.15)] cursor-default">
                 <span
                   class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">03</span>
-                <span
-                  class="material-symbols-outlined text-4xl text-green-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(34,197,94,0.5)] transition-all duration-500">whatsapp</span>
+                <v-icon name="bi-whatsapp"
+                  class="text-4xl text-green-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(34,197,94,0.5)] transition-all duration-500 notranslate" />
                 <h3 class="text-white font-bold text-base tracking-wide mt-3">Notificaciones por WhatsApp</h3>
                 <p class="text-white/60 text-sm leading-relaxed mt-1.5">En el momento en que alguien escanea su código,
                   usted recibe una alerta directa por WhatsApp. Sin necesidad de revisar correos ni otras apps.</p>
@@ -180,7 +180,7 @@ const toggleSound = (index: number) => {
                 <span
                   class="absolute -top-2 -right-2 text-[5rem] font-black text-white/[0.03] select-none pointer-events-none leading-none">04</span>
                 <span
-                  class="material-symbols-outlined text-4xl text-emerald-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-500">public</span>
+                  class="material-symbols-outlined notranslate text-4xl text-emerald-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-500">public</span>
                 <h3 class="text-white font-bold text-base tracking-wide mt-3">Cobertura Global</h3>
                 <p class="text-white/60 text-sm leading-relaxed mt-1.5">Sin importar dónde esté, si hay señal, su código
                   funciona. Así de simple, en cualquier rincón del mundo.</p>
@@ -190,7 +190,7 @@ const toggleSound = (index: number) => {
             <!-- Free Trial Banner -->
             <div
               class="w-full max-w-2xl mb-8 p-4 rounded-xl bg-gradient-to-r from-amber-500/[0.06] to-amber-500/[0.02] border border-amber-500/20 flex items-center gap-3">
-              <span class="material-symbols-outlined text-2xl text-amber-400 shrink-0">rocket_launch</span>
+              <span class="material-symbols-outlined notranslate text-2xl text-amber-400 shrink-0">rocket_launch</span>
               <p class="text-white/70 text-sm leading-relaxed">
                 <strong class="text-amber-400 font-semibold">30 días gratis, sin tarjeta de crédito.</strong>
                 Active su código QR hoy y pruebe todas las funciones sin compromiso.
@@ -201,7 +201,7 @@ const toggleSound = (index: number) => {
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <router-link :to="{ name: 'pricing' }"
                 class="w-full max-w-xs flex justify-center items-center gap-2 px-6 py-3 bg-slate-700/50 border border-white/20 text-amber-400 font-semibold rounded-lg hover:bg-amber-400 hover:text-black transition-all duration-300">
-                Obtener mi Código QR <span class="material-symbols-outlined">qr_code_scanner</span>
+                Obtener mi Código QR <span class="material-symbols-outlined notranslate">qr_code_scanner</span>
               </router-link>
 
 
@@ -215,17 +215,17 @@ const toggleSound = (index: number) => {
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 mt-20 pt-10 border-t border-white/5 w-full">
               <div class="flex flex-col items-center lg:items-start gap-2 text-white/40 group">
                 <span
-                  class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">notifications_active</span>
+                  class="material-symbols-outlined notranslate text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">notifications_active</span>
                 <span class="text-xs font-black uppercase tracking-widest text-white/60">Alertas Inmediatas</span>
               </div>
               <div class="flex flex-col items-center lg:items-start gap-2 text-white/40 group">
                 <span
-                  class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">vpn_key</span>
+                  class="material-symbols-outlined notranslate text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">vpn_key</span>
                 <span class="text-xs font-black uppercase tracking-widest text-white/60">Cero Datos Expuestos</span>
               </div>
               <div class="flex flex-col items-center lg:items-start gap-2 text-white/40 group">
                 <span
-                  class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">public</span>
+                  class="material-symbols-outlined notranslate text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">public</span>
                 <span class="text-xs font-black uppercase tracking-widest text-white/60">Cobertura Global</span>
               </div>
             </div>
@@ -250,8 +250,8 @@ const toggleSound = (index: number) => {
                 class="absolute bottom-1 right-1 z-30 p-3 gap-2 flex items-center bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-amber-500 transition-all hover:scale-[1.01] cursor-pointer shadow-lg">
                 <span>Haga click para {{ !mutedStates[index] ? 'apagar' :
                   'encender' }} el sonido</span>
-                <span class="material-symbols-outlined text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up'
-                  }}</span>
+                <span class="material-symbols-outlined notranslate text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up'
+                }}</span>
               </button>
             </div>
           </section>

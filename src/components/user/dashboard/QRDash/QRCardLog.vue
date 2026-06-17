@@ -144,7 +144,7 @@ const openDisclaimer = (phone: string) => {
         <div class="log-card border border-white/5 rounded-2xl rounded-tl-sm p-2.5 space-y-2.5 shadow-sm">
 
           <div class="flex gap-2 items-center">
-            <span class="material-symbols-outlined text-green-400">contact_page</span>
+            <span class="material-symbols-outlined notranslate text-green-400">contact_page</span>
             <div class="flex items-center gap-1">
               <small
                 class="text-xs font-google-sans font-bold text-green-100 bg-emerald-900 border border-emerald-700 p-1 rounded-2xl flex items-center gap-0.5">
@@ -155,7 +155,7 @@ const openDisclaimer = (phone: string) => {
               <button v-if="scannerPhone" @click="showPhone = !showPhone"
                 class="p-1 rounded-lg hover:bg-emerald-900/50 transition-colors cursor-pointer border border-emerald-800/50 flex items-center justify-center"
                 :title="showPhone ? 'Ocultar número' : 'Mostrar número completo'">
-                <span class="material-symbols-outlined text-[12px] text-green-400/70">{{ showPhone ? 'visibility_off' :
+                <span class="material-symbols-outlined notranslate text-[12px] text-green-400/70">{{ showPhone ? 'visibility_off' :
                   'visibility' }}</span>
               </button>
             </div>
@@ -184,7 +184,7 @@ const openDisclaimer = (phone: string) => {
             <div
               class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
               <div class="w-8 h-8 rounded-full bg-black/60 border border-white/10 flex items-center justify-center">
-                <span class="material-symbols-outlined text-white/70 text-[16px]">zoom_in</span>
+                <span class="material-symbols-outlined notranslate text-white/70 text-[16px]">zoom_in</span>
               </div>
             </div>
           </div>
@@ -193,7 +193,7 @@ const openDisclaimer = (phone: string) => {
           <div v-if="scanMetrics.lat && scanMetrics.lon" class="space-y-1.5">
             <div class="flex items-center justify-between">
               <p class="text-white/25 text-[7px] font-black uppercase tracking-[0.15em] flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px] text-amber-500/50">location_on</span>
+                <span class="material-symbols-outlined notranslate text-[12px] text-amber-500/50">location_on</span>
                 Ubicación aproximada
               </p>
               <button v-if="!isMapActive" @click="activateMap"
@@ -207,7 +207,7 @@ const openDisclaimer = (phone: string) => {
                 class="absolute inset-0 flex flex-col items-center justify-center gap-1.5 cursor-pointer group/map hover:bg-white/[0.02] transition-colors">
                 <div
                   class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover/map:scale-110 group-hover/map:bg-amber-500/20 transition-all duration-300">
-                  <span class="material-symbols-outlined text-amber-500 text-[16px]">map</span>
+                  <span class="material-symbols-outlined notranslate text-amber-500 text-[16px]">map</span>
                 </div>
                 <span class="text-[8px] text-white/25 font-black uppercase tracking-[0.1em]">Ver mapa interactivo</span>
               </div>

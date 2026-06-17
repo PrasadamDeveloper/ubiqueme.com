@@ -28,7 +28,7 @@
           <div class="relative z-10 space-y-10">
             <div class="flex items-center gap-4 group">
               <span
-                class="material-symbols-outlined text-orange-500 text-6xl group-hover:rotate-12 transition-transform">location_on</span>
+                class="material-symbols-outlined notranslate text-orange-500 text-6xl group-hover:rotate-12 transition-transform">location_on</span>
               <div class="flex flex-col">
                 <h2 class="text-3xl font-black text-[#E8EFFE] tracking-tighter uppercase leading-none">Ubiqueme</h2>
 
@@ -47,11 +47,11 @@
 
             <div class="grid grid-cols-2 gap-4 max-w-sm">
               <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
-                <span class="material-symbols-outlined text-orange-500 mb-2">shield_check</span>
+                <span class="material-symbols-outlined notranslate text-orange-500 mb-2">shield_check</span>
                 <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Protección Total</p>
               </div>
               <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
-                <span class="material-symbols-outlined text-orange-500 mb-2">bolt</span>
+                <span class="material-symbols-outlined notranslate text-orange-500 mb-2">bolt</span>
                 <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Aviso al Instante</p>
               </div>
             </div>
@@ -59,9 +59,9 @@
             <!-- Decorative Floating Icons -->
             <div class="absolute inset-0 pointer-events-none opacity-[0.05] select-none">
               <span
-                class="material-symbols-outlined absolute top-[10%] left-[10%] text-9xl animate-float-slow text-orange-500">security</span>
+                class="material-symbols-outlined notranslate absolute top-[10%] left-[10%] text-9xl animate-float-slow text-orange-500">security</span>
               <span
-                class="material-symbols-outlined absolute bottom-[20%] right-[10%] text-8xl animate-float-medium">qr_code_2</span>
+                class="material-symbols-outlined notranslate absolute bottom-[20%] right-[10%] text-8xl animate-float-medium">qr_code_2</span>
             </div>
           </div>
         </div>
@@ -71,7 +71,7 @@
           <div class="w-full max-w-md space-y-8">
 
             <div class="md:hidden flex flex-col items-center mb-10 text-center">
-              <span class="material-symbols-outlined text-orange-500 text-6xl mb-4">location_on</span>
+              <span class="material-symbols-outlined notranslate text-orange-500 text-6xl mb-4">location_on</span>
               <h2 class="text-2xl font-black text-white uppercase tracking-widest leading-none">Ubiqueme</h2>
               <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Security
                 Protocol</span>
@@ -128,7 +128,7 @@
                 <span v-if="!loading">Registrarme</span>
                 <span v-else>Procesando...</span>
                 <span v-if="!loading"
-                  class="material-symbols-outlined text-lg font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
+                  class="material-symbols-outlined notranslate text-lg font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
                 <span v-else class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
               </button>
             </form>

@@ -50,7 +50,7 @@ const qrCategory = ref('other')
           <div class="flex gap-4">
             <div
               class="w-12 h-12 rounded-2xl border border-orange-500/15 bg-orange-500/5 flex items-center justify-center">
-              <span class="material-symbols-outlined text-orange-400">qr_code_scanner</span>
+              <span class="material-symbols-outlined notranslate text-orange-400">qr_code_scanner</span>
             </div>
             <div>
               <h3 class="text-xl font-semibold text-white">Asignar QR</h3>

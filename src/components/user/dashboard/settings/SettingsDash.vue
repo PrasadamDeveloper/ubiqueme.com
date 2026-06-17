@@ -205,7 +205,7 @@ const goToMYQR = () => {
       <div class="flex items-center gap-3 mb-2">
         <div
           class="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/20 flex items-center justify-center">
-          <span class="material-symbols-outlined text-orange-400 text-lg">settings</span>
+          <span class="material-symbols-outlined notranslate text-orange-400 text-lg">settings</span>
         </div>
         <div>
           <h2 class="text-3xl font-bold text-white">Cuenta y Configuración</h2>
@@ -232,7 +232,7 @@ const goToMYQR = () => {
           <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
             <div
               class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined text-orange-400 text-lg">badge</span>
+              <span class="material-symbols-outlined notranslate text-orange-400 text-lg">badge</span>
             </div>
             <div>
               <h3 class="text-white text-sm font-semibold">Identidad</h3>
@@ -247,7 +247,7 @@ const goToMYQR = () => {
                 completo</label>
               <div
                 class="w-full bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white/60 opacity-60 cursor-not-allowed flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px] text-white/30">person</span>
+                <span class="material-symbols-outlined notranslate text-[16px] text-white/30">person</span>
                 {{ userData?.name || '---' }}
               </div>
             </div>
@@ -258,7 +258,7 @@ const goToMYQR = () => {
                 electrónico</label>
               <div
                 class="w-full bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white/60 opacity-60 cursor-not-allowed flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px] text-white/30">mail</span>
+                <span class="material-symbols-outlined notranslate text-[16px] text-white/30">mail</span>
                 {{ userData?.email || '---' }}
               </div>
             </div>
@@ -274,7 +274,7 @@ const goToMYQR = () => {
                   class="px-4 py-3 rounded-xl text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5">
                   <span v-if="isSavingPhone"
                     class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  <span v-else class="material-symbols-outlined text-[18px]">save</span>
+                  <span v-else class="material-symbols-outlined notranslate text-[18px]">save</span>
                   <span class="hidden sm:inline text-xs font-bold uppercase tracking-wider">Guardar</span>
                 </button>
               </div>
@@ -288,7 +288,7 @@ const goToMYQR = () => {
             <div class="flex items-center gap-3">
               <div
                 class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-                <span class="material-symbols-outlined text-orange-400 text-lg">qr_code_2</span>
+                <span class="material-symbols-outlined notranslate text-orange-400 text-lg">qr_code_2</span>
               </div>
               <div>
                 <h3 class="text-white text-sm font-semibold">Mis Códigos QR</h3>
@@ -316,7 +316,7 @@ const goToMYQR = () => {
                 }}</p>
               <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[12px] text-white/20">visibility</span>
+                  <span class="material-symbols-outlined notranslate text-[12px] text-white/20">visibility</span>
                   <span class="text-[10px] text-white/30 font-mono">{{ qr.scans ?? 0 }} escaneos</span>
                 </div>
 
@@ -325,7 +325,7 @@ const goToMYQR = () => {
           </div>
 
           <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-            <span class="material-symbols-outlined text-4xl text-white/10 mb-3">qr_code_scanner</span>
+            <span class="material-symbols-outlined notranslate text-4xl text-white/10 mb-3">qr_code_scanner</span>
             <p class="text-sm text-white/30">No tienes códigos QR registrados</p>
             <p class="text-[10px] text-white/20 mt-1">Adquiere un plan para comenzar</p>
           </div>
@@ -337,7 +337,7 @@ const goToMYQR = () => {
         <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
           <div
             class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-            <span class="material-symbols-outlined text-orange-400 text-lg">workspace_premium</span>
+            <span class="material-symbols-outlined notranslate text-orange-400 text-lg">workspace_premium</span>
           </div>
           <div>
             <h3 class="text-white text-sm font-semibold">Planes y Suscripción</h3>
@@ -351,7 +351,7 @@ const goToMYQR = () => {
             <div class="flex items-center gap-4">
               <div
                 class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-                <span class="material-symbols-outlined text-orange-400 text-2xl">star</span>
+                <span class="material-symbols-outlined notranslate text-orange-400 text-2xl">star</span>
               </div>
               <div>
                 <div class="flex items-center gap-2">
@@ -383,7 +383,7 @@ const goToMYQR = () => {
         </div>
 
         <div v-else class="flex flex-col items-center justify-center py-10 text-center">
-          <span class="material-symbols-outlined text-4xl text-white/10 mb-3">credit_card_off</span>
+          <span class="material-symbols-outlined notranslate text-4xl text-white/10 mb-3">credit_card_off</span>
           <p class="text-sm text-white/30">No tienes suscripciones activas</p>
           <p class="text-[10px] text-white/20 mt-1">Adquiere un plan para activar tu cuenta</p>
         </div>
@@ -396,7 +396,7 @@ const goToMYQR = () => {
           <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
             <div
               class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined text-orange-400 text-lg">lock</span>
+              <span class="material-symbols-outlined notranslate text-orange-400 text-lg">lock</span>
             </div>
             <div>
               <h3 class="text-white text-sm font-semibold">Seguridad</h3>
@@ -413,7 +413,7 @@ const goToMYQR = () => {
               class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-orange-600/10 border border-orange-500/20 text-orange-400 hover:bg-orange-600/20 hover:border-orange-500/40 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2">
               <span v-if="isResettingPassword"
                 class="w-4 h-4 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin"></span>
-              <span v-else class="material-symbols-outlined text-[16px]">send</span>
+              <span v-else class="material-symbols-outlined notranslate text-[16px]">send</span>
               Enviar enlace
             </button>
           </div>
@@ -422,7 +422,7 @@ const goToMYQR = () => {
         <!-- Danger Zone with Delete Prompt -->
         <div class="bg-[#0f0f11] rounded-2xl p-6 border border-red-500/10">
           <h3 class="text-red-500 text-sm font-semibold mb-4 pb-3 border-b border-red-500/5 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">warning</span>
+            <span class="material-symbols-outlined notranslate text-[18px]">warning</span>
             Zona de Peligro
           </h3>
 
@@ -440,12 +440,12 @@ const goToMYQR = () => {
                   class="w-full max-w-md bg-[#0f0f11] border border-red-500/20 rounded-3xl p-6 shadow-2xl space-y-5">
                   <div class="flex items-center justify-between">
                     <h4 class="text-white font-bold text-sm flex items-center gap-2">
-                      <span class="material-symbols-outlined text-red-500 text-[18px]">delete_forever</span>
+                      <span class="material-symbols-outlined notranslate text-red-500 text-[18px]">delete_forever</span>
                       Cancelar cuenta
                     </h4>
                     <button @click="showDeletePrompt = false"
                       class="text-white/30 hover:text-white transition-colors cursor-pointer">
-                      <span class="material-symbols-outlined text-[20px]">close</span>
+                      <span class="material-symbols-outlined notranslate text-[20px]">close</span>
                     </button>
                   </div>
 
@@ -487,7 +487,7 @@ const goToMYQR = () => {
                       class="flex-1 py-3 rounded-xl bg-red-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer">
                       <span v-if="isDeleting"
                         class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                      <span v-else class="material-symbols-outlined text-[16px]">delete_forever</span>
+                      <span v-else class="material-symbols-outlined notranslate text-[16px]">delete_forever</span>
                       {{ isDeleting ? 'Enviando...' : 'Solicitar cancelación' }}
                     </button>
                   </div>
@@ -500,7 +500,7 @@ const goToMYQR = () => {
             class="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer">
             <span v-if="isCancelling"
               class="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin"></span>
-            <span v-else class="material-symbols-outlined text-[16px]">delete_forever</span>
+            <span v-else class="material-symbols-outlined notranslate text-[16px]">delete_forever</span>
             {{ isCancelling ? 'Procesando...' : 'Cancelar mi cuenta' }}
           </button>
           <p class="text-[9px] text-center text-gray-600 mt-3">

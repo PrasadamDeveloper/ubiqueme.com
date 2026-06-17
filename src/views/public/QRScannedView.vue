@@ -67,15 +67,15 @@ onMounted(() => {
           <!-- Decorative Icons -->
           <div class="absolute inset-0 opacity-[0.05] select-none">
             <span
-              class="material-symbols-outlined absolute top-[15%] left-[5%] text-8xl animate-float-slow">qr_code_2</span>
+              class="material-symbols-outlined notranslate absolute top-[15%] left-[5%] text-8xl animate-float-slow">qr_code_2</span>
             <span
-              class="material-symbols-outlined absolute top-[40%] right-[8%] text-9xl animate-float-medium text-orange-500">security</span>
+              class="material-symbols-outlined notranslate absolute top-[40%] right-[8%] text-9xl animate-float-medium text-orange-500">security</span>
             <span
-              class="material-symbols-outlined absolute bottom-[20%] left-[10%] text-7xl animate-float-fast">notifications_active</span>
+              class="material-symbols-outlined notranslate absolute bottom-[20%] left-[10%] text-7xl animate-float-fast">notifications_active</span>
             <span
-              class="material-symbols-outlined absolute top-[10%] right-[15%] text-[12rem] animate-float-slow opacity-20">fingerprint</span>
+              class="material-symbols-outlined notranslate absolute top-[10%] right-[15%] text-[12rem] animate-float-slow opacity-20">fingerprint</span>
             <span
-              class="material-symbols-outlined absolute bottom-[10%] right-[12%] text-8xl animate-float-slow text-orange-500">verified_user</span>
+              class="material-symbols-outlined notranslate absolute bottom-[10%] right-[12%] text-8xl animate-float-slow text-orange-500">verified_user</span>
           </div>
         </div>
 
@@ -89,7 +89,7 @@ onMounted(() => {
             class="w-full text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div
               class="w-24 h-24 bg-red-500/10 border border-red-500/20 rounded-[2rem] flex items-center justify-center mx-auto">
-              <span class="material-symbols-outlined text-red-500 text-5xl">error</span>
+              <span class="material-symbols-outlined notranslate text-red-500 text-5xl">error</span>
             </div>
             <div class="space-y-2">
               <h1 class="text-3xl font-black italic uppercase tracking-tighter">QR Inexistente</h1>
@@ -122,11 +122,11 @@ onMounted(() => {
                   <div
                     class="w-24 h-24 md:w-32 md:h-32 bg-orange-500 rounded-[2rem] flex items-center justify-center border-4 border-[#09090b] shadow-[0_20px_50px_rgba(249,115,22,0.3)] group-hover:scale-105 transition-transform">
                     <span
-                      class="material-symbols-outlined text-[#09090b] text-4xl md:text-6xl font-black">qr_code_2</span>
+                      class="material-symbols-outlined notranslate text-[#09090b] text-4xl md:text-6xl font-black">qr_code_2</span>
                   </div>
                   <div
                     class="absolute -bottom-2 -right-2 bg-green-500 text-[#09090b] px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 border-2 border-[#09090b] shadow-lg">
-                    <span class="material-symbols-outlined text-[10px] font-black">check</span> Activo
+                    <span class="material-symbols-outlined notranslate text-[10px] font-black">check</span> Activo
                   </div>
                 </div>
                 <div class="flex-grow grid grid-cols-2 gap-x-8 gap-y-4 w-full text-center md:text-left">
@@ -166,7 +166,7 @@ onMounted(() => {
               <div class="relative z-10 space-y-4">
                 <div
                   class="inline-flex items-center gap-1.5 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-500/20">
-                  <span class="material-symbols-outlined text-[12px]">whatsapp</span>
+                  <span class="material-symbols-outlined notranslate text-[12px]">whatsapp</span>
                   Contacto vía WhatsApp
                 </div>
 
@@ -187,7 +187,7 @@ onMounted(() => {
                   </svg>
                   <span>Contactar por WhatsApp</span>
                   <span
-                    class="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                    class="material-symbols-outlined notranslate text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
                 </a>
 
                 <p class="text-white/30 text-[10px] font-medium max-w-xs mx-auto">
@@ -202,7 +202,7 @@ onMounted(() => {
               <div class="flex items-start gap-6">
                 <div
                   class="w-14 h-14 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-orange-500 text-2xl">security</span>
+                  <span class="material-symbols-outlined notranslate text-orange-500 text-2xl">security</span>
                 </div>
                 <div class="space-y-2 pt-1">
                   <h4 class="text-white font-black text-lg">Privacidad de Identidad</h4>
@@ -217,9 +217,9 @@ onMounted(() => {
             <!-- Footer Trust Info -->
             <div class="text-center space-y-6">
               <div class="flex items-center justify-center gap-8 text-white/10">
-                <span class="material-symbols-outlined text-2xl">verified_user</span>
-                <span class="material-symbols-outlined text-2xl">lock</span>
-                <span class="material-symbols-outlined text-2xl">shield_with_heart</span>
+                <span class="material-symbols-outlined notranslate text-2xl">verified_user</span>
+                <span class="material-symbols-outlined notranslate text-2xl">lock</span>
+                <span class="material-symbols-outlined notranslate text-2xl">shield_with_heart</span>
               </div>
               <p class="text-[9px] text-white/20 font-black uppercase tracking-[0.6em]">Secure Protocol Ubiqueme</p>
             </div>
@@ -231,7 +231,7 @@ onMounted(() => {
         <div
           class="fixed bottom-0 left-0 right-0 z-50 bg-amber-500/10 border-t border-amber-500/20 backdrop-blur-md px-4 py-3 text-center">
           <div class="flex items-center justify-center gap-2 text-amber-400 text-xs font-medium">
-            <span class="material-symbols-outlined text-[14px]">info</span>
+            <span class="material-symbols-outlined notranslate text-[14px]">info</span>
             <span>Esta vista está deprecated. El manejo ahora se hace directamente vía WhatsApp.</span>
           </div>
         </div>

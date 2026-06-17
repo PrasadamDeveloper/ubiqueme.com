@@ -115,7 +115,7 @@ const plans = [
       </div>
       <h2 class="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter uppercase">
         Elegir <br /><span class="text-orange-500">Plan</span> <span
-          class="material-symbols-outlined text-5xl md:text-7xl text-amber-500 align-middle">shopping_bag</span>
+          class="material-symbols-outlined notranslate text-5xl md:text-7xl text-amber-500 align-middle">shopping_bag</span>
       </h2>
       <p class="text-white/40 text-lg max-w-xl mx-auto font-medium leading-relaxed">
         Desde protección básica hasta control total de tus bienes. Sin contratos, sin complicaciones.
@@ -169,7 +169,7 @@ const plans = [
             </div>
             <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0"
               :style="{ borderColor: plan.accentBorder, background: plan.accent }">
-              <span class="material-symbols-outlined text-xl" :style="{ color: plan.accentText }">
+              <span class="material-symbols-outlined notranslate text-xl" :style="{ color: plan.accentText }">
                 {{ plan.id === 'bronce' ? 'shield' : plan.id === 'plata' ? 'verified_user' : 'military_tech' }}
               </span>
             </div>
@@ -202,7 +202,7 @@ const plans = [
             <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" :style="feat.included
               ? { background: plan.accentBorder, boxShadow: `0 0 10px ${plan.accentBorder}` }
               : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }">
-              <span class="material-symbols-outlined text-[12px]! font-black"
+              <span class="material-symbols-outlined notranslate text-[12px]! font-black"
                 :style="feat.included ? { color: plan.accentText } : { color: 'rgba(255,255,255,0.15)' }">
                 {{ feat.included ? 'check' : 'remove' }}
               </span>
@@ -230,7 +230,7 @@ const plans = [
     <div
       class="mt-16 max-w-3xl mx-auto p-6 rounded-[2rem] border border-orange-500/10 bg-orange-500/5 text-center space-y-3">
       <div class="inline-flex items-center gap-2 text-orange-400 font-bold text-xs uppercase tracking-wider">
-        <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+        <span class="material-symbols-outlined notranslate text-[16px]">local_shipping</span>
         Información de Envío Física (Sólo México)
       </div>
       <p class="text-sm text-white/80 leading-relaxed">

@@ -167,7 +167,7 @@ const handleSelect = (id: string) => {
                     </div>
                     <div class="w-10 h-10 rounded-xl border flex items-center justify-center shrink-0"
                       :class="plan.featured ? 'border-[#ff7900]/30 bg-[#ff7900]/10' : 'border-white/10 bg-white/[0.04]'">
-                      <span class="material-symbols-outlined text-lg"
+                      <span class="material-symbols-outlined notranslate text-lg"
                         :class="plan.featured ? 'text-[#ff7900]' : 'text-white/50'">
                         {{ plan.id === 'bronce' ? 'shield' : plan.id === 'plata' ? 'verified_user' : 'military_tech' }}
                       </span>
@@ -204,7 +204,7 @@ const handleSelect = (id: string) => {
                           : !feature.included
                             ? { border: '1px solid rgba(255,255,255,0.04)' }
                             : {}">
-                        <span class="material-symbols-outlined text-[10px]! font-black">{{ feature.included ? 'check' :
+                        <span class="material-symbols-outlined notranslate text-[10px]! font-black">{{ feature.included ? 'check' :
                           'remove' }}</span>
                       </div>
                       <span class="text-[13px] font-medium leading-snug font-mono"
@@ -222,7 +222,7 @@ const handleSelect = (id: string) => {
                       : 'bg-white/[0.04] text-white/70 hover:bg-white/[0.08] border border-white/[0.06]'">
                     {{ plan.cta }}
                     <span v-if="plan.featured"
-                      class="material-symbols-outlined text-[14px] font-black">arrow_forward</span>
+                      class="material-symbols-outlined notranslate text-[14px] font-black">arrow_forward</span>
                   </button>
 
                 </div>
@@ -245,7 +245,7 @@ const handleSelect = (id: string) => {
                 <div class="relative z-10 text-center space-y-3">
                   <div
                     class="inline-flex items-center gap-2 text-[#ff7900] font-bold text-[10px] uppercase tracking-wider font-mono">
-                    <span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                    <span class="material-symbols-outlined notranslate text-[14px]">local_shipping</span>
                     Envío Físico — Solo México
                   </div>
                   <p class="text-sm text-white/70 leading-relaxed font-mono">

@@ -145,7 +145,7 @@ const handleSubmit = async () => {
             <div class="mb-14 space-y-6">
               <button @click="router.back()"
                 class="inline-flex items-center gap-1.5 text-white/30 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.25em] cursor-pointer">
-                <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+                <span class="material-symbols-outlined notranslate text-[14px]">arrow_back</span>
                 Volver
               </button>
               <div>
@@ -180,7 +180,7 @@ const handleSubmit = async () => {
                     </p>
                     <h3 class="text-2xl font-black text-white">{{ currentPlan.name }}</h3>
                   </div>
-                  <span class="material-symbols-outlined text-2xl text-[#ff7900]">{{ currentPlan.icon }}</span>
+                  <span class="material-symbols-outlined notranslate text-2xl text-[#ff7900]">{{ currentPlan.icon }}</span>
                 </div>
 
                 <div class="flex items-baseline gap-1 mb-3">
@@ -201,7 +201,7 @@ const handleSubmit = async () => {
                     :class="feature.included ? 'border-white/[0.06] bg-white/[0.02]' : 'border-white/[0.03] bg-white/[0.01] opacity-40'">
                     <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                       :class="feature.included ? 'bg-[#ff7900]/10 text-[#ff7900]' : 'bg-white/[0.03] text-white/20'">
-                      <span class="material-symbols-outlined text-[14px] font-black">{{ feature.included ? 'check' :
+                      <span class="material-symbols-outlined notranslate text-[14px] font-black">{{ feature.included ? 'check' :
                         'close' }}</span>
                     </div>
                     <span class="text-sm font-medium"
@@ -217,7 +217,7 @@ const handleSubmit = async () => {
                     v-for="(f, i) in (selectedPlan === 'plata' ? (plans[0]?.features ?? []) : [...(plans[0]?.features ?? []), ...(plans[1]?.features ?? [])])"
                     :key="(f?.label ?? '') + i"
                     class="px-3 py-1.5 rounded-lg border border-white/[0.04] bg-white/[0.01] flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[10px] text-white/20">add</span>
+                    <span class="material-symbols-outlined notranslate text-[10px] text-white/20">add</span>
                     <span class="text-[10px] text-white/30 font-medium">{{ f?.label }}</span>
                   </div>
                 </div>
@@ -229,7 +229,7 @@ const handleSubmit = async () => {
                   style="background-image: linear-gradient(rgba(255,121,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,121,0,.3) 1px, transparent 1px); background-size: 20px 20px;">
                 </div>
                 <div class="relative z-10 flex items-start gap-3">
-                  <span class="material-symbols-outlined text-[#ff7900] text-xl shrink-0 mt-0.5">local_shipping</span>
+                  <span class="material-symbols-outlined notranslate text-[#ff7900] text-xl shrink-0 mt-0.5">local_shipping</span>
                   <div class="space-y-1">
                     <h4 class="text-xs font-bold text-white uppercase tracking-wider">Envío físico — Solo México</h4>
                     <p class="text-[12px] text-white/50 leading-relaxed">
@@ -285,7 +285,7 @@ const handleSubmit = async () => {
             <div v-else class="max-w-lg mx-auto py-24 text-center space-y-8">
               <div
                 class="w-20 h-20 rounded-2xl bg-[#ff7900]/10 border border-[#ff7900]/20 flex items-center justify-center mx-auto">
-                <span class="material-symbols-outlined text-4xl text-[#ff7900]">check_circle</span>
+                <span class="material-symbols-outlined notranslate text-4xl text-[#ff7900]">check_circle</span>
               </div>
               <div class="space-y-3">
                 <h2 class="text-3xl font-black text-white tracking-tight">Suscripción en proceso</h2>

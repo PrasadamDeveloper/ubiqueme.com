@@ -67,11 +67,11 @@
                     </div>
                     <div class="flex items-center gap-3 text-xs text-white/40 flex-wrap">
                       <span class="flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[12px]">mail</span>
+                        <span class="material-symbols-outlined notranslate text-[12px]">mail</span>
                         {{ user.email }}
                       </span>
                       <span v-if="user.phone" class="flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[12px]">call</span>
+                        <span class="material-symbols-outlined notranslate text-[12px]">call</span>
                         {{ user.phone }}
                       </span>
                     </div>
@@ -86,7 +86,7 @@
                   <div class="text-center">
                     <p class="text-[9px] uppercase tracking-widest text-white/30 font-black mb-1">QRs</p>
                     <div class="flex items-center gap-1 text-white text-sm font-bold">
-                      <span class="material-symbols-outlined text-[14px] text-[#ff7900]">qr_code_2</span>
+                      <span class="material-symbols-outlined notranslate text-[14px] text-[#ff7900]">qr_code_2</span>
                       {{ user.totalQRs }}
                     </div>
                   </div>
@@ -117,7 +117,7 @@
                     :class="user.isBanned
                       ? 'border-red-500/20 bg-red-500/5 text-red-400'
                       : 'border-white/10 bg-white/[0.03] text-white/40'">
-                    <span class="material-symbols-outlined text-[11px]">{{ user.isBanned ? 'block' : 'shield' }}</span>
+                    <span class="material-symbols-outlined notranslate text-[11px]">{{ user.isBanned ? 'block' : 'shield' }}</span>
                     {{ user.isBanned ? 'Suspendido' : 'Normal' }}
                   </div>
                   <div v-if="user.isBanned && user.banReason"
@@ -132,7 +132,7 @@
                     class="h-9 px-3 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                     <span v-if="processingPlanSubmit"
                       class="w-3 h-3 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
-                    <span v-else class="material-symbols-outlined text-[14px]">workspace_premium</span>
+                    <span v-else class="material-symbols-outlined notranslate text-[14px]">workspace_premium</span>
                     Asignar Plan
                   </button>
                   <button v-if="hasActiveTrial(user.uid)" @click="endFreeTrial(user)"
@@ -140,7 +140,7 @@
                     class="h-9 px-3 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                     <span v-if="processingCancelReason"
                       class="w-3 h-3 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
-                    <span v-else class="material-symbols-outlined text-[14px]">cancel</span>
+                    <span v-else class="material-symbols-outlined notranslate text-[14px]">cancel</span>
                     Terminar Trial
                   </button>
                   <button v-else @click="addFreeTrial(user)" v-tooltip="'Agregar prueba gratuita de 30 días'"
@@ -148,7 +148,7 @@
                     class="h-9 px-3 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/60 hover:bg-[#ff7900]/10 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                     <span v-if="processingAddTrial"
                       class="w-3 h-3 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
-                    <span v-else class="material-symbols-outlined text-[14px]">rocket_launch</span>
+                    <span v-else class="material-symbols-outlined notranslate text-[14px]">rocket_launch</span>
                     Asignar Trial
                   </button>
                   <button @click="openBanModal(user)" v-tooltip="'Suspender o reactivar acceso'"
@@ -159,7 +159,7 @@
                       : 'border-red-500/15 bg-red-500/5 text-red-400 hover:bg-red-500/10'">
                     <span v-if="processingBanSubmit"
                       class="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin"></span>
-                    <span v-else class="material-symbols-outlined text-[14px]">{{ user.isBanned ? 'how_to_reg' : 'gavel'
+                    <span v-else class="material-symbols-outlined notranslate text-[14px]">{{ user.isBanned ? 'how_to_reg' : 'gavel'
                       }}</span>
                     {{ user.isBanned ? 'Restaurar cuenta' : 'Suspender cuenta' }}
                   </button>
@@ -171,7 +171,7 @@
               <div v-if="getUserSubscriptions(user.uid).length > 0"
                 class="border-t border-white/[0.04] px-5 py-4 bg-white/[0.01] space-y-3">
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[13px] text-white/25">workspace_premium</span>
+                  <span class="material-symbols-outlined notranslate text-[13px] text-white/25">workspace_premium</span>
                   <span class="text-[9px] font-black uppercase tracking-[0.25em] text-white/25">Suscripciones ({{
                     getUserSubscriptions(user.uid).length }})</span>
                 </div>
@@ -182,7 +182,7 @@
                     <!-- Header: Plan + Status -->
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px] text-[#ff7900]">workspace_premium</span>
+                        <span class="material-symbols-outlined notranslate text-[16px] text-[#ff7900]">workspace_premium</span>
                         <span class="font-black text-[#ff7900] uppercase text-[11px] tracking-wider">{{ sub.planType
                           }}</span>
                       </div>
@@ -264,7 +264,7 @@
                         class="flex-1 h-8 rounded-xl border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                         <span v-if="processingQRSubmit"
                           class="w-3 h-3 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
-                        <span v-else class="material-symbols-outlined text-[12px]">qr_code</span>
+                        <span v-else class="material-symbols-outlined notranslate text-[12px]">qr_code</span>
                         Asignar QR
                       </button>
                       <button v-if="sub.status === 'active'" @click="cancelSubscription(sub.id, sub.userId)"
@@ -272,7 +272,7 @@
                         class="flex-1 h-8 rounded-xl border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                         <span v-if="processingCancelReason"
                           class="w-3 h-3 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
-                        <span v-else class="material-symbols-outlined text-[12px]">block</span>
+                        <span v-else class="material-symbols-outlined notranslate text-[12px]">block</span>
                         Cancelar
                       </button>
                       <button v-if="sub.status === 'canceled'" @click="renewSubscription(sub)"
@@ -280,7 +280,7 @@
                         class="flex-1 h-8 rounded-xl border border-green-500/15 bg-green-500/5 text-green-400/80 hover:bg-green-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                         <span v-if="processingRenew"
                           class="w-3 h-3 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin"></span>
-                        <span v-else class="material-symbols-outlined text-[12px]">refresh</span>
+                        <span v-else class="material-symbols-outlined notranslate text-[12px]">refresh</span>
                         Renovar
                       </button>
                     </div>
@@ -302,7 +302,7 @@
 
           <!-- Empty -->
           <div v-if="!loading && !usersComputed?.length" class="text-center py-20">
-            <span class="material-symbols-outlined text-5xl text-white/10 mb-4">folder_off</span>
+            <span class="material-symbols-outlined notranslate text-5xl text-white/10 mb-4">folder_off</span>
             <p class="text-white/30">No se encontraron usuarios</p>
           </div>
         </div>

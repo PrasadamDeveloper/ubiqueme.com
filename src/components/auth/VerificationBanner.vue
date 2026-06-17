@@ -3,7 +3,7 @@
     class="w-full bg-primary/5 border border-primary/20 rounded-3xl p-8 flex flex-col items-center text-center space-y-5 animate-fade-in">
     <div
       class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 shadow-[0_0_30px_rgba(123,208,255,0.15)]">
-      <span class="material-symbols-outlined text-primary text-3xl">mark_email_unread</span>
+      <span class="material-symbols-outlined notranslate text-primary text-3xl">mark_email_unread</span>
     </div>
 
     <div class="space-y-2">
@@ -25,7 +25,7 @@
         <span v-if="loading"
           class="w-3.5 h-3.5 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></span>
         <!-- Email icon when idle -->
-        <span v-else class="material-symbols-outlined text-[16px]">forward_to_inbox</span>
+        <span v-else class="material-symbols-outlined notranslate text-[16px]">forward_to_inbox</span>
 
         <span v-if="loading">Enviando...</span>
         <span v-else-if="cooldown > 0">Reenviar en {{ cooldown }}s</span>

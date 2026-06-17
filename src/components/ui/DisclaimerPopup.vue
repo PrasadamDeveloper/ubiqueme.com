@@ -59,14 +59,14 @@ const goToTerms = () => {
               <!-- Close button -->
               <button @click="close"
                 class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+                <span class="material-symbols-outlined notranslate text-[18px]">close</span>
               </button>
 
               <!-- Icon Row: Shield + Warning -->
               <div class="flex items-center justify-center gap-4 pt-2">
                 <div
                   class="w-14 h-14 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-amber-500 text-[28px]">warning_amber</span>
+                  <span class="material-symbols-outlined notranslate text-amber-500 text-[28px]">warning_amber</span>
                 </div>
                 <div
                   class="w-14 h-14 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
@@ -97,7 +97,7 @@ const goToTerms = () => {
               <!-- Divider -->
               <div class="flex items-center gap-3">
                 <div class="flex-1 h-px bg-white/5"></div>
-                <span class="material-symbols-outlined text-white/10 text-[14px]">gpp_maybe</span>
+                <span class="material-symbols-outlined notranslate text-white/10 text-[14px]">gpp_maybe</span>
                 <div class="flex-1 h-px bg-white/5"></div>
               </div>
 

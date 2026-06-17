@@ -35,7 +35,7 @@ const submitForm = () => {
       <div class="flex items-center gap-3 mb-2">
         <div
           class="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/20 flex items-center justify-center">
-          <span class="material-symbols-outlined text-orange-400 text-lg">support_agent</span>
+          <span class="material-symbols-outlined notranslate text-orange-400 text-lg">support_agent</span>
         </div>
         <div>
           <h2 class="text-3xl font-bold text-white">Soporte técnico</h2>
@@ -49,7 +49,7 @@ const submitForm = () => {
       <div class="flex items-start gap-4">
         <div
           class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-orange-400 text-lg">handshake</span>
+          <span class="material-symbols-outlined notranslate text-orange-400 text-lg">handshake</span>
         </div>
         <div>
           <p class="text-white text-sm font-medium leading-relaxed">
@@ -69,7 +69,7 @@ const submitForm = () => {
       <div v-if="showSuccess" class="absolute inset-0 bg-[#161618] flex flex-col items-center justify-center z-10">
         <div
           class="w-16 h-16 bg-orange-500/20 text-orange-400 border border-orange-500/20 rounded-full flex items-center justify-center mb-4">
-          <span class="material-symbols-outlined text-3xl">check</span>
+          <span class="material-symbols-outlined notranslate text-3xl">check</span>
         </div>
         <h3 class="text-white text-lg font-semibold mb-1">¡Mensaje enviado exitosamente!</h3>
         <p class="text-gray-500 text-sm">Nuestro equipo le responderá a su correo en breve.</p>
@@ -89,7 +89,7 @@ const submitForm = () => {
             </select>
             <!-- Dropdown Icon -->
             <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-white/30">
-              <span class="material-symbols-outlined text-[18px]">expand_more</span>
+              <span class="material-symbols-outlined notranslate text-[18px]">expand_more</span>
             </div>
           </div>
         </div>
@@ -105,7 +105,7 @@ const submitForm = () => {
           class="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-orange-600 hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-all active:scale-[0.98] flex items-center justify-center gap-2">
           <span v-if="isSending"
             class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          <span v-else class="material-symbols-outlined text-[18px]">send</span>
+          <span v-else class="material-symbols-outlined notranslate text-[18px]">send</span>
           {{ isSending ? 'Enviando mensaje...' : 'Enviar mensaje al soporte' }}
         </button>
       </form>
@@ -113,7 +113,7 @@ const submitForm = () => {
 
     <!-- Direct email -->
     <div class="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500 text-center">
-      <span class="material-symbols-outlined text-[14px] text-white/20">mail</span>
+      <span class="material-symbols-outlined notranslate text-[14px] text-white/20">mail</span>
       También puede escribirnos directamente a:
       <a href="mailto:soporte@ubiqueme.com"
         class="text-orange-400 hover:text-orange-300 transition-colors font-medium">soporte@ubiqueme.com</a>

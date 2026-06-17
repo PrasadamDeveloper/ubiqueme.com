@@ -73,7 +73,7 @@ const formatDate = (timestamp: any) => {
         <!-- Background Decoration -->
         <div
           class="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-opacity duration-500 rotate-12">
-          <span class="material-symbols-outlined text-[200px]">fingerprint</span>
+          <span class="material-symbols-outlined notranslate text-[200px]">fingerprint</span>
         </div>
 
         <div>
@@ -102,13 +102,13 @@ const formatDate = (timestamp: any) => {
         <div class="mt-10 pt-6 border-t border-white/10 flex gap-12 relative z-10">
           <div>
             <p class="text-[9px] text-white/30 font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[12px]">calendar_month</span> Miembro Desde
+              <span class="material-symbols-outlined notranslate text-[12px]">calendar_month</span> Miembro Desde
             </p>
             <p class="text-sm text-white/70">{{ formatDate(userData.createdAt) }}</p>
           </div>
           <div>
             <p class="text-[9px] text-white/30 font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[12px]">history</span> Último Acceso
+              <span class="material-symbols-outlined notranslate text-[12px]">history</span> Último Acceso
             </p>
             <p class="text-sm text-white/70">{{ formatDate(userData.lastLoginAt) }}</p>
           </div>
@@ -123,7 +123,7 @@ const formatDate = (timestamp: any) => {
           <div
             class="absolute inset-0 bg-gradient-to-t from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
           </div>
-          <span class="material-symbols-outlined text-amber-500 text-4xl mb-3 relative z-10">qr_code_2</span>
+          <span class="material-symbols-outlined notranslate text-amber-500 text-4xl mb-3 relative z-10">qr_code_2</span>
           <p class="text-6xl font-black text-white tracking-tighter relative z-10">{{ userData.totalQRs || 0 }}</p>
           <p class="text-[10px] text-amber-500 font-black uppercase tracking-widest mt-2 relative z-10">QRs Registrados
           </p>
@@ -135,12 +135,12 @@ const formatDate = (timestamp: any) => {
           <h3 class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-4">Suscripción</h3>
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-white text-3xl">workspace_premium</span>
+              <span class="material-symbols-outlined notranslate text-white text-3xl">workspace_premium</span>
               <p class="text-3xl font-black tracking-tight capitalize text-white">{{ userData.plan || 'N/A' }}</p>
             </div>
             <div
               class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg w-fit mt-2">
-              <span class="material-symbols-outlined text-[12px] text-white/60">credit_card</span>
+              <span class="material-symbols-outlined notranslate text-[12px] text-white/60">credit_card</span>
               <p class="text-[9px] text-white/60 uppercase tracking-widest font-black">{{ userData.subscriptionStatus ||
                 'Unknown' }}</p>
             </div>

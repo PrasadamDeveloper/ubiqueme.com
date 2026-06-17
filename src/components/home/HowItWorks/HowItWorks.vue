@@ -5,7 +5,7 @@
     <div class="text-center mb-20" data-aos="fade-up">
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
         Protección en <span class="text-orange-500">3 simples pasos.</span> <span
-          class="material-symbols-outlined text-3xl sm:text-4xl text-amber-500 align-middle">verified_user</span>
+          class="material-symbols-outlined notranslate text-3xl sm:text-4xl text-amber-500 align-middle">verified_user</span>
       </h2>
       <p class="text-white/50 text-base sm:text-lg font-medium max-w-2xl mx-auto">
         Nuestro sistema actúa como un puente anónimo entre quien encuentra su pertenencia y usted, sin intermediarios
@@ -25,7 +25,7 @@
         <div
           class="w-20 h-20 bg-[#070b14] border border-white/10 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300 group-hover:border-primary/50 group-hover:bg-primary/5 shadow-2xl">
           <span
-            class="material-symbols-outlined text-4xl text-white/80 group-hover:text-primary transition-colors">qr_code_2</span>
+            class="material-symbols-outlined notranslate text-4xl text-white/80 group-hover:text-primary transition-colors">qr_code_2</span>
         </div>
         <div
           class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/5 text-white/40 text-[10px] font-black mb-4">
@@ -42,7 +42,7 @@
         <div
           class="w-20 h-20 bg-[#070b14] border border-white/10 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300 group-hover:border-primary/50 group-hover:bg-primary/5 shadow-2xl">
           <span
-            class="material-symbols-outlined text-4xl text-white/80 group-hover:text-primary transition-colors">document_scanner</span>
+            class="material-symbols-outlined notranslate text-4xl text-white/80 group-hover:text-primary transition-colors">document_scanner</span>
         </div>
         <div
           class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/5 text-white/40 text-[10px] font-black mb-4">
@@ -59,7 +59,7 @@
         <div
           class="w-20 h-20 bg-[#070b14] border border-white/10 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300 group-hover:border-primary/50 group-hover:bg-primary/5 shadow-2xl">
           <span
-            class="material-symbols-outlined text-4xl text-white/80 group-hover:text-primary transition-colors">mark_email_unread</span>
+            class="material-symbols-outlined notranslate text-4xl text-white/80 group-hover:text-primary transition-colors">mark_email_unread</span>
         </div>
         <div
           class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/5 text-white/40 text-[10px] font-black mb-4">
@@ -77,7 +77,7 @@
       <div
         class="bg-slate-800/90 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
         <span
-          class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">gpp_good</span>
+          class="material-symbols-outlined notranslate text-primary text-2xl group-hover:scale-110 transition-transform">gpp_good</span>
         <div>
           <h4 class="text-white font-bold text-sm mb-2">Sin Datos Expuestos</h4>
           <p class="text-white/40 text-xs font-medium leading-relaxed">
@@ -90,7 +90,7 @@
       <div
         class="bg-slate-800/90 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
         <span
-          class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">bolt</span>
+          class="material-symbols-outlined notranslate text-primary text-2xl group-hover:scale-110 transition-transform">bolt</span>
         <div>
           <h4 class="text-white font-bold text-sm mb-2">Sin Aplicaciones</h4>
           <p class="text-white/40 text-xs font-medium leading-relaxed">
@@ -103,7 +103,7 @@
       <div
         class="bg-slate-800/90 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
         <span
-          class="material-symbols-outlined text-amber-500 text-2xl group-hover:scale-110 transition-transform">chat</span>
+          class="material-symbols-outlined notranslate text-amber-500 text-2xl group-hover:scale-110 transition-transform">chat</span>
         <div>
           <h4 class="text-white font-bold text-sm mb-2">Contacto Inteligente</h4>
           <p class="text-white/40 text-xs font-medium leading-relaxed">
@@ -116,7 +116,7 @@
       <div
         class="bg-slate-800/90 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
         <span
-          class="material-symbols-outlined text-amber-500 text-2xl group-hover:scale-110 transition-transform">public</span>
+          class="material-symbols-outlined notranslate text-amber-500 text-2xl group-hover:scale-110 transition-transform">public</span>
         <div>
           <h4 class="text-white font-bold text-sm mb-2">Alcance Global</h4>
           <p class="text-white/40 text-xs font-medium leading-relaxed">

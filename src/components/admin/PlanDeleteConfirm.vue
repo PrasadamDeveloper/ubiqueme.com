@@ -12,7 +12,7 @@
           <div
             class="w-16 h-16 rounded-2xl border border-red-500/20 bg-red-500/10 flex items-center justify-center flex-shrink-0">
 
-            <span class="material-symbols-outlined text-red-400 text-[30px]">
+            <span class="material-symbols-outlined notranslate text-red-400 text-[30px]">
 
               warning
 
@@ -47,7 +47,7 @@
 
           <div class="flex gap-4">
 
-            <span class="material-symbols-outlined text-red-400 mt-1">
+            <span class="material-symbols-outlined notranslate text-red-400 mt-1">
 
               cancel
 

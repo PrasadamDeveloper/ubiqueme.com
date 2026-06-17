@@ -87,7 +87,7 @@ const autoComplete = () => {
           <div class="relative max-w-4xl mx-auto px-6 pt-24 pb-16 text-center">
             <div
               class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/10 text-orange-400 text-[10px] font-black uppercase tracking-[0.2em] mb-5">
-              <span class="material-symbols-outlined text-[14px]">contact_mail</span>
+              <span class="material-symbols-outlined notranslate text-[14px]">contact_mail</span>
               Contacto
             </div>
             <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
@@ -106,7 +106,7 @@ const autoComplete = () => {
             class="p-8 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 text-center max-w-md mx-auto">
             <div
               class="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-4">
-              <span class="material-symbols-outlined text-[32px]">check</span>
+              <span class="material-symbols-outlined notranslate text-[32px]">check</span>
             </div>
             <h2 class="text-xl font-black text-white mb-2">Mensaje enviado</h2>
             <p class="text-white/50 text-sm leading-relaxed">
@@ -126,7 +126,7 @@ const autoComplete = () => {
               <div class="p-4 rounded-2xl border border-white/10 bg-white/[0.02] text-center">
                 <div
                   class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto mb-3">
-                  <span class="material-symbols-outlined text-[20px]">mail</span>
+                  <span class="material-symbols-outlined notranslate text-[20px]">mail</span>
                 </div>
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Correo</p>
                 <p class="text-sm text-white font-medium">soporte@ubiqueme.com</p>
@@ -134,7 +134,7 @@ const autoComplete = () => {
               <div class="p-4 rounded-2xl border border-white/10 bg-white/[0.02] text-center">
                 <div
                   class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto mb-3">
-                  <span class="material-symbols-outlined text-[20px]">schedule</span>
+                  <span class="material-symbols-outlined notranslate text-[20px]">schedule</span>
                 </div>
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Horario</p>
                 <p class="text-sm text-white font-medium">Lun - Vie, 9:00 - 18:00</p>
@@ -142,7 +142,7 @@ const autoComplete = () => {
               <div class="p-4 rounded-2xl border border-white/10 bg-white/[0.02] text-center">
                 <div
                   class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto mb-3">
-                  <span class="material-symbols-outlined text-[20px]">bolt</span>
+                  <span class="material-symbols-outlined notranslate text-[20px]">bolt</span>
                 </div>
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Respuesta</p>
                 <p class="text-sm text-white font-medium">24 - 48 hrs hábiles</p>

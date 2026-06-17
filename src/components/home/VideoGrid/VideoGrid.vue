@@ -4,7 +4,7 @@
     <!-- Section Header -->
     <div class="text-center mb-16" data-aos="fade-up">
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-        Ubiqueme en acción <span class="material-symbols-outlined text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
+        Ubiqueme en acción <span class="material-symbols-outlined notranslate text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
       </h2>
       <p class="text-white/50 text-base sm:text-lg font-medium max-w-2xl mx-auto">
         Descubra cómo nuestra tecnología protege lo que más valora.
@@ -45,7 +45,7 @@
           <!-- Sound Activation Button -->
           <button @click="activateSound(i)"
             class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-[#09090b] hover:bg-orange-500 border border-orange-500/30 hover:border-transparent text-white/90 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 z-30 flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_25px_rgba(249,115,22,0.3)]">
-            <span class="material-symbols-outlined text-[14px]">{{ mutedStates[i] ? 'volume_off' : 'volume_up' }}</span>
+            <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' : 'volume_up' }}</span>
             {{ mutedStates[i] ? 'Haga click para activar el sonido' : 'Haga click para silenciar' }}
           </button>
         </div>

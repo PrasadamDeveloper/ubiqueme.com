@@ -20,7 +20,7 @@
             <div class="text-center mb-16 space-y-5">
               <div
                 class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ff7900]/10 rounded-full border border-[#ff7900]/20">
-                <span class="material-symbols-outlined text-[14px] text-[#ff7900]">help</span>
+                <span class="material-symbols-outlined notranslate text-[14px] text-[#ff7900]">help</span>
                 <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff7900]">Soporte y Ayuda</span>
               </div>
               <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight leading-[0.9]">
@@ -41,7 +41,7 @@
                   <h3 class="text-base md:text-lg font-bold text-white tracking-tight pr-6">
                     {{ faq.question }}
                   </h3>
-                  <span class="material-symbols-outlined text-white/30 transition-transform duration-300 shrink-0"
+                  <span class="material-symbols-outlined notranslate text-white/30 transition-transform duration-300 shrink-0"
                     :class="{ 'rotate-180 text-[#ff7900]': activeIndex === index }">
                     keyboard_arrow_down
                   </span>
@@ -70,7 +70,7 @@
                   resolver problemas específicos.</p>
                 <RouterLink :to="{ name: 'contact' }"
                   class="inline-flex h-12 items-center justify-center gap-2 bg-[#ff7900] text-black px-8 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-[#ff7900]/90 shadow-lg shadow-[#ff7900]/15 active:scale-[0.97]">
-                  <span class="material-symbols-outlined text-[16px]">mail</span>
+                  <span class="material-symbols-outlined notranslate text-[16px]">mail</span>
                   <span>Contactar Soporte</span>
                 </RouterLink>
               </div>

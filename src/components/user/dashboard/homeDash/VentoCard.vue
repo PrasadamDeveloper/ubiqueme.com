@@ -35,7 +35,7 @@ const props = defineProps({
 
         <div
           class="relative w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-          <span class="material-symbols-outlined text-amber-500 text-2xl group-hover:scale-110 transition-transform">{{
+          <span class="material-symbols-outlined notranslate text-amber-500 text-2xl group-hover:scale-110 transition-transform">{{
             icon }}</span>
         </div>
       </div>
@@ -48,7 +48,7 @@ const props = defineProps({
       <!-- Trend Footer -->
       <div class="flex items-center gap-2 pt-4 border-t border-white/5 mt-2">
         <div class="flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/20">
-          <span class="material-symbols-outlined text-[10px] text-amber-500 font-black">{{ trendIcon }}</span>
+          <span class="material-symbols-outlined notranslate text-[10px] text-amber-500 font-black">{{ trendIcon }}</span>
         </div>
         <span class="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">{{ trendText }}</span>
       </div>
@@ -57,7 +57,7 @@ const props = defineProps({
     <!-- Technical Decoration Overlay -->
     <div
       class="absolute right-4 bottom-4 opacity-[0.02] group-hover:opacity-[0.05] group-hover:scale-110 transition-all duration-700 pointer-events-none">
-      <span class="material-symbols-outlined text-[120px] font-black">{{ icon }}</span>
+      <span class="material-symbols-outlined notranslate text-[120px] font-black">{{ icon }}</span>
     </div>
   </div>
 </template>

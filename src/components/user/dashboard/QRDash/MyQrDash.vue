@@ -18,7 +18,7 @@
         class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-8 animate-fade-up">
         <div>
           <p class="text-[#ebf2ff] font-poppins font-medium  text-2xl mb-2">Mis Códigos QR <span
-              class="material-symbols-outlined text-5xl md:text-6xl text-amber-50 align-middle">qr_code</span>
+              class="material-symbols-outlined notranslate text-5xl md:text-6xl text-amber-50 align-middle">qr_code</span>
           </p>
 
           <div class="flex items-center gap-2">
@@ -56,12 +56,12 @@
       <!-- Search Bar -->
       <div class="relative animate-fade-up">
         <span
-          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-xl pointer-events-none">search</span>
+          class="material-symbols-outlined notranslate absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-xl pointer-events-none">search</span>
         <input v-model="searchQuery" type="text" placeholder="Buscar QR por nombre, categoría o ID..."
           class="w-full bg-[#1f1f2367] border border-white/5 rounded-xl pl-10 pr-10 py-3 text-sm text-white/80 placeholder:text-white/30 focus:outline-none focus:border-orange-500/30 focus:ring-1 focus:ring-orange-500/10 transition-all" />
         <button v-if="searchQuery" @click="searchQuery = ''"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors cursor-pointer">
-          <span class="material-symbols-outlined text-lg">close</span>
+          <span class="material-symbols-outlined notranslate text-lg">close</span>
         </button>
       </div>
 
@@ -186,7 +186,7 @@
          text-white text-sm font-medium
          px-4 py-2 rounded-xl
          transition-all duration-150 cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">add</span>
+                    <span class="material-symbols-outlined notranslate text-sm">add</span>
                     Asignar QR
                     <span class="ml-1.5 text-white/60 text-[10px]">
                       ({{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }} restantes)
@@ -222,19 +222,19 @@
           <!-- Empty State — no subscriptions at all -->
           <div v-else-if="groupedQRs.length === 0" key="empty-all"
             class="flex flex-col items-center justify-center py-20 text-center w-full">
-            <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">account_balance_wallet</span>
+            <span class="material-symbols-outlined notranslate text-6xl text-slate-500 mb-4">account_balance_wallet</span>
             <h3 class="text-xl font-semibold text-white mb-2">No tiene suscripciones activas</h3>
             <p class="text-slate-400 mb-6">Adquiera un plan para poder registrar códigos QR.</p>
             <RouterLink to="/pricing"
               class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-500 text-black font-black text-xs uppercase tracking-widest hover:bg-orange-400 transition-all">
-              <span class="material-symbols-outlined text-sm">workspace_premium</span>
+              <span class="material-symbols-outlined notranslate text-sm">workspace_premium</span>
               Ver Planes
             </RouterLink>
           </div>
 
           <!-- Empty State — filtro sin resultados -->
           <div v-else key="empty-filter" class="flex flex-col items-center justify-center py-20 text-center w-full">
-            <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">search_off</span>
+            <span class="material-symbols-outlined notranslate text-6xl text-slate-500 mb-4">search_off</span>
             <h3 class="text-xl font-semibold text-white mb-2 capitalize">No hay planes {{ plansView }}</h3>
             <p class="text-slate-400 mb-6">No se encontraron suscripciones con este estado.</p>
           </div>

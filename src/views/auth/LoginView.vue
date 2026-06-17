@@ -28,7 +28,7 @@
           <div class="relative z-10 space-y-8">
             <div class="flex items-center gap-4 group">
               <span
-                class="material-symbols-outlined text-orange-500 text-6xl group-hover:rotate-12 transition-transform">location_on</span>
+                class="material-symbols-outlined notranslate text-orange-500 text-6xl group-hover:rotate-12 transition-transform">location_on</span>
               <div class="flex flex-col">
                 <h2 class="text-3xl font-black text-white tracking-tighter uppercase leading-none">Ubiqueme</h2>
                 <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em]">Security
@@ -54,13 +54,13 @@
 
               <div class="flex gap-4 items-center pt-4">
                 <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-orange-500/50">key</span>
+                  <span class="material-symbols-outlined notranslate text-orange-500/50">key</span>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-orange-500/50">shield</span>
+                  <span class="material-symbols-outlined notranslate text-orange-500/50">shield</span>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-orange-500/50">fingerprint</span>
+                  <span class="material-symbols-outlined notranslate text-orange-500/50">fingerprint</span>
                 </div>
               </div>
             </div>
@@ -68,9 +68,9 @@
             <!-- Decorative Floating Icons -->
             <div class="absolute inset-0 pointer-events-none opacity-[0.05] select-none">
               <span
-                class="material-symbols-outlined absolute top-[10%] left-[10%] text-9xl animate-float-slow text-orange-500">security</span>
+                class="material-symbols-outlined notranslate absolute top-[10%] left-[10%] text-9xl animate-float-slow text-orange-500">security</span>
               <span
-                class="material-symbols-outlined absolute bottom-[20%] right-[10%] text-8xl animate-float-medium">qr_code_2</span>
+                class="material-symbols-outlined notranslate absolute bottom-[20%] right-[10%] text-8xl animate-float-medium">qr_code_2</span>
             </div>
           </div>
 
@@ -82,7 +82,7 @@
           <div class="w-full max-w-sm space-y-10">
 
             <div class="md:hidden flex flex-col items-center mb-10 text-center">
-              <span class="material-symbols-outlined text-orange-500 text-6xl mb-4">location_on</span>
+              <span class="material-symbols-outlined notranslate text-orange-500 text-6xl mb-4">location_on</span>
               <h2 class="text-2xl font-black text-white uppercase tracking-widest leading-none">Ubiqueme</h2>
               <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Security
                 Protocol</span>
@@ -118,7 +118,7 @@
                       class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
-                      <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
+                      <span class="material-symbols-outlined notranslate text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
                         }}</span>
                     </button>
                   </div>
@@ -129,7 +129,7 @@
                   <span v-if="!loading">Iniciar Sesión</span>
                   <span v-else>Autenticando...</span>
                   <span v-if="!loading"
-                    class="material-symbols-outlined text-lg font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
+                    class="material-symbols-outlined notranslate text-lg font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
                   <span v-else class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
                 </button>
               </form>
@@ -175,7 +175,7 @@
                 @resend="resendVerification" />
               <button @click="emailVerified = true"
                 class="w-full mt-6 h-14 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-sm transition-all duration-300 hover:bg-white/10 flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                <span class="material-symbols-outlined notranslate text-lg">arrow_back</span>
                 <span>Volver al Login</span>
               </button>
             </template>

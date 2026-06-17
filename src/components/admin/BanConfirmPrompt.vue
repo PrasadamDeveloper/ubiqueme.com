@@ -67,7 +67,7 @@ const formatDate = (timestamp: any) => {
               ? 'border-red-500/20 bg-red-500/10 text-red-400'
               : 'border-green-500/20 bg-green-500/10 text-green-400'">
 
-              <span class="material-symbols-outlined text-[36px]">
+              <span class="material-symbols-outlined notranslate text-[36px]">
                 {{ isCurrentlyBanned ? 'how_to_reg' : 'gavel' }}
               </span>
 
