@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
-import { collection, doc, getDoc, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
+import { collection, doc, getDoc, increment, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
@@ -35,8 +35,12 @@ const statusConfig = {
   Process: { bg: 'bg-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400', label: 'En Proceso' },
   Error: { bg: 'bg-red-500/10', text: 'text-red-400', dot: 'bg-red-400', label: 'Error' },
   Paused: { bg: 'bg-slate-500/10', text: 'text-slate-400', dot: 'bg-slate-400', label: 'Pausado' },
-  Inactive: { bg: 'bg-rose-500/10', text: 'text-rose-400', dot: 'bg-rose-400', label: 'Inactivo' },
+  Inactive: { bg: 'bg-slate-500/10', text: 'text-slate-500', dot: 'bg-slate-500', label: 'Inactivo' },
 }
+
+const isInactive = computed(() => propsComputed.value.status === 'Inactive')
+const isCanceled = computed(() => propsComputed.value.status === 'Canceled')
+const isDisabled = computed(() => isInactive.value || isCanceled.value)
 
 const currentStatus = computed(() => {
   if (propsComputed.value.isBanned) {
@@ -217,7 +221,7 @@ const handleCancelQR = async () => {
   try {
     isLoading.value = true;
     const batch = writeBatch(db);
-    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`);
+    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`);
     const publicQrDoc = doc(db, 'publicQR', props.id);
 
     batch.update(userQRDoc, { status: 'Canceled' });
@@ -226,6 +230,10 @@ const handleCancelQR = async () => {
     if (publicSnap.exists()) {
       batch.update(publicQrDoc, { status: 'Canceled' });
     }
+
+    // Liberar slot en la suscripción
+    const subDoc = doc(db, `users/${userStore.getUserId}/subscriptions/${props.subscriptionId}`);
+    batch.update(subDoc, { totalQRsCreated: increment(-1) });
 
     await batch.commit();
     closeAll();
@@ -696,16 +704,21 @@ const hiddeLogsHandle = () => {
 <template>
 
   <div
-    class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans group">
+    class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] transition-all duration-500 overflow-hidden font-google-sans group"
+    :class="{
+      'hover:border-orange-500/40': !isDisabled,
+      'opacity-50 grayscale': isDisabled,
+      'grayscale-[50%] brightness-75 sepia-[0.3] hue-rotate-[340deg] saturate-[0.5]': isCanceled
+    }">
 
     <!-- Patrón de Fondo Cuadrícula -->
-    <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
+    <div v-if="!isDisabled" class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
       style="background-image: linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px); background-size: 24px 24px;">
     </div>
 
 
     <!-- Resplandor Naranja General Sutil -->
-    <div
+    <div v-if="!isDisabled"
       class="absolute top-0 left-0 w-full h-full z-0 opacity-20 pointer-events-none bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
     </div>
 

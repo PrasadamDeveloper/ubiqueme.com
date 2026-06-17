@@ -378,12 +378,7 @@ const createQRForSubscription = async () => {
     toast.error('No se ha seleccionado una suscripción válida. Por favor, intente nuevamente.');
     return;
   }
-  if (
-    (groupedQRs.value.find(
-      g => g.subscription.id === selectedSubscription.value?.id
-    )?.qrs.length ?? 0) >=
-    (selectedSubscription.value?.totalQRsAllowed ?? 0)
-  ) {
+  if ((selectedSubscription.value?.totalQRsCreated ?? 0) >= (selectedSubscription.value?.totalQRsAllowed ?? 0)) {
     toast.error(
       'La suscripción seleccionada ya ha alcanzado su límite de QRs. Por favor, seleccione otra suscripción o actualice su plan.'
     );
