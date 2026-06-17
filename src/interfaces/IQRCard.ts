@@ -18,7 +18,7 @@ import type { Timestamp } from 'firebase/firestore'
  *   docId: 'firestore_path_xyz'
  * }
  */
-export type TQRStatus = 'Active' | 'Canceled' | 'Process' | 'Error' | 'Paused'
+export type TQRStatus = 'Active' | 'Canceled' | 'Process' | 'Error' | 'Paused' | 'Inactive'
 
 export interface IQRCard {
   /** Display name given to the asset by the owner */

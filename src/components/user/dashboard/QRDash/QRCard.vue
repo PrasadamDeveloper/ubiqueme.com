@@ -5,11 +5,12 @@ import { collection, doc, getDoc, onSnapshot, orderBy, query, Timestamp, writeBa
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
-import type { IQRCard } from '@/interfaces/IQRCard'
+import type { IQRCard, TQRStatus } from '@/interfaces/IQRCard'
 import type { IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
+import { nanoid } from 'nanoid'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -34,6 +35,7 @@ const statusConfig = {
   Process: { bg: 'bg-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400', label: 'En Proceso' },
   Error: { bg: 'bg-red-500/10', text: 'text-red-400', dot: 'bg-red-400', label: 'Error' },
   Paused: { bg: 'bg-slate-500/10', text: 'text-slate-400', dot: 'bg-slate-400', label: 'Pausado' },
+  Inactive: { bg: 'bg-rose-500/10', text: 'text-rose-400', dot: 'bg-rose-400', label: 'Inactivo' },
 }
 
 const currentStatus = computed(() => {
@@ -239,31 +241,69 @@ const handleCancelQR = async () => {
 const handleRenewQR = async () => {
   try {
     isLoading.value = true;
+    const newId = nanoid(15);
     const batch = writeBatch(db);
-    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`);
-    const publicQrDoc = doc(db, 'publicQR', props.id);
 
-    batch.update(userQRDoc, {
-      status: 'Active',
-      scans: 0,
-      lastScan: null,
-    });
+    // 1. Mark old QR as Inactive
+    const oldUserQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`);
+    batch.update(oldUserQRDoc, { status: 'Inactive', isActive: false });
 
-    const publicSnap = await getDoc(publicQrDoc)
-    if (publicSnap.exists()) {
-      batch.update(publicQrDoc, {
-        status: 'Active',
-        totalScans: 0,
-        lastScan: null,
-      });
+    const oldPublicDoc = doc(db, 'publicQR', props.id);
+    const oldPublicSnap = await getDoc(oldPublicDoc);
+    if (oldPublicSnap.exists()) {
+      batch.update(oldPublicDoc, { status: 'Inactive' });
     }
+
+    // 2. Create new QR with new ID
+    const now = Timestamp.now();
+    const userQrData = {
+      banReason: '',
+      category: props.category,
+      createdAt: now,
+      docId: newId,
+      freeShipmentUsed: props.freeShipmentUsed ?? false,
+      id: newId,
+      img: props.img ?? '',
+      isActive: true,
+      isBanned: false,
+      lastScan: '',
+      link: props.link ?? '',
+      name: props.name,
+      physicalShipped: props.physicalShipped ?? false,
+      physicalShippedAt: props.physicalShippedAt ?? '',
+      scans: 0,
+      shippingNotes: '',
+      status: 'Active' as TQRStatus,
+      subscriptionId: props.subscriptionId,
+      uid: userStore.getUserId,
+    };
+
+    const newUserQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${newId}`);
+    batch.set(newUserQRDoc, userQrData);
+
+    const newPublicDoc = doc(db, 'publicQR', newId);
+    batch.set(newPublicDoc, {
+      id: newId,
+      name: props.name,
+      category: props.category,
+      status: 'Active',
+      isPublic: true,
+      isBanned: false,
+      banReason: '',
+      totalScans: 0,
+      lastScan: null,
+      uid: userStore.getUserId,
+      tier: props.planType ?? 'free',
+      createdAt: now,
+      docId: newId,
+    });
 
     await batch.commit();
     closeAll();
-    toast.success(`QR renovado exitosamente`);
+    toast.success(`QR reemplazado exitosamente. Nuevo ID: ${newId}`);
   } catch (error) {
     const e = error as Error;
-    toast.error(`Error al renovar QR: ${e.message}`);
+    toast.error(`Error al reemplazar QR: ${e.message}`);
   } finally {
     isLoading.value = false;
   }
@@ -282,7 +322,7 @@ const menuOptions = [
   { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
   { divider: true },
   { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
-  { label: 'Renovar QR', icon: 'autorenew', description: 'Inicia el proceso para renovar este código.', action: () => openPrompt('renew') },
+  { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
   { divider: true },
   {
     label: 'Desactivar',
@@ -596,10 +636,6 @@ const handleDownloadCompactPNG = async () => {
   }
 }
 
-const handlePrint = () => {
-  window.print()
-}
-
 const qrLogs = ref<IQRLog[]>([]);
 const logsLoaded = ref(false);
 const isLogsLoading = ref(false);
@@ -647,8 +683,6 @@ const loadLogs = () => {
 onUnmounted(() => {
   if (unsubscribeLogs) unsubscribeLogs();
 })
-
-import WatchLogsBtn from '../homeDash/WatchLogsBtn.vue'
 
 const hiddeLogsHandle = () => {
   qrLogs.value = [];
@@ -860,23 +894,35 @@ const hiddeLogsHandle = () => {
           </div>
         </Transition>
 
-        <!-- Renew Prompt -->
+        <!-- Renew/Replace Prompt -->
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
           <div v-if="activePrompt === 'renew'" class="w-full text-center max-w-sm">
-            <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-              <span class="material-symbols-outlined text-amber-500 text-[24px]">autorenew</span>
+            <div class="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto mb-4">
+              <span class="material-symbols-outlined text-rose-500 text-[24px]">warning</span>
             </div>
-            <h3 class="text-white/90 text-lg font-medium mb-1.5">Renovar código</h3>
-            <p class="text-white/50 text-sm leading-relaxed mb-6 px-4">
-              Se iniciará el proceso de renovación.
-            </p>
+            <h3 class="text-white/90 text-lg font-medium mb-1.5">¿Reemplazar código QR?</h3>
+            <div class="space-y-2 text-left px-4 mb-6">
+              <p class="text-white/50 text-sm leading-relaxed">
+                Al reemplazar este QR <strong class="text-white/70">se creará uno nuevo con un ID diferente</strong>.
+              </p>
+              <ul class="text-white/50 text-xs space-y-1.5 list-disc pl-4">
+                <li>El <strong class="text-rose-400">código anterior dejará de funcionar permanentemente</strong></li>
+                <li>Los <strong class="text-rose-400">QR físicos (stickers) actuales quedarán inservibles</strong></li>
+                <li>Deberá solicitar un nuevo QR físico si lo desea</li>
+                <li>El historial de escaneos anteriores se conservará</li>
+                <li class="text-white/70 font-medium">Esta acción no se puede deshacer</li>
+              </ul>
+            </div>
             <div class="flex gap-3 w-full">
               <button @click="closeAll"
                 class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
               <button @click="handleRenewQR"
-                class="flex-1 py-2.5 bg-white text-black rounded-lg font-medium text-sm hover:bg-white/90 transition-colors active:scale-[0.98] cursor-pointer">Renovar</button>
+                class="flex-1 py-2.5 bg-rose-500 text-white rounded-lg font-medium text-sm hover:bg-rose-600 transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">autorenew</span>
+                Reemplazar
+              </button>
             </div>
           </div>
         </Transition>
