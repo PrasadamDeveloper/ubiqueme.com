@@ -238,21 +238,21 @@ const handleRegister = async () => {
       },
       lastLoginAt: Timestamp.now(),
       createdAt: Timestamp.now(),
-      trialActive: false, trialStartsAt: null, trialEndsAt: null, isTrialUsed: false,
+      trialActive: true, trialStartsAt: Timestamp.now(), trialEndsAt: Timestamp.fromDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)), isTrialUsed: false,
     });
 
     const subId = generateRandomId();
     batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
       id: subId,
       userId: user.uid,
-      planType: 'bronce',
+      planType: 'trial',
       status: 'active',
       purchasedAt: Timestamp.now(),
-      endDate: null,
+      endDate: Timestamp.fromDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
       paymentProviderId: '',
-      totalQRsAllowed: 1, // Default limit for bronce plan
+      totalQRsAllowed: 1,
       totalQRsCreated: 0,
-      freeShipmentsAllowed: 1,
+      freeShipmentsAllowed: 0,
       freeShipmentsUsed: 0
     });
 
@@ -295,21 +295,21 @@ const handleGoogleAuth = async () => {
         },
         lastLoginAt: Timestamp.now(),
         createdAt: Timestamp.now(),
-        trialActive: false, trialStartsAt: null, trialEndsAt: null, isTrialUsed: false,
+        trialActive: true, trialStartsAt: Timestamp.now(), trialEndsAt: Timestamp.fromDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)), isTrialUsed: false,
       })
 
       const subId = generateRandomId();
       batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
         id: subId,
         userId: user.uid,
-        planType: 'bronce',
+        planType: 'trial',
         status: 'active',
         purchasedAt: Timestamp.now(),
-        endDate: null,
+        endDate: Timestamp.fromDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
         paymentProviderId: '',
         totalQRsAllowed: 1,
         totalQRsCreated: 0,
-        freeShipmentsAllowed: 1,
+        freeShipmentsAllowed: 0,
         freeShipmentsUsed: 0
       })
 
