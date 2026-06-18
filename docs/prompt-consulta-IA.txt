@@ -1,0 +1,38 @@
+## Problema: Validación y formateo de números telefónicos internacionales para WhatsApp
+
+### Contexto
+Tenemos una app (Vue 3 + Firebase) donde el usuario se registra y debe ingresar su número de WhatsApp para recibir notificaciones cuando alguien escanea sus códigos QR. El número se guarda en Firestore y luego un Cloudflare Worker lo usa para enviar mensajes via WhatsApp Business API.
+
+### El problema actual
+Tenemos un componente `PhonePrompt.vue` que muestra un selector de país (con bandera y código de país) y un input para el número nacional. El problema es que **hoy validamos que el número tenga exactamente 10 dígitos** porque lo hardcodeamos pensando solo en México (+52), pero:
+
+- Chile (+56) tiene números de 9 dígitos → se rechazan inválidamente
+- Argentina (+54) necesita un "9" adicional entre prefijo y número
+- Bolivia (+591) tiene 8 dígitos
+- Alemania (+49) tiene 10 u 11 dígitos según el número
+- Muchos países tienen longitudes variables
+
+### Cómo guardamos el número hoy
+Tomamos el prefijo del país (ej. "+52") y lo concatenamos con el número nacional para guardarlo en Firestore como una string sin el "+": `525512345678`. Eso luego se usa en el Worker para enviar el WhatsApp.
+
+### Requisitos
+1. El usuario selecciona un país de una lista (~28 países: LATAM + USA + Canadá + Europa principal)
+2. Escribe su número nacional (solo dígitos, sin prefijo)
+3. Queremos validar que el número sea **válido para el país seleccionado** (formato, longitud correcta)
+4. Queremos formatearlo correctamente a **E.164** para WhatsApp (ej: +525512345678, +5491123456789, +56912345678)
+5. Que funcione para TODOS los países sin tener que hardcodear longitudes ni reglas especiales
+6. También hay un componente `SettingsDash.vue` donde el usuario puede editar su teléfono
+
+### Pregunta concreta
+¿Cuál es la mejor solución recomendada en 2026 para:
+- Validar números telefónicos por país en frontend (Vue 3)
+- Formatear a E.164
+- Manejar casos especiales (Argentina "9", México "1", etc.)
+- Sin depender de APIs externas (debe funcionar offline)
+
+Consideraciones: bundle size, soporte TypeScript, que esté activamente mantenida.
+
+Contexto adicional del proyecto en package.json:
+- Vue 3 + TypeScript + Vite + Pinia + Firebase
+- Ya usa Tailwind CSS
+- Sin librería de teléfonos actualmente

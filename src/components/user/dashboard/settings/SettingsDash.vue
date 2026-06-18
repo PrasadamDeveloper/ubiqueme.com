@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, defineAsyncComponent } from 'vue'
+import { parsePhoneNumber } from 'libphonenumber-js'
 import { toast } from 'vue-sonner'
 import { auth } from '@/firebase'
 import { sendPasswordResetEmail } from 'firebase/auth'
@@ -106,11 +107,33 @@ const handleResetPassword = async () => {
 const handleSavePhone = async () => {
   const userId = userStore.getUserId
   if (!userId) return
+
+  // Validate with libphonenumber-js
+  const raw = phoneInput.value.trim()
+  if (raw.startsWith('+')) {
+    // User typed with + prefix — detect country automatically
+    try {
+      const phone = parsePhoneNumber(raw)
+      if (!phone.isValid()) {
+        toast.error('Número de teléfono no válido. Verifica el formato.')
+        return
+      }
+      phoneInput.value = phone.format('E.164') // normalize
+    } catch {
+      toast.error('Número de teléfono no válido. Verifica el formato.')
+      return
+    }
+  } else {
+    toast.error('Incluye el código de país (ej. +52 555 123 4567).')
+    return
+  }
+
   isSavingPhone.value = true
   try {
     const userDocRef = doc(db, `users/${userId}`)
-    await updateDoc(userDocRef, { phone: phoneInput.value })
-    userData.value.phone = phoneInput.value
+    const normalized = phoneInput.value.replace('+', '')
+    await updateDoc(userDocRef, { phone: normalized })
+    userData.value.phone = normalized
     toast.success('Teléfono actualizado correctamente')
   } catch (error: any) {
     toast.error('Error al guardar: ' + error.message)
@@ -306,14 +329,14 @@ const goToMYQR = () => {
               class="bg-[#161618] border border-white/5 rounded-xl p-3 hover:border-orange-500/20 transition-all group cursor-pointer block">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-mono text-white/20 truncate max-w-[80px]">{{ qr.id?.slice(0, 8)
-                  }}...</span>
+                }}...</span>
                 <span :class="qrStatusColor(qr.status)"
                   class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border">
                   {{ qr.status }}
                 </span>
               </div>
               <p class="text-sm font-medium text-white/80 truncate group-hover:text-white transition-colors">{{ qr.name
-                }}</p>
+              }}</p>
               <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center gap-2">
                   <span class="material-symbols-outlined notranslate text-[12px] text-white/20">visibility</span>

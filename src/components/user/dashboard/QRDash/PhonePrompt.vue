@@ -45,12 +45,12 @@
 
             <!-- Phone input -->
             <div class="relative flex-1">
-              <input v-model="phoneNumber" type="tel" placeholder="55 1234 5678" maxlength="10" @input="onPhoneInput"
+              <input v-model="phoneNumber" type="tel" placeholder="55 1234 5678" @input="onPhoneInput"
                 class="w-full h-14 px-5 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all tracking-wider text-lg font-medium" />
             </div>
           </div>
           <p class="text-[11px] text-white/30 font-medium ml-1">
-            {{ selectedCountry.flag }} {{ selectedCountry.name }} &middot; 10 dígitos
+            {{ selectedCountry.flag }} {{ selectedCountry.name }}
           </p>
         </div>
 
@@ -82,6 +82,8 @@ import { ref, computed } from 'vue'
 import { doc, updateDoc, getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/user'
 import { toast } from 'vue-sonner'
+import { parsePhoneNumber, getCountries, getCountryCallingCode } from 'libphonenumber-js'
+import type { CountryCode } from 'libphonenumber-js'
 
 const emit = defineEmits<{
   saved: []
@@ -92,48 +94,67 @@ const db = getFirestore()
 const userStore = useUserStore()
 
 interface Country {
-  code: string
+  code: CountryCode
   flag: string
   name: string
   prefix: string
 }
 
-const countries: Country[] = [
-  { code: 'MX', flag: '🇲🇽', name: 'México', prefix: '+52' },
-  { code: 'AR', flag: '🇦🇷', name: 'Argentina', prefix: '+54' },
-  { code: 'BO', flag: '🇧🇴', name: 'Bolivia', prefix: '+591' },
-  { code: 'CL', flag: '🇨🇱', name: 'Chile', prefix: '+56' },
-  { code: 'CO', flag: '🇨🇴', name: 'Colombia', prefix: '+57' },
-  { code: 'CR', flag: '🇨🇷', name: 'Costa Rica', prefix: '+506' },
-  { code: 'CU', flag: '🇨🇺', name: 'Cuba', prefix: '+53' },
-  { code: 'DO', flag: '🇩🇴', name: 'Rep. Dominicana', prefix: '+1' },
-  { code: 'EC', flag: '🇪🇨', name: 'Ecuador', prefix: '+593' },
-  { code: 'SV', flag: '🇸🇻', name: 'El Salvador', prefix: '+503' },
-  { code: 'GT', flag: '🇬🇹', name: 'Guatemala', prefix: '+502' },
-  { code: 'HN', flag: '🇭🇳', name: 'Honduras', prefix: '+504' },
-  { code: 'NI', flag: '🇳🇮', name: 'Nicaragua', prefix: '+505' },
-  { code: 'PA', flag: '🇵🇦', name: 'Panamá', prefix: '+507' },
-  { code: 'PY', flag: '🇵🇾', name: 'Paraguay', prefix: '+595' },
-  { code: 'PE', flag: '🇵🇪', name: 'Perú', prefix: '+51' },
-  { code: 'UY', flag: '🇺🇾', name: 'Uruguay', prefix: '+598' },
-  { code: 'VE', flag: '🇻🇪', name: 'Venezuela', prefix: '+58' },
-  { code: 'US', flag: '🇺🇸', name: 'Estados Unidos', prefix: '+1' },
-  { code: 'CA', flag: '🇨🇦', name: 'Canadá', prefix: '+1' },
-  { code: 'ES', flag: '🇪🇸', name: 'España', prefix: '+34' },
-  { code: 'FR', flag: '🇫🇷', name: 'Francia', prefix: '+33' },
-  { code: 'IT', flag: '🇮🇹', name: 'Italia', prefix: '+39' },
-  { code: 'DE', flag: '🇩🇪', name: 'Alemania', prefix: '+49' },
-  { code: 'GB', flag: '🇬🇧', name: 'Reino Unido', prefix: '+44' },
-  { code: 'PT', flag: '🇵🇹', name: 'Portugal', prefix: '+351' },
-  { code: 'NL', flag: '🇳🇱', name: 'Países Bajos', prefix: '+31' },
-]
+/**
+ * Convert an ISO country code to a flag emoji.
+ * Example: 'CL' → '🇨🇱'
+ */
+const getFlagEmoji = (countryCode: string): string => {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map((char) => 0x1f1e6 + char.charCodeAt(0) - 0x41)
+  return String.fromCodePoint(...codePoints)
+}
 
-const selectedCountry = ref<Country>(countries[0]!)
+/** Full country name map (will fallback to code if not found) */
+const countryNames: Record<string, string> = {
+  MX: 'México', AR: 'Argentina', BO: 'Bolivia', CL: 'Chile',
+  CO: 'Colombia', CR: 'Costa Rica', CU: 'Cuba', DO: 'Rep. Dominicana',
+  EC: 'Ecuador', SV: 'El Salvador', GT: 'Guatemala', HN: 'Honduras',
+  NI: 'Nicaragua', PA: 'Panamá', PY: 'Paraguay', PE: 'Perú',
+  UY: 'Uruguay', VE: 'Venezuela', US: 'Estados Unidos', CA: 'Canadá',
+  ES: 'España', FR: 'Francia', IT: 'Italia', DE: 'Alemania',
+  GB: 'Reino Unido', PT: 'Portugal', NL: 'Países Bajos',
+  BR: 'Brasil', JP: 'Japón', CN: 'China', IN: 'India',
+  AU: 'Australia', NZ: 'Nueva Zelanda', ZA: 'Sudáfrica',
+  RU: 'Rusia', KR: 'Corea del Sur', SE: 'Suecia', NO: 'Noruega',
+  DK: 'Dinamarca', FI: 'Finlandia', IE: 'Irlanda', CH: 'Suiza',
+  AT: 'Austria', BE: 'Bélgica', PL: 'Polonia', CZ: 'Rep. Checa',
+  GR: 'Grecia', HU: 'Hungría', RO: 'Rumanía', UA: 'Ucrania',
+  IL: 'Israel', AE: 'Emiratos Árabes', SA: 'Arabia Saudita',
+  TR: 'Turquía', EG: 'Egipto', NG: 'Nigeria', KE: 'Kenia',
+  PH: 'Filipinas', ID: 'Indonesia', MY: 'Malasia', SG: 'Singapur',
+  TH: 'Tailandia', VN: 'Vietnam', TW: 'Taiwán', HK: 'Hong Kong',
+}
+
+const countries: Country[] = getCountries()
+  .map((code) => ({
+    code,
+    flag: getFlagEmoji(code),
+    name: countryNames[code] || code,
+    prefix: `+${getCountryCallingCode(code)}`,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name))
+
+const selectedCountry = ref<Country>(countries.find((c) => c.code === 'MX') || countries[0]!)
 const phoneNumber = ref('')
 const isSaving = ref(false)
 
 const isValid = computed(() => {
-  return phoneNumber.value.length === 10 && /^\d+$/.test(phoneNumber.value)
+  const raw = phoneNumber.value
+  if (!raw || !/^\d{4,}$/.test(raw)) return false
+  try {
+    const phone = parsePhoneNumber(raw, selectedCountry.value.code)
+    return phone.isValid()
+  } catch {
+    return false
+  }
 })
 
 const onPhoneInput = () => {
@@ -142,17 +163,24 @@ const onPhoneInput = () => {
 }
 
 /**
- * Formats to WhatsApp-friendly format (no +, no spaces).
- * Example: MX +52 5512345678 → 525512345678
+ * Formats to WhatsApp-friendly format (E.164 without the +).
+ * Example: +52 5512345678 → 525512345678
+ * Example: +54 11 1234 5678 → 549112345678 (includes Argentina "9")
  */
 const formatForWhatsApp = (): string => {
-  const rawPrefix = selectedCountry.value.prefix.replace('+', '')
-  return `${rawPrefix}${phoneNumber.value}`
+  try {
+    const phone = parsePhoneNumber(phoneNumber.value, selectedCountry.value.code)
+    return phone.format('E.164').replace('+', '')
+  } catch {
+    // Fallback: just concatenate (shouldn't happen since we validate first)
+    const rawPrefix = selectedCountry.value.prefix.replace('+', '')
+    return `${rawPrefix}${phoneNumber.value}`
+  }
 }
 
 const handleSave = async () => {
   if (!isValid.value) {
-    toast.error('El número debe tener exactamente 10 dígitos.')
+    toast.error('El número no es válido para el país seleccionado.')
     return
   }
 
