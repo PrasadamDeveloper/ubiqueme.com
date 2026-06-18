@@ -11,6 +11,7 @@ import {
 	query,
 	where,
 	getDocs,
+	deleteField,
 } from 'firebase/firestore/lite';
 import { getAuth, Auth, signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -338,6 +339,27 @@ async function sendQRInactiveReply(env: Env, to: string, message: string): Promi
 	});
 }
 
+// ─── SHA-256 helper (native Workers crypto) ─────────────────────
+async function sha256Hex(input: string): Promise<string> {
+	const encoder = new TextEncoder();
+	const data = encoder.encode(input);
+	const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function generateOtpCode(): string {
+	return String(100000 + Math.floor(Math.random() * 900000));
+}
+
+function generateSalt(): string {
+	const bytes = new Uint8Array(32);
+	crypto.getRandomValues(bytes);
+	return Array.from(bytes)
+		.map((b) => b.toString(16).padStart(2, '0'))
+		.join('');
+}
+
 // ─── Caption/text parsing ────────────────────────────────────────
 interface ParsedScanData {
 	qrId: string;
@@ -367,6 +389,16 @@ export default {
 		// Handle CORS preflight
 		if (request.method === 'OPTIONS') {
 			return new Response(null, { headers: CORS_HEADERS });
+		}
+
+		// ─── POST /api/send-otp ──────────────────────────────────
+		if (url.pathname === '/api/send-otp' && request.method === 'POST') {
+			return handleSendOtp(request, env);
+		}
+
+		// ─── POST /api/verify-otp ────────────────────────────────
+		if (url.pathname === '/api/verify-otp' && request.method === 'POST') {
+			return handleVerifyOtp(request, env);
 		}
 
 		// Webhook routing (Exclusively for Meta)
@@ -508,6 +540,226 @@ async function handleImageWithCaption(
 /**
  * POST /api/whatsapp — Incoming webhook from Meta
  */
+// ─── OTP helpers ────────────────────────────────────────────────
+async function sendOtpWhatsApp(env: Env, to: string, code: string): Promise<boolean> {
+	const payload = {
+		messaging_product: 'whatsapp',
+		recipient_type: 'individual',
+		to,
+		type: 'template',
+		template: {
+			name: 'verify_otp',
+			language: { code: 'es' },
+			components: [
+				{
+					type: 'body',
+					parameters: [{ type: 'text', text: code }],
+				},
+			],
+		},
+	};
+	const response = await fetch(MESSAGES_URL(env), {
+		method: 'POST',
+		headers: metaHeaders(env),
+		body: JSON.stringify(payload),
+	});
+	const result = (await response.json()) as { messages?: Array<{ id: string }>; error?: { message: string } };
+	console.log(`[Worker] sendOtpWhatsApp status: ${response.status}, body: ${JSON.stringify(result)}`);
+	return response.ok;
+}
+
+/**
+ * POST /api/send-otp
+ * Generates a 6-digit code, stores SHA-256 hash in Firestore, sends via WhatsApp template.
+ */
+async function handleSendOtp(request: Request, env: Env): Promise<Response> {
+	try {
+		const { uid } = (await request.json()) as { uid?: string };
+		if (!uid) {
+			return new Response(JSON.stringify({ error: 'uid is required' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		await ensureAuthenticated(env);
+		const { db } = getFirebase(env);
+		const userRef = doc(db!, 'users', uid);
+		const userSnap = await getDoc(userRef);
+		if (!userSnap.exists()) {
+			return new Response(JSON.stringify({ error: 'User not found' }), {
+				status: 404,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		const userData = userSnap.data();
+		const phone: string | undefined = userData.phone;
+		if (!phone) {
+			return new Response(JSON.stringify({ error: 'No phone registered' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		// Rate limit: check if a recent OTP was sent (within last 60s)
+		const otpExpiresAt = userData.otpExpiresAt?.toDate?.();
+		if (otpExpiresAt && otpExpiresAt > new Date()) {
+			// An OTP is still pending — allow resend only if more than 60s have passed since last sent
+			const otpSentAt = userData.otpSentAt?.toDate?.();
+			if (otpSentAt && Date.now() - otpSentAt.getTime() < 60_000) {
+				return new Response(JSON.stringify({ error: 'Wait 60 seconds before requesting a new code' }), {
+					status: 429,
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+				});
+			}
+		}
+
+		// Generate code, salt, hash
+		const code = generateOtpCode();
+		const salt = generateSalt();
+		const hash = await sha256Hex(code + salt);
+
+		// Store in Firestore
+		const now = Timestamp.now();
+		const expiresAt = Timestamp.fromMillis(now.toMillis() + 10 * 60 * 1000); // 10 min
+		const batch = writeBatch(db!);
+		batch.update(userRef, {
+			otpHash: hash,
+			otpSalt: salt,
+			otpExpiresAt: expiresAt,
+			otpAttempts: 0,
+			otpSentAt: now,
+		});
+		await batch.commit();
+		console.log(`[Worker] OTP stored for uid ${uid}, expires at ${expiresAt.toDate().toISOString()}`);
+
+		// Send via WhatsApp
+		const cleanPhone = phone.replace('whatsapp:', '').replace('+', '');
+		const sent = await sendOtpWhatsApp(env, cleanPhone, code);
+		if (!sent) {
+			console.error('[Worker] Failed to send OTP WhatsApp to', cleanPhone);
+			return new Response(JSON.stringify({ error: 'Failed to send OTP via WhatsApp' }), {
+				status: 500,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		return new Response(JSON.stringify({ success: true }), {
+			status: 200,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	} catch (e: unknown) {
+		console.error('[Worker] Excepción en handleSendOtp:', e);
+		return new Response(JSON.stringify({ error: 'Internal error' }), {
+			status: 500,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	}
+}
+
+/**
+ * POST /api/verify-otp
+ * Validates the submitted code against stored hash, marks phone as verified on success.
+ */
+async function handleVerifyOtp(request: Request, env: Env): Promise<Response> {
+	try {
+		const { uid, code } = (await request.json()) as { uid?: string; code?: string };
+		if (!uid || !code) {
+			return new Response(JSON.stringify({ error: 'uid and code are required' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		await ensureAuthenticated(env);
+		const { db } = getFirebase(env);
+		const userRef = doc(db!, 'users', uid);
+		const userSnap = await getDoc(userRef);
+		if (!userSnap.exists()) {
+			return new Response(JSON.stringify({ error: 'User not found' }), {
+				status: 404,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		const userData = userSnap.data();
+		const otpHash: string | undefined = userData.otpHash;
+		const otpSalt: string | undefined = userData.otpSalt;
+		const otpExpiresAt: Timestamp | undefined = userData.otpExpiresAt;
+		const otpAttempts: number | undefined = userData.otpAttempts;
+
+		if (!otpHash || !otpSalt || !otpExpiresAt) {
+			return new Response(JSON.stringify({ error: 'No OTP pending' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		// Check expiration
+		if (otpExpiresAt.toDate() < new Date()) {
+			return new Response(JSON.stringify({ error: 'Code expired' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		// Check attempt limit
+		if ((otpAttempts ?? 0) >= 3) {
+			return new Response(JSON.stringify({ error: 'Too many attempts, request a new code' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		// Compare hash
+		const attemptedHash = await sha256Hex(code + otpSalt);
+		if (attemptedHash !== otpHash) {
+			const newAttempts = (otpAttempts ?? 0) + 1;
+			const batch = writeBatch(db!);
+			batch.update(userRef, { otpAttempts: newAttempts });
+			// If this was the 3rd attempt, also clear the hash so it can't be tried again
+			if (newAttempts >= 3) {
+				batch.update(userRef, {
+					otpHash: deleteField(),
+					otpSalt: deleteField(),
+					otpExpiresAt: deleteField(),
+				});
+			}
+			await batch.commit();
+			console.log(`[Worker] OTP invalid for uid ${uid}, attempt ${newAttempts}/3`);
+			return new Response(JSON.stringify({ error: 'Invalid code' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		// Success — mark phone as verified, clean up OTP fields
+		const successBatch = writeBatch(db!);
+		successBatch.update(userRef, {
+			phoneVerified: true,
+			otpHash: deleteField(),
+			otpSalt: deleteField(),
+			otpExpiresAt: deleteField(),
+			otpAttempts: deleteField(),
+			otpSentAt: deleteField(),
+		});
+		await successBatch.commit();
+		console.log(`[Worker] Phone verified for uid ${uid}`);
+
+		return new Response(JSON.stringify({ success: true, phoneVerified: true }), {
+			status: 200,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	} catch (e: unknown) {
+		console.error('[Worker] Excepción en handleVerifyOtp:', e);
+		return new Response(JSON.stringify({ error: 'Internal error' }), {
+			status: 500,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	}
+}
+
 async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Response> {
 	try {
 		const jsonBody: MetaWebhookPayload = await request.json();
