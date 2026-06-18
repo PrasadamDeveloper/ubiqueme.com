@@ -79,14 +79,47 @@ const handleCancel = () => {
 </template>
 
 <style scoped>
-.fade-scale-enter-active,
+/* Transitions.dev — Modal open / close */
+.fade-scale-enter-active {
+  transition: opacity 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .fade-scale-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .fade-scale-enter-from,
 .fade-scale-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  transform: scale(0.96);
+}
+
+.fade-scale-enter-to,
+.fade-scale-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-scale-enter-active>div:last-child,
+.fade-scale-leave-active>div:last-child,
+.fade-scale-enter-active>div:first-child,
+.fade-scale-leave-active>div:first-child {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .fade-scale-enter-active,
+  .fade-scale-leave-active {
+    transition: none;
+  }
+
+  .fade-scale-enter-from,
+  .fade-scale-leave-to {
+    opacity: 0;
+    transform: none;
+  }
 }
 </style>

@@ -184,6 +184,7 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  signOut,
   getAdditionalUserInfo
 } from 'firebase/auth'
 import { doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore'
@@ -257,8 +258,9 @@ const handleRegister = async () => {
     });
 
     await batch.commit()
+    await signOut(auth)
     toast.success('Registro completado con éxito. Por favor verifique su correo.')
-    router.push({ name: 'login' })
+    router.push({ name: 'verify' })
   } catch (error) {
     console.error(error)
     toast.error(`Error al registrarse: ${error}`)
@@ -316,6 +318,7 @@ const handleGoogleAuth = async () => {
       await batch.commit()
     }
 
+    // Google accounts are auto-verified by Firebase, so redirect to dashboard
     userStore.setFullName(user.displayName || '')
     userStore.setCreationDate(user.metadata?.creationTime || '')
     userStore.setUserId(user.uid)

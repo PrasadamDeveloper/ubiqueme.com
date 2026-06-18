@@ -85,6 +85,11 @@ const toggleMenu = (event: Event) => {
 
 const userStore = useUserStore();
 
+const isMexicanPhone = computed(() => {
+  const phone = userStore.getUserPhone;
+  return !!phone && phone.startsWith('52');
+});
+
 const isLoading = ref(false);
 
 const handleEdit = async () => {
@@ -118,11 +123,15 @@ const _setQrPublic = async () => {
     isLoading.value = true;
     const batch = writeBatch(db);
     const publicQrRef = doc(db, 'publicQR', props.id);
+
+    // Check if doc already exists — if so, preserve original createdAt
+    const publicSnap = await getDoc(publicQrRef);
+    const isNew = !publicSnap.exists();
+
     const publicQRData: Record<string, unknown> = {
       id: props.id,
       name: props.name,
       docId: props.id,
-      createdAt: Timestamp.now(),
       status: 'Active',
       isPublic: true,
       isBanned: false,
@@ -131,15 +140,29 @@ const _setQrPublic = async () => {
       lastScan: null,
       uid: userStore.getUserId,
       tier: props.subscriptionId,
+      category: props.category ?? '',
     }
-    if (props.category) {
-      publicQRData.category = props.category
+    // Only set createdAt on first creation (Bug #2: avoid changing createdAt on reactivation)
+    if (isNew) {
+      publicQRData.createdAt = Timestamp.now();
     }
+
     const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.id}`)
     batch.update(qrDoc, {
       status: 'Active',
     })
-    batch.set(publicQrRef, publicQRData, { merge: true });
+
+    if (isNew) {
+      // Creation: set() with all required fields → hits create rule + isValidPublicQRData
+      batch.set(publicQrRef, publicQRData);
+    } else {
+      // Reactivation: update() with ONLY fields allowed by rules for Paused → Active
+      batch.update(publicQrRef, {
+        status: 'Active',
+        isPublic: true,
+      });
+    }
+
     await batch.commit();
     isLoading.value = false;
     toast.success(`QR establecido como público`);
@@ -325,9 +348,9 @@ const canMakePublic = computed(() => propsComputed.value.planType && propsComput
 const canMakePrivate = computed(() => qrStatusLoaded.value || canMakePublic.value)
 
 const menuOptions = [
-  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId) },
-  { label: 'Hacer Público', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
-  { label: 'Hacer Privado', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
+  { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+  { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
   { divider: true },
   { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
   { divider: true },
@@ -335,7 +358,7 @@ const menuOptions = [
   { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
   { divider: true },
   {
-    label: 'Desactivar',
+    label: 'Eliminar QR',
     icon: 'block',
     description: 'Desactivar el código permanentemente, NO podrá ser escaneado, tendrá que adquirir uno nuevo y este se inutilizara permanentemente.',
     action: () => openPrompt('cancel'),
@@ -747,7 +770,7 @@ const hiddeLogsHandle = () => {
               {{ currentStatus.label }}
             </span>
           </div>
-          <!-- Menu button (top right on mobile, moved to right column on desktop) -->
+          <!-- Menu button (top right on mobile) — TEMPORALMENTE visible siempre para testear reglas -->
           <button data-name="hamMenu" @click="toggleMenu($event)"
             class="sm:hidden text-orange-500/90 hover:text-white transition-colors cursor-pointer w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 shrink-0">
             <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[22px]">more_horiz</span>
@@ -833,7 +856,7 @@ const hiddeLogsHandle = () => {
             <QrcodeVue :value="qrScanUrl" :size="110" render-as="svg" level="H" />
           </template>
         </div>
-        <!-- Menu button (desktop only, inside QR column) -->
+        <!-- Menu button (desktop only, inside QR column) — TEMPORALMENTE visible siempre para testear reglas -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
           class="hidden sm:flex text-orange-500/90 hover:text-white transition-colors cursor-pointer w-9 h-9 items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 absolute top-4 right-4">
           <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[22px]">more_horiz</span>
