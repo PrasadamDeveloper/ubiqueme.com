@@ -16,6 +16,11 @@
 - Change only what is required. Reuse existing patterns and architecture.
 - Never expose API keys in frontend code.
 
+## Git
+
+- Never push unless explicitly told to do so by the user.
+- Stage and commit locally, but wait for user confirmation before pushing.
+
 ## Communication
 
 - Concise. No restating requests or summarizing actions.

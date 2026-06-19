@@ -859,7 +859,7 @@ const hiddeLogsHandle = () => {
 
     <!-- ─── Templates ocultos para captura con html2canvas ─── -->
     <!-- Normal capture template -->
-    <div id="qr-capture-normal" class="hidden"
+    <div id="qr-capture-normal" class="capture-template"
       style="width:600px; padding:24px; background:#0a0401; font-family:'Google Sans',sans-serif;">
       <!-- Grid pattern -->
       <div class="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -901,7 +901,7 @@ const hiddeLogsHandle = () => {
     </div>
 
     <!-- Compact capture template -->
-    <div id="qr-capture-compact" class="hidden"
+    <div id="qr-capture-compact" class="capture-template"
       style="width:280px;padding:16px;background:#fff;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'Google Sans',sans-serif;">
       <span
         style="color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:12px;">ubiqueme.com</span>
@@ -948,7 +948,7 @@ const hiddeLogsHandle = () => {
 }
 
 /* Ocultar templates de captura */
-.hidden {
+.capture-template {
   display: none !important;
 }
 
