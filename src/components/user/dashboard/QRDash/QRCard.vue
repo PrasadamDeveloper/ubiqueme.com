@@ -523,8 +523,8 @@ const handleDownloadPNG = async () => {
     ctx.fillStyle = '#ffffff'
     ctx.font = 'bold 16px "Google Sans", sans-serif'
     ctx.textBaseline = 'top'
-    ctx.fillText('Escanee este QR para contactar', infoX, dividerY + 16)
-    ctx.fillText('al dueño de forma segura.', infoX, dividerY + 38)
+    ctx.fillText('Escanee este código QR para contactar', infoX, dividerY + 16)
+    ctx.fillText('al responsable de forma segura.', infoX, dividerY + 38)
 
     // GPS pin icon + brand
     const pinY = dividerY + 70
@@ -549,7 +549,7 @@ const handleDownloadPNG = async () => {
     const bottomY = pinY + 38
     ctx.fillStyle = 'rgba(255,255,255,0.5)'
     ctx.font = 'bold 11px "Google Sans", sans-serif'
-    ctx.fillText('Escanee y ayude a devolver esta pertenencia', infoX, bottomY)
+    ctx.fillText('Escanee este código QR para contactar al responsable de forma segura', infoX, bottomY)
 
     // Download
     const link = document.createElement('a')
@@ -654,7 +654,7 @@ const handleDownloadCompactPNG = async () => {
     ctx.font = `bold ${smallFontSize}px "Google Sans", sans-serif`
     ctx.fillStyle = '#f38020'
     const barbaY = qrY + qrMaxSize + textSpacing
-    ctx.fillText('Escanee QR para contactar al dueño', size / 2, barbaY)
+    ctx.fillText('Escanee QR para contactar al responsable', size / 2, barbaY)
 
     // Download
     const link = document.createElement('a')
@@ -1061,7 +1061,7 @@ const hiddeLogsHandle = () => {
                   </p>
                   <div class="w-full h-px bg-white/10 my-0.5"></div>
                   <p class="text-white font-bold leading-tight" :style="{ fontSize: ctaFontSize }">
-                    Escanee este QR para contactar al dueño de forma segura.
+                    Escanee este código QR para contactar al responsable de forma segura.
                   </p>
                   <div class="flex items-center gap-1">
                     <span class="material-symbols-outlined notranslate text-[#f38020]"
@@ -1099,7 +1099,7 @@ const hiddeLogsHandle = () => {
                 </div>
                 <!-- CTA -->
                 <p class="text-[#f38020] font-bold text-center" :style="{ fontSize: compactCtaFontSize }">
-                  Escanee QR para contactar al dueño
+                  Escanee QR para contactar al responsable
                 </p>
               </div>
 
