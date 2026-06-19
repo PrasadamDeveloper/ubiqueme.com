@@ -795,7 +795,7 @@ const hiddeLogsHandle = () => {
                       </template>
                     </div>
                     <div class="flex flex-col min-w-0 gap-0.5 flex-1">
-                      <p class="text-white font-extrabold leading-tight truncate text-base">
+                      <p class="text-white font-extrabold leading-tight truncate text-base py-3">
                         {{ propsComputed.name || 'Código QR' }}
                       </p>
                       <p class="text-white font-bold font-mono text-xs">#{{ propsComputed.id }}</p>
@@ -858,64 +858,67 @@ const hiddeLogsHandle = () => {
     </Transition>
 
     <!-- ─── Templates ocultos para captura con html2canvas ─── -->
-    <!-- Normal capture template -->
-    <div id="qr-capture-normal" class="capture-template"
-      style="width:600px; padding:24px; background:#0a0401; font-family:'Google Sans',sans-serif;">
-      <!-- Grid pattern -->
-      <div class="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style="background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:24px 24px;top:0;left:0;right:0;bottom:0;position:absolute;">
-      </div>
-      <!-- Orange glow -->
-      <div
-        class="absolute top-0 left-0 w-full h-full pointer-events-none bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
-      </div>
-      <div style="display:flex;flex-direction:row;align-items:center;gap:24px;position:relative;z-index:1;">
+    <!-- Off-screen wrapper mantiene los templates renderizados con dimensiones reales -->
+    <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
+      <!-- Normal capture template -->
+      <div id="qr-capture-normal"
+        style="width:600px;padding:24px;background:#0a0401;font-family:'Google Sans',sans-serif;">
+        <!-- Grid pattern -->
         <div
-          style="background:#fff;border-radius:16px;padding:12px;display:flex;align-items:center;justify-content:center;">
-          <template v-if="propsComputed.img">
-            <img :src="propsComputed.img" style="width:120px;height:120px;object-fit:contain;" />
-          </template>
-          <template v-else>
-            <QrcodeVue :value="qrScanUrl" :size="120" render-as="canvas" level="H" />
-          </template>
+          style="position:absolute;top:0;left:0;right:0;bottom:0;opacity:0.04;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:24px 24px;">
         </div>
-        <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
-          <p
-            style="color:#fff;font-size:22px;font-weight:900;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            {{ propsComputed.name || 'Código QR' }}
-          </p>
-          <p style="color:#fff;font-size:12px;font-weight:700;font-family:monospace;margin:4px 0 0 0;">
-            #{{ propsComputed.id }}
-          </p>
-          <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);margin:6px 0;"></div>
-          <p style="color:#fff;font-size:14px;font-weight:700;margin:0;">
-            Escanee este código QR para contactar al responsable de forma segura.
-          </p>
-          <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
-            <span style="color:#f38020;font-size:16px;">📍</span>
-            <span
-              style="color:#f38020;font-weight:900;letter-spacing:1px;text-transform:uppercase;font-size:14px;">ubiqueme.com</span>
+        <!-- Orange glow -->
+        <div
+          style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:linear-gradient(135deg,rgba(251,146,60,0.1),transparent 50%,transparent);">
+        </div>
+        <div style="display:flex;flex-direction:row;align-items:center;gap:24px;position:relative;z-index:1;">
+          <div
+            style="background:#fff;border-radius:16px;padding:12px;display:flex;align-items:center;justify-content:center;">
+            <template v-if="propsComputed.img">
+              <img :src="propsComputed.img" style="width:120px;height:120px;object-fit:contain;" />
+            </template>
+            <template v-else>
+              <QrcodeVue :value="qrScanUrl" :size="120" render-as="canvas" level="H" />
+            </template>
+          </div>
+          <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
+            <p
+              style="color:#fff;font-size:22px;font-weight:900;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              {{ propsComputed.name || 'Código QR' }}
+            </p>
+            <p style="color:#fff;font-size:12px;font-weight:700;font-family:monospace;margin:4px 0 0 0;">
+              #{{ propsComputed.id }}
+            </p>
+            <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);margin:6px 0;"></div>
+            <p style="color:#fff;font-size:14px;font-weight:700;margin:0;">
+              Escanee este código QR para contactar al responsable de forma segura.
+            </p>
+            <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+              <span style="color:#f38020;font-size:16px;">📍</span>
+              <span
+                style="color:#f38020;font-weight:900;letter-spacing:1px;text-transform:uppercase;font-size:14px;">ubiqueme.com</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Compact capture template -->
-    <div id="qr-capture-compact" class="capture-template"
-      style="width:280px;padding:16px;background:#fff;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'Google Sans',sans-serif;">
-      <span
-        style="color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:12px;">ubiqueme.com</span>
-      <div style="display:flex;align-items:center;justify-content:center;">
-        <template v-if="propsComputed.img">
-          <img :src="propsComputed.img" style="width:100px;height:100px;object-fit:contain;" />
-        </template>
-        <template v-else>
-          <QrcodeVue :value="qrScanUrl" :size="100" render-as="canvas" level="H" />
-        </template>
+      <!-- Compact capture template -->
+      <div id="qr-capture-compact"
+        style="width:280px;padding:16px;background:#fff;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'Google Sans',sans-serif;">
+        <span
+          style="color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:12px;">ubiqueme.com</span>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <template v-if="propsComputed.img">
+            <img :src="propsComputed.img" style="width:100px;height:100px;object-fit:contain;" />
+          </template>
+          <template v-else>
+            <QrcodeVue :value="qrScanUrl" :size="100" render-as="canvas" level="H" />
+          </template>
+        </div>
+        <p style="color:#f38020;font-weight:700;text-align:center;font-size:10px;margin:0;">
+          Escanee QR para contactar al responsable
+        </p>
       </div>
-      <p style="color:#f38020;font-weight:700;text-align:center;font-size:10px;margin:0;">
-        Escanee QR para contactar al responsable
-      </p>
     </div>
   </div>
 </template>
@@ -947,10 +950,7 @@ const hiddeLogsHandle = () => {
   background: rgba(249, 115, 22, 0.4);
 }
 
-/* Ocultar templates de captura */
-.capture-template {
-  display: none !important;
-}
+/* Ya no se necesita — el wrapper off-screen maneja la ocultación */
 
 @media print {
   body * {
