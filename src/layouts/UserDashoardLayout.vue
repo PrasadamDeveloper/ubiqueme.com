@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { useUserStore } from '@/stores/user';
-import { RouterLink, useRouter } from 'vue-router'
 import { onMounted, onUnmounted, ref } from 'vue';
+import { RouterLink } from 'vue-router'
 import { useAuth } from '@/handleAuth'
 
 const { handleLogout } = useAuth()
@@ -15,9 +14,15 @@ const navLinks = [
 const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
 const currentDomainIndex = ref(0);
 const isMobileMenuOpen = ref(false);
+const showCompactBadge = ref(false);
 let intervalId: any;
 
 onMounted(() => {
+  // Compact SSL badge after 4s
+  setTimeout(() => {
+    showCompactBadge.value = true;
+  }, 4000);
+
   intervalId = setInterval(() => {
     currentDomainIndex.value = (currentDomainIndex.value + 1) % domains.length;
   }, 5000);
@@ -42,10 +47,42 @@ onUnmounted(() => {
 
         <!-- Logo con animación (Match Home) -->
         <div class="flex items-center gap-3">
-          <!-- SSL Badge -->
-          <div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md border border-white/8 bg-white/[0.03]">
-            <span class="material-symbols-outlined notranslate text-white/30" style="font-size:13px">shield</span>
-            <span class="text-[9px] font-black uppercase tracking-[0.15em] text-white/25">SSL</span>
+          <!-- SSL Badge (animated: expandido -> compacto tras 4s) -->
+          <div
+            class="group/badge relative flex items-center gap-1.5 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] active:scale-[0.97] transition-all duration-300 cursor-default"
+            :class="showCompactBadge ? 'px-2 py-1' : 'px-2.5 py-1.5'">
+            <!-- Pulse ring (solo mientras expandido) -->
+            <Transition name="fade">
+              <span v-if="!showCompactBadge"
+                class="absolute inset-0 rounded-lg animate-pulse-ring-orange pointer-events-none"></span>
+            </Transition>
+
+            <!-- Icono: lock mientras expandido, shield en compacto -->
+            <Transition name="fade" mode="out-in">
+              <span :key="showCompactBadge ? 'shield' : 'lock'"
+                class="material-symbols-outlined notranslate relative z-[1]"
+                :class="showCompactBadge ? 'text-orange-500/50' : 'text-orange-400'" style="font-size:16px">{{
+                  showCompactBadge ? 'shield' : 'lock' }}</span>
+            </Transition>
+
+            <!-- Texto: "Conexión segura" expandido, "SSL" compacto -->
+            <Transition name="fade" mode="out-in">
+              <span :key="showCompactBadge ? 'ssl' : 'conexion'"
+                class="relative z-[1] font-black uppercase whitespace-nowrap transition-colors duration-300"
+                :class="showCompactBadge ? 'text-[9px] tracking-[0.15em] text-orange-500/40' : 'text-[10px] sm:text-[11px] tracking-[0.15em] text-orange-500/80'">{{
+                  showCompactBadge ? 'SSL' : 'Conexión segura' }}</span>
+            </Transition>
+
+            <!-- Tooltip (hover en cualquier estado) -->
+            <div
+              class="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-all duration-300 z-50 w-max max-w-[220px]">
+              <div class="bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2 shadow-2xl">
+                <p class="text-[10px] leading-relaxed text-white/70">
+                  <span class="text-orange-400 font-bold">🔒 SSL 256-bit</span><br>
+                  Su información viaja cifrada y protegida.
+                </p>
+              </div>
+            </div>
           </div>
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
             <span
@@ -97,7 +134,7 @@ onUnmounted(() => {
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-            }}</span>
+          }}</span>
         </button>
 
       </div>
@@ -182,5 +219,41 @@ onUnmounted(() => {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Pulse ring animation for SSL badge */
+@keyframes pulse-ring-orange {
+  0% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+  }
+}
+
+.animate-pulse-ring-orange {
+  animation: pulse-ring-orange 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Fade transition for badge state change */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-ring-orange {
+    animation: none;
+  }
 }
 </style>
