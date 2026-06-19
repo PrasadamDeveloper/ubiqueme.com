@@ -803,7 +803,7 @@ const hiddeLogsHandle = () => {
         <!-- Description -->
         <p class="text-white/40 text-xs leading-relaxed mb-4 max-w-[400px]">
           Este es su codigo para {{ propsComputed.name || 'este QR' }}. Escanee este código para contactar al
-          responsable de forma segura.
+          responsable de forma
           <span class="text-white/70">segura y anónima</span>.
         </p>
 
