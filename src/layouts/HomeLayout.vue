@@ -84,29 +84,42 @@ onUnmounted(() => {
         <div class="flex items-center gap-3 relative">
           <!-- SSL Badge (animated: expandido -> compacto tras 4s) -->
           <div
-            class="group/badge relative flex items-center gap-1.5 ml-4 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] active:scale-[0.97] transition-all duration-300 cursor-default"
-            :class="showCompactBadge ? 'px-2 py-1' : 'px-2.5 py-1.5'">
+            class="group/badge relative flex items-center gap-1.5 ml-4 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] active:scale-[0.97] cursor-default"
+            :class="showCompactBadge ? 'px-2 py-1' : 'px-2.5 py-1.5'"
+            :style="{ transition: 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)' }">
             <!-- Pulse ring (solo mientras expandido) -->
             <Transition name="fade">
               <span v-if="!showCompactBadge"
                 class="absolute inset-0 rounded-lg animate-pulse-ring-orange pointer-events-none"></span>
             </Transition>
 
-            <!-- Icono: lock mientras expandido, shield en compacto -->
-            <Transition name="fade" mode="out-in">
-              <span :key="showCompactBadge ? 'shield' : 'lock'"
-                class="material-symbols-outlined notranslate relative z-[1]"
-                :class="showCompactBadge ? 'text-orange-500/50' : 'text-orange-400'" style="font-size:16px">{{
-                  showCompactBadge ? 'shield' : 'lock' }}</span>
-            </Transition>
+            <!-- Icono: cross-fade lock -> shield -->
+            <div class="relative w-4 h-4 flex items-center justify-center shrink-0">
+              <Transition name="fade">
+                <span v-if="!showCompactBadge" key="lock"
+                  class="material-symbols-outlined notranslate absolute inset-0 flex items-center justify-center text-orange-400 z-[1]"
+                  style="font-size:16px">lock</span>
+              </Transition>
+              <Transition name="fade">
+                <span v-if="showCompactBadge" key="shield"
+                  class="material-symbols-outlined notranslate absolute inset-0 flex items-center justify-center text-orange-500/50 z-[1]"
+                  style="font-size:16px">shield</span>
+              </Transition>
+            </div>
 
-            <!-- Texto: "Conexión segura" expandido, "SSL" compacto -->
-            <Transition name="fade" mode="out-in">
-              <span :key="showCompactBadge ? 'ssl' : 'conexion'"
-                class="relative z-[1] font-black uppercase whitespace-nowrap transition-colors duration-300"
-                :class="showCompactBadge ? 'text-[9px] tracking-[0.15em] text-orange-500/40' : 'text-[10px] sm:text-[11px] tracking-[0.15em] text-orange-500/80'">{{
-                  showCompactBadge ? 'SSL' : 'Conexión segura' }}</span>
-            </Transition>
+            <!-- Texto: cross-fade "Conexión segura" -> "SSL" -->
+            <div class="relative flex items-center"
+              :style="{ minWidth: showCompactBadge ? '20px' : '105px', transition: 'min-width 0.45s cubic-bezier(0.4, 0, 0.2, 1)' }">
+              <Transition name="fade">
+                <span v-if="!showCompactBadge" key="conexion"
+                  class="absolute left-0 font-black whitespace-nowrap text-[10px] sm:text-[11px] text-orange-500/80 z-[1]">Conexión
+                  segura</span>
+              </Transition>
+              <Transition name="fade">
+                <span v-if="showCompactBadge" key="ssl"
+                  class="absolute left-0 font-black whitespace-nowrap text-[9px] tracking-[0.15em] text-orange-500/40 z-[1]">SSL</span>
+              </Transition>
+            </div>
 
             <!-- Tooltip (hover en cualquier estado) -->
             <div
@@ -233,7 +246,7 @@ onUnmounted(() => {
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-          }}</span>
+            }}</span>
         </button>
 
       </div>
