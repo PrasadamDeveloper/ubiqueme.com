@@ -43,7 +43,7 @@ Sin necesidad de que nadie instale una app.
 
 Descubra cómo funciona en situaciones reales:
 
-🔗 ubiqueme.com/en-accion
+🔗 <https://ubiqueme.com/en-accion>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -77,7 +77,7 @@ Ubiqueme
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🔗 ubiqueme.com
+🔗 <https://ubiqueme.com>
 📧 <soporte@ubiqueme.com>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
