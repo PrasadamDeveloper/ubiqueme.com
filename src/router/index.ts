@@ -78,6 +78,14 @@ const router = createRouter({
       component: () => import('@/views/public/PricingView.vue'),
     },
     {
+      path: '/en-accion',
+      name: 'videos',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/VideosView.vue'),
+    },
+    {
       path: '/help',
       name: 'help',
       meta: {

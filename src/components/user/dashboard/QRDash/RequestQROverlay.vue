@@ -63,7 +63,9 @@ const setGluePosition = (qrId: string, gluePosition: 'frontal' | 'trasero') => {
 
 const expandedQR = ref<string | null>(null)
 
-const toggleExpanded = (qrId: string) => {
+const toggleExpanded = (qrId: string, qrStatus?: string) => {
+  // Only active QRs can expand
+  if (qrStatus && qrStatus !== 'Active') return;
   if (expandedQR.value === qrId) {
     expandedQR.value = null
   } else {
@@ -90,7 +92,9 @@ const shipmentCost = computed(() => {
 
 const hasFreeShipment = computed(() => shipmentCost.value === 0)
 
-const toggleQRSelection = (qrId: string) => {
+const toggleQRSelection = (qrId: string, qrStatus?: string) => {
+  // Only active QRs can be selected
+  if (qrStatus && qrStatus !== 'Active') return;
   const newSet = new Set(selectedQRIds.value)
   if (newSet.has(qrId)) {
     newSet.delete(qrId)
@@ -409,15 +413,20 @@ const handleClose = () => {
                 ''
               ]">
 
-              <!-- Header row (click to select / expand) -->
-              <div class="flex items-center gap-3 p-3 cursor-pointer" @click="toggleExpanded(qr.id)">
-                <!-- Checkbox -->
-                <div @click.stop="toggleQRSelection(qr.id)"
-                  class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all cursor-pointer"
-                  :class="isSelected(qr.id)
-                    ? 'bg-orange-500 border-orange-500'
-                    : 'border-white/20 bg-transparent'">
-                  <span v-if="isSelected(qr.id)" class="material-symbols-outlined notranslate text-black text-[14px]">check</span>
+              <!-- Header row (click to select / expand) — only active QRs expand -->
+              <div class="flex items-center gap-3 p-3 cursor-pointer"
+                :class="qr.status !== 'Active' ? 'opacity-50' : ''"
+                @click="qr.status === 'Active' && toggleExpanded(qr.id, qr.status)">
+                <!-- Checkbox — disabled for non-active QRs -->
+                <div @click.stop="toggleQRSelection(qr.id, qr.status)"
+                  class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all" :class="[
+                    isSelected(qr.id)
+                      ? 'bg-orange-500 border-orange-500'
+                      : 'border-white/20 bg-transparent',
+                    qr.status !== 'Active' ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'
+                  ]">
+                  <span v-if="isSelected(qr.id)"
+                    class="material-symbols-outlined notranslate text-black text-[14px]">check</span>
                 </div>
 
                 <!-- QR Info -->
