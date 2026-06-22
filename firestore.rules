@@ -26,6 +26,24 @@
 // ===============================================================
 
 /**
+ * Determines which fields an owner can update on a QR document
+ * based on its current status.
+ * Rules:
+ *   - 'Active':     any field in the allowed list
+ *   - 'Paused':     only 'status' (to reactivate or cancel)
+ *   - 'Canceled':   nothing (owner cannot modify Canceled QRs)
+ *   - 'Inactive':   nothing (owner cannot modify Inactive QRs)
+ * Admin can always do anything.
+ */
+function canOwnerUpdateQR(currentStatus, affectedKeys, allowedKeys) {
+  // Only Active QRs allow changing non-status fields
+  return (currentStatus == 'Active' && affectedKeys.hasOnly(allowedKeys))
+         // Paused QRs can change status and isPublic (pause / reactivate)
+         || (currentStatus == 'Paused' && affectedKeys.hasOnly(['status', 'isPublic']));
+  // Canceled and Inactive: owner cannot update anything → always false
+}
+
+/**
  * Checks if the request comes from an authenticated user.
  * @return {boolean} true if request.auth is not null
  */
@@ -241,9 +259,13 @@ match /users/{userId} {
 
     // ── UPDATE ──
     // Who can update: the owner (limited fields), or admin (any field)
+    // Security: owner can only modify QRs that are 'Active' or 'Paused'.
+    //           Canceled and Inactive QRs are frozen for non-admin users.
     allow update: if (isOwner(userId)
-                      && request.resource.data.diff(resource.data).affectedKeys()
-                        .hasOnly(['status', 'name', 'category', 'isActive', 'lastScan', 'scans', 'physicalShipped', 'physicalShippedAt', 'shippingNotes', 'freeShipmentUsed']))
+                      && canOwnerUpdateQR(
+                           resource.data.status,
+                           request.resource.data.diff(resource.data).affectedKeys(),
+                           ['status', 'name', 'category', 'isActive', 'lastScan', 'scans', 'physicalShipped', 'physicalShippedAt', 'shippingNotes', 'freeShipmentUsed']))
                     || isAdmin();
 
     // ── DELETE ──
@@ -278,9 +300,13 @@ match /publicQR/{qrId} {
 
   // ── UPDATE ──
   // Who can update: the owner (limited fields), or admin (any field)
+  // Security: owner can only modify QRs that are 'Active' or 'Paused'.
+  //           Canceled and Inactive QRs are frozen for non-admin users.
   allow update: if (isAuth() && resource.data.uid == request.auth.uid
-                    && request.resource.data.diff(resource.data).affectedKeys()
-                      .hasOnly(['status', 'name', 'category', 'lastScan', 'totalScans', 'freeShipmentUsed', 'isPublic']))
+                    && canOwnerUpdateQR(
+                         resource.data.status,
+                         request.resource.data.diff(resource.data).affectedKeys(),
+                         ['status', 'name', 'category', 'lastScan', 'totalScans', 'freeShipmentUsed', 'isPublic']))
                   || isAdmin();
 
   // ── DELETE ──

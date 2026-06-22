@@ -21,7 +21,26 @@
             Verificación
           </h1>
 
-          <div v-if="status === 'loading'" class="flex flex-col items-center mt-6 w-full">
+          <div v-if="!oobCode" class="flex flex-col items-center mt-6 space-y-6 w-full">
+            <div
+              class="w-16 h-16 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center">
+              <span class="material-symbols-outlined notranslate text-orange-500 text-3xl">mail</span>
+            </div>
+            <p class="text-white/70 text-base font-medium leading-relaxed">
+              Le hemos enviado un correo de verificación a su bandeja de entrada. Por favor revise su correo
+              electrónico y haga clic en el enlace para activar su cuenta.
+            </p>
+            <p class="text-white/40 text-sm font-medium">
+              ¿No recibió el correo? Verifique su carpeta de spam o solicite un nuevo enlace desde el inicio de sesión.
+            </p>
+            <RouterLink to="/login"
+              class="w-full mt-4 h-14 bg-orange-500 text-black rounded-2xl font-black text-sm transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] flex items-center justify-center gap-2">
+              <span>Ir al Login</span>
+              <span class="material-symbols-outlined notranslate font-black text-xl">arrow_forward</span>
+            </RouterLink>
+          </div>
+
+          <div v-else-if="status === 'loading'" class="flex flex-col items-center mt-6 w-full">
             <!-- Reset Password Form -->
             <template v-if="action === 'resetPassword'">
               <div class="w-full space-y-6">
@@ -40,7 +59,7 @@
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined notranslate text-xl">{{ showNewPassword ? 'visibility' :
                         'visibility_off'
-                      }}</span>
+                        }}</span>
                     </button>
                   </div>
                 </div>
@@ -54,9 +73,10 @@
                       class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
                     <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
-                      <span class="material-symbols-outlined notranslate text-xl">{{ showConfirmPassword ? 'visibility' :
+                      <span class="material-symbols-outlined notranslate text-xl">{{ showConfirmPassword ? 'visibility'
+                        :
                         'visibility_off'
-                      }}</span>
+                        }}</span>
                     </button>
                   </div>
                 </div>
@@ -209,7 +229,7 @@ const handleActivateAccount = async (action: string) => {
 
 onMounted(() => {
   if (!oobCode || !action) {
-    status.value = 'error';
+    // No oobCode means user was just redirected after registering — show info state
     return;
   }
   handleActivateAccount(action as string);

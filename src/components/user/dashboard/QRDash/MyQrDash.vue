@@ -222,7 +222,8 @@
           <!-- Empty State — no subscriptions at all -->
           <div v-else-if="groupedQRs.length === 0" key="empty-all"
             class="flex flex-col items-center justify-center py-20 text-center w-full">
-            <span class="material-symbols-outlined notranslate text-6xl text-slate-500 mb-4">account_balance_wallet</span>
+            <span
+              class="material-symbols-outlined notranslate text-6xl text-slate-500 mb-4">account_balance_wallet</span>
             <h3 class="text-xl font-semibold text-white mb-2">No tiene suscripciones activas</h3>
             <p class="text-slate-400 mb-6">Adquiera un plan para poder registrar códigos QR.</p>
             <RouterLink to="/pricing"
@@ -256,7 +257,7 @@ import { useUserStore } from '@/stores/user'
 import QRCard from './QRCard.vue'
 import RequestQROverlay from './RequestQROverlay.vue'
 import { onMounted, onUnmounted, ref, computed } from 'vue'
-import { collection, getFirestore, onSnapshot, Timestamp, doc, increment, writeBatch, getDoc } from 'firebase/firestore'
+import { collection, getFirestore, onSnapshot, Timestamp, doc, increment, writeBatch, getDoc, FirestoreError } from 'firebase/firestore'
 import { useImageStore } from '@/stores/imageStore'
 
 import type { IMyQR } from '@/interfaces/IMyQR'
@@ -510,8 +511,11 @@ onMounted(async () => {
       id: doc.id,
       ...doc.data()
     })) as ISubscription[];
-  }, (error) => {
-    toast.error(`Error obteniendo suscripciones: ${error}`);
+  }, (error: FirestoreError) => {
+    // Silenciar error esperado al cerrar sesión
+    if (error.code !== 'permission-denied') {
+      toast.error(`Error obteniendo suscripciones: ${error}`);
+    }
   });
 
   // Listener de QRs
@@ -534,8 +538,11 @@ onMounted(async () => {
       isLoading.value = false;
     }, 600);
   },
-    (error) => {
-      toast.error(`Error obteniendo QRs: ${error}`);
+    (error: FirestoreError) => {
+      // Silenciar error esperado al cerrar sesión
+      if (error.code !== 'permission-denied') {
+        toast.error(`Error obteniendo QRs: ${error}`);
+      }
       isLoading.value = false;
     }
   );
