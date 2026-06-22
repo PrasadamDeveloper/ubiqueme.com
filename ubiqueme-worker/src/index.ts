@@ -381,6 +381,34 @@ function parseScanFields(text: string): ParsedScanData {
 	};
 }
 
+//DELETE FOR PRODUCTION TEST ONLY 21/06/2026
+async function sendWhatsappMsg (env:Env) {
+const whatsappUrl =  `https://graph.facebook.com/v25.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+const payload = {
+  	messaging_product: "whatsapp",
+  	recipient_type: "individual",
+  	to: "525635752789",
+  	type: "text",
+ 	 text: {
+    "body": "Lo lograste bro! te felicito, vamos a lograrlo, saldrás adelante nunca te rindas y recuerda... Memento Mori."
+ 	 }
+}
+
+	try {
+		await fetch(whatsappUrl,{
+			method:'POST',
+			headers:{
+				authorization:`Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+				'Content-Type':'application/json'
+			},
+			body:JSON.stringify(payload)
+		})
+		console.log('Succesfully sent message to user')
+	} catch (error) {
+		console.log(`Error while trying to send shkn whatsapp message: ${error}`)
+	}
+}
+
 // ─── Main handler ───────────────────────────────────────────────
 export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
@@ -389,6 +417,13 @@ export default {
 		// Handle CORS preflight
 		if (request.method === 'OPTIONS') {
 			return new Response(null, { headers: CORS_HEADERS });
+		}
+
+		if (url.pathname === '/swm'){
+			await sendWhatsappMsg(env)
+			return new Response('Whatsapp shkn handle', {
+				headers:CORS_HEADERS
+			})
 		}
 
 		// ─── POST /api/send-otp ──────────────────────────────────
@@ -550,12 +585,18 @@ async function sendOtpWhatsApp(env: Env, to: string, code: string): Promise<bool
 		template: {
 			name: 'verify_otp',
 			language: { code: 'es' },
-			components: [
-				{
-					type: 'body',
-					parameters: [{ type: 'text', text: code }],
-				},
-			],
+		components: [
+			{
+				type: 'body',
+				parameters: [{ type: 'text', text: code }],
+			},
+		{
+			type: 'button',
+			sub_type: 'url',
+			index: 0,
+			parameters: [{ type: 'text', text: code }],
+		},
+		],
 		},
 	};
 	const response = await fetch(MESSAGES_URL(env), {
@@ -574,9 +615,9 @@ async function sendOtpWhatsApp(env: Env, to: string, code: string): Promise<bool
  */
 async function handleSendOtp(request: Request, env: Env): Promise<Response> {
 	try {
-		const { uid } = (await request.json()) as { uid?: string };
-		if (!uid) {
-			return new Response(JSON.stringify({ error: 'uid is required' }), {
+		const { uid, phone } = (await request.json()) as { uid?: string; phone?: string };
+		if (!uid || !phone) {
+			return new Response(JSON.stringify({ error: 'uid and phone are required' }), {
 				status: 400,
 				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
 			});
@@ -594,13 +635,6 @@ async function handleSendOtp(request: Request, env: Env): Promise<Response> {
 		}
 
 		const userData = userSnap.data();
-		const phone: string | undefined = userData.phone;
-		if (!phone) {
-			return new Response(JSON.stringify({ error: 'No phone registered' }), {
-				status: 400,
-				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-			});
-		}
 
 		// Rate limit: check if a recent OTP was sent (within last 60s)
 		const otpExpiresAt = userData.otpExpiresAt?.toDate?.();
@@ -620,11 +654,12 @@ async function handleSendOtp(request: Request, env: Env): Promise<Response> {
 		const salt = generateSalt();
 		const hash = await sha256Hex(code + salt);
 
-		// Store in Firestore
+		// Store pendingPhone + OTP data in Firestore (DO NOT set phone yet)
 		const now = Timestamp.now();
 		const expiresAt = Timestamp.fromMillis(now.toMillis() + 10 * 60 * 1000); // 10 min
 		const batch = writeBatch(db!);
 		batch.update(userRef, {
+			pendingPhone: phone,
 			otpHash: hash,
 			otpSalt: salt,
 			otpExpiresAt: expiresAt,
@@ -688,9 +723,17 @@ async function handleVerifyOtp(request: Request, env: Env): Promise<Response> {
 		const otpSalt: string | undefined = userData.otpSalt;
 		const otpExpiresAt: Timestamp | undefined = userData.otpExpiresAt;
 		const otpAttempts: number | undefined = userData.otpAttempts;
+		const pendingPhone: string | undefined = userData.pendingPhone;
 
 		if (!otpHash || !otpSalt || !otpExpiresAt) {
 			return new Response(JSON.stringify({ error: 'No OTP pending' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		if (!pendingPhone) {
+			return new Response(JSON.stringify({ error: 'No pending phone to verify' }), {
 				status: 400,
 				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
 			});
@@ -734,10 +777,12 @@ async function handleVerifyOtp(request: Request, env: Env): Promise<Response> {
 			});
 		}
 
-		// Success — mark phone as verified, clean up OTP fields
+		// Success — move pendingPhone to phone, mark as verified, clean up OTP + pending fields
 		const successBatch = writeBatch(db!);
 		successBatch.update(userRef, {
+			phone: pendingPhone,
 			phoneVerified: true,
+			pendingPhone: deleteField(),
 			otpHash: deleteField(),
 			otpSalt: deleteField(),
 			otpExpiresAt: deleteField(),
@@ -745,7 +790,7 @@ async function handleVerifyOtp(request: Request, env: Env): Promise<Response> {
 			otpSentAt: deleteField(),
 		});
 		await successBatch.commit();
-		console.log(`[Worker] Phone verified for uid ${uid}`);
+		console.log(`[Worker] Phone verified for uid ${uid}: ${pendingPhone}`);
 
 		return new Response(JSON.stringify({ success: true, phoneVerified: true }), {
 			status: 200,
