@@ -68,8 +68,8 @@ onUnmounted(() => {
             <!-- Texto: "Conexión segura" expandido, "SSL" compacto -->
             <Transition name="fade" mode="out-in">
               <span :key="showCompactBadge ? 'ssl' : 'conexion'"
-                class="relative z-[1] font-black uppercase whitespace-nowrap transition-colors duration-300"
-                :class="showCompactBadge ? 'text-[9px] tracking-[0.15em] text-orange-500/40' : 'text-[10px] sm:text-[11px] tracking-[0.15em] text-orange-500/80'">{{
+                class="relative z-[1] font-black   transition-colors duration-300"
+                :class="showCompactBadge ? 'text-[9px]  text-orange-500/40' : 'text-[10px] sm:text-[11px]  text-orange-500/80'">{{
                   showCompactBadge ? 'SSL' : 'Conexión segura' }}</span>
             </Transition>
 

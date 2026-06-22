@@ -382,30 +382,30 @@ function parseScanFields(text: string): ParsedScanData {
 }
 
 //DELETE FOR PRODUCTION TEST ONLY 21/06/2026
-async function sendWhatsappMsg (env:Env) {
-const whatsappUrl =  `https://graph.facebook.com/v25.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
-const payload = {
-  	messaging_product: "whatsapp",
-  	recipient_type: "individual",
-  	to: "525635752789",
-  	type: "text",
- 	 text: {
-    "body": "Lo lograste bro! te felicito, vamos a lograrlo, saldrás adelante nunca te rindas y recuerda... Memento Mori."
- 	 }
-}
+async function sendWhatsappMsg(env: Env) {
+	const whatsappUrl = `https://graph.facebook.com/v25.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+	const payload = {
+		messaging_product: 'whatsapp',
+		recipient_type: 'individual',
+		to: '525635752789',
+		type: 'text',
+		text: {
+			body: 'Lo lograste bro! te felicito, vamos a lograrlo, saldrás adelante nunca te rindas y recuerda... Memento Mori.',
+		},
+	};
 
 	try {
-		await fetch(whatsappUrl,{
-			method:'POST',
-			headers:{
-				authorization:`Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-				'Content-Type':'application/json'
+		await fetch(whatsappUrl, {
+			method: 'POST',
+			headers: {
+				authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+				'Content-Type': 'application/json',
 			},
-			body:JSON.stringify(payload)
-		})
-		console.log('Succesfully sent message to user')
+			body: JSON.stringify(payload),
+		});
+		console.log('Succesfully sent message to user');
 	} catch (error) {
-		console.log(`Error while trying to send shkn whatsapp message: ${error}`)
+		console.log(`Error while trying to send shkn whatsapp message: ${error}`);
 	}
 }
 
@@ -419,11 +419,11 @@ export default {
 			return new Response(null, { headers: CORS_HEADERS });
 		}
 
-		if (url.pathname === '/swm'){
-			await sendWhatsappMsg(env)
+		if (url.pathname === '/swm') {
+			await sendWhatsappMsg(env);
 			return new Response('Whatsapp shkn handle', {
-				headers:CORS_HEADERS
-			})
+				headers: CORS_HEADERS,
+			});
 		}
 
 		// ─── POST /api/send-otp ──────────────────────────────────
@@ -434,6 +434,11 @@ export default {
 		// ─── POST /api/verify-otp ────────────────────────────────
 		if (url.pathname === '/api/verify-otp' && request.method === 'POST') {
 			return handleVerifyOtp(request, env);
+		}
+
+		// ───POST /api/cancel-otp
+		if (url.pathname === '/api/cancel-otp' && request.method === 'POST') {
+			return handleCancelOTPCode(env, request);
 		}
 
 		// Webhook routing (Exclusively for Meta)
@@ -585,18 +590,18 @@ async function sendOtpWhatsApp(env: Env, to: string, code: string): Promise<bool
 		template: {
 			name: 'verify_otp',
 			language: { code: 'es' },
-		components: [
-			{
-				type: 'body',
-				parameters: [{ type: 'text', text: code }],
-			},
-		{
-			type: 'button',
-			sub_type: 'url',
-			index: 0,
-			parameters: [{ type: 'text', text: code }],
-		},
-		],
+			components: [
+				{
+					type: 'body',
+					parameters: [{ type: 'text', text: code }],
+				},
+				{
+					type: 'button',
+					sub_type: 'url',
+					index: 0,
+					parameters: [{ type: 'text', text: code }],
+				},
+			],
 		},
 	};
 	const response = await fetch(MESSAGES_URL(env), {
@@ -798,6 +803,43 @@ async function handleVerifyOtp(request: Request, env: Env): Promise<Response> {
 		});
 	} catch (e: unknown) {
 		console.error('[Worker] Excepción en handleVerifyOtp:', e);
+		return new Response(JSON.stringify({ error: 'Internal error' }), {
+			status: 500,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	}
+}
+
+//Cancel OTP (when user clicks on 'wrong number button')
+async function handleCancelOTPCode(env: Env, request: Request) {
+	try {
+		const { uid } = (await request.json()) as { uid?: string };
+		if (!uid) {
+			return new Response(JSON.stringify({ error: 'uid is required' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+		await ensureAuthenticated(env);
+		const { db } = getFirebase(env);
+
+		const batch = writeBatch(db!);
+		const userRef = doc(db!, `users/${uid}`);
+		batch.update(userRef, {
+			pendingPhone: deleteField(),
+			otpHash: deleteField(),
+			otpSalt: deleteField(),
+			otpExpiresAt: deleteField(),
+			otpAttempts: deleteField(),
+			otpSentAt: deleteField(),
+		});
+		await batch.commit();
+		return new Response(JSON.stringify({ success: true }), {
+			status: 200,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	} catch (error) {
+		console.log(`Internal Error: ${error}`);
 		return new Response(JSON.stringify({ error: 'Internal error' }), {
 			status: 500,
 			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
