@@ -35,26 +35,42 @@
               Número de WhatsApp
             </label>
             <div class="flex gap-2">
-              <!-- Country selector -->
+              <!-- Country code input with suggestions -->
               <div class="relative shrink-0">
-                <select v-model="selectedCountry"
-                  class="appearance-none w-[100px] h-14 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white text-sm font-medium text-center focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all cursor-pointer">
-                  <option v-for="c in countries" :key="c.code" :value="c" class="bg-[#0c0c0c] text-white">
-                    {{ c.flag }} {{ c.prefix }}
-                  </option>
-                </select>
-                <span class="absolute text-xs -translate-y-1/2 pointer-events-none right-3 top-1/2 text-white/20">
-                  &#9660;
-                </span>
+                <!-- Input for typing country code -->
+                <input v-model="countryCodeSearch" type="text" inputmode="numeric" placeholder="+52"
+                  @input="onCountrySearch" @focus="suggestionsOpen = true" @blur="closeSuggestions"
+                  class="w-[110px] h-14 px-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white text-sm font-medium text-center focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all placeholder:text-white/40"
+                  v-if="!selectedCountry || editingCountry" />
+
+                <!-- Chip when country is selected -->
+                <button v-else @click="editCountry" type="button"
+                  class="flex items-center gap-1.5 h-14 px-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white text-sm font-medium cursor-pointer transition-all hover:bg-white/10">
+                  <span class="text-lg">{{ selectedCountry.flag }}</span>
+                  <span class="font-medium tracking-wider">{{ selectedCountry.prefix }}</span>
+                  <span class="text-xs text-white/30 material-symbols-outlined notranslate">expand_more</span>
+                </button>
+
+                <!-- Suggestions dropdown -->
+                <div v-if="suggestionsOpen && filteredCountries.length"
+                  class="absolute z-50 mt-1 left-0 min-w-[240px] bg-[#151515] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-48 overflow-y-auto">
+                  <button v-for="c in filteredCountries" :key="c.code" @mousedown.prevent="selectCountry(c)"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 transition-colors text-white text-sm text-left">
+                    <span class="text-lg shrink-0">{{ c.flag }}</span>
+                    <span class="font-medium truncate">{{ c.name }}</span>
+                    <span class="ml-auto text-white/40 shrink-0">{{ c.prefix }}</span>
+                  </button>
+                </div>
               </div>
 
               <!-- Phone input -->
               <div class="relative flex-1">
-                <input v-model="phoneNumber" type="tel" placeholder="55 1234 5678" @input="onPhoneInput"
-                  class="w-full px-5 text-lg font-medium tracking-wider text-white transition-all border h-14 bg-white/5 border-white/20 hover:border-white/30 rounded-2xl placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10" />
+                <input ref="phoneInput" v-model="phoneNumber" type="tel" placeholder="55 1234 5678"
+                  @input="onPhoneInput" :disabled="!selectedCountry"
+                  class="w-full px-5 text-lg font-medium tracking-wider text-white transition-all border h-14 bg-white/5 border-white/20 hover:border-white/30 rounded-2xl placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed" />
               </div>
             </div>
-            <p class="text-[11px] text-white/30 font-medium ml-1">
+            <p v-if="selectedCountry" class="text-[11px] text-white/30 font-medium ml-1">
               {{ selectedCountry.flag }} {{ selectedCountry.name }}
             </p>
           </div>
@@ -86,12 +102,12 @@
           </div>
           <div class="flex-1 min-w-0">
             <h2 class="text-xl font-black tracking-tight text-white sm:text-2xl">
-              Verifica tu número
+              Verifique su número
             </h2>
             <p class="mt-1 text-sm font-medium leading-relaxed text-white/50">
               Hemos enviado un código de verificación de 6 dígitos al número
               <span class="font-bold text-white/70">{{ selectedCountry.prefix }} {{ phoneNumber }}</span>
-              por WhatsApp. Introdúcelo abajo para confirmar.
+              por WhatsApp. Introduzcalo abajo para confirmar.
             </p>
           </div>
         </div>
@@ -122,14 +138,28 @@
           </button>
 
           <!-- Resend link -->
-          <div class="text-center">
+          <div class="text-center flex flex-col items-center gap-2.5">
+            <small class="text-white/40">
+              ¿No recibó el código?
+            </small>
             <button @click="handleResendOtp" :disabled="isSendingOtp"
-              class="text-sm font-medium transition-colors text-white/40 hover:text-orange-500 disabled:opacity-30">
-              ¿No recibiste el código?
+              class="text-xs  transition-colors text-white/40 disabled:opacity-30 group">
+              <span
+                class="group-hover:text-slate-200 group-hover:ring group-hover:ring-offset-white shadow-white group-hover:shadow-sm transition-shadow duration-400 ease-out  px-1 py-1.5 rounded-lg border border-gray-500 bg-[#0F0F0F]    cursor-pointer font-google-sans font-medium">Enviar
+                de
+                nuevo</span>
             </button>
             <span v-if="resendCooldown > 0" class="ml-2 text-xs font-medium text-white/20">
               ({{ resendCooldown }}s)
             </span>
+          </div>
+          <div class="text-center">
+            <button @click="handleCancelOTPValidation" :disabled="isSendingOtp"
+              class="text-xs font-medium transition-colors text-orange-100/40 italic hover:text-gray-100 disabled:opacity-30 flex items-center justify-center w-full gap-1 cursor-pointer">
+              <span class="material-symbols-outlined text-sm! ">phone</span>
+              <span class="underline">¿Número equivocado?</span>
+            </button>
+
           </div>
         </div>
       </template>
@@ -137,14 +167,13 @@
       <!-- Footer (same in both steps) -->
       <p class="mt-5 text-[10px] text-white/20 font-medium text-center leading-relaxed">
         Este número solo se usará para enviarle notificaciones de escaneo de sus códigos QR.
-        No compartiremos su número con terceros.
       </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, nextTick, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { toast } from 'vue-sonner'
 import { parsePhoneNumber, getCountries, getCountryCallingCode } from 'libphonenumber-js'
@@ -208,9 +237,13 @@ const countries: Country[] = getCountries()
   .sort((a, b) => a.name.localeCompare(b.name))
 
 const selectedCountry = ref<Country>(countries.find((c) => c.code === 'MX') || countries[0]!)
+const countryCodeSearch = ref('')
+const editingCountry = ref(false)
+const suggestionsOpen = ref(false)
+const phoneInput = ref<HTMLInputElement | null>(null)
 const phoneNumber = ref('')
 const otpCode = ref('')
-const step = ref<1 | 2>(1)
+const step = ref<1 | 2 | 3>(1)
 const isSendingOtp = ref(false)
 const isVerifying = ref(false)
 const resendCooldown = ref(0)
@@ -230,6 +263,41 @@ const isValid = computed(() => {
 const onPhoneInput = () => {
   // Strip non-digits
   phoneNumber.value = phoneNumber.value.replace(/\D/g, '')
+}
+
+const filteredCountries = computed(() => {
+  const q = countryCodeSearch.value.replace(/\D/g, '')
+  if (!q) return countries
+  return countries.filter((c) => c.prefix.replace('+', '').startsWith(q))
+})
+
+const onCountrySearch = () => {
+  // Strip non-digits
+  countryCodeSearch.value = countryCodeSearch.value.replace(/\D/g, '')
+  suggestionsOpen.value = true
+}
+
+const selectCountry = async (country: Country) => {
+  selectedCountry.value = country
+  countryCodeSearch.value = ''
+  editingCountry.value = false
+  suggestionsOpen.value = false
+  // Focus the phone input after selection
+  await nextTick()
+  phoneInput.value?.focus()
+}
+
+const editCountry = () => {
+  editingCountry.value = true
+  suggestionsOpen.value = true
+  countryCodeSearch.value = selectedCountry.value.prefix.replace('+', '')
+}
+
+const closeSuggestions = () => {
+  // Delay so click on suggestion registers first
+  setTimeout(() => {
+    suggestionsOpen.value = false
+  }, 150)
 }
 
 const onOtpInput = () => {
@@ -354,6 +422,30 @@ const startResendCooldown = () => {
   }, 1000)
 }
 
+const handleCancelOTPValidation = async () => {
+  try {
+    const userId = userStore.getUserId;
+    const response = await fetch(`${WORKER_URL}/api/cancel-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid: userId }),
+    });
+
+    const data = await response.json()
+    console.log(data)
+    if (!response.ok) {
+      throw new Error(`Error al cancelar`)
+    }
+    if (response.ok) {
+      toast.info('Codigo OTP cancelado')
+      step.value = 1;
+      phoneNumber.value = ''
+    }
+  } catch (error) {
+    toast.error(`Error al intentar cancelar la verificación OTP: ${error}`)
+  }
+}
+
 onUnmounted(() => {
   if (cooldownTimer) clearInterval(cooldownTimer)
 })
@@ -376,8 +468,17 @@ onUnmounted(() => {
   animation: fadeIn 0.35s ease-out forwards;
 }
 
-/* Remove default select arrow in IE */
-select::-ms-expand {
-  display: none;
+/* Scrollbar for suggestions */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 </style>
