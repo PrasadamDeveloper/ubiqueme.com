@@ -29,7 +29,7 @@ const submitForm = () => {
 </script>
 
 <template>
-  <div class="w-full max-w-7xl mx-auto font-google-sans pb-20">
+  <div class="w-full max-w-7xl mx-auto font-google-sans pb-20 p-3">
     <!-- Page Header -->
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-2">

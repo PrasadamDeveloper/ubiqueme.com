@@ -228,7 +228,7 @@ const showUpdateModal = (mode: boolean) => {
 </script>
 
 <template>
-  <div class="w-full max-w-7xl mx-auto font-google-sans pb-20">
+  <div class="w-full max-w-7xl mx-auto font-google-sans pb-20 p-3">
     <PhoneUpdatePrompt v-if="isUpdateModal" @dismiss="showUpdateModal(false)"></PhoneUpdatePrompt>
     <!-- Page Header -->
     <div class="mb-8">
@@ -337,14 +337,14 @@ const showUpdateModal = (mode: boolean) => {
               class="bg-[#161618] border border-white/5 rounded-xl p-3 hover:border-orange-500/20 transition-all group cursor-pointer block">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-mono text-white/20 truncate max-w-[80px]">{{ qr.id?.slice(0, 8)
-                }}...</span>
+                  }}...</span>
                 <span :class="qrStatusColor(qr.status)"
                   class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border">
                   {{ qr.status }}
                 </span>
               </div>
               <p class="text-sm font-medium text-white/80 truncate group-hover:text-white transition-colors">{{ qr.name
-              }}</p>
+                }}</p>
               <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center gap-2">
                   <span class="material-symbols-outlined notranslate text-[12px] text-white/20">visibility</span>
