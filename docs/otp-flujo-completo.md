@@ -167,7 +167,30 @@ if (!userSnap.exists()) {
 }
 ```
 
-#### 2.3 RATE LIMITING — ¿Esperar 60 segundos?
+#### 2.3 ANTI-SPAM GLOBAL — Límite de intentos totales
+
+Antes del rate limiting de 60s, el worker verifica un contador **global** de OTPs solicitados por este usuario:
+
+```ts
+// ubiqueme-worker/src/index.ts
+const userData = userSnap.data()
+
+// ❌ ANTI-SPAM: Si el usuario ha solicitado 10 OTPs en total, se bloquea permanentemente
+if (userData.totalOtpAttempts == 10) {
+  return new Response(
+    JSON.stringify({
+      error: 'Attempts limit reached',
+    }),
+    {
+      status: 401, // HTTP 401 = Unauthorized
+    },
+  )
+}
+```
+
+**¿Por qué un límite global?** `otpAttempts` (3 intentos) se reinicia con cada nuevo OTP, pero `totalOtpAttempts` es un contador **acumulativo de por vida**. Si un usuario ha solicitado 10 códigos en total (aunque todos hayan expirado o se hayan cancelado), se bloquea para siempre. Esto evita abuso del sistema de verificación telefónica.
+
+#### 2.4 RATE LIMITING — ¿Esperar 60 segundos?
 
 ```ts
 // Obtiene los datos actuales del usuario
@@ -203,7 +226,7 @@ if (otpExpiresAt && otpExpiresAt > new Date()) {
 | OTP sigue vigente pero últ. envío > 60s | ✅ Pasa, permite reenviar    |
 | OTP sigue vigente y envío < 60s         | ❌ Rechaza con 429           |
 
-#### 2.4 🎯 GENERACIÓN DEL CÓDIGO + SALT + HASH
+#### 2.5 🎯 GENERACIÓN DEL CÓDIGO + SALT + HASH
 
 Aquí está el corazón del sistema. Se generan tres cosas:
 
@@ -226,7 +249,7 @@ const hash = await sha256Hex(code + salt)
 
 ---
 
-##### 🔧 Función `generateOtpCode()` — Línea 351
+##### 🔧 Función `generateOtpCode()` — Línea ~355
 
 ```ts
 // ubiqueme-worker/src/index.ts — Líneas 351-353
@@ -242,7 +265,7 @@ function generateOtpCode(): string {
 
 ---
 
-##### 🔧 Función `generateSalt()` — Línea 355
+##### 🔧 Función `generateSalt()` — Línea ~359
 
 ```ts
 // ubiqueme-worker/src/index.ts — Líneas 355-361
@@ -269,7 +292,7 @@ function generateSalt(): string {
 
 ---
 
-##### 🔧 Función `sha256Hex()` — Línea 343
+##### 🔧 Función `sha256Hex()` — Línea ~347
 
 ```ts
 // ubiqueme-worker/src/index.ts — Líneas 343-349
@@ -294,10 +317,10 @@ async function sha256Hex(input: string): Promise<string> {
 
 ---
 
-#### 2.5 📝 ESCRITURA EN FIRESTORE
+#### 2.6 📝 ESCRITURA EN FIRESTORE
 
 ```ts
-// ubiqueme-worker/src/index.ts — Líneas 657-669
+// ubiqueme-worker/src/index.ts
 
 // pendingPhone: el teléfono NO se guarda como "phone" oficial aún
 // Se guarda como "pendingPhone" = pendiente de verificación
@@ -315,6 +338,7 @@ batch.update(userRef, {
   otpExpiresAt: expiresAt, // Ahora + 10 minutos
   otpAttempts: 0, // Empieza en 0 intentos
   otpSentAt: now, // Marca de tiempo del envío (para rate limiting)
+  totalOtpAttempts: increment(1), // 🔢 Contador global de OTPs solicitados (anti-spam)
 })
 await batch.commit()
 ```
@@ -330,7 +354,8 @@ await batch.commit()
   "otpSalt": "a7f3c9e1b2d84f6a0c3e5d7b9a1c4e8f2a6d0b3c5e7f9a1b4d6c8e0a2f4b6d8",
   "otpExpiresAt": "Abril 15, 2026, 10:35:00 UTC",
   "otpAttempts": 0,
-  "otpSentAt": "Abril 15, 2026, 10:25:00 UTC"
+  "otpSentAt": "Abril 15, 2026, 10:25:00 UTC",
+  "totalOtpAttempts": 12 // Contador global de OTPs solicitados (nunca se reinicia)
 }
 ```
 
@@ -343,8 +368,9 @@ await batch.commit()
 | ✅ `otpExpiresAt` (fecha de expiración) | ❌ Nada que permita obtener el código original |
 | ✅ `otpAttempts` (contador de intentos) |                                                |
 | ✅ `pendingPhone` (número a verificar)  |                                                |
+| ✅ `totalOtpAttempts` (contador global) |                                                |
 
-#### 2.6 📱 ENVÍO DEL CÓDIGO POR WHATSAPP
+#### 2.7 📱 ENVÍO DEL CÓDIGO POR WHATSAPP
 
 ```ts
 // ubiqueme-worker/src/index.ts — Líneas 673-674
@@ -417,7 +443,7 @@ Válido por 10 minutos.
 [Copiar código]  <-- botón
 ```
 
-#### 2.7 Respuesta al frontend
+#### 2.8 Respuesta al frontend
 
 ```ts
 // Si llegó aquí, todo salió bien: código generado, guardado y enviado
@@ -426,7 +452,7 @@ return new Response(JSON.stringify({ success: true }), {
 })
 ```
 
-#### 2.8 Manejo de errores
+#### 2.9 Manejo de errores
 
 ```ts
   } catch (e: unknown) {
@@ -732,7 +758,72 @@ return new Response(JSON.stringify({ success: true, phoneVerified: true }), {
 
 ---
 
-## ✅ Paso 5: Frontend recibe la respuesta exitosa
+## ⏹️ Paso 5.5: Cancelación de OTP — `POST /api/cancel-otp`
+
+Cuando el usuario hace clic en "Número incorrecto" en el frontend, se cancela el OTP pendiente.
+
+### 5.5.1 Frontend — Envío de cancelación
+
+```ts
+// PhonePrompt.vue
+const handleCancelOtp = async () => {
+  const userId = userStore.getUserId
+  if (!userId) return
+
+  const response = await fetch(`${WORKER_URL}/api/cancel-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uid: userId }),
+  })
+  // El modal se cierra y el usuario puede intentar con otro número
+}
+```
+
+### 5.5.2 Worker — `handleCancelOTPCode()`
+
+```ts
+// ubiqueme-worker/src/index.ts
+async function handleCancelOTPCode(env: Env, request: Request) {
+  try {
+    const { uid } = (await request.json()) as { uid?: string }
+    if (!uid) {
+      return new Response(JSON.stringify({ error: 'uid is required' }), {
+        status: 400,
+      })
+    }
+
+    await ensureAuthenticated(env)
+    const { db } = getFirebase(env)
+
+    const batch = writeBatch(db!)
+    const userRef = doc(db!, `users/${uid}`)
+    batch.update(userRef, {
+      pendingPhone: deleteField(),
+      otpHash: deleteField(),
+      otpSalt: deleteField(),
+      otpExpiresAt: deleteField(),
+      otpAttempts: deleteField(),
+      otpSentAt: deleteField(),
+    })
+    await batch.commit()
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+    })
+  } catch (error) {
+    console.log(`Internal Error: ${error}`)
+    return new Response(JSON.stringify({ error: 'Internal error' }), {
+      status: 500,
+    })
+  }
+}
+```
+
+**¿Qué hace?** Limpia todos los campos OTP del documento del usuario, igual que si el código hubiera expirado o se hubiera verificado exitosamente. La diferencia es que **no** toca `totalOtpAttempts` (ese contador global sigue acumulado) ni escribe `phone` (el número no se verifica). Simplemente permite al usuario empezar de cero con un número diferente.
+
+---
+
+## ✅ Paso 6: Frontend recibe la respuesta exitosa
 
 ```ts
 // PhonePrompt.vue — Líneas 306-331
@@ -772,6 +863,8 @@ emit('saved') // Cierra el modal
 | **Rate limiting**              | 60 segundos mínimo entre reenvíos                                                 | Evita spam de SMS/WhatsApp (costo por mensaje)                                         |
 | **PendingPhone vs Phone**      | El número vive en `pendingPhone` hasta que se verifica                            | Si alguien nunca verifica, su `phone` oficial queda vacío (no tiene número registrado) |
 | **Limpieza post-verificación** | `deleteField()` en todos los campos OTP                                           | El código no puede reutilizarse (ataque de replay)                                     |
+| **Límite global de OTPs**      | `totalOtpAttempts` contador de por vida; max 10 antes de bloqueo permanente       | Evita abuso sistemático del sistema de verificación telefónica                         |
+| **Cancelación de OTP**         | `POST /api/cancel-otp` limpia campos OTP sin verificar el número                  | Permite al usuario corregir un número incorrecto sin perder el contador global         |
 
 ---
 
@@ -892,8 +985,11 @@ async function handleSendOtp(request: Request, env: Env): Promise<Response> {
   const userSnap = await getDoc(userRef)
   if (!userSnap.exists()) return error(404, 'User not found')
 
-  // Rate limiting: 60s
+  // Anti-spam global: máximo 10 OTPs de por vida
   const userData = userSnap.data()
+  if (userData.totalOtpAttempts == 10) return error(401, 'Attempts limit reached')
+
+  // Rate limiting: 60s
   const otpExpiresAt = userData.otpExpiresAt?.toDate?.()
   if (otpExpiresAt && otpExpiresAt > new Date()) {
     const otpSentAt = userData.otpSentAt?.toDate?.()
@@ -918,6 +1014,7 @@ async function handleSendOtp(request: Request, env: Env): Promise<Response> {
     otpExpiresAt: expiresAt,
     otpAttempts: 0,
     otpSentAt: now,
+    totalOtpAttempts: increment(1), // Contador global
   })
   await batch.commit()
 
@@ -996,7 +1093,7 @@ async function handleVerifyOtp(request: Request, env: Env): Promise<Response> {
 
 > **Documentación generada a partir del código fuente de Ubiqueme**
 > Archivos involucrados: `ubiqueme-worker/src/index.ts`, `src/components/user/dashboard/QRDash/PhonePrompt.vue`
-> Última actualización: 22 de junio de 2026
+> Última actualización: 23 de junio de 2026
 
 ```
 
