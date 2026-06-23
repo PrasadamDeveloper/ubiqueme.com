@@ -14,7 +14,6 @@ import {
 	deleteField,
 } from 'firebase/firestore/lite';
 import { getAuth, Auth, signInWithEmailAndPassword } from 'firebase/auth';
-
 // ─── Meta Webhook Types ─────────────────────────────────────────
 interface MetaWebhookPayload {
 	entry?: Array<{
@@ -641,6 +640,19 @@ async function handleSendOtp(request: Request, env: Env): Promise<Response> {
 
 		const userData = userSnap.data();
 
+		//Check if user is spamming and preventing spam
+		if (userData.totalOtpAttempts == 10) {
+			return new Response(
+				JSON.stringify({
+					error: 'Attempts limit reached',
+				}),
+				{
+					status: 401,
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+				},
+			);
+		}
+
 		// Rate limit: check if a recent OTP was sent (within last 60s)
 		const otpExpiresAt = userData.otpExpiresAt?.toDate?.();
 		if (otpExpiresAt && otpExpiresAt > new Date()) {
@@ -670,6 +682,7 @@ async function handleSendOtp(request: Request, env: Env): Promise<Response> {
 			otpExpiresAt: expiresAt,
 			otpAttempts: 0,
 			otpSentAt: now,
+			totalOtpAttempts: increment(1),
 		});
 		await batch.commit();
 		console.log(`[Worker] OTP stored for uid ${uid}, expires at ${expiresAt.toDate().toISOString()}`);
