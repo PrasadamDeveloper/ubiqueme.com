@@ -30,6 +30,8 @@ import {
   BiPersonFill,
   BiPersonCircle,
   BiWhatsapp,
+  RiMedalLine,
+  RiMedalFill,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -52,6 +54,8 @@ addIcons(
   BiPersonFill,
   BiPersonCircle,
   BiWhatsapp,
+  RiMedalLine,
+  RiMedalFill,
 )
 
 const app = createApp(App)

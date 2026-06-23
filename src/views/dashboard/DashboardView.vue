@@ -4,11 +4,8 @@ import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
 import MainLoader from '@/components/ui/MainLoader.vue'
 import { useAuth } from '@/handleAuth'
 import { computed, defineAsyncComponent, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.ts'
 import { useComponentsStore } from '@/stores/components.ts'
-
-const router = useRouter()
 
 const hoverOnSideBar = ref(false)
 let timeout = null as any
@@ -27,18 +24,21 @@ const handleSideBarLeave = () => {
 
 const dashButtons = [
   { name: 'Mis QR', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
+  { name: 'Planes', icon: 'ri-medal-line', iconActive: 'ri-medal-fill' },
   { name: 'Configuración', icon: 'co-settings', iconActive: 'md-settings' },
   { name: 'Soporte', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
   { name: 'Cerrar Sesión', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' },
+
 ]
 
 const mobileButtons = [
   { name: 'Mis QR', label: 'QRs', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
+  { name: 'Planes', label: 'Planes', icon: 'ri-medal-line', iconActive: 'ri-medal-fill' },
   { name: 'Configuración', label: 'Ajustes', icon: 'co-settings', iconActive: 'md-settings' },
   { name: 'Soporte', label: 'Ayuda', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
 ]
 
-type ComponentName = 'Mis QR' | 'Configuración' | 'Cerrar Sesión' | 'Soporte'
+type ComponentName = 'Mis QR' | 'Configuración' | 'Cerrar Sesión' | 'Soporte' | 'Planes'
 
 const withLoader = (viewPath: () => Promise<any>) => {
   return defineAsyncComponent({
@@ -53,6 +53,7 @@ const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   'Mis QR': withLoader(() => import('../../components/user/dashboard/QRDash/MyQrDash.vue')),
   'Configuración': withLoader(() => import('../../components/user/dashboard/settings/SettingsDash.vue')),
   'Soporte': defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
+  'Planes': defineAsyncComponent(() => import('../../components/user/dashboard/pricing/PricingDash.vue')),
 }
 
 const currentComponent = computed(() => {
@@ -66,6 +67,8 @@ const changeComponent = (component: ComponentName) => {
     handleLogout()
     return
   }
+
+
   componentsStore.changeComponent(component)
 }
 
@@ -79,18 +82,21 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 🚀 SIDEBAR (OVERLAY MODE) - Desktop Only -->
         <aside @mouseenter="handleSideBarHover" @mouseleave="handleSideBarLeave"
-          :class="{ 'w-65': hoverOnSideBar, 'w-24': !hoverOnSideBar }"
-          class="hidden lg:flex absolute left-0 top-0 z-30 pt-24 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 bg-[#0c0c0c] will-change-[width]">
+          :class="{ 'w-65  bg-[#0D0D0F]': hoverOnSideBar, 'w-24  bg-[#0D0D0F]': !hoverOnSideBar }"
+          class="hidden lg:flex absolute left-0 top-0 z-30 pt-24 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 will-change-[width]">
 
-          <div class="mb-12">
-            <div class="w-18 h-12 bg-[#060200] rounded-xl flex items-center justify-center shadow-2xl">
-              <span class="text-orange-100 text-xs font-google-sans font-medium">{{
-                useUserStore().getFirstName.charAt(0)
-              }}</span>
+          <div class="mb-12 hidden">
+            <div
+              class="w-18 h-12 bg-[#090300] rounded-xl flex items-center justify-center shadow-2xl overflow-hidden absolute left-0">
+              <span v-if="!hoverOnSideBar" class="text-orange-100 text-xs font-google-sans font-medium">{{
+                'Hola'
+                }}</span>
+              <span v-else class="text-white text-xs font-google-sans animate-fade-right">{{ useUserStore().getFirstName
+                }}</span>
             </div>
           </div>
 
-          <div class="flex-1 w-full space-y-2 px-4 overflow-hidden justify-evenly h-full flex flex-col">
+          <div class="flex-1 w-full space-y-1 px-4 overflow-hidden justify-evenly h-full flex flex-col ">
             <ButtonDash @click="changeComponent(btn.name as ComponentName)" v-for="(btn, index) in dashButtons"
               :key="btn.name" :name="btn.name" :isHover="hoverOnSideBar" :index="index" :icon="btn.icon"
               :iconActive="btn.iconActive" :active="componentsStore.getCurrentComponent === btn.name" />
@@ -106,7 +112,7 @@ const changeComponent = (component: ComponentName) => {
         <!-- 🚀 MAIN CONTENT AREA (FIXED OFFSET) -->
         <div
           class="relative z-10 w-full h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:pl-24! lg:pt-15 pt-20! pb-28 lg:pb-8 bg-[#0e0e0e]  flex-1!">
-          <section class="w-full ">
+          <section class="w-full px-4 sm:px-6 lg:px-8 pt-5 pb-20  mx-auto space-y-10 ">
             <component :is="currentComponent"></component>
           </section>
         </div>

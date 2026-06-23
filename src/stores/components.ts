@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-type ComponentName = 'Mis QR' | 'Configuración' | 'Cerrar Sesión' | 'Soporte'
+type ComponentName = 'Mis QR' | 'Configuración' | 'Cerrar Sesión' | 'Soporte' | 'Planes'
 
 export const useComponentsStore = defineStore('componentsStore', {
   state: () => ({

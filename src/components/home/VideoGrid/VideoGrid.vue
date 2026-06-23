@@ -4,7 +4,8 @@
     <!-- Section Header -->
     <div class="text-center mb-16" data-aos="fade-up">
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-        Ubiqueme en acción <span class="material-symbols-outlined notranslate text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
+        Ubiqueme en acción <span
+          class="material-symbols-outlined notranslate text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
       </h2>
       <p class="text-white/50 text-base sm:text-lg font-medium max-w-2xl mx-auto">
         Descubra cómo nuestra tecnología protege lo que más valora.
@@ -15,25 +16,23 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
 
       <!-- Video Item Wrapper -->
-      <div v-for="(v, i) in videoSources" :key="i"
-        class="flex flex-col gap-4"
-        data-aos="fade-up" :data-aos-delay="(i - 1) * 100">
-        
+      <div v-for="(v, i) in videoSources" :key="i" class="flex flex-col gap-4" data-aos="fade-up"
+        :data-aos-delay="(i - 1) * 100">
+
         <!-- Title Above Video -->
         <h3 class="text-xl sm:text-2xl font-bold text-white text-center px-2">{{ v.title }}</h3>
 
         <!-- Video Card -->
-        <div
-          class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group"
+        <div class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group"
           :id="`video-${i}`">
           <!-- User's Main Video -->
-          <video
-            class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video"
-            v-lazy-video="v.src" autoplay loop muted playsinline>
+          <video class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video"
+            v-lazy-video="v.src" autoplay loop muted playsinline :ref="setVideoRef(i)">
           </video>
 
           <!-- Hover Overlay for Description -->
-          <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
+          <div
+            class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
             <p class="text-white/90 text-sm md:text-base font-medium leading-relaxed mb-8">{{ v.description }}</p>
           </div>
 
@@ -45,7 +44,8 @@
           <!-- Sound Activation Button -->
           <button @click="activateSound(i)"
             class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-[#09090b] hover:bg-orange-500 border border-orange-500/30 hover:border-transparent text-white/90 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 z-30 flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_25px_rgba(249,115,22,0.3)]">
-            <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' : 'volume_up' }}</span>
+            <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' :
+              'volume_up' }}</span>
             {{ mutedStates[i] ? 'Haga click para activar el sonido' : 'Haga click para silenciar' }}
           </button>
         </div>
@@ -120,8 +120,16 @@ onMounted(() => {
 
 const mutedStates = ref(videoSources.map(() => true))
 
+// Template refs array — reemplaza querySelector para mejor reactividad
+const videoRefs = ref<(HTMLVideoElement | null)[]>([])
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const setVideoRef = (index: number) => (el: any) => {
+  videoRefs.value[index] = el as HTMLVideoElement | null
+}
+
 const activateSound = (videoId: number) => {
-  const videoSelected = document.querySelector(`#video-${videoId} .main-video`) as HTMLVideoElement;
+  const videoSelected = videoRefs.value[videoId];
 
   if (!videoSelected) return;
 
@@ -132,7 +140,7 @@ const activateSound = (videoId: number) => {
     // Silenciar los demás videos
     videoSources.forEach((_, index) => {
       if (index !== videoId) {
-        const otherVideo = document.querySelector(`#video-${index} .main-video`) as HTMLVideoElement;
+        const otherVideo = videoRefs.value[index];
         if (otherVideo && !otherVideo.muted) {
           otherVideo.muted = true;
           mutedStates.value[index] = true;

@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore'
 import MainLoader from '@/components/ui/MainLoader.vue'
 import { useComponentsStore } from '@/stores/components'
+import PhoneUpdatePrompt from '../QRDash/PhoneUpdatePrompt.vue'
 
 const userStore = useUserStore()
 const db = getFirestore()
@@ -219,10 +220,16 @@ const goToMYQR = () => {
   componentsStore.changeComponent('Mis QR');
 }
 
+const isUpdateModal = ref(false);
+
+const showUpdateModal = (mode: boolean) => {
+  mode ? isUpdateModal.value = true : isUpdateModal.value = false;
+}
 </script>
 
 <template>
   <div class="w-full max-w-7xl mx-auto font-google-sans pb-20">
+    <PhoneUpdatePrompt v-if="isUpdateModal" @dismiss="showUpdateModal(false)"></PhoneUpdatePrompt>
     <!-- Page Header -->
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-2">
@@ -290,15 +297,16 @@ const goToMYQR = () => {
             <div>
               <label class="block text-[10px] font-medium text-gray-500 mb-1 uppercase tracking-wider">Teléfono</label>
               <div class="flex gap-2">
-                <input type="tel" v-model="phoneInput"
-                  class="flex-1 bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-white/20"
-                  placeholder="+52 555 123 4567" />
-                <button @click="handleSavePhone" :disabled="isSavingPhone"
-                  class="px-4 py-3 rounded-xl text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5">
+                <input type="tel" v-model="userStore.getUserPhone"
+                  class="flex-1 bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white/30 focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-white/20"
+                  placeholder="+52 555 123 4567" disabled />
+
+                <button @click="showUpdateModal(true)" :disabled="isSavingPhone"
+                  class="px-2 rounded-xl text-sm font-medium bg-orange-700 hover:bg-orange-500 text-white transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1">
                   <span v-if="isSavingPhone"
                     class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  <span v-else class="material-symbols-outlined notranslate text-[18px]">save</span>
-                  <span class="hidden sm:inline text-xs font-bold uppercase tracking-wider">Guardar</span>
+                  <span v-else class="material-symbols-outlined notranslate text-[18px]">autorenew</span>
+                  <span class="hidden sm:inline text-xs font-bold uppercase tracking-wider">Cambiar</span>
                 </button>
               </div>
             </div>
@@ -349,8 +357,8 @@ const goToMYQR = () => {
 
           <div v-else class="flex flex-col items-center justify-center py-12 text-center">
             <span class="material-symbols-outlined notranslate text-4xl text-white/10 mb-3">qr_code_scanner</span>
-            <p class="text-sm text-white/30">No tienes códigos QR registrados</p>
-            <p class="text-[10px] text-white/20 mt-1">Adquiere un plan para comenzar</p>
+            <p class="text-sm text-white/30">No tiene códigos QR registrados</p>
+            <p class="text-[10px] text-white/20 mt-1">Adquiera un plan para comenzar</p>
           </div>
         </div>
       </div>

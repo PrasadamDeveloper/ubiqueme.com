@@ -65,7 +65,7 @@ onUnmounted(() => {
     <nav :class="[
       'fixed top-0 w-full z-50 transition-all duration-500',
       isScrolled
-        ? 'bg-[#09090b]/85 backdrop-blur-2xl border-b border-white/5 shadow-[0_4px_40px_rgba(0,0,0,0.4)]'
+        ? 'bg-[#09090b]/95  border-b border-white/5 shadow-[0_4px_40px_rgba(0,0,0,0.4)]'
         : 'bg-[#09090b] border-b border-white/5'
     ]">
 

@@ -28,12 +28,12 @@ const props = defineProps({
 
 <template>
   <button :class="[
-    'relative flex items-center gap-3 rounded-[10px] transition-all duration-300 overflow-hidden',
+    'relative flex items-center gap-3 rounded-[10px] transition-all ease-out duration-200 overflow-hidden  w-full',
     'min-h-[42px] px-3 cursor-pointer',
     active
       ? 'bg-orange-500/10 text-orange-400'
-      : 'text-white/50 hover:bg-white/5'
-  ]" :style="{ width: isHover ? '184px' : '47px' }">
+      : 'text-white/50 hover:bg-orange-500/70 hover:text-white'
+  ]" :style="{ width: isHover ? '195px' : '47px' }">
     <!-- indicador activo -->
     <span v-if="active" class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-orange-500"></span>
 
