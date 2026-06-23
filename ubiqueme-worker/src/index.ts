@@ -806,6 +806,7 @@ async function handleVerifyOtp(request: Request, env: Env): Promise<Response> {
 			otpExpiresAt: deleteField(),
 			otpAttempts: deleteField(),
 			otpSentAt: deleteField(),
+			totalOtpAttempts: deleteField(),
 		});
 		await successBatch.commit();
 		console.log(`[Worker] Phone verified for uid ${uid}: ${pendingPhone}`);
