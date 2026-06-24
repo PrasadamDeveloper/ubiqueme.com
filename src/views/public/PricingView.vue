@@ -81,7 +81,7 @@ const plans = [
 ]
 
 const handleSelect = (id: string) => {
-  router.push({ name: 'checkout', params: { planId: id } })
+  router.push({ name: 'checkout', query: { planId: id, currency: selectedCurrency.value } })
 }
 </script>
 
@@ -204,7 +204,8 @@ const handleSelect = (id: string) => {
                           : !feature.included
                             ? { border: '1px solid rgba(255,255,255,0.04)' }
                             : {}">
-                        <span class="material-symbols-outlined notranslate text-[10px]! font-black">{{ feature.included ? 'check' :
+                        <span class="material-symbols-outlined notranslate text-[10px]! font-black">{{ feature.included
+                          ? 'check' :
                           'remove' }}</span>
                       </div>
                       <span class="text-[13px] font-medium leading-snug font-mono"

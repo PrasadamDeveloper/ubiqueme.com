@@ -80,7 +80,7 @@ const plans = [
 ]
 
 const handleSelect = (id: string) => {
-  router.push({ name: 'checkout', params: { planId: id } })
+  router.push({ name: 'checkout', query: { planId: id, currency: selectedCurrency.value } })
 }
 </script>
 

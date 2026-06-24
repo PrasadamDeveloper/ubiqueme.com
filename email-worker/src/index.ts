@@ -164,6 +164,7 @@ export default {
 		}
 
 		const plan = body.plan;
+		const currency = body.currency;
 		const fullName = body.fullName;
 		const email = body.email;
 		const phone = body.phone;
@@ -182,6 +183,7 @@ export default {
 
 		const fields = {
 			Plan: planLabel,
+			Moneda: currency || 'MXN',
 			'Nombre completo': fullName,
 			'Correo electrónico': email,
 			Teléfono: phone,

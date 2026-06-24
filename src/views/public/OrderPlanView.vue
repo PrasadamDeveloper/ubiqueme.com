@@ -9,7 +9,8 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const selectedPlan = ref(route.params.planId as string || 'plata')
+const selectedPlan = ref((route.query.planId as string) || (route.params.planId as string) || 'plata')
+const selectedCurrency = ref<'MXN' | 'USD' | 'CLP'>((route.query.currency as 'MXN' | 'USD' | 'CLP') || 'MXN')
 
 onMounted(() => {
   if (!userStore.isAuthenticated) {
@@ -32,11 +33,14 @@ const plans = [
   {
     id: 'bronce',
     name: 'Bronce',
-    price: '$499',
-    period: '/año',
     icon: 'shield',
     description: 'Protección básica esencial para comenzar.',
     cta: 'Seleccionar Bronce',
+    prices: {
+      MXN: { price: '499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '42' },
+      USD: { price: '29', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '2.4' },
+      CLP: { price: '25000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '2100' },
+    },
     features: [
       { label: '1 código QR activo', included: true },
       { label: 'Contador de escaneos básico', included: true },
@@ -51,12 +55,15 @@ const plans = [
   {
     id: 'plata',
     name: 'Plata',
-    price: '$999',
-    period: '/año',
     icon: 'verified_user',
     description: 'La opción más equilibrada con monitoreo avanzado.',
     featured: true,
     cta: 'Seleccionar Plata',
+    prices: {
+      MXN: { price: '999', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '83' },
+      USD: { price: '59', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '4.9' },
+      CLP: { price: '49000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '4100' },
+    },
     features: [
       { label: '3 códigos QR activos', included: true },
       { label: 'Contador de escaneos en tiempo real', included: true },
@@ -71,11 +78,14 @@ const plans = [
   {
     id: 'oro',
     name: 'Oro',
-    price: '$1,499',
-    period: '/año',
     icon: 'military_tech',
     description: 'Control total con todas las funciones premium.',
     cta: 'Seleccionar Oro',
+    prices: {
+      MXN: { price: '1499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '125' },
+      USD: { price: '89', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '7.4' },
+      CLP: { price: '75000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '6300' },
+    },
     features: [
       { label: '5 códigos QR activos', included: true },
       { label: 'Mapa dinámico de ubicación', included: true },
@@ -102,9 +112,10 @@ const handleSubmit = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         plan: selectedPlan.value,
+        currency: selectedCurrency.value,
         fullName: formData.value.fullName,
         email: formData.value.email,
-        phone: formData.value.phone,
+        phone: userStore.getUserPhone || formData.value.phone,
         firebaseUid: formData.value.firebaseUid,
         notes: formData.value.specialNotes,
       }),
@@ -180,12 +191,16 @@ const handleSubmit = async () => {
                     </p>
                     <h3 class="text-2xl font-black text-white">{{ currentPlan.name }}</h3>
                   </div>
-                  <span class="material-symbols-outlined notranslate text-2xl text-[#ff7900]">{{ currentPlan.icon }}</span>
+                  <span class="material-symbols-outlined notranslate text-2xl text-[#ff7900]">{{ currentPlan.icon
+                    }}</span>
                 </div>
 
                 <div class="flex items-baseline gap-1 mb-3">
-                  <span class="text-3xl font-black text-white">{{ currentPlan.price }}</span>
-                  <span class="text-white/20 text-[10px] font-black uppercase">{{ currentPlan.period }}</span>
+                  <span class="text-3xl font-black text-white">{{ currentPlan.prices[selectedCurrency].symbol }}{{
+                    currentPlan.prices[selectedCurrency].price }}</span>
+                  <span class="text-white/20 text-[10px] font-black uppercase">{{
+                    currentPlan.prices[selectedCurrency].label }} {{ currentPlan.prices[selectedCurrency].period
+                    }}</span>
                 </div>
                 <p class="text-white/40 text-sm mb-6">{{ currentPlan.description }}</p>
 
@@ -201,7 +216,8 @@ const handleSubmit = async () => {
                     :class="feature.included ? 'border-white/[0.06] bg-white/[0.02]' : 'border-white/[0.03] bg-white/[0.01] opacity-40'">
                     <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                       :class="feature.included ? 'bg-[#ff7900]/10 text-[#ff7900]' : 'bg-white/[0.03] text-white/20'">
-                      <span class="material-symbols-outlined notranslate text-[14px] font-black">{{ feature.included ? 'check' :
+                      <span class="material-symbols-outlined notranslate text-[14px] font-black">{{ feature.included ?
+                        'check' :
                         'close' }}</span>
                     </div>
                     <span class="text-sm font-medium"
@@ -229,7 +245,8 @@ const handleSubmit = async () => {
                   style="background-image: linear-gradient(rgba(255,121,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,121,0,.3) 1px, transparent 1px); background-size: 20px 20px;">
                 </div>
                 <div class="relative z-10 flex items-start gap-3">
-                  <span class="material-symbols-outlined notranslate text-[#ff7900] text-xl shrink-0 mt-0.5">local_shipping</span>
+                  <span
+                    class="material-symbols-outlined notranslate text-[#ff7900] text-xl shrink-0 mt-0.5">local_shipping</span>
                   <div class="space-y-1">
                     <h4 class="text-xs font-bold text-white uppercase tracking-wider">Envío físico — Solo México</h4>
                     <p class="text-[12px] text-white/50 leading-relaxed">
@@ -262,8 +279,10 @@ const handleSubmit = async () => {
 
                   <div class="space-y-1.5">
                     <label class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30">Teléfono WhatsApp
-                      <span class="text-[#ff7900]">*</span></label>
-                    <input v-model="formData.phone" required type="tel" placeholder="+52 555 555 5555"
+                      <span v-if="!userStore.getUserPhone" class="text-[#ff7900]">*</span></label>
+                    <input v-if="userStore.getUserPhone" :value="userStore.getUserPhone" readonly
+                      class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white/60 text-sm outline-none cursor-not-allowed" />
+                    <input v-else v-model="formData.phone" required type="tel" placeholder="+52 555 555 5555"
                       class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-[#0d0d0e] text-white text-sm outline-none focus:border-[#ff7900]/40 focus:ring-1 focus:ring-[#ff7900]/20 transition-all placeholder:text-white/15" />
                   </div>
 
@@ -291,7 +310,7 @@ const handleSubmit = async () => {
                 <h2 class="text-3xl font-black text-white tracking-tight">Suscripción en proceso</h2>
                 <p class="text-white/40 text-sm leading-relaxed max-w-xs mx-auto">
                   Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-white">{{ formData.email
-                  }}</strong>.
+                    }}</strong>.
                 </p>
               </div>
               <button @click="router.push('/')"
