@@ -182,7 +182,7 @@ const toggleSound = (index: number) => {
                 <article class=" p-2 bg-white rounded-xl pb-8 relative">
                   <qrcode-vue value="https://ubiqueme.com" :size="100" render-as="canvas" />
                   <span
-                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-black/50 leading-tight">ubiqueme.com</span>
+                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-orange-400 leading-tight">ubiqueme.com</span>
                 </article>
               </div>
             </h1>

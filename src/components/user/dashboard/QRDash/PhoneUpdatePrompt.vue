@@ -279,6 +279,10 @@ const onCountrySearch = () => {
   // Strip non-digits
   countryCodeSearch.value = countryCodeSearch.value.replace(/\D/g, '')
   suggestionsOpen.value = true
+  // Auto-select if exactly one country matches the typed prefix
+  if (filteredCountries.value.length === 1) {
+    selectCountry(filteredCountries.value[0]!)
+  }
 }
 
 const selectCountry = async (country: Country) => {
