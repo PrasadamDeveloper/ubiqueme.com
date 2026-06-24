@@ -27,7 +27,7 @@
               <span class="flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-green-400"></span>
                 <span class="font-medium text-green-400">{{usersData.filter(u => u.isActive && !u.isBanned).length
-                  }}</span> activos
+                }}</span> activos
               </span>
               <span class="w-px h-4 bg-white/10"></span>
               <span class="flex items-center gap-1.5">
@@ -64,7 +64,7 @@
 
           <!-- Empty -->
           <div v-if="!loading && !usersComputed?.length" class="text-center py-20">
-            <span class="material-symbols-outlined notranslate text-4xl text-white/10 mb-3">group_off</span>
+            <span class="material-symbols-outlined notranslate text-4xl  text-white/10 mb-3">group_off</span>
             <p class="text-white/30 text-sm">No se encontraron usuarios</p>
           </div>
 
@@ -90,7 +90,7 @@
                     <span class="text-sm font-medium text-white truncate">{{ user.name }}</span>
                     <span v-if="user.role !== 'user'"
                       class="px-1.5 py-0.5 rounded border border-white/[0.06] bg-white/[0.03] text-[8px] uppercase tracking-widest text-white/40 font-black shrink-0">{{
-                      user.role }}</span>
+                        user.role }}</span>
                     <span v-if="user.isBanned"
                       class="px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 text-[8px] font-black uppercase tracking-widest shrink-0">Suspendido</span>
                   </div>
@@ -105,10 +105,9 @@
                 <div class="flex items-center gap-4 shrink-0">
                   <div class="hidden sm:flex items-center gap-1.5 text-xs">
                     <span class="material-symbols-outlined notranslate text-[13px] text-[#ff7900]">qr_code</span>
-                    <span class="text-white/60 font-mono">{{ user.totalQRs }}</span>
+                    <span class="text-white/60">{{ user.totalQRs }}</span>
                   </div>
-                  <span class="text-[10px] font-bold font-mono"
-                    :class="user.isActive ? 'text-green-400' : 'text-white/25'">
+                  <span class="text-[10px] font-bold" :class="user.isActive ? 'text-green-400' : 'text-white/25'">
                     {{ user.isActive ? 'Activo' : 'Inactivo' }}
                   </span>
                   <!-- Expand indicator -->
@@ -120,10 +119,11 @@
 
               <!-- Expanded detail panel -->
               <Transition name="expand">
-                <div v-if="expandedUsers.has(user.uid)" class="border-t border-white/[0.04] px-4 pb-4 pt-3 space-y-4">
+                <div v-if="expandedUsers.has(user.uid)"
+                  class="border-t border-white/[0.04] px-4 pb-4 pt-3 grid grid-cols-1 sm:grid-cols-4 gap-3">
 
                   <!-- Quick actions row -->
-                  <div class="flex items-center gap-2 flex-wrap">
+                  <div class="flex items-center gap-2 flex-wrap col-span-full">
                     <button @click="openPlanModal(user)" :disabled="processingPlanSubmit"
                       class="h-7 px-2.5 rounded-lg border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
                       <span v-if="processingPlanSubmit"
@@ -159,16 +159,173 @@
                     </button>
                   </div>
 
-                  <!-- Dates row -->
-                  <div class="flex items-center gap-4 text-[10px] text-white/30 font-mono flex-wrap">
-                    <span>Registro: <span class="text-white/50">{{ formatedDate(user.createdAt) }}</span></span>
-                    <span>Último login: <span class="text-white/50">{{ formatedDate(user.lastLoginAt) }}</span></span>
-                    <span v-if="user.isBanned && user.banReason" class="text-red-300/70">Motivo: {{ user.banReason
-                      }}</span>
+                  <!-- Contacto -->
+                  <div
+                    class="border border-[#ff7900]/20 rounded-xl p-3 hover:border-[#ff7900]/60 transition-colors duration-200">
+                    <div class="flex items-center gap-1.5 mb-2">
+                      <span class="material-symbols-outlined notranslate text-[13px] text-[#ff7900]">contact_page</span>
+                      <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#ff7900]/70">Contacto</span>
+                    </div>
+                    <div class="space-y-1.5 pl-0.5">
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">mail</span>
+                        <span class="text-[11px] text-white/40">Email:</span>
+                        <span class="text-[11px] text-white">{{ user.email }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">call</span>
+                        <span class="text-[11px] text-white/40">Teléfono:</span>
+                        <span v-if="user.phone" class="text-[11px] text-white">{{ user.phone }}</span>
+                        <span v-else class="text-[11px] italic text-white/20">Sin teléfono</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">fingerprint</span>
+                        <span class="text-[11px] text-white/40">UID:</span>
+                        <span class="text-[10px] text-white font-mono tracking-tight">{{ user.uid }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Estado -->
+                  <div
+                    class="border border-[#ff7900]/20 rounded-xl p-3 hover:border-[#ff7900]/60 transition-colors duration-200">
+                    <div class="flex items-center gap-1.5 mb-2">
+                      <span
+                        class="material-symbols-outlined notranslate text-[13px] text-[#ff7900]">manage_accounts</span>
+                      <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#ff7900]/70">Estado</span>
+                    </div>
+                    <div class="space-y-1.5 pl-0.5">
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">check_circle</span>
+                        <span class="text-[11px] text-white/40">Estado:</span>
+                        <span class="text-[11px] font-medium"
+                          :class="user.isActive ? 'text-green-400' : 'text-white/30'">{{ user.isActive ? 'Activo' :
+                            'Inactivo' }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">gavel</span>
+                        <span class="text-[11px] text-white/40">Suspensión:</span>
+                        <span class="text-[11px]"
+                          :class="user.isBanned ? 'text-red-400 font-medium' : 'text-white/30'">{{ user.isBanned ?
+                            'Suspendido' : 'No suspendido' }}</span>
+                      </div>
+                      <div v-if="user.isBanned && user.banReason" class="flex items-center gap-2.5 ml-7">
+                        <span class="text-[11px] text-red-300/70"><strong>Motivo:</strong> {{ user.banReason }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">badge</span>
+                        <span class="text-[11px] text-white/40">Rol:</span>
+                        <span class="text-[11px] text-white">{{ user.role }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">qr_code</span>
+                        <span class="text-[11px] text-white/40">QRs totales:</span>
+                        <span class="text-[11px] text-white font-medium">{{ user.totalQRs }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Fechas -->
+                  <div
+                    class="border border-[#ff7900]/20 rounded-xl p-3 hover:border-[#ff7900]/60 transition-colors duration-200">
+                    <div class="flex items-center gap-1.5 mb-2">
+                      <span class="material-symbols-outlined notranslate text-[13px] text-[#ff7900]">schedule</span>
+                      <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#ff7900]/70">Fechas</span>
+                    </div>
+                    <div class="space-y-1.5 pl-0.5">
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">calendar_add_on</span>
+                        <span class="text-[11px] text-white/40">Registro:</span>
+                        <span class="text-[11px] text-white">{{ formatedDate(user.createdAt) }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">login</span>
+                        <span class="text-[11px] text-white/40">Último login:</span>
+                        <span class="text-[11px] text-white">{{ formatedDate(user.lastLoginAt) }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Trial -->
+                  <div v-if="user.trialActive"
+                    class="border border-[#ff7900]/20 rounded-xl p-3 hover:border-[#ff7900]/60 transition-colors duration-200">
+                    <div class="flex items-center gap-1.5 mb-2">
+                      <span class="material-symbols-outlined notranslate text-[13px] text-[#ff7900]">science</span>
+                      <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#ff7900]/70">Periodo de
+                        prueba</span>
+                    </div>
+                    <div class="space-y-1.5 pl-0.5">
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">play_arrow</span>
+                        <span class="text-[11px] text-white/40">Inicio:</span>
+                        <span class="text-[11px] text-white">{{ formatedDate(user.trialStartsAt) }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">timer</span>
+                        <span class="text-[11px] text-white/40">Fin:</span>
+                        <span class="text-[11px] text-white">{{ formatedDate(user.trialEndsAt) }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">history</span>
+                        <span class="text-[11px] text-white/40">Estado:</span>
+                        <span class="text-[11px] font-medium"
+                          :class="user.isTrialUsed ? 'text-amber-400' : 'text-green-400'">{{ user.isTrialUsed ? 'Usado'
+                            : 'Disponible' }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Notificaciones -->
+                  <div
+                    class="border border-[#ff7900]/20 rounded-xl p-3 hover:border-[#ff7900]/60 transition-colors duration-200 hidden">
+                    <div class="flex items-center gap-1.5 mb-2">
+                      <span
+                        class="material-symbols-outlined notranslate text-[13px] text-[#ff7900]">notifications</span>
+                      <span
+                        class="text-[9px] font-black uppercase tracking-[0.2em] text-[#ff7900]/70">Notificaciones</span>
+                    </div>
+                    <div class="space-y-1.5 pl-0.5">
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">mail</span>
+                        <span class="text-[11px] text-white/40">Email:</span>
+                        <span class="text-[11px] font-medium"
+                          :class="user.preferences?.emailNotifications ? 'text-green-400' : 'text-white/30'">{{
+                            user.preferences?.emailNotifications ? 'ON' : 'OFF' }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">sms</span>
+                        <span class="text-[11px] text-white/40">SMS:</span>
+                        <span class="text-[11px] font-medium"
+                          :class="user.preferences?.smsNotifications ? 'text-green-400' : 'text-white/30'">{{
+                            user.preferences?.smsNotifications ? 'ON' : 'OFF' }}</span>
+                      </div>
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="material-symbols-outlined notranslate text-[12px] text-[#ff7900] shrink-0">chat</span>
+                        <span class="text-[11px] text-white/40">WhatsApp:</span>
+                        <span class="text-[11px] font-medium"
+                          :class="user.preferences?.whatsappNotifications ? 'text-green-400' : 'text-white/30'">{{
+                            user.preferences?.whatsappNotifications ? 'ON' : 'OFF' }}</span>
+                      </div>
+                    </div>
                   </div>
 
                   <!-- Subscriptions -->
-                  <div v-if="getUserSubscriptions(user.uid).length > 0" class="space-y-2">
+                  <div v-if="getUserSubscriptions(user.uid).length > 0" class="space-y-2 col-span-full">
                     <div
                       class="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 flex items-center gap-1.5">
                       <span class="material-symbols-outlined notranslate text-[11px]">workspace_premium</span>
@@ -184,7 +341,7 @@
                             <span
                               class="material-symbols-outlined notranslate text-[14px] text-[#ff7900]">workspace_premium</span>
                             <span class="font-bold text-[#ff7900] uppercase text-[10px] tracking-wider">{{ sub.planType
-                              }}</span>
+                            }}</span>
                           </div>
                           <span
                             :class="sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : sub.status === 'canceled' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/40 border-white/10'"
@@ -198,7 +355,7 @@
                         <div>
                           <div class="flex justify-between text-[9px] mb-1">
                             <span class="text-white/40">QRs</span>
-                            <span class="text-white font-mono font-bold">{{ sub.totalQRsCreated }} / {{
+                            <span class="text-white font-bold">{{ sub.totalQRsCreated }} / {{
                               sub.totalQRsAllowed }}</span>
                           </div>
                           <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
@@ -213,16 +370,16 @@
                         <div class="flex items-center justify-between text-[9px] text-white/30">
                           <span>Envíos: <span class="text-white/50">{{ sub.freeShipmentsUsed ?? 0 }}/{{
                             sub.freeShipmentsAllowed ?? 1 }}</span></span>
-                          <span>ID: <span class="font-mono text-white/30">{{ sub.id.slice(0, 8) }}…</span></span>
+                          <span>ID: <span class="text-white/30">{{ sub.id.slice(0, 8) }}…</span></span>
                         </div>
 
                         <!-- Dates -->
                         <div class="flex items-center gap-3 text-[9px] text-white/30">
-                          <span>Inicio: <span class="text-white/50 font-mono">{{ formatedDate(sub.purchasedAt)
-                              }}</span></span>
-                          <span>Ven: <span class="font-mono"
+                          <span>Inicio: <span class="text-white/50">{{ formatedDate(sub.purchasedAt)
+                          }}</span></span>
+                          <span>Ven: <span
                               :class="sub.status === 'active' && sub.endDate && sub.endDate.toDate() < new Date() ? 'text-red-400' : 'text-white/50'">{{
-                              formatedDate(sub.endDate) }}</span></span>
+                                formatedDate(sub.endDate) }}</span></span>
                         </div>
 
                         <!-- Cancel info -->
@@ -266,7 +423,7 @@
                       </div>
                     </div>
                   </div>
-                  <div v-else>
+                  <div v-else class="col-span-full">
                     <span class="text-[10px] text-white/20 italic">Sin suscripciones</span>
                   </div>
                 </div>
@@ -829,7 +986,7 @@ const getUserIdUI = (userPayload: IUser, index: number) => {
     oro: 'O',
   };
   const prefix = prefixMap[planType] ?? 'U';
-  return `${prefix}${String(index).padStart(5, '0')}${initial}`;
+  return `${prefix}${String(index).padStart(3, '0')}${initial}`;
 }
 
 </script>

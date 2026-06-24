@@ -27,7 +27,7 @@ const propsComputed = computed(() => {
 })
 
 const showMenu = ref(false)
-const activePrompt = ref<'cancel' | 'renew' | 'edit' | 'amplify' | 'download' | null>(null)
+const activePrompt = ref<'cancel' | 'renew' | 'edit' | 'amplify' | 'download' | 'international' | null>(null)
 
 const qrName = ref(propsComputed.value.name);
 
@@ -350,7 +350,7 @@ const canMakePublic = computed(() => propsComputed.value.planType && propsComput
 const canMakePrivate = computed(() => qrStatusLoaded.value || canMakePublic.value)
 
 const menuOptions = [
-  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
+  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => isMexicanPhone.value ? emit('request-physical', props.subscriptionId) : (activePrompt.value = 'international') },
   { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
   { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
   { divider: true },
@@ -772,6 +772,39 @@ const hiddeLogsHandle = () => {
               <button @click="handleEdit"
                 class="flex-1 py-2.5 bg-white text-black rounded-lg font-medium text-sm hover:bg-white/90 transition-colors active:scale-[0.98] cursor-pointer">Guardar</button>
             </div>
+          </div>
+        </Transition>
+
+        <!-- International Prompt -->
+        <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+          <div v-if="activePrompt === 'international'" class="w-full text-center max-w-sm">
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+              <span class="material-symbols-outlined notranslate text-amber-500 text-[24px]">flight</span>
+            </div>
+            <h3 class="text-white/90 text-lg font-medium mb-2">Envíos solo en México</h3>
+            <p class="text-white/50 text-sm leading-relaxed mb-6 px-4">
+              Temporalmente los envíos de QR físicos solo están disponibles dentro de México.
+              Estamos trabajando para poder brindar acceso internacional pronto.
+            </p>
+            <p class="text-white/40 text-xs mb-4">Mientras tanto, puede descargar su QR:</p>
+            <div class="flex flex-col gap-2 w-full">
+              <button @click="handleDownloadPNG"
+                class="w-full py-2.5 bg-[#f38020] text-white rounded-lg font-medium text-sm hover:bg-[#e07010] transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined notranslate text-[16px]">download</span>
+                Descargar QR Normal
+              </button>
+              <button @click="handleDownloadCompactPNG"
+                class="w-full py-2.5 bg-white text-black rounded-lg font-medium text-sm hover:bg-white/90 transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined notranslate text-[16px]">download</span>
+                Descargar QR Compacto
+              </button>
+            </div>
+            <button @click="closeAll"
+              class="mt-3 w-full py-2 bg-white/5 text-white/50 rounded-lg text-xs hover:bg-white/10 hover:text-white/70 transition-colors cursor-pointer">
+              Cerrar
+            </button>
           </div>
         </Transition>
 
