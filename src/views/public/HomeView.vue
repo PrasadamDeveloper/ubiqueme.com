@@ -171,11 +171,15 @@ const toggleSound = (index: number) => {
             <h1 class="text-4xl sm:text-6xl lg:text-[4rem] font-black text-white tracking-tight mb-6 leading-[1.1]">
               Códigos QR inteligentes para<br />
               <div class="flex justify-center items-center">
-                <span class="text-transparent bg-clip-text bg-linear-to-r m-0! p-0! from-white to-white/80">recibir
+                <span
+                  class="text-transparent bg-clip-text bg-linear-to-br m-0! p-0! from-white via-sky-50 to-blue-50">recibir
                   alertas
                   de su familia y
-                  pertenencias.</span>
-                <article class="p-2 bg-white rounded-xl pb-8 relative">
+                  pertenencias
+                  <br>
+
+                </span>
+                <article class=" p-2 bg-white rounded-xl pb-8 relative">
                   <qrcode-vue value="https://ubiqueme.com" :size="100" render-as="canvas" />
                   <span
                     class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-black/50 leading-tight">ubiqueme.com</span>
