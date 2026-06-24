@@ -16,7 +16,6 @@ const emit = defineEmits<{
 
 const banReasonInput = ref('')
 
-// Clear input when modal opens
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     banReasonInput.value = ''
@@ -30,10 +29,8 @@ const handleSubmit = () => {
 const handleCancel = () => {
   emit('cancel')
 }
-const formatDate = (timestamp: any) => {
-
+const formatDate = (timestamp: { seconds?: number } | null | undefined) => {
   if (!timestamp?.seconds) return '—'
-
   return new Date(
     timestamp.seconds * 1000
   ).toLocaleString('es-MX', { dateStyle: 'full', timeStyle: 'short' })
@@ -42,247 +39,89 @@ const formatDate = (timestamp: any) => {
 </script>
 
 <template>
-  <Transition name="fade-scale">
-    <div v-if="isOpen" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4">
-
-
+  <Transition name="md3-dialog">
+    <div v-if="isOpen" class="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4 backdrop-blur-sm">
 
       <div
-        class="relative w-full max-w-6xl rounded-3xl border border-white/10 bg-[#0b0b0d] overflow-hidden font-google-sans">
+        class="relative w-full max-w-2xl rounded-2xl border border-white/[0.08] bg-[#0d0d0e] shadow-2xl overflow-hidden">
 
-        <!-- GRID -->
-        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="
-          background-image:
-          linear-gradient(rgba(255,255,255,.8) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,.8) 1px, transparent 1px);
-          background-size:32px 32px;">
-        </div>
+        <div class="grid md:grid-cols-[1fr_1.2fr]">
 
-        <div class="relative z-10 grid lg:grid-cols-[360px_1fr]">
-
-          <!-- SIDEBAR -->
-          <div class="border-b lg:border-b-0 lg:border-r border-white/10 p-8">
-
-            <div class="w-20 h-20 rounded-3xl border flex items-center justify-center mb-6" :class="!isCurrentlyBanned
-              ? 'border-red-500/20 bg-red-500/10 text-red-400'
-              : 'border-green-500/20 bg-green-500/10 text-green-400'">
-
-              <span class="material-symbols-outlined notranslate text-[36px]">
-                {{ isCurrentlyBanned ? 'how_to_reg' : 'gavel' }}
-              </span>
-
+          <!-- LEFT: User card + info -->
+          <div class="p-5 border-b md:border-b-0 md:border-r border-white/[0.06] space-y-4 bg-white/[0.01]">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-base font-black" :class="!isCurrentlyBanned
+                ? 'bg-red-500/10 text-red-400'
+                : 'bg-green-500/10 text-green-400'">
+                <span class="material-symbols-outlined notranslate text-xl">
+                  {{ isCurrentlyBanned ? 'how_to_reg' : 'gavel' }}
+                </span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase tracking-[0.2em] font-black"
+                  :class="!isCurrentlyBanned ? 'text-red-400' : 'text-green-400'">
+                  {{ isCurrentlyBanned ? 'Reactivar' : 'Suspender' }}
+                </span>
+                <h3 class="text-sm font-semibold text-white mt-0.5">{{ user.name }}</h3>
+              </div>
             </div>
 
-            <span class="text-[10px] uppercase tracking-[0.25em] text-orange-400 font-black">
-
-              User Management
-
-            </span>
-
-            <h2 class="mt-3 text-3xl font-black" :class="!isCurrentlyBanned
-              ? 'text-red-400'
-              : 'text-green-400'">
-
-              {{ isCurrentlyBanned
-                ? 'Reactivar Usuario'
-                : 'Suspender Usuario' }}
-
-            </h2>
-
-            <p class="mt-3 text-sm text-white/45 leading-relaxed">
-
-              Está a punto de
-              {{ isCurrentlyBanned ? 'reactivar' : 'suspender' }}
-              una cuenta activa.
-
-            </p>
-
-            <!-- USER CARD -->
-            <div class="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-
-              <div class="flex items-center gap-4">
-
-                <div
-                  class="w-14 h-14 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 text-lg font-black">
-
-                  {{ user.name?.charAt(0).toUpperCase() }}
-
-                </div>
-
-                <div>
-
-                  <h3 class="font-bold text-white">
-
-                    {{ user.name }}
-
-                  </h3>
-
-                  <p class="text-xs text-white/40">
-
-                    {{ user.email }}
-
-                  </p>
-
-                </div>
-
+            <div class="space-y-2 text-[11px]">
+              <div class="flex justify-between">
+                <span class="text-white/35">Email</span>
+                <span class="text-white/70">{{ user.email }}</span>
               </div>
-
-              <div class="mt-5 space-y-3 text-xs">
-
-                <div class="flex justify-between">
-
-                  <span class="text-white/40">
-                    UID
-                  </span>
-
-                  <span class="text-white font-mono">
-
-                    {{ user.uid }}
-
-                  </span>
-
-                </div>
-
-                <div class="flex justify-between">
-                  <span class="text-white/40">Suscripciones</span>
-                  <span class="text-orange-400">Ver en Detalles</span>
-                </div>
-
+              <div class="flex justify-between">
+                <span class="text-white/35">UID</span>
+                <span class="text-white/50 font-mono text-[9px]">{{ user.uid }}</span>
               </div>
-
+              <div class="flex justify-between">
+                <span class="text-white/35">QRs</span>
+                <span class="text-white/70">{{ user.totalQRs }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-white/35">Rol</span>
+                <span class="text-[#ff7900] font-medium">{{ user.role }}</span>
+              </div>
             </div>
 
+            <div class="text-[10px] text-white/30 space-y-1">
+              <div>Registro: <span class="text-white/50">{{ formatDate(user.createdAt) }}</span></div>
+              <div>Último acceso: <span class="text-white/50">{{ formatDate(user.lastLoginAt) }}</span></div>
+              <div v-if="user.trialEndsAt">Trial termina: <span class="text-white/50">{{ formatDate(user.trialEndsAt)
+              }}</span></div>
+            </div>
           </div>
 
-          <!-- CONTENT -->
-          <div class="p-8">
-
-            <!-- INFO GRID -->
-            <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-
-              <div class="rounded-2xl border border-white/10 p-5 bg-white/[0.02]">
-
-                <p class="text-[10px] uppercase text-white/35">
-
-                  Cuenta creada
-
-                </p>
-
-                <p class="mt-2 text-sm text-white">
-
-                  {{ formatDate(user.createdAt) }}
-
-                </p>
-
-              </div>
-
-              <div class="rounded-2xl border border-white/10 p-5 bg-white/[0.02]">
-
-                <p class="text-[10px] uppercase text-white/35">
-
-                  Último acceso
-
-                </p>
-
-                <p class="mt-2 text-sm text-white">
-
-                  {{ formatDate(user.lastLoginAt) }}
-
-                </p>
-
-              </div>
-
-              <div class="rounded-2xl border border-white/10 p-5 bg-white/[0.02]">
-
-                <p class="text-[10px] uppercase text-white/35">
-
-                  QR Generados
-
-                </p>
-
-                <p class="mt-2 text-sm text-white">
-
-                  {{ user.totalQRs }}
-
-                </p>
-
-              </div>
-
-              <div class="rounded-2xl border border-white/10 p-5 bg-white/[0.02]">
-
-                <p class="text-[10px] uppercase text-white/35">
-
-                  Trial termina
-
-                </p>
-
-                <p class="mt-2 text-sm text-white">
-
-                  {{ formatDate(user.trialEndsAt) }}
-
-                </p>
-
-              </div>
-
-
-
-              <div class="rounded-2xl border border-white/10 p-5 bg-white/[0.02]">
-
-                <p class="text-[10px] uppercase text-white/35">
-
-                  Rol
-
-                </p>
-
-                <p class="mt-2 text-sm text-orange-400">
-
-                  {{ user.role }}
-
-                </p>
-
-              </div>
-
-            </div>
-
-            <!-- BAN REASON -->
-            <div v-if="!isCurrentlyBanned" class="mt-8">
-
-              <label class="text-[10px] uppercase tracking-[0.2em] text-white/45">
-
-                Motivo suspensión (opcional)
-
-              </label>
-
+          <!-- RIGHT: Reason + actions -->
+          <div class="p-5 space-y-4">
+            <div v-if="!isCurrentlyBanned" class="space-y-2">
+              <label class="text-[9px] uppercase tracking-widest text-white/35 font-medium">Motivo de suspensión</label>
               <textarea v-model="banReasonInput" placeholder="Ej. uso indebido, spam, actividad sospechosa..."
-                class="mt-3 w-full h-32 rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-sm text-white outline-none focus:border-orange-500 resize-none">
-            </textarea>
-
+                class="w-full h-28 px-3.5 py-3 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white text-[12px] outline-none focus:border-red-500/30 placeholder:text-white/20 resize-none transition-colors">
+              </textarea>
+            </div>
+            <div v-else class="text-sm text-white/50 leading-relaxed">
+              Se reactivará el acceso completo a <span class="text-white font-medium">{{ user.name }}</span>.
             </div>
 
-            <!-- ACTIONS -->
-            <div class="mt-8 flex flex-col sm:flex-row gap-3">
-
+            <div class="flex gap-2 pt-1">
               <button @click="handleCancel"
-                class="flex-1 h-14 rounded-2xl border border-white/10 bg-white/[0.03] text-white font-black text-xs uppercase tracking-[0.20em]">
-
+                class="flex-1 h-10 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white/70 text-[10px] font-semibold uppercase tracking-widest hover:bg-white/[0.06] transition cursor-pointer">
                 Cancelar
-
               </button>
-
               <button @click="handleSubmit" :disabled="processing"
-                class="flex-1 h-14 rounded-2xl font-black text-xs uppercase tracking-[0.20em] disabled:opacity-50 flex items-center justify-center gap-2"
+                class="flex-1 h-10 rounded-xl font-semibold text-[10px] uppercase tracking-widest transition disabled:opacity-40 flex items-center justify-center gap-1.5 cursor-pointer"
                 :class="!isCurrentlyBanned
-                  ? 'bg-red-500 text-white'
-                  : 'bg-green-500 text-black'">
+                  ? 'bg-red-500 hover:bg-red-600 text-white'
+                  : 'bg-green-500 hover:bg-green-600 text-white'">
                 <span v-if="processing"
-                  class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                 <span v-else>
-                  {{ isCurrentlyBanned ? 'Reactivar usuario' : 'Suspender usuario' }}
+                  {{ isCurrentlyBanned ? 'Reactivar' : 'Suspender' }}
                 </span>
               </button>
-
             </div>
-
           </div>
 
         </div>
@@ -294,55 +133,40 @@ const formatDate = (timestamp: any) => {
 </template>
 
 <style scoped>
-.font-google-sans {
-  font-family: 'Google Sans', sans-serif;
-}
-
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Transitions.dev — Modal open / close */
-.fade-scale-enter-active {
-  transition: opacity 250ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+.md3-dialog-enter-active {
+  transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1), transform 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.fade-scale-leave-active {
-  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+.md3-dialog-leave-active {
+  transition: opacity 150ms cubic-bezier(0.4, 0, 1, 1), transform 150ms cubic-bezier(0.4, 0, 1, 1);
 }
 
-.fade-scale-enter-from,
-.fade-scale-leave-to {
+.md3-dialog-enter-from,
+.md3-dialog-leave-to {
   opacity: 0;
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
-.fade-scale-enter-to,
-.fade-scale-leave-from {
+.md3-dialog-enter-to,
+.md3-dialog-leave-from {
   opacity: 1;
   transform: scale(1);
 }
 
-/* Compositor hint */
-.fade-scale-enter-active>div:last-child,
-.fade-scale-leave-active>div:last-child,
-.fade-scale-enter-active>div:first-child,
-.fade-scale-leave-active>div:first-child {
-  will-change: transform, opacity;
-}
-
 @media (prefers-reduced-motion: reduce) {
 
-  .fade-scale-enter-active,
-  .fade-scale-leave-active {
+  .md3-dialog-enter-active,
+  .md3-dialog-leave-active {
     transition: none;
   }
 
-  .fade-scale-enter-from,
-  .fade-scale-leave-to {
-    opacity: 0;
+  .md3-dialog-enter-from,
+  .md3-dialog-leave-to {
+    opacity: 1;
     transform: none;
   }
 }

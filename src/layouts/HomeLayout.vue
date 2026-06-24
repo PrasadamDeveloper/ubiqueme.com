@@ -229,7 +229,7 @@ onUnmounted(() => {
             </RouterLink>
 
             <RouterLink :to="{ name: 'register' }"
-              class="bg-orange-500 text-[#09090b] px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
+              class="bg-orange-500 text-[#f7f7f7] px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
               Registrarse
             </RouterLink>
           </template>
@@ -246,7 +246,7 @@ onUnmounted(() => {
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-            }}</span>
+          }}</span>
         </button>
 
       </div>

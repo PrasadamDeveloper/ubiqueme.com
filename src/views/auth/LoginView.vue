@@ -106,13 +106,9 @@
                 </div>
 
                 <div class="space-y-2">
-                  <div class="flex justify-between items-center px-1">
-                    <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Contraseña</label>
-                    <button type="button" @click="handleForgotPassword" :disabled="isResettingPassword"
-                      class="text-[10px] font-black text-orange-500 hover:text-white uppercase tracking-widest transition-colors cursor-pointer">¿Olvidó
-                      su clave?</button>
-                  </div>
                   <div class="group relative">
+                    <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Contraseña</label>
+
                     <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
                       :disabled="loading" placeholder="••••••••"
                       class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
@@ -133,6 +129,11 @@
                     class="material-symbols-outlined notranslate text-lg font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
                   <span v-else class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
                 </button>
+                <div class="flex justify-between items-center px-1">
+                  <button type="button" @click="handleForgotPassword" :disabled="isResettingPassword"
+                    class="text-[10px] font-black text-orange-500 hover:text-white uppercase tracking-widest transition-colors cursor-pointer">¿Olvidó
+                    su contraseña?</button>
+                </div>
               </form>
 
 

@@ -18,7 +18,6 @@ const emit = defineEmits<{
 
 const selectedPlan = ref<string>(props.currentPlan)
 
-// Initialize selected plan when modal opens
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     selectedPlan.value = props.currentPlan
@@ -32,7 +31,6 @@ const handleSubmit = () => {
 const handleCancel = () => {
   emit('cancel')
 }
-const now = computed(() => new Date());
 const renewalDate = computed(() => {
   const date = new Date();
   date.setMonth(date.getMonth() + 12);
@@ -48,311 +46,99 @@ const cancelDeletePlan = () => {
   showDeleteConfirm.value = false
 }
 
+const plans = [
+  { key: 'bronce', label: 'Bronce', price: '$499 MXN / año', qrs: '1 QR' },
+  { key: 'plata', label: 'Plata', price: '$999 MXN / año', qrs: '3 QR' },
+  { key: 'oro', label: 'Oro', price: '$1499 MXN / año', qrs: '5 QR' },
+]
 </script>
 
 <template>
-  <Transition name="fade-scale">
+  <Transition name="md3-dialog">
 
-
-    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/85  p-4">
+    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
       <PlanDeleteConfirm v-if="showDeleteConfirm" :loading="loading" @confirm="handleCancelPlan"
         @cancel="cancelDeletePlan">
       </PlanDeleteConfirm>
 
       <div
-        class="relative w-full max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0a0a0b] shadow-2xl font-google-sans">
+        class="relative w-full max-w-lg rounded-2xl border border-white/[0.08] bg-[#0d0d0e] shadow-2xl overflow-hidden">
 
-        <!-- Pattern -->
-        <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style="background-image: linear-gradient(rgba(255,255,255,.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.7) 1px, transparent 1px); background-size:28px 28px;">
+        <!-- Header -->
+        <div class="p-5 pb-3 space-y-1">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-9 h-9 rounded-xl bg-[#ff7900]/10 border border-[#ff7900]/20 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined notranslate text-[#ff7900] text-base">workspace_premium</span>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-white">Agregar plan</h3>
+              <p class="text-[11px] text-white/40">
+                para <span class="text-white/60">{{ userName }}</span>
+                <span class="text-white/30">· {{ userEmail }}</span>
+              </p>
+            </div>
+          </div>
         </div>
 
+        <!-- Plan options -->
+        <div class="px-5 pb-3 space-y-2">
+          <div v-for="plan in plans" :key="plan.key" @click="selectedPlan = plan.key"
+            class="flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all duration-200" :class="selectedPlan === plan.key
+              ? 'border-[#ff7900]/30 bg-[#ff7900]/5'
+              : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'">
 
-
-        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr]">
-
-          <!-- LEFT -->
-          <section class="p-6 md:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-white/10 space-y-8">
-
-            <!-- Header -->
-            <div class="flex gap-5 items-start">
-
-              <div
-                class="w-16 h-16 rounded-3xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined notranslate text-orange-400 text-[30px]">
-                  workspace_premium
-                </span>
-              </div>
-
-              <div>
-
-                <span class="text-[10px] uppercase tracking-[0.30em] text-orange-400 font-black">
-                  Subscription Management
-                </span>
-
-                <h3 class="text-3xl md:text-4xl font-black tracking-tight text-white mt-2 flex flex-wrap">
-
-                  Cambiar Plan a
-
-                  <span class="ml-3 text-orange-400 animate-fade-down" :key="selectedPlan">
-                    {{ selectedPlan.toUpperCase() }}
-                  </span>
-
-                </h3>
-
-                <p class="text-sm text-white/45 mt-3">
-
-                  Seleccione el nuevo plan para
-
-                  <span class="font-semibold text-white">
-
-                    {{ userName }}
-
-                  </span>
-
-                </p>
-
-              </div>
-
+            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors"
+              :class="selectedPlan === plan.key
+                ? 'border-[#ff7900]'
+                : 'border-white/20'">
+              <div v-if="selectedPlan === plan.key" class="w-2.5 h-2.5 rounded-full bg-[#ff7900]"></div>
             </div>
 
-            <!-- INFO -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-              <!-- Inicio -->
-              <article class="rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
-
-                <div class="flex gap-4">
-
-                  <div
-                    class="h-14 w-14 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined notranslate">
-                      calendar_month
-                    </span>
-                  </div>
-
-                  <div>
-
-                    <span class="text-[10px] uppercase tracking-[0.25em] text-white/35">
-
-                      Inicio del plan
-
-                    </span>
-
-                    <p class="mt-3 text-white">
-
-                      Plan
-
-                      <span class="font-bold text-orange-400">
-
-                        {{ selectedPlan.toUpperCase() }}
-
-                      </span>
-
-                    </p>
-
-                    <span class="text-xs text-white/50 mt-2 block">
-
-                      {{ now.toLocaleString(
-                        'es-MX',
-                        { dateStyle: 'full' }
-                      ) }}
-
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </article>
-
-              <!-- Renovacion -->
-              <article class="rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
-
-                <div class="flex gap-4">
-
-                  <div
-                    class="h-14 w-14 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined notranslate animate-spin animate-duration-8000">
-                      autorenew
-                    </span>
-                  </div>
-
-                  <div>
-
-                    <span class="text-[10px] uppercase tracking-[0.25em] text-white/35">
-
-                      Renovación
-
-                    </span>
-
-                    <p class="mt-3 text-white">
-
-                      Próximo ciclo
-
-                    </p>
-
-                    <span class="text-xs text-white/50 mt-2 block">
-
-                      {{ renewalDate.toLocaleString(
-                        'es-MX',
-                        { dateStyle: 'full' }
-                      ) }}
-
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </article>
-
-            </div>
-
-            <!-- Notice -->
-            <div class="rounded-[28px] border border-orange-500/10 bg-orange-500/[0.03] p-5 flex gap-4">
-
-              <div class="h-12 w-12 rounded-2xl bg-orange-500/10 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined notranslate text-orange-400">
-                  mail
-                </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-white">{{ plan.label }}</span>
+                <span v-if="plan.key === currentPlan"
+                  class="px-1.5 py-0.5 rounded bg-white/[0.06] text-[8px] font-black uppercase tracking-widest text-white/40">Actual</span>
               </div>
-
-              <p class="text-[12px] leading-relaxed text-white/50">
-
-                Se enviará automáticamente un correo notificando el cambio de plan de
-
-                <span class="text-white font-medium">
-
-                  {{ userName }}
-
-                </span>
-
-                a
-
-                <span class="text-white/80">
-
-                  {{ userEmail }}
-
-                </span>
-
-              </p>
-
+              <span class="text-[10px] text-white/35">{{ plan.price }} · {{ plan.qrs }}</span>
             </div>
 
-          </section>
+            <span v-if="selectedPlan === plan.key"
+              class="material-symbols-outlined notranslate text-[#ff7900] text-base">check_circle</span>
+          </div>
+        </div>
 
-          <!-- RIGHT -->
-          <section class="p-6 md:p-8 bg-white/[0.02]">
+        <!-- Info row -->
+        <div class="mx-5 mb-3 p-3 rounded-xl bg-orange-500/[0.04] border border-orange-500/10 flex items-center gap-3">
+          <span class="material-symbols-outlined notranslate text-[#ff7900] text-base">calendar_month</span>
+          <div class="text-[10px] text-white/40">
+            <span class="text-white/60">Inicio hoy</span>
+            <span class="text-white/30"> · Renovación {{ renewalDate.toLocaleString('es-MX', { dateStyle: 'full' })
+              }}</span>
+          </div>
+        </div>
 
-            <div class="space-y-4">
+        <!-- Actions -->
+        <div class="flex gap-2 px-5 pb-5">
+          <button @click="handleCancel"
+            class="flex-1 h-10 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white/70 text-[10px] font-semibold uppercase tracking-widest hover:bg-white/[0.06] transition cursor-pointer">
+            Cancelar
+          </button>
+          <button @click="handleSubmit" :disabled="selectedPlan === currentPlan || loading"
+            class="flex-1 h-10 rounded-xl bg-[#ff7900] hover:bg-[#ff8c1a] text-white text-[10px] font-semibold uppercase tracking-widest transition disabled:opacity-40 flex items-center justify-center gap-1.5 cursor-pointer">
+            <span v-if="loading"
+              class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span v-else>Guardar</span>
+          </button>
+        </div>
 
-              <!-- Bronce -->
-              <button @click="selectedPlan = 'bronce'"
-                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'bronce'
-                  ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
-                  : 'border-white/10 hover:bg-white/[0.04]'">
-
-                <div class="flex justify-between items-center">
-
-                  <div>
-
-                    <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
-                      Bronce
-                    </p>
-
-                    <span class="text-[11px] text-white/40">
-                      $499 MXN / año · Máx 1 QR
-                    </span>
-
-                  </div>
-
-                  <span v-if="selectedPlan === 'bronce'" class="material-symbols-outlined notranslate text-orange-400">
-                    check_circle
-                  </span>
-
-                </div>
-
-              </button>
-
-              <!-- Plata -->
-              <button @click="selectedPlan = 'plata'"
-                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'plata'
-                  ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
-                  : 'border-white/10 hover:bg-white/[0.04]'">
-
-                <div class="flex justify-between items-center">
-
-                  <div>
-
-                    <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
-                      Plata
-                    </p>
-
-                    <span class="text-[11px] text-white/40">
-                      $999 MXN / año · Máx 3 QR
-                    </span>
-
-                  </div>
-
-                  <span v-if="selectedPlan === 'plata'" class="material-symbols-outlined notranslate text-orange-400">
-                    check_circle
-                  </span>
-
-                </div>
-
-              </button>
-
-              <!-- Oro -->
-              <button @click="selectedPlan = 'oro'"
-                class="w-full rounded-[24px] border p-5 text-left transition-all duration-300" :class="selectedPlan === 'oro'
-                  ? 'border-orange-500/30 bg-orange-500/10 shadow-lg shadow-orange-500/10'
-                  : 'border-white/10 hover:bg-white/[0.04]'">
-
-                <div class="flex justify-between items-center">
-
-                  <div>
-
-                    <p class="text-xs uppercase tracking-[0.25em] font-black text-white">
-                      Oro
-                    </p>
-
-                    <span class="text-[11px] text-white/40">
-                      $1499 MXN / año · Máx 5 QR
-                    </span>
-
-                  </div>
-
-                  <span v-if="selectedPlan === 'oro'" class="material-symbols-outlined notranslate text-orange-400">
-                    check_circle
-                  </span>
-
-                </div>
-
-              </button>
-
-
-              <!-- Buttons -->
-              <div class="grid grid-cols-2 gap-3 pt-5">
-
-                <button @click="handleCancel"
-                  class="h-14 rounded-[20px] border border-white/10 bg-white/[0.03] text-white text-xs uppercase font-black tracking-[0.20em] hover:bg-white/[0.06] transition">
-                  Cancelar
-                </button>
-
-                <button @click="handleSubmit" :disabled="selectedPlan === currentPlan || loading"
-                  class="h-14 rounded-[20px] bg-orange-500 hover:bg-orange-600 text-white text-xs uppercase font-black tracking-[0.20em] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                  <span v-if="loading"
-                    class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  <span v-else>Guardar</span>
-                </button>
-
-              </div>
-
-            </div>
-
-          </section>
-
+        <!-- Cancel plan link -->
+        <div class="px-5 pb-4 flex justify-center">
+          <button @click="handleCancelPlan"
+            class="text-[10px] text-red-400/60 hover:text-red-400 transition cursor-pointer font-medium">
+            Cancelar suscripción activa
+          </button>
         </div>
 
       </div>
@@ -362,54 +148,40 @@ const cancelDeletePlan = () => {
 </template>
 
 <style scoped>
-.font-google-sans {
-  font-family: 'Google Sans', sans-serif;
-}
-
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Transitions.dev — Modal open / close */
-.fade-scale-enter-active {
-  transition: opacity 250ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+.md3-dialog-enter-active {
+  transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1), transform 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.fade-scale-leave-active {
-  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+.md3-dialog-leave-active {
+  transition: opacity 150ms cubic-bezier(0.4, 0, 1, 1), transform 150ms cubic-bezier(0.4, 0, 1, 1);
 }
 
-.fade-scale-enter-from,
-.fade-scale-leave-to {
+.md3-dialog-enter-from,
+.md3-dialog-leave-to {
   opacity: 0;
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
-.fade-scale-enter-to,
-.fade-scale-leave-from {
+.md3-dialog-enter-to,
+.md3-dialog-leave-from {
   opacity: 1;
   transform: scale(1);
 }
 
-.fade-scale-enter-active>div:last-child,
-.fade-scale-leave-active>div:last-child,
-.fade-scale-enter-active>div:first-child,
-.fade-scale-leave-active>div:first-child {
-  will-change: transform, opacity;
-}
-
 @media (prefers-reduced-motion: reduce) {
 
-  .fade-scale-enter-active,
-  .fade-scale-leave-active {
+  .md3-dialog-enter-active,
+  .md3-dialog-leave-active {
     transition: none;
   }
 
-  .fade-scale-enter-from,
-  .fade-scale-leave-to {
-    opacity: 0;
+  .md3-dialog-enter-from,
+  .md3-dialog-leave-to {
+    opacity: 1;
     transform: none;
   }
 }

@@ -41,7 +41,7 @@
                 <span class="text-orange-500 uppercase">Comunidad.</span>
               </h1>
               <p class="text-white/40 text-lg font-medium leading-relaxed max-w-sm">
-                Empiece a proteger sus pertenencias y comunicaciones con el estándar de seguridad de Ubiqueme.
+                Empiece a proteger sus pertenencias y comunicaciones con Ubiqueme.
               </p>
             </div>
 
