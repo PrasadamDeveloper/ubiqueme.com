@@ -34,9 +34,10 @@
 
         </div>
 
-        <!-- Botón de admin/test (Crear QR) -->
-        <RouterLink to="/admin"
-          class="hidden bg-orange-600/20 text-orange-400 border border-orange-500/20 px-6 py-2.5 rounded-lg font-black text-sm active:scale-95 cursor-pointer hover:bg-orange-600/30 transition-colors">
+        <!-- Botón de admin (solo visible para usuarios con role admin) -->
+        <RouterLink v-if="userStore.getRole === 'admin'" to="/admin"
+          class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-600/20 to-orange-700/10 text-orange-400 border border-orange-500/20 px-5 py-2.5 rounded-xl font-medium text-sm active:scale-95 cursor-pointer hover:from-orange-600/30 hover:to-orange-700/20 hover:border-orange-400/30 transition-all shadow-sm shadow-orange-500/5 backdrop-blur-sm">
+          <span class="material-symbols-outlined notranslate text-lg">admin_panel_settings</span>
           Ir al panel de admin
         </RouterLink>
       </div>

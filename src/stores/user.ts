@@ -11,6 +11,7 @@ export const useUserStore = defineStore(
     const userId = ref('')
     const email = ref('')
     const userPhone = ref('')
+    const role = ref('')
     const isAuthenticated = ref(false)
     const authReady = ref(false)
 
@@ -21,6 +22,7 @@ export const useUserStore = defineStore(
     const getUserId = computed(() => userId.value)
     const getEmail = computed(() => email.value)
     const getUserPhone = computed(() => userPhone.value)
+    const getRole = computed(() => role.value)
     const getIsAuthenticated = computed(() => isAuthenticated.value)
     const isAuthReady = computed(() => authReady.value)
 
@@ -40,6 +42,9 @@ export const useUserStore = defineStore(
     function setUserPhone(val: string) {
       userPhone.value = val
     }
+    function setRole(val: string) {
+      role.value = val
+    }
     function setIsAuthenticated(val: boolean) {
       isAuthenticated.value = val
     }
@@ -55,6 +60,7 @@ export const useUserStore = defineStore(
       userId.value = ''
       email.value = ''
       userPhone.value = ''
+      role.value = ''
       isAuthenticated.value = false
     }
 
@@ -65,6 +71,7 @@ export const useUserStore = defineStore(
       userId,
       email,
       userPhone,
+      role,
       isAuthenticated,
       authReady,
       // Getters
@@ -74,6 +81,7 @@ export const useUserStore = defineStore(
       getUserId,
       getEmail,
       getUserPhone,
+      getRole,
       getIsAuthenticated,
       isAuthReady,
       // Actions
@@ -82,6 +90,7 @@ export const useUserStore = defineStore(
       setCreationDate,
       setEmail,
       setUserPhone,
+      setRole,
       setIsAuthenticated,
       setAuthReady,
       clearFullName,
