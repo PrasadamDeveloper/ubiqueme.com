@@ -4,13 +4,12 @@ import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDFGdlu8fLVe0osO_OYCewHU0UA0wmlaLE',
-  authDomain: 'ubiqueme-system.firebaseapp.com',
-  projectId: 'ubiqueme-system',
-  storageBucket: 'ubiqueme-system.firebasestorage.app',
-  messagingSenderId: '313357118395',
-  appId: '1:313357118395:web:399c08ecb384cd4570f29e',
-  measurementId: 'G-3XT4RFF2Q0',
+  apiKey: 'AIzaSyBUnGSjA5JAstb-l-NukKeNmrBQyTEO1D4',
+  authDomain: 'ubiqueme-services.firebaseapp.com',
+  projectId: 'ubiqueme-services',
+  storageBucket: 'ubiqueme-services.firebasestorage.app',
+  messagingSenderId: '239704119257',
+  appId: '1:239704119257:web:f77f867a60796c379bebc8',
 }
 
 // Initialize Firebase

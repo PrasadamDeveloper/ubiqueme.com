@@ -62,6 +62,7 @@
     "eslint-plugin-cypress": "^6.1.0",
     "eslint-plugin-oxlint": "~1.51.0",
     "eslint-plugin-vue": "~10.8.0",
+    "firebase-admin": "^14.0.0",
     "gh-pages": "^6.3.0",
     "jiti": "^2.6.1",
     "jsdom": "^28.1.0",

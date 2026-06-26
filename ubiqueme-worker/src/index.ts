@@ -380,34 +380,6 @@ function parseScanFields(text: string): ParsedScanData {
 	};
 }
 
-//DELETE FOR PRODUCTION TEST ONLY 21/06/2026
-async function sendWhatsappMsg(env: Env) {
-	const whatsappUrl = `https://graph.facebook.com/v25.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
-	const payload = {
-		messaging_product: 'whatsapp',
-		recipient_type: 'individual',
-		to: '525635752789',
-		type: 'text',
-		text: {
-			body: 'Lo lograste bro! te felicito, vamos a lograrlo, saldrás adelante nunca te rindas y recuerda... Memento Mori.',
-		},
-	};
-
-	try {
-		await fetch(whatsappUrl, {
-			method: 'POST',
-			headers: {
-				authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(payload),
-		});
-		console.log('Succesfully sent message to user');
-	} catch (error) {
-		console.log(`Error while trying to send shkn whatsapp message: ${error}`);
-	}
-}
-
 // ─── Main handler ───────────────────────────────────────────────
 export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
@@ -416,13 +388,6 @@ export default {
 		// Handle CORS preflight
 		if (request.method === 'OPTIONS') {
 			return new Response(null, { headers: CORS_HEADERS });
-		}
-
-		if (url.pathname === '/swm') {
-			await sendWhatsappMsg(env);
-			return new Response('Whatsapp shkn handle', {
-				headers: CORS_HEADERS,
-			});
 		}
 
 		// ─── POST /api/send-otp ──────────────────────────────────
