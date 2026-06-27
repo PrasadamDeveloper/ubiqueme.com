@@ -1,3 +1,4 @@
+import { Resend } from 'resend';
 import { initializeApp, FirebaseOptions, FirebaseApp } from 'firebase/app';
 import {
 	getFirestore,
@@ -44,6 +45,7 @@ interface Env {
 	WHATSAPP_PHONE_NUMBER_ID: string;
 	WHATSAPP_VERIFY_TOKEN: string;
 	WHATSAPP_ACCESS_TOKEN: string;
+	RESEND_API_KEY: string;
 }
 
 const CORS_HEADERS = {
@@ -338,6 +340,112 @@ async function sendQRInactiveReply(env: Env, to: string, message: string): Promi
 	});
 }
 
+// ─── Resend scan copy email (only for ubiqueme.com@gmail.com) ──
+const SCAN_EMAIL_WRAPPER = (content: string) =>
+	`<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+  .container{max-width:560px;margin:0 auto;padding:32px 16px}
+  .card{background:#fff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden}
+  .header{padding:24px;border-bottom:1px solid #e4e4e7;text-align:center}
+  .header span{color:#111;font-size:22px;font-weight:800;letter-spacing:-0.5px}
+  .header .orange{color:#ff7900}
+  .body{padding:32px 28px;color:#111;font-size:14px;line-height:1.7}
+  .footer{padding:32px 24px;border-top:1px solid #e4e4e7;text-align:center;font-size:11px;color:#999}
+  .badge{display:inline-block;padding:4px 12px;border-radius:100px;background:#fff7ed;border:1px solid #ffedd5;color:#ff7900;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+  .field-row{padding:10px 14px;border-radius:8px;margin-bottom:4px}
+  .field-label{font-size:12px;color:#666;font-weight:500}
+  .field-value{font-size:13px;color:#111;font-weight:500}
+  img.scan-img{max-width:100%;border-radius:12px;border:1px solid #e4e4e7;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="header"><span>ubiqueme</span><span class="orange">.com</span></div>
+    <div class="body">${content}</div>
+    <div class="footer">&copy; 2026 Ubiqueme. Todos los derechos reservados.</div>
+  </div>
+</div>
+</body>
+</html>`.trim();
+
+async function sendScanEmail(
+	env: Env,
+	ownerEmail: string,
+	qrName: string,
+	scannerPhone: string,
+	customMessage: string,
+	scanTime: string,
+	displayName: string,
+	imageBase64?: string,
+	imageMimeType?: string,
+): Promise<void> {
+	try {
+		const rows = [
+			{ label: 'QR', value: qrName },
+			{ label: 'Teléfono del escáner', value: scannerPhone },
+			{ label: 'Mensaje', value: customMessage },
+			{ label: 'Hora del escaneo', value: scanTime },
+			{ label: 'Propietario', value: displayName },
+		];
+
+		const fieldsHtml = rows
+			.map(
+				(r) =>
+					`<table width="100%" cellpadding="0" cellspacing="0"><tr>
+            <td bgcolor="#f9f9f9" style="width:40%;padding:10px 14px;border-radius:8px 0 0 8px;font-size:12px;color:#666;font-weight:500;vertical-align:top">${r.label}</td>
+            <td bgcolor="#f9f9f9" style="width:60%;padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#111;font-weight:500;vertical-align:top">${r.value}</td>
+          </tr></table>`,
+			)
+			.join('');
+
+		const hasImage = !!imageBase64 && !!imageMimeType;
+		const imgHtml = hasImage ? `<img class="scan-img" src="cid:scan-image" alt="Imagen del escaneo" />` : '';
+
+		const content = `
+      <span class="badge">Nuevo escaneo QR</span>
+      <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;letter-spacing:-0.3px">${qrName}</h2>
+      <div style="padding:0">${fieldsHtml}</div>
+      ${imgHtml ? `<div style="margin-top:16px">${imgHtml}</div>` : ''}
+      <p style="margin-top:20px;font-size:12px;color:#999;border-top:1px solid #e4e4e7;padding-top:16px">
+        Este es un aviso automático enviado por el sistema de escaneo de Ubiqueme.
+      </p>`;
+
+		const emailPayload: {
+			from: string;
+			to: string[];
+			subject: string;
+			html: string;
+			attachments?: Array<{ filename: string; content: string; content_id: string; disposition: 'inline' }>;
+		} = {
+			from: 'Ubiqueme <scan@ubiqueme.com>',
+			to: [ownerEmail],
+			subject: `Nuevo escaneo QR — ${qrName}`,
+			html: SCAN_EMAIL_WRAPPER(content),
+		};
+
+		if (hasImage) {
+			emailPayload.attachments = [
+				{
+					filename: 'scan-image',
+					content: imageBase64!,
+					content_id: 'scan-image',
+					disposition: 'inline',
+				},
+			];
+		}
+
+		const resend = new Resend(env.RESEND_API_KEY);
+		await resend.emails.send(emailPayload);
+		console.log(`[Worker] Scan email enviado a ${ownerEmail} para QR ${qrName}`);
+	} catch (error) {
+		console.error('[Worker] Error enviando scan email:', error);
+	}
+}
+
 // ─── SHA-256 helper (native Workers crypto) ─────────────────────
 async function sha256Hex(input: string): Promise<string> {
 	const encoder = new TextEncoder();
@@ -528,6 +636,21 @@ async function handleImageWithCaption(
 		if (!notified) {
 			console.error('[Worker] Meta API error — notification NOT sent to owner.');
 			return new Response('Meta API Error', { status: 200 });
+		}
+
+		// 6a. If owner email is ubiqueme.com@gmail.com, send a copy via Resend
+		if (ownerData.email === 'ubiqueme.com@gmail.com') {
+			await sendScanEmail(
+				env,
+				ownerData.email,
+				qrNameParam,
+				cleanScannerPhone,
+				parsed.customMessage,
+				parsed.scanTime,
+				ownerData.displayName || 'propietario',
+				base64, // raw base64 (without prefix)
+				imgMimeType, // e.g. "image/jpeg"
+			);
 		}
 
 		// 7. Send scanner confirmation reply
@@ -938,6 +1061,20 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 
 		const msgStatus = 'ACEPTADO por Meta (message_id presente)';
 		console.log(`[Worker] Notificación al dueño: ${msgStatus}.`);
+
+		// 6a. If owner email is ubiqueme.com@gmail.com, send a copy via Resend (text flow, no image)
+		if (ownerData.email === 'ubiqueme.com@gmail.com') {
+			await sendScanEmail(
+				env,
+				ownerData.email,
+				qrNameParam,
+				cleanScannerPhone,
+				parsed.customMessage || 'Sin mensaje',
+				parsed.scanTime,
+				ownerData.displayName || 'propietario',
+				// No imageUrl in text flow
+			);
+		}
 
 		// 7. Send scanner confirmation reply
 		await sendScannerConfirmation(env, senderPhone, qrData.name || parsed.qrName || 'objeto');
