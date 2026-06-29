@@ -659,7 +659,7 @@ const hiddeLogsHandle = () => {
         </button>
         <!-- Menu button (desktop only) -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
-          class="hidden sm:flex text-orange-400 hover:text-white transition-colors cursor-pointer px-3 py-1.5 items-center justify-center gap-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 active:scale-95 absolute top-4 right-4 border border-orange-500/20 text-[11px] font-bold uppercase tracking-wider">
+          class="hidden sm:flex text-orange-400 hover:text-white transition-colors cursor-pointer px-3 py-0.5 items-center justify-center gap-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 active:scale-95 absolute top-4 right-4 border border-orange-500/20 text-[11px] font-bold ">
           <span class="text-white/80">Menú</span>
           <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[16px]">more_horiz</span>
         </button>
