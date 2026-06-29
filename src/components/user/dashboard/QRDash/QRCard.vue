@@ -659,8 +659,9 @@ const hiddeLogsHandle = () => {
         </button>
         <!-- Menu button (desktop only) -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
-          class="hidden sm:flex text-orange-500/90 hover:text-white transition-colors cursor-pointer w-9 h-9 items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 absolute top-4 right-4">
-          <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[22px]">more_horiz</span>
+          class="hidden sm:flex text-orange-400 hover:text-white transition-colors cursor-pointer px-3 py-1.5 items-center justify-center gap-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 active:scale-95 absolute top-4 right-4 border border-orange-500/20 text-[11px] font-bold uppercase tracking-wider">
+          <span class="text-white/80">Menú</span>
+          <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[16px]">more_horiz</span>
         </button>
       </div>
       <!-- Desktop Full-Card Menu Overlay -->
