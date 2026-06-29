@@ -415,8 +415,10 @@ const currentSize = computed(() => sizeConfig[downloadSize.value])
 const currentCompactSize = computed(() => compactSizeConfig[downloadSize.value])
 
 // ─── html2canvas downloads ───
+const getQrCaptureId = (suffix: 'normal' | 'compact') => `qr-capture-${suffix}-${propsComputed.value.id}`
+
 const handleDownloadPNG = async () => {
-  const el = document.getElementById('qr-capture-normal')
+  const el = document.getElementById(getQrCaptureId('normal'))
   if (!el) return
   isDownloading.value = true
   try {
@@ -439,7 +441,7 @@ const handleDownloadPNG = async () => {
 }
 
 const handleDownloadCompactPNG = async () => {
-  const el = document.getElementById('qr-capture-compact')
+  const el = document.getElementById(getQrCaptureId('compact'))
   if (!el) return
   isDownloading.value = true
   try {
@@ -519,21 +521,24 @@ const hiddeLogsHandle = () => {
 <template>
 
   <div
-    class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] transition-all duration-500 overflow-hidden font-google-sans group"
+    class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] transition-all duration-500 font-google-sans group"
     :class="{
       'hover:border-orange-500/40': !isDisabled,
       'opacity-50 grayscale': isDisabled,
       'grayscale-[50%] brightness-75 sepia-[0.3] hue-rotate-[340deg] saturate-[0.5]': isCanceled
     }">
 
-    <!-- Patrón de Fondo Cuadrícula -->
-    <div v-if="!isDisabled" class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
-      style="background-image: linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px); background-size: 24px 24px;">
-    </div>
+    <!-- Clip wrapper: only the decorative elements need overflow-hidden, not the whole card -->
+    <div class="absolute inset-0 z-0 overflow-hidden rounded-[2rem] pointer-events-none">
+      <!-- Patrón de Fondo Cuadrícula -->
+      <div v-if="!isDisabled" class="absolute inset-0 opacity-[0.04]"
+        style="background-image: linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px); background-size: 24px 24px;">
+      </div>
 
-    <!-- Resplandor Naranja General Sutil -->
-    <div v-if="!isDisabled"
-      class="absolute top-0 left-0 w-full h-full z-0 opacity-20 pointer-events-none bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
+      <!-- Resplandor Naranja General Sutil -->
+      <div v-if="!isDisabled"
+        class="absolute top-0 left-0 w-full h-full opacity-20 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
+      </div>
     </div>
 
     <section v-if="isLoading" class="absolute inset-0 bg-[#0a0a0a]/95 flex items-center justify-center z-50">
@@ -646,18 +651,24 @@ const hiddeLogsHandle = () => {
             <QrcodeVue :value="qrScanUrl" :size="110" render-as="svg" level="H" />
           </template>
         </div>
+        <!-- Direct download button (visible on both mobile and desktop) -->
+        <button @click="openPrompt('download')" v-tooltip="{ content: 'Descargar QR', placement: 'top' }"
+          class="mt-3 flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-95 border border-orange-500/20">
+          <span class="material-symbols-outlined notranslate text-[16px]">download</span>
+          Descargar
+        </button>
         <!-- Menu button (desktop only) -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
           class="hidden sm:flex text-orange-500/90 hover:text-white transition-colors cursor-pointer w-9 h-9 items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 absolute top-4 right-4">
           <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[22px]">more_horiz</span>
         </button>
-        <!-- Menu Popover -->
+        <!-- Desktop Menu Popover (hidden on mobile) -->
         <Transition enter-active-class="transition-all duration-200 ease-out"
           enter-from-class="opacity-0 -translate-y-2 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
           leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 translate-y-0 scale-100" leave-to-class="opacity-0 -translate-y-2 scale-95">
           <div v-if="showMenu"
-            class="absolute top-14 right-4 w-[260px] bg-[#0b0808] border border-orange-500/20 rounded-xl p-2 shadow-[0_8px_30px_rgb(249,115,22,0.15)] z-50 max-h-[200px] overflow-y-auto">
+            class="hidden sm:block absolute top-14 right-4 w-[260px] bg-[#0b0808] border border-orange-500/20 rounded-xl p-2 shadow-[0_8px_30px_rgb(249,115,22,0.15)] z-50 max-h-[300px] overflow-y-auto">
             <template v-for="(option, index) in menuOptions" :key="index">
               <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2"></div>
               <div v-else-if="option.locked" v-tooltip="{ content: option.lockTooltip, placement: 'top' }"
@@ -686,9 +697,70 @@ const hiddeLogsHandle = () => {
           </div>
         </Transition>
       </div>
-      <!-- Overlay para cerrar menú -->
-      <div v-if="showMenu" @click="showMenu = false" class="fixed inset-0 z-30 cursor-default"></div>
+      <!-- Desktop Overlay para cerrar menú -->
+      <div v-if="showMenu" @click="showMenu = false" class="hidden sm:block fixed inset-0 z-30 cursor-default"></div>
     </div>
+
+    <!-- ─── Mobile Bottom Sheet Menu (Teleported to body) ─── -->
+    <Teleport to="body">
+      <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0"
+        enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100" leave-to-class="opacity-0">
+        <div v-if="showMenu" @click="showMenu = false" class="sm:hidden fixed inset-0 bg-black/70 z-40 cursor-default">
+        </div>
+      </Transition>
+      <Transition enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 translate-y-full" enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-full">
+        <div v-if="showMenu"
+          class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0b0808] border-t border-orange-500/20 rounded-t-2xl p-4 pb-8 max-h-[85vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
+          <!-- Handle bar -->
+          <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
+          <!-- Header with back button -->
+          <div class="flex items-center justify-center mb-4 relative ml-2">
+            <button @click="showMenu = false"
+              class="absolute left-0 w-8 h-8 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-white/5">
+              <span class="material-symbols-outlined notranslate text-[22px]">arrow_back</span>
+              Atrás
+            </button>
+            <span class="text-white/60 text-[10px] font-bold uppercase tracking-widest text-center">Opciones del
+              QR</span>
+          </div>
+          <div class="space-y-1">
+            <template v-for="(option, index) in menuOptions" :key="index">
+              <div v-if="option.divider" class="h-px bg-white/5 my-2 mx-4"></div>
+              <div v-else-if="option.locked"
+                class="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl bg-transparent text-sm text-left font-medium text-white/30 cursor-not-allowed opacity-60">
+                <span class="material-symbols-outlined notranslate text-[22px]">lock</span>
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium">{{ option.label }}</span>
+                  <span class="text-[11px] text-white/20 font-normal leading-tight">{{ option.lockTooltip }}</span>
+                </div>
+              </div>
+              <button v-else @click="option.action" :class="[
+                'w-full flex items-center gap-4 cursor-pointer px-4 py-3 rounded-xl bg-transparent text-sm transition-colors text-left font-medium active:scale-[0.98]',
+                option.color || 'text-white/80',
+                option.hoverBg || 'hover:bg-white/5 active:bg-white/10'
+              ]">
+                <span
+                  :class="[option.color || 'text-orange-400', 'material-symbols-outlined notranslate text-[22px]']">{{
+                    option.icon }}</span>
+                <div class="flex flex-col">
+                  <span>{{ option.label }}</span>
+                  <span class="text-[10px] text-white/30 font-normal leading-tight">{{ option.description }}</span>
+                </div>
+              </button>
+            </template>
+          </div>
+          <!-- Close button -->
+          <button @click="showMenu = false"
+            class="w-full mt-3 py-3 bg-white/5 text-white/60 rounded-xl text-sm font-medium hover:bg-white/10 hover:text-white/80 transition-colors cursor-pointer active:scale-[0.98]">
+            Cerrar
+          </button>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- Overlay Prompts -->
     <Transition enter-active-class="transition-all duration-200 ease-out" enter-from-class="opacity-0"
@@ -917,7 +989,7 @@ const hiddeLogsHandle = () => {
     <!-- Off-screen wrapper mantiene los templates renderizados con dimensiones reales -->
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <!-- Normal capture template - dynamic size -->
-      <div id="qr-capture-normal"
+      <div :id="`qr-capture-normal-${props.id}`"
         :style="`width:${currentSize.width}px;padding:${currentSize.width * 0.04}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;`">
         <!-- Grid pattern -->
         <div
@@ -983,7 +1055,7 @@ const hiddeLogsHandle = () => {
       </div>
 
       <!-- Compact capture template - dynamic square size -->
-      <div id="qr-capture-compact"
+      <div :id="`qr-capture-compact-${props.id}`"
         :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.05}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.02}px;font-family:'Google Sans',sans-serif;position:relative;`">
 
         <!-- Row 1: ubiqueme.com -->

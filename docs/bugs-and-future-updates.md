@@ -1,7 +1,7 @@
 # 🐛 Bugs & Future Updates — Ubiqueme.com
 
 > **Versión del documento:** 1.0  
-> **Última actualización:** 2026-06-23 3:45 PM (America/Mexico_City)  
+> **Última actualización:** 2026-06-29 2:55 PM (America/Mexico_City)  
 > **Propósito:** Registro de bugs activos por corregir y futuras actualizaciones planeadas.
 
 ---
@@ -51,7 +51,7 @@ Esto provoca que el número se salga del contenedor, se corte visualmente en la 
 
 ---
 
-### � Bug #3 — Botón "Planes" en Dashboard cambia de layout (Inconsistencia UX)
+### 🔴 Bug #3 — Botón "Planes" en Dashboard cambia de layout (Inconsistencia UX)
 
 #### Nombre
 
@@ -115,6 +115,52 @@ Cuando un usuario cancela o regenera un QR, el contador `totalQRsCreated` en la 
 
 ---
 
+### 🔴 Bug #5 — Menú de opciones no responsive en mobile (QRCard)
+
+#### Nombre
+
+Menú de opciones no responsive en mobile
+
+#### Descripción
+
+En `QRCard.vue`, el menú que se abre al hacer clic en los 3 puntos (`more_horiz`) tiene un popover con `max-h-[200px]` y overflow-y-auto. En mobile, el menú puede salirse de la pantalla, verse cortado, y las opciones son difíciles de tocar por su tamaño reducido.
+
+#### Fix aplicado
+
+- Se reemplazó el popover pequeño en mobile por un **bottom sheet** a pantalla completa con fondo oscuro overlay
+- El bottom sheet ocupa la mitad inferior de la pantalla con opciones más grandes, espaciadas y fáciles de tocar
+- En desktop se mantiene el popover original con tooltips
+- Se agregó un botón de descarga directo fuera del menú de opciones
+
+#### Estado
+
+- [x] Fixed — 2026-06-29
+
+---
+
+### 🔴 Bug #6 — Descarga de QR con nombre incorrecto a partir del 2do QR
+
+#### Nombre
+
+Descarga de QR con nombre del QR 1 al descargar desde el 2do QR en adelante
+
+#### Descripción
+
+Al descargar un QR desde `QRCard.vue`, si hay múltiples QRs en el grid, las funciones `handleDownloadPNG()` y `handleDownloadCompactPNG()` usan `document.getElementById('qr-capture-normal')` y `document.getElementById('qr-capture-compact')`. Como múltiples instancias del componente comparten los mismos IDs, `getElementById` siempre devuelve la primera instancia encontrada en el DOM, descargando siempre el QR 1 sin importar cuál se seleccione.
+
+#### Fix aplicado
+
+- Se reemplazaron los IDs estáticos por IDs dinámicos únicos usando `props.id`
+- Las funciones de descarga ahora reciben el elemento por template refs dinámicas con IDs únicos
+
+#### Estado
+
+- [x] Fixed — 2026-06-29
+
+---
+
 ## 🚀 Future Updates
 
 _(Aún sin contenido. Sección reservada para features planeados a futuro.)_
+
+---
