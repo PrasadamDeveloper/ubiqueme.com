@@ -72,6 +72,12 @@
                   </div>
                 </div>
               </div>
+              <button v-if="group.subscription.status === 'active'"
+                @click="() => toggleCreateQrModal(group.subscription)"
+                class="mt-2.5 w-full h-9 rounded-xl bg-orange-500 text-black text-[9px] font-bold uppercase tracking-wider hover:bg-orange-400 transition-all active:scale-[0.98] flex items-center justify-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined notranslate text-[14px]">add</span>
+                Asignar QR
+              </button>
             </div>
 
             <!-- QRs list -->
@@ -115,7 +121,7 @@
 
     <!-- FAB: Create QR -->
     <button @click="toggleCreateQrModal"
-      class="fixed right-5 bottom-24 z-30 w-14 h-14 rounded-full bg-orange-500 text-black shadow-lg shadow-orange-500/30 flex items-center justify-center active:scale-90 transition-all cursor-pointer">
+      class="fixed right-5 bottom-28 z-30 w-14 h-14 rounded-full bg-orange-500 text-black shadow-lg shadow-orange-500/30 flex items-center justify-center active:scale-90 transition-all cursor-pointer">
       <span class="material-symbols-outlined notranslate text-[28px]">add</span>
     </button>
 
@@ -170,6 +176,10 @@
       </Transition>
     </Teleport>
 
+    <!-- Limit Reached Dialog (M3 Alert Dialog) -->
+    <LimitReached :subscriptionName="selectedSubscription?.planType ?? ''" v-if="showLimitReached"
+      @close="showLimitReached = false" />
+
     <!-- Physical QR Overlay -->
     <RequestQROverlayMobile :visible="showPhysicalOverlay" :subscription="overlaySubscription" :qrs="overlayQrs"
       @close="closePhysicalOverlay" @confirm="closePhysicalOverlay" />
@@ -193,6 +203,7 @@ import { nanoid } from 'nanoid'
 import LineLoader from '@/components/ui/LineLoader.vue'
 import { toast } from 'vue-sonner'
 import PhonePrompt from './PhonePrompt.vue'
+import LimitReached from './LimitReached.vue'
 
 const userQRs = ref<IMyQR[]>([])
 const userSubscriptions = ref<ISubscription[]>([])
@@ -262,10 +273,23 @@ const isCreatingQR = ref(false)
 const newQrName = ref('')
 const selectedCategory = ref('other')
 
-const toggleCreateQrModal = () => {
-  if (!userSubscriptions.value.find(s => s.status === 'active' && s.totalQRsCreated < s.totalQRsAllowed)) {
-    toast.error('No tiene suscripciones activas con capacidad disponible')
-    return
+const selectedSubscription = ref<ISubscription | null>(null)
+const showLimitReached = ref(false)
+
+const toggleCreateQrModal = (sub?: ISubscription) => {
+  if (sub) {
+    selectedSubscription.value = sub
+    if (sub.totalQRsCreated >= sub.totalQRsAllowed) {
+      showLimitReached.value = true
+      return
+    }
+  } else {
+    const activeSub = userSubscriptions.value.find(s => s.status === 'active' && s.totalQRsCreated < s.totalQRsAllowed)
+    if (!activeSub) {
+      toast.error('No tiene suscripciones activas con capacidad disponible')
+      return
+    }
+    selectedSubscription.value = activeSub
   }
   showCreateQRModal.value = !showCreateQRModal.value
 }

@@ -134,7 +134,8 @@ onUnmounted(() => {
           </div>
           <RouterLink :to="{ name: 'home' }"
             class="flex items-center gap-2 group cursor-pointer z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] rounded-lg">
-            <img :src="UbiquemeLogo" alt="Ubiqueme Logo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
+              class="hidden sm:block w-10 h-10 sm:w-12 sm:h-12 object-contain" />
             <!-- Desktop: domains side by side -->
             <div class="hidden lg:flex flex-col min-w-[140px] sm:min-w-[200px]">
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
@@ -166,31 +167,18 @@ onUnmounted(() => {
           </RouterLink>
         </div>
 
-        <!-- Mobile: domains centered with absolute positioning to prevent animation jumps -->
-        <div class="lg:hidden flex-1 flex justify-center min-w-0">
-          <RouterLink :to="{ name: 'home' }" class="flex flex-col items-center w-full max-w-fit">
-            <div class="relative h-8 w-full overflow-hidden flex items-center justify-center">
+        <!-- Mobile: domains like dashboard (no logo, no tagline) -->
+        <div
+          class="lg:hidden flex-1 flex justify-start mx-auto  md:justify-center min-w-0 absolute top-1/2 translate-x-1/2 translate-y-1/2 bottom-1/2 right-1/2 sm:fixed">
+          <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
+            <span
+              class="material-symbols-outlined notranslate text-orange-500 text-[2rem] group-hover:rotate-12 transition-transform">location_on</span>
+            <div class="flex flex-col justify-center h-8 overflow-hidden relative min-w-[120px]">
               <Transition name="slide-up">
                 <div :key="currentDomainIndex"
-                  class="absolute left-0 right-0 flex justify-center items-baseline text-[#dce7ff] font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
-                  <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                  class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
+                  <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                   <span class="text-orange-500">.com</span>
-                </div>
-              </Transition>
-            </div>
-            <div class="relative h-3.5 w-full overflow-hidden flex items-center justify-center">
-              <Transition name="slide-up">
-                <div :key="currentTaglineIndex"
-                  class="absolute left-0 right-0 flex justify-center text-[8px] text-white/30 font-medium tracking-wider whitespace-nowrap font-google-sans"
-                  style="font-variation-settings: normal">
-                  <template v-if="taglines[currentTaglineIndex]!.clickable">
-                    por <span @click.stop="openAziechrie"
-                      class="font-semibold text-orange-400/60 hover:text-orange-400 transition-colors cursor-pointer">AZIECHRIE
-                      PHARMA</span>
-                  </template>
-                  <template v-else>
-                    {{ taglines[currentTaglineIndex]!.text }}
-                  </template>
                 </div>
               </Transition>
             </div>
@@ -246,50 +234,66 @@ onUnmounted(() => {
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-          }}</span>
+            }}</span>
         </button>
 
       </div>
 
-      <!-- Mobile Menu Overlay -->
+      <!-- Mobile Menu Overlay (M3 Redesign) -->
       <Transition name="mobile-menu">
         <div v-if="isMobileMenuOpen"
-          class="fixed top-20 left-0 w-full h-[calc(100dvh-80px)] bg-[#09090b]/95 backdrop-blur-xl z-40 border-t border-white/5 flex flex-col justify-between p-8 lg:hidden">
-          <!-- Links with staggered animation -->
-          <div class="flex flex-col space-y-2">
+          class="fixed top-20 left-0 w-full h-[calc(100dvh-80px)] bg-[#1C1B1F] z-40 border-t border-[#49454F]/30 flex flex-col lg:hidden overflow-y-auto">
+          <!-- Header -->
+          <div class="flex items-center gap-3 px-6 pt-6 pb-4">
+            <span class="material-symbols-outlined notranslate text-[#E6E1E5] text-[28px]">menu</span>
+            <span class="text-[#E6E1E5] text-lg font-bold">Menú</span>
+          </div>
+
+          <!-- Auth section (non-logged-in) -->
+          <template v-if="!useUserStore().getUserId">
+            <div class="px-4 space-y-2 pb-4">
+              <!-- Registrarse: prominent CTA -->
+              <RouterLink :to="{ name: 'register' }" @click="isMobileMenuOpen = false"
+                class="flex items-center justify-center gap-2 w-full bg-orange-500 text-black py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
+                <span class="material-symbols-outlined notranslate text-[18px]">person_add</span>
+                Registrarse
+              </RouterLink>
+              <!-- Iniciar sesión -->
+              <RouterLink :to="{ name: 'login' }" @click="isMobileMenuOpen = false"
+                class="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] text-[#CAC4D0] hover:text-[#E6E1E5] hover:bg-[#2B2930] cursor-pointer">
+                <span class="material-symbols-outlined notranslate text-[18px]">login</span>
+                Iniciar sesión
+              </RouterLink>
+            </div>
+            <!-- Divider -->
+            <div class="mx-6 border-t border-[#49454F]/30 mb-2"></div>
+          </template>
+
+          <!-- Nav links -->
+          <div class="flex-1 px-4 space-y-1">
             <RouterLink v-for="(link, index) in navLinks" :key="link.name" :to="{ name: link.pathName }"
               @click="isMobileMenuOpen = false" :style="{ transitionDelay: `${index * 60}ms` }" :class="[
                 { 'hidden': !useUserStore().getUserId && link.requiredLogin },
-                'flex items-center gap-3 py-4 px-4 rounded-2xl transition-all duration-300',
+                'flex items-center gap-3 px-4 py-4 rounded-2xl transition-all duration-200 active:scale-[0.98] cursor-pointer min-h-[50px]',
                 $route.name === link.pathName
-                  ? 'text-orange-500 bg-orange-500/[0.06] border border-orange-500/10'
-                  : 'text-white/60 hover:text-orange-500 border border-transparent'
+                  ? 'text-orange-500 bg-[#2B2930] border border-orange-500/10'
+                  : 'text-[#E6E1E5] hover:bg-[#2B2930] border border-transparent'
               ]">
               <span class="material-symbols-outlined notranslate text-[22px]">{{ link.icon }}</span>
-              <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
+              <span class="text-[13px] font-bold tracking-wider">{{ link.name }}</span>
+              <!-- Active indicator -->
+              <div v-if="$route.name === link.pathName" class="ml-auto w-1.5 h-1.5 rounded-full bg-orange-500">
+              </div>
             </RouterLink>
           </div>
 
-          <!-- Actions -->
-          <div class="flex flex-col gap-3 mt-auto pt-6">
-            <template v-if="!useUserStore().getUserId">
-              <RouterLink :to="{ name: 'login' }" @click="isMobileMenuOpen = false"
-                class="w-full flex items-center justify-center border border-white/10 hover:border-white/20 text-white/80 hover:text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer">
-                Iniciar sesión
-              </RouterLink>
-
-              <RouterLink :to="{ name: 'register' }" @click="isMobileMenuOpen = false"
-                class="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-[#09090b] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
-                Registrarse
-              </RouterLink>
-            </template>
-            <template v-else>
-              <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
-                class="w-full flex items-center justify-center bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 hover:text-[#09090b] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
-                <span class="material-symbols-outlined notranslate text-sm">dashboard</span>
-                Panel de Control
-              </RouterLink>
-            </template>
+          <!-- Dashboard button (logged-in only) -->
+          <div v-if="useUserStore().getUserId" class="px-4 pt-2 pb-8">
+            <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
+              class="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] bg-[#2B2930] border border-[#49454F]/30 text-[#E6E1E5] hover:bg-orange-500 hover:text-black hover:border-orange-500 cursor-pointer">
+              <span class="material-symbols-outlined notranslate text-[18px]">dashboard</span>
+              Mis Códigos QR
+            </RouterLink>
           </div>
         </div>
       </Transition>

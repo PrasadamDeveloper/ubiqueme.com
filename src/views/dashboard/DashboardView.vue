@@ -59,17 +59,25 @@ const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   'Mis QR': withLoader(() => import('../../components/user/dashboard/QRDash/MyQrDash.vue')),
   'Mis QR Mobile': withLoader(() => import('../../components/user/dashboard/QRDash/MyQrDashMobile.vue')),
   'Configuración': withLoader(() => import('../../components/user/dashboard/settings/SettingsDash.vue')),
+  'Configuración Mobile': withLoader(() => import('../../components/user/dashboard/settings/SettingsDashMobile.vue')),
   'Soporte': defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
+  'Soporte Mobile': defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDashMobile.vue')),
   'Planes': defineAsyncComponent(() => import('../../components/user/dashboard/pricing/PricingDash.vue')),
+  'Planes Mobile': defineAsyncComponent(() => import('../../components/user/dashboard/pricing/PricingDashMobile.vue')),
 }
 
 const currentComponent = computed(() => {
   const name = componentsStore.getCurrentComponent
-  // Use mobile version for "Mis QR" when on small screen
-  if (isMobile.value && name === 'Mis QR') {
-    return componentsMap['Mis QR Mobile'] ?? componentsMap['Mis QR']
+  if (!isMobile.value) {
+    return componentsMap[name] ?? componentsMap['Mis QR']
   }
-  return componentsMap[name] ?? componentsMap['Mis QR']
+  // Mobile routing
+  const mobileKey = name === 'Mis QR' ? 'Mis QR Mobile'
+    : name === 'Configuración' ? 'Configuración Mobile'
+      : name === 'Soporte' ? 'Soporte Mobile'
+        : name === 'Planes' ? 'Planes Mobile'
+          : name
+  return componentsMap[mobileKey] ?? componentsMap[name] ?? componentsMap['Mis QR']
 })
 
 const { handleLogout } = useAuth()
@@ -102,9 +110,9 @@ const changeComponent = (component: ComponentName) => {
               class="w-18 h-12 bg-[#090300] rounded-xl flex items-center justify-center shadow-2xl overflow-hidden absolute left-0">
               <span v-if="!hoverOnSideBar" class="text-orange-100 text-xs font-google-sans font-medium">{{
                 'Hola'
-                }}</span>
+              }}</span>
               <span v-else class="text-white text-xs font-google-sans animate-fade-right">{{ useUserStore().getFirstName
-                }}</span>
+              }}</span>
             </div>
           </div>
 
@@ -131,14 +139,20 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 📱 FLOATING BOTTOM NAVIGATION BAR - Mobile Only -->
         <nav
-          class="lg:hidden fixed bottom-4 left-4 right-4 bg-[#09090b]/90 backdrop-blur-xl border border-white/10 rounded-[24px] h-16 px-4 z-40 flex items-center justify-around shadow-[0_8px_32px_0_rgba(249,115,22,0.15)] transition-all duration-300">
-          <button v-for="btn in mobileButtons" :key="btn.name" @click="changeComponent(btn.name as ComponentName)"
-            class="flex flex-col items-center justify-center text-center gap-1 cursor-pointer transition-all duration-300 w-12 h-12 rounded-xl active:scale-95"
-            :class="componentsStore.getCurrentComponent === btn.name ? 'text-orange-800 scale-105' : 'text-white/40 hover:text-white/70'">
-            <v-icon :name="componentsStore.getCurrentComponent === btn.name ? btn.iconActive : btn.icon" scale="1.2" />
-            <span class="text-[9px] font-bold tracking-tight uppercase">{{ btn.label }}</span>
-          </button>
-
+          class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#1C1B1F] border-t border-[#49454F]/30 shadow-[0_-4px_20px_rgba(0,0,0,0.4)]"
+          style="padding-bottom:env(safe-area-inset-bottom,0px)">
+          <div class="flex items-center justify-around h-16">
+            <button v-for="btn in mobileButtons" :key="btn.name" @click="changeComponent(btn.name as ComponentName)"
+              class="flex flex-col items-center justify-center text-center gap-0.5 cursor-pointer transition-all duration-150 w-16 h-full rounded-xl active:scale-95 relative"
+              :class="componentsStore.getCurrentComponent === btn.name ? 'text-orange-400' : 'text-[#CAC4D0]/50 hover:text-[#E6E1E5]'">
+              <!-- Active indicator line -->
+              <div v-if="componentsStore.getCurrentComponent === btn.name"
+                class="absolute top-0 w-8 h-0.5 rounded-full bg-orange-500"></div>
+              <v-icon :name="componentsStore.getCurrentComponent === btn.name ? btn.iconActive : btn.icon"
+                scale="1.1" />
+              <span class="text-[9px] font-bold tracking-tight uppercase">{{ btn.label }}</span>
+            </button>
+          </div>
         </nav>
 
       </div>
