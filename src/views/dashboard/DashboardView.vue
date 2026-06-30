@@ -3,12 +3,18 @@ import ButtonDash from '@/components/user/dashboard/ButtonDash.vue'
 import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
 import MainLoader from '@/components/ui/MainLoader.vue'
 import { useAuth } from '@/handleAuth'
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, ref, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user.ts'
 import { useComponentsStore } from '@/stores/components.ts'
 
 const hoverOnSideBar = ref(false)
 let timeout = null as any
+
+// ─── Mobile detection ──────────────────────────────────────────
+const isMobile = ref(window.innerWidth < 768)
+const onResize = () => { isMobile.value = window.innerWidth < 768 }
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
 
 const handleSideBarHover = () => {
   if (timeout) clearTimeout(timeout)
@@ -51,6 +57,7 @@ const componentsStore = useComponentsStore();
 
 const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   'Mis QR': withLoader(() => import('../../components/user/dashboard/QRDash/MyQrDash.vue')),
+  'Mis QR Mobile': withLoader(() => import('../../components/user/dashboard/QRDash/MyQrDashMobile.vue')),
   'Configuración': withLoader(() => import('../../components/user/dashboard/settings/SettingsDash.vue')),
   'Soporte': defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
   'Planes': defineAsyncComponent(() => import('../../components/user/dashboard/pricing/PricingDash.vue')),
@@ -58,8 +65,13 @@ const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
 
 const currentComponent = computed(() => {
   const name = componentsStore.getCurrentComponent
+  // Use mobile version for "Mis QR" when on small screen
+  if (isMobile.value && name === 'Mis QR') {
+    return componentsMap['Mis QR Mobile'] ?? componentsMap['Mis QR']
+  }
   return componentsMap[name] ?? componentsMap['Mis QR']
 })
+
 const { handleLogout } = useAuth()
 
 const changeComponent = (component: ComponentName) => {
@@ -90,9 +102,9 @@ const changeComponent = (component: ComponentName) => {
               class="w-18 h-12 bg-[#090300] rounded-xl flex items-center justify-center shadow-2xl overflow-hidden absolute left-0">
               <span v-if="!hoverOnSideBar" class="text-orange-100 text-xs font-google-sans font-medium">{{
                 'Hola'
-              }}</span>
+                }}</span>
               <span v-else class="text-white text-xs font-google-sans animate-fade-right">{{ useUserStore().getFirstName
-              }}</span>
+                }}</span>
             </div>
           </div>
 
