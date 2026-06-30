@@ -357,7 +357,7 @@ const hiddeLogsHandle = () => {
 <template>
   <!-- Android M3 Card -->
   <div
-    class="relative w-full bg-[#1C1B1F] rounded-2xl overflow-hidden font-google-sans shadow-sm border border-[#49454F]/30"
+    class="relative w-full bg-[#18171a] rounded-2xl overflow-hidden font-google-sans shadow-sm border border-double  border-[#491e0a]"
     :class="{ 'opacity-50 grayscale': isDisabled, 'grayscale-[50%] brightness-75': isCanceled }">
 
     <!-- Loading overlay -->
@@ -494,7 +494,7 @@ const hiddeLogsHandle = () => {
                 option.color || 'text-[#E6E1E5]', option.hoverBg || 'hover:bg-white/5 active:bg-white/10']">
                 <span
                   :class="[option.color || 'text-orange-400', 'material-symbols-outlined notranslate text-[20px]']">{{
-                  option.icon }}</span>
+                    option.icon }}</span>
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description

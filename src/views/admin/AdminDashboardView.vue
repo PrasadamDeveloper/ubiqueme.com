@@ -78,7 +78,7 @@
                 class="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer">
 
                 <!-- Avatar dot -->
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0" :class="user.isBanned
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[8px] font-black shrink-0" :class="user.isBanned
                   ? 'bg-red-500/10 text-red-400'
                   : 'bg-[#ff7900]/10 text-[#ff7900]'">
                   {{ getUserIdUI(user, index) }}
@@ -90,7 +90,7 @@
                     <span class="text-sm font-medium text-white truncate">{{ user.name }}</span>
                     <span v-if="user.role !== 'user'"
                       class="px-1.5 py-0.5 rounded border border-white/[0.06] bg-white/[0.03] text-[8px] uppercase tracking-widest text-white/40 font-black shrink-0">{{
-                      user.role }}</span>
+                        user.role }}</span>
                     <span v-if="user.isBanned"
                       class="px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 text-[8px] font-black uppercase tracking-widest shrink-0">Suspendido</span>
                   </div>
@@ -222,7 +222,7 @@
                               }}</span></span>
                           <span>Ven: <span class="font-mono"
                               :class="sub.status === 'active' && sub.endDate && sub.endDate.toDate() < new Date() ? 'text-red-400' : 'text-white/50'">{{
-                              formatedDate(sub.endDate) }}</span></span>
+                                formatedDate(sub.endDate) }}</span></span>
                         </div>
 
                         <!-- Cancel info -->
@@ -829,7 +829,7 @@ const getUserIdUI = (userPayload: IUser, index: number) => {
     oro: 'O',
   };
   const prefix = prefixMap[planType] ?? 'U';
-  return `${prefix}${String(index).padStart(5, '0')}${initial}`;
+  return `${prefix}${String(index).padStart(3, '0')}${initial}`;
 }
 
 </script>

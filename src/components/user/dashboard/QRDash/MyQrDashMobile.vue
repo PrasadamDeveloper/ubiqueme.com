@@ -119,11 +119,6 @@
       </div>
     </div>
 
-    <!-- FAB: Create QR -->
-    <button @click="toggleCreateQrModal"
-      class="fixed right-5 bottom-28 z-30 w-14 h-14 rounded-full bg-orange-500 text-black shadow-lg shadow-orange-500/30 flex items-center justify-center active:scale-90 transition-all cursor-pointer">
-      <span class="material-symbols-outlined notranslate text-[28px]">add</span>
-    </button>
 
     <!-- Create QR Modal (M3 Dialog) -->
     <Teleport to="body">

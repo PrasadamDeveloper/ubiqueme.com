@@ -674,7 +674,7 @@ const hiddeLogsHandle = () => {
           <button @click="showMenu = false"
             class="flex items-center gap-2 text-white/50 hover:text-orange-400 transition-colors cursor-pointer w-fit mb-4">
             <span class="material-symbols-outlined notranslate text-[20px]">arrow_back</span>
-            <span class="text-xs font-bold uppercase tracking-widest">Volver</span>
+            <span class="text-xs font-bold ">Volver</span>
           </button>
 
           <!-- Title -->
