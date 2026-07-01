@@ -554,40 +554,40 @@ const hiddeLogsHandle = () => {
               <!-- Preview -->
               <div class="flex justify-center mb-4">
                 <div
-                  class="rounded-2xl bg-gradient-to-br from-[#1C1B1F] to-[#2B2930] border border-[#49454F]/30 p-4 w-full max-w-[260px]">
+                  class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 w-full max-w-[260px]">
                   <template v-if="downloadStyle === 'normal'">
                     <span
-                      class="block text-center text-orange-500 font-black tracking-[0.15em] uppercase text-[9px] mb-2">ubiqueme.com</span>
+                      class="block text-center text-black font-black tracking-[0.15em] uppercase text-[9px] mb-2">ubiqueme.com</span>
                     <div class="flex items-center justify-center gap-1.5">
-                      <span class="text-orange-500/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
+                      <span class="text-black/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
                         style="writing-mode:vertical-rl">localizarme.com</span>
                       <div class="shrink-0 bg-white rounded-xl p-1">
                         <QrcodeVue :value="qrScanUrl" :size="64" render-as="canvas" level="H" />
                       </div>
                       <div class="flex flex-col flex-1 min-w-0 gap-0.5">
-                        <p class="text-white font-extrabold text-xs leading-tight truncate">{{ propsComputed.name ||
+                        <p class="text-black font-extrabold text-xs leading-tight truncate">{{ propsComputed.name ||
                           'Código QR' }}</p>
-                        <p class="text-white/60 font-mono font-bold text-[8px]">#{{ propsComputed.id }}</p>
-                        <p class="text-white/70 font-semibold text-[8px] leading-tight">Escanee QR para contactar al
+                        <p class="text-black/60 font-mono font-bold text-[8px]">#{{ propsComputed.id }}</p>
+                        <p class="text-black/70 font-semibold text-[8px] leading-tight">Escanee QR para contactar al
                           responsable.</p>
                       </div>
-                      <span class="text-orange-500/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
+                      <span class="text-black/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
                         style="writing-mode:vertical-rl">contactomio.com</span>
                     </div>
                   </template>
                   <template v-else>
                     <div class="bg-white rounded-2xl p-2 shadow-lg flex flex-col items-center gap-1 w-[140px] mx-auto">
-                      <span class="text-orange-500 font-black tracking-widest uppercase text-[8px]">ubiqueme.com</span>
+                      <span class="text-black font-black tracking-widest uppercase text-[8px]">ubiqueme.com</span>
                       <div class="flex items-center justify-center w-full">
-                        <span class="text-orange-500 font-bold uppercase text-[4px] tracking-wider"
+                        <span class="text-black font-bold uppercase text-[4px] tracking-wider"
                           style="writing-mode:vertical-rl">localizarme.com</span>
                         <div class="mx-0.5">
                           <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
                         </div>
-                        <span class="text-orange-500 font-bold uppercase text-[4px] tracking-wider"
+                        <span class="text-black font-bold uppercase text-[4px] tracking-wider"
                           style="writing-mode:vertical-rl">contactomio.com</span>
                       </div>
-                      <p class="text-orange-500 font-bold text-center text-[7px]">Escanee QR para contactar</p>
+                      <p class="text-black font-bold text-center text-[7px]">Escanee QR para contactar</p>
                     </div>
                   </template>
                 </div>
@@ -661,7 +661,7 @@ const hiddeLogsHandle = () => {
     <!-- ─── Hidden capture templates ─── -->
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
         <!-- div A: QR code — centered vertically -->
         <div
           :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
@@ -677,11 +677,11 @@ const hiddeLogsHandle = () => {
         <!-- div B: name + static text — centered vertically -->
         <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
           <p
-            :style="`color:#fff;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
+            :style="`color:#000;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
             {{ propsComputed.name || 'Código QR' }}
           </p>
           <p
-            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
+            :style="`color:rgba(0,0,0,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
             Escanee este código QR para contactar al responsable por whatsapp.
           </p>
         </div>
@@ -690,12 +690,12 @@ const hiddeLogsHandle = () => {
       <div :id="`qr-capture-compact-${props.id}`"
         :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.005}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.008}px;font-family:'Google Sans',sans-serif;position:relative;`">
         <span
-          :style="`color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
+          :style="`color:#000;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
         <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;flex:1;width:100%;">
           <div
             :style="`width:${currentCompactSize.size * 0.035}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;`">
             <div style="transform:rotate(-90deg);white-space:nowrap;"><span
-                :style="`color:#f38020;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">localizarme.com</span>
+                :style="`color:#000;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">localizarme.com</span>
             </div>
           </div>
           <div style="flex:1;display:flex;align-items:center;justify-content:center;">
@@ -705,12 +705,12 @@ const hiddeLogsHandle = () => {
           <div
             :style="`width:${currentCompactSize.size * 0.035}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;`">
             <div style="transform:rotate(90deg);white-space:nowrap;"><span
-                :style="`color:#f38020;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">contactomio.com</span>
+                :style="`color:#000;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">contactomio.com</span>
             </div>
           </div>
         </div>
         <p
-          :style="`color:#f38020;font-weight:700;text-align:center;font-size:${currentCompactSize.size * 0.036}px;margin:0;`">
+          :style="`color:#000;font-weight:700;text-align:center;font-size:${currentCompactSize.size * 0.036}px;margin:0;`">
           Escanee QR para contactar al responsable</p>
       </div>
     </div>

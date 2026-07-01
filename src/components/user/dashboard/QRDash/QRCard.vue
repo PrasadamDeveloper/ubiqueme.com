@@ -806,16 +806,16 @@ const hiddeLogsHandle = () => {
 
             <!-- Preview card with glass effect -->
             <div
-              class="w-full mb-5 rounded-2xl bg-gradient-to-br from-[#0f0a08] to-[#0a0401] border border-white/10 p-5 relative overflow-hidden">
+              class="w-full mb-5 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-5 relative overflow-hidden">
               <!-- Subtle grid behind -->
               <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                 style="background-image: linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
               </div>
               <div class="relative z-10 flex flex-col items-center gap-3">
                 <template v-if="downloadStyle === 'normal'">
-                  <span class="text-[#f38020] font-black tracking-[0.15em] uppercase text-[10px]">ubiqueme.com</span>
+                  <span class="text-black font-black tracking-[0.15em] uppercase text-[10px]">ubiqueme.com</span>
                   <div class="flex items-center justify-center w-full gap-2">
-                    <span class="text-[#f38020]/70 font-bold uppercase text-[7px] whitespace-nowrap tracking-wider"
+                    <span class="text-black/70 font-bold uppercase text-[7px] whitespace-nowrap tracking-wider"
                       style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
                     <div class="shrink-0 bg-white rounded-xl p-1.5">
                       <template v-if="propsComputed.img">
@@ -826,23 +826,23 @@ const hiddeLogsHandle = () => {
                       </template>
                     </div>
                     <div class="flex flex-col flex-1 min-w-0 gap-0.5">
-                      <p class="text-white font-extrabold text-sm leading-tight truncate">{{ propsComputed.name ||
+                      <p class="text-black font-extrabold text-sm leading-tight truncate">{{ propsComputed.name ||
                         'Código QR' }}
                       </p>
-                      <p class="text-white/60 font-mono font-bold text-[10px]">#{{ propsComputed.id }}</p>
-                      <div class="w-3/4 h-px bg-white/10 my-0.5"></div>
-                      <p class="text-white/70 font-semibold text-[10px] leading-tight">Escanee este QR para contactar al
+                      <p class="text-black/60 font-mono font-bold text-[10px]">#{{ propsComputed.id }}</p>
+                      <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
+                      <p class="text-black/70 font-semibold text-[10px] leading-tight">Escanee este QR para contactar al
                         responsable de forma segura.</p>
                     </div>
-                    <span class="text-[#f38020]/70 font-bold uppercase text-[7px] whitespace-nowrap tracking-wider"
+                    <span class="text-black/70 font-bold uppercase text-[7px] whitespace-nowrap tracking-wider"
                       style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
                   </div>
                 </template>
                 <template v-else>
                   <div class="bg-white rounded-2xl p-3 shadow-lg flex flex-col items-center gap-1.5 w-[160px]">
-                    <span class="text-[#f38020] font-black tracking-widest uppercase text-[9px]">ubiqueme.com</span>
+                    <span class="text-black font-black tracking-widest uppercase text-[9px]">ubiqueme.com</span>
                     <div class="flex items-center justify-center w-full">
-                      <span class="text-[#f38020] font-bold uppercase text-[5px] tracking-wider"
+                      <span class="text-black font-bold uppercase text-[5px] tracking-wider"
                         style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
                       <div class="mx-1">
                         <template v-if="propsComputed.img">
@@ -852,10 +852,10 @@ const hiddeLogsHandle = () => {
                           <QrcodeVue :value="qrScanUrl" :size="64" render-as="canvas" level="H" />
                         </template>
                       </div>
-                      <span class="text-[#f38020] font-bold uppercase text-[5px] tracking-wider"
+                      <span class="text-black font-bold uppercase text-[5px] tracking-wider"
                         style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
                     </div>
-                    <p class="text-[#f38020] font-bold text-center text-[8px]">Escanee QR para contactar al responsable
+                    <p class="text-black font-bold text-center text-[8px]">Escanee QR para contactar al responsable
                     </p>
                   </div>
                 </template>
@@ -954,15 +954,15 @@ const hiddeLogsHandle = () => {
               <!-- Preview -->
               <div class="flex justify-center mb-5">
                 <div
-                  class="rounded-2xl bg-gradient-to-br from-[#0f0a08] to-[#0a0401] border border-white/10 p-5 relative overflow-hidden w-full max-w-[280px]">
+                  class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-5 relative overflow-hidden w-full max-w-[280px]">
                   <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style="background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
                   </div>
                   <div class="relative z-10 flex flex-col items-center gap-2">
                     <template v-if="downloadStyle === 'normal'">
-                      <span class="text-[#f38020] font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
+                      <span class="text-black font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
                       <div class="flex items-center justify-center w-full gap-1.5">
-                        <span class="text-[#f38020]/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
+                        <span class="text-black/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
                           style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
                         <div class="shrink-0 bg-white rounded-xl p-1">
                           <template v-if="propsComputed.img">
@@ -973,24 +973,24 @@ const hiddeLogsHandle = () => {
                           </template>
                         </div>
                         <div class="flex flex-col flex-1 min-w-0 gap-0.5">
-                          <p class="text-white font-extrabold text-xs leading-tight truncate">{{ propsComputed.name ||
+                          <p class="text-black font-extrabold text-xs leading-tight truncate">{{ propsComputed.name ||
                             'Código QR' }}
                           </p>
-                          <p class="text-white/60 font-mono font-bold text-[8px]">#{{ propsComputed.id }}</p>
-                          <div class="w-3/4 h-px bg-white/10 my-0.5"></div>
-                          <p class="text-white/70 font-semibold text-[8px] leading-tight">Escanee este QR para contactar
+                          <p class="text-black/60 font-mono font-bold text-[8px]">#{{ propsComputed.id }}</p>
+                          <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
+                          <p class="text-black/70 font-semibold text-[8px] leading-tight">Escanee este QR para contactar
                             al
                             responsable.</p>
                         </div>
-                        <span class="text-[#f38020]/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
+                        <span class="text-black/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
                           style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
                       </div>
                     </template>
                     <template v-else>
                       <div class="bg-white rounded-2xl p-2 shadow-lg flex flex-col items-center gap-1 w-[140px]">
-                        <span class="text-[#f38020] font-black tracking-widest uppercase text-[8px]">ubiqueme.com</span>
+                        <span class="text-black font-black tracking-widest uppercase text-[8px]">ubiqueme.com</span>
                         <div class="flex items-center justify-center w-full">
-                          <span class="text-[#f38020] font-bold uppercase text-[4px] tracking-wider"
+                          <span class="text-black font-bold uppercase text-[4px] tracking-wider"
                             style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
                           <div class="mx-0.5">
                             <template v-if="propsComputed.img">
@@ -1000,10 +1000,10 @@ const hiddeLogsHandle = () => {
                               <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
                             </template>
                           </div>
-                          <span class="text-[#f38020] font-bold uppercase text-[4px] tracking-wider"
+                          <span class="text-black font-bold uppercase text-[4px] tracking-wider"
                             style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
                         </div>
-                        <p class="text-[#f38020] font-bold text-center text-[7px]">Escanee QR para contactar al
+                        <p class="text-black font-bold text-center text-[7px]">Escanee QR para contactar al
                           responsable</p>
                       </div>
                     </template>
@@ -1087,7 +1087,7 @@ const hiddeLogsHandle = () => {
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <!-- Normal capture template - dynamic size -->
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
         <!-- div A: QR code — centered vertically -->
         <div
           :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
@@ -1103,11 +1103,11 @@ const hiddeLogsHandle = () => {
         <!-- div B: name + static text — centered vertically -->
         <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
           <p
-            :style="`color:#fff;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
+            :style="`color:#000;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
             {{ propsComputed.name || 'Código QR' }}
           </p>
           <p
-            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
+            :style="`color:rgba(0,0,0,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
             Escanee este código QR para contactar al responsable por whatsapp.
           </p>
         </div>
@@ -1119,7 +1119,7 @@ const hiddeLogsHandle = () => {
 
         <!-- Row 1: ubiqueme.com -->
         <span
-          :style="`color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
+          :style="`color:#000;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
 
         <!-- Row 2: 3-column flex: left domain (rotated) | QR | right domain (rotated) -->
         <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;flex:1;width:100%;">
@@ -1128,7 +1128,7 @@ const hiddeLogsHandle = () => {
             :style="`width:${currentCompactSize.size * 0.035}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;`">
             <div style="transform:rotate(-90deg);white-space:nowrap;">
               <span
-                :style="`color:#f38020;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">localizarme.com</span>
+                :style="`color:#000;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">localizarme.com</span>
             </div>
           </div>
 
@@ -1151,14 +1151,14 @@ const hiddeLogsHandle = () => {
             :style="`width:${currentCompactSize.size * 0.035}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;`">
             <div style="transform:rotate(90deg);white-space:nowrap;">
               <span
-                :style="`color:#f38020;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">contactomio.com</span>
+                :style="`color:#000;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">contactomio.com</span>
             </div>
           </div>
         </div>
 
         <!-- Row 3: text -->
         <p
-          :style="`color:#f38020;font-weight:700;text-align:center;font-size:${currentCompactSize.size * 0.036}px;margin:0;`">
+          :style="`color:#000;font-weight:700;text-align:center;font-size:${currentCompactSize.size * 0.036}px;margin:0;`">
           Escanee QR para contactar al responsable
         </p>
       </div>
