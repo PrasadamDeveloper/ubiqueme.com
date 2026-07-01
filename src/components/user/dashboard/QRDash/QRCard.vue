@@ -1100,7 +1100,7 @@ const hiddeLogsHandle = () => {
         <!-- Logo top-right -->
         <div
           :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
-          <img :src="LogoWhite" :style="`width:${currentSize.width * 0.14}px;height:auto;opacity:0.9;display:block;`"
+          <img :src="LogoWhite" :style="`width:${currentSize.width * 0.06}px;height:auto;opacity:0.9;display:block;`"
             alt="Ubiqueme" />
         </div>
         <!-- div A: QR code — centered vertically -->
@@ -1135,7 +1135,7 @@ const hiddeLogsHandle = () => {
         <div
           :style="`position:absolute;top:${currentCompactSize.size * 0.015}px;right:${currentCompactSize.size * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentCompactSize.size * 0.015}px;padding:${currentCompactSize.size * 0.008}px;z-index:5;pointer-events:none;`">
           <img :src="LogoWhite"
-            :style="`width:${currentCompactSize.size * 0.14}px;height:auto;opacity:0.9;display:block;`"
+            :style="`width:${currentCompactSize.size * 0.06}px;height:auto;opacity:0.9;display:block;`"
             alt="Ubiqueme" />
         </div>
         <!-- Row 1: ubiqueme.com -->
