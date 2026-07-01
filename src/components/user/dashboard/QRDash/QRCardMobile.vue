@@ -357,10 +357,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-              }}</h3>
+            }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-                }}</span>
+              }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -451,7 +451,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                    }}</span>
+                  }}</span>
                 </div>
               </div>
 
@@ -464,7 +464,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                    }}</span>
+                  }}</span>
                 </div>
               </button>
             </template>
@@ -629,12 +629,10 @@ const hiddeLogsHandle = () => {
                 <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1">
                   <button @click="downloadStyle = 'normal'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="[downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white', downloadFormat === 'pdf' ? 'opacity-50' : '']"
-                    :disabled="downloadFormat === 'pdf'">Normal</button>
+                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">Normal</button>
                   <button @click="downloadStyle = 'compact'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="[downloadStyle === 'compact' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white', downloadFormat === 'pdf' ? 'opacity-30' : '']"
-                    :disabled="downloadFormat === 'pdf'">Compacto</button>
+                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">Compacto</button>
                 </div>
                 <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl">
                   <button @click="downloadSize = 'sm'"

@@ -37,6 +37,13 @@ export const PHYSICAL_SIZE_MM: Record<DownloadSize, { widthMm: number; heightMm:
   lg: { widthMm: 210, heightMm: 146 },
 }
 
+// ─── Physical dimensions for PDF (mm) — Compact (square) ────────
+export const PHYSICAL_SIZE_MM_COMPACT: Record<DownloadSize, { sizeMm: number }> = {
+  sm: { sizeMm: 55 },
+  md: { sizeMm: 85 },
+  lg: { sizeMm: 148 },
+}
+
 // ─── Composable ─────────────────────────────────────────────────
 export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   // Resolve props (support both reactive Ref and plain object)
@@ -74,9 +81,9 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     }
   })
 
-  /** When PDF format is selected, only normal style is available */
+  /** Both styles are available for PNG and PDF */
   const availableStyles = computed<DownloadStyle[]>(() => {
-    return downloadFormat.value === 'pdf' ? ['normal'] : ['normal', 'compact']
+    return ['normal', 'compact']
   })
 
   /** Generate a DOM element ID for the capture template */
@@ -183,6 +190,48 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     }
   }
 
+  // ── Download: PDF (from compact style canvas) ────────────────
+
+  const handleDownloadCompactPDF = async (onClose?: () => void) => {
+    const elId = getQrCaptureId('compact')
+    const el = document.getElementById(elId)
+    if (!el) {
+      toast.error('Error al capturar el QR compacto. Intente de nuevo.')
+      return
+    }
+
+    isDownloading.value = true
+    try {
+      const canvas = await html2canvas(el, {
+        scale: 4,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+      })
+
+      const { sizeMm } = PHYSICAL_SIZE_MM_COMPACT[downloadSize.value]
+
+      const { jsPDF } = await import('jspdf')
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [sizeMm, sizeMm],
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      pdf.addImage(imgData, 'PNG', 0, 0, sizeMm, sizeMm)
+
+      pdf.save(`qr-compact-${p.value.id}.pdf`)
+
+      toast.success('QR compacto descargado como PDF — tamaño físico exacto para impresión')
+      onClose?.()
+    } catch (error) {
+      toast.error(`Error al descargar PDF compacto: ${error}`)
+    } finally {
+      isDownloading.value = false
+    }
+  }
+
   // ── Download: PDF (from normal style canvas) ─────────────────
 
   const handleDownloadPDF = async (onClose?: () => void) => {
@@ -235,6 +284,9 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
   const handleDownload = (onClose?: () => void) => {
     if (downloadFormat.value === 'pdf') {
+      if (downloadStyle.value === 'compact') {
+        return handleDownloadCompactPDF(onClose)
+      }
       return handleDownloadPDF(onClose)
     }
     if (downloadStyle.value === 'compact') {
@@ -273,6 +325,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     handleDownloadPNG,
     handleDownloadCompactPNG,
     handleDownloadPDF,
+    handleDownloadCompactPDF,
     handleDownload,
   }
 }

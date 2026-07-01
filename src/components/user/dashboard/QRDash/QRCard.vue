@@ -879,14 +879,12 @@ const hiddeLogsHandle = () => {
               <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
                 <button @click="downloadStyle = 'normal'"
                   class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="[downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' && downloadStyle !== 'normal' ? 'opacity-50 cursor-not-allowed' : '']"
-                  :disabled="downloadFormat === 'pdf'">
+                  :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
                   Normal
                 </button>
                 <button @click="downloadStyle = 'compact'"
                   class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="[downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' ? 'opacity-30 cursor-not-allowed' : '']"
-                  :disabled="downloadFormat === 'pdf'">
+                  :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
                   Compacto
                 </button>
               </div>
@@ -1030,14 +1028,12 @@ const hiddeLogsHandle = () => {
                 <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
                   <button @click="downloadStyle = 'normal'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="[downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' ? 'opacity-50 cursor-not-allowed' : '']"
-                    :disabled="downloadFormat === 'pdf'">
+                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
                     Normal
                   </button>
                   <button @click="downloadStyle = 'compact'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="[downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' ? 'opacity-30 cursor-not-allowed' : '']"
-                    :disabled="downloadFormat === 'pdf'">
+                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
                     Compacto
                   </button>
                 </div>
