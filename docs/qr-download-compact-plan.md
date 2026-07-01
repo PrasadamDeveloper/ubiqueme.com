@@ -89,6 +89,29 @@ El `html2canvas` usa `scale: 3` para alta resolución. Si recortamos desde CSS, 
 
 ---
 
+## Resultado Final (implementado)
+
+### Valores finales aplicados en templates ocultos de captura
+
+| Propiedad                      | Template normal (antes) | Template normal (después) |
+| ------------------------------ | ----------------------- | ------------------------- |
+| Padding contenedor             | `4%` del width          | `0.4%` del width          |
+| Gap vertical entre filas       | `8px`                   | `3px`                     |
+| Margin-right `localizarme.com` | `6px`                   | `1px`                     |
+| Padding recuadro blanco QR     | `2%` del width          | `0.3%` del width          |
+| Margin-left columna info       | `12px`                  | `1px`                     |
+| Margin-left `contactomio.com`  | `8px`                   | `1px`                     |
+| Padding template compacto      | `5%`                    | `0.5%`                    |
+| Gap template compacto          | `2%`                    | `0.8%`                    |
+
+### Feedback del usuario (segunda iteración)
+
+> "me gusta pero sigue teniendo en X un padding excesivo, redúzcamelo mucho más aún (solo en X), pega ligeramente más los dominios al centro y elimina aún más el padding X"
+
+Esto motivó la segunda ronda de reducción donde todos los márgenes/paddings horizontales se llevaron al mínimo absoluto: `1px` entre dominios y `0.4%` / `0.3%` de padding en el contenedor y recuadro QR respectivamente.
+
+---
+
 ## Resumen visual del cambio (antes vs después)
 
 ```
@@ -113,7 +136,7 @@ DESPUÉS (compactado):
 │     ██  QR   ██            │  ← QR mismo tamaño
 │     ████████████            │
 │                            │
-│ localizarme.com | contact..│  ← dominios centrados, padding lateral mínimo
+│ localizarme.com contactomio│  ← dominios casi pegados al centro, padding X mínimo
 └────────────────────────────┘
 ```
 
@@ -124,4 +147,151 @@ DESPUÉS (compactado):
 - No se modifica la lógica de generación del QR (librería `qrcode`), solo su contenedor visual.
 - No se cambia el tamaño del QR code en sí — solo se reduce el espacio vacío alrededor.
 - Los cambios deben probarse tanto en vista mobile (donde se descarga) como en vista escritorio.
-- La imagen descargada debe mantener su calidad (scale 3) y verse idéntica en apariencia pero más compacta.
+- La imagen descargada debe mantener su calidad (scale 4) y verse idéntica en apariencia pero más compacta.
+- **Archivos modificados**: `QRCard.vue` y `QRCardMobile.vue` (templates ocultos de captura con `html2canvas`).
+
+---
+
+# Implementación de descarga PDF + compartición de lógica (Julio 2026)
+
+## Motivación
+
+El sistema original solo descargaba PNGS. Un PNG no tiene información de tamaño físico (DPI/PPI), por lo que al imprimirse el tamaño depende completamente del visor, navegador o configuración de impresora. Para solucionarlo se implementó descarga en **PDF** con dimensiones físicas exactas en milímetros.
+
+Además, la lógica de descarga estaba **duplicada** casi idénticamente entre `QRCard.vue` y `QRCardMobile.vue`. Se extrajo a un composable compartido.
+
+## Arquitectura implementada
+
+### Nuevo archivo
+
+- **`src/composables/useQRDownload.ts`** — Composable que centraliza toda la lógica de:
+  - Generación del QR de alta resolución (`generateHighResQR`)
+  - Captura con `html2canvas` (templates normal y compacto)
+  - Descarga PNG (`handleDownloadPNG`, `handleDownloadCompactPNG`)
+  - Descarga PDF con dimensiones físicas (`handleDownloadPDF`)
+  - Estado reactivo: `downloadStyle`, `downloadSize`, `downloadFormat`, `isDownloading`, `qrHighResUrl`
+
+### Archivos modificados
+
+| Archivo                                                 | Cambio                                                                |
+| ------------------------------------------------------- | --------------------------------------------------------------------- |
+| `src/components/user/dashboard/QRDash/QRCard.vue`       | Reemplazó lógica local de descarga por `useQRDownload(propsComputed)` |
+| `src/components/user/dashboard/QRDash/QRCardMobile.vue` | Reemplazó lógica local de descarga por `useQRDownload(propsComputed)` |
+| `package.json`                                          | Se agregó dependencia `jspdf`                                         |
+
+### Dependencia agregada
+
+- **`jspdf`** — Librería para generar PDF del lado del cliente. Se importa dinámicamente (`await import('jspdf')`) solo cuando el usuario hace clic en "Descargar PDF", sin afectar el bundle inicial.
+
+## Flujo de descarga PDF
+
+```
+Template DOM oculto (idéntico al que usa PNG)
+  ↓
+html2canvas(el, { scale: 4 })
+  ↓
+Canvas HTML5 (en memoria)
+  ↓
+canvas.toDataURL('image/png')
+  ↓
+jsPDF({ unit: 'mm', format: [widthMm, heightMm] })
+  ↓
+pdf.addImage(imgData, 'PNG', 0, 0, widthMm, heightMm)
+  ↓
+pdf.save('qr-{id}.pdf')
+```
+
+**No se construye el diseño nuevamente.** El PDF reutiliza exactamente el mismo canvas generado por `html2canvas`, insertándolo completo en un documento PDF con las dimensiones físicas correctas.
+
+## Dimensiones físicas del PDF (estilo Normal)
+
+Basadas en la relación de aspecto 9:4 del diseño (MD = 27 cm ancho × 12 cm alto):
+
+| Tamaño | Ancho (cm) | Alto (cm) | Ancho (mm) | Alto (mm) |
+| ------ | ---------- | --------- | ---------- | --------- |
+| SM     | 13.5       | 6         | 135        | 60        |
+| MD     | 27         | 12        | 270        | 120       |
+| LG     | 40.5       | 18        | 405        | 180       |
+
+Constante `PHYSICAL_SIZE_MM` en `useQRDownload.ts`.
+
+## Resolución del QR mejorada
+
+| Antes                                    | Después                                   |
+| ---------------------------------------- | ----------------------------------------- |
+| `QRCode.toDataURL(text, { width: 600 })` | `QRCode.toDataURL(text, { width: 1200 })` |
+
+Se duplicó la resolución del QR generado (600 → 1200 px) para cubrir el escalado `scale: 4` de `html2canvas` en todos los tamaños sin pérdida por doble escalado.
+
+## Cambios en la UI
+
+### Overlay de descarga (antes)
+
+```
+[Estilo: Normal | Compacto]
+[Tamaño: SM | MD | LG]
+[💡 Al imprimir, ajuste la escala]
+[Botón: Descargar QR]
+```
+
+### Overlay de descarga (después)
+
+```
+[Formato: PNG | PDF]
+[Estilo: Normal | Compacto]  ← Compacto deshabilitado cuando formato = PDF
+[Tamaño: SM | MD | LG]
+[📄 El PDF respeta el tamaño físico exacto] (cuando PDF está seleccionado)
+[💡 Al imprimir, ajuste la escala] (cuando PNG está seleccionado)
+[Botón: Descargar QR / Descargar PDF]  ← etiqueta dinámica
+```
+
+- Cuando se selecciona **PDF**, el estilo Compacto se deshabilita visualmente (opacity reducida + `disabled`).
+- El texto del botón cambia según el formato seleccionado: "Descargar QR" (PNG) o "Descargar PDF".
+- El mensaje informativo inferior cambia según el formato.
+
+## Composable: `useQRDownload(props)`
+
+### Parámetros
+
+```typescript
+interface QRDownloadProps {
+  id: string
+  name: string
+  img?: string
+  category?: string
+}
+```
+
+Acepta tanto un objeto plano como un `Ref<QRDownloadProps>` reactivo (se usa `computed` desde los componentes).
+
+### Retorno
+
+```typescript
+{
+  downloadStyle,        // Ref<'normal' | 'compact'>
+  downloadSize,         // Ref<'sm' | 'md' | 'lg'>
+  downloadFormat,       // Ref<'png' | 'pdf'>
+  isDownloading,        // Ref<boolean>
+  qrHighResUrl,         // Ref<string> — DataURL del QR
+  qrScanUrl,            // ComputedRef<string> — URL de WhatsApp
+  currentSize,          // ComputedRef<{ width, qrSize }>
+  currentCompactSize,   // ComputedRef<{ size, qrSize }>
+  getDownloadLabel,     // ComputedRef<string> — "Descargar QR" | "Descargar PDF" | "Descargando..."
+  getQrCaptureId,       // (suffix) => string
+  generateHighResQR,    // () => Promise<void>
+  handleDownloadPNG,    // (onClose?) => Promise<void>
+  handleDownloadCompactPNG, // (onClose?) => Promise<void>
+  handleDownloadPDF,    // (onClose?) => Promise<void>
+  handleDownload,       // (onClose?) => Promise<void> — dispatch unificado
+}
+```
+
+## TypeScript y Build
+
+- `npm run type-check` → **0 errores**
+- `npm run build-only` → **build exitoso**
+- `jspdf` aparece como chunk separado (`jspdf.es.min-*.js`) — solo se carga bajo demanda
+
+## Limitación conocida
+
+**Compacto no tiene PDF.** Cuando el usuario selecciona estilo "Compacto", la descarga solo está disponible como PNG. El PDF solo está disponible para el estilo "Normal". Esto es intencional para mantener la implementación simple — las dimensiones físicas del diseño compacto se definirán en una fase posterior si es necesario.

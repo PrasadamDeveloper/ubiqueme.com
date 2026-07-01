@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import QrcodeVue from 'qrcode.vue'
-import QRCode from 'qrcode'
-import html2canvas from 'html2canvas'
 import { collection, doc, getDoc, increment, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
@@ -13,6 +11,7 @@ import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
 import { nanoid } from 'nanoid'
+import { useQRDownload } from '@/composables/useQRDownload'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -251,64 +250,30 @@ const menuOptions = [
   { label: 'Eliminar QR', icon: 'block', description: 'Desactivar permanentemente', action: () => openPrompt('cancel'), color: 'text-rose-400', hoverBg: 'hover:bg-rose-500/10' },
 ]
 
-const qrScanUrl = computed(() => {
-  const id = propsComputed.value.id
-  const name = propsComputed.value.name || 'Código QR'
-  const text = `ID: ${id}\nQR: ${name}\nMensaje: Escaneé su QR *_"${name.trim()}"_* para contactarlo `
-  return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
-})
+// ─── Download composable ──────────────────────────────────────
+const downloadComposable = useQRDownload(computed(() => ({
+  id: propsComputed.value.id,
+  name: propsComputed.value.name,
+  img: propsComputed.value.img,
+  category: propsComputed.value.category,
+})))
 
-const downloadStyle = ref<'normal' | 'compact'>('normal')
-const downloadSize = ref<'sm' | 'md' | 'lg'>('md')
-const isDownloading = ref(false)
+const {
+  downloadStyle,
+  downloadSize,
+  downloadFormat,
+  isDownloading,
+  qrHighResUrl,
+  qrScanUrl,
+  currentSize,
+  currentCompactSize,
+  getDownloadLabel,
+  generateHighResQR,
+  handleDownload,
+} = downloadComposable
 
-const qrHighResUrl = ref('')
-const generateHighResQR = async () => {
-  const text = `https://wa.me/525652094079?text=${encodeURIComponent(`ID: ${propsComputed.value.id}\nQR: ${propsComputed.value.name || 'Código QR'}\nMensaje: Escaneé su QR *_"${(propsComputed.value.name || 'Código QR').trim()}"_* para contactarlo `)}`
-  const url = await QRCode.toDataURL(text, { width: 600, margin: 1, color: { dark: '#000000', light: '#ffffff' }, errorCorrectionLevel: 'H' })
-  qrHighResUrl.value = url
-}
 onMounted(generateHighResQR)
 watch(() => propsComputed.value.name, generateHighResQR)
-
-const sizeConfig = { sm: { width: 400, qrSize: 100 }, md: { width: 600, qrSize: 160 }, lg: { width: 900, qrSize: 240 } }
-const compactSizeConfig = { sm: { size: 200, qrSize: 130 }, md: { size: 280, qrSize: 190 }, lg: { size: 380, qrSize: 260 } }
-const currentSize = computed(() => sizeConfig[downloadSize.value])
-const currentCompactSize = computed(() => compactSizeConfig[downloadSize.value])
-
-const getQrCaptureId = (suffix: 'normal' | 'compact') => `qr-capture-${suffix}-${propsComputed.value.id}`
-
-const handleDownloadPNG = async () => {
-  const el = document.getElementById(getQrCaptureId('normal'))
-  if (!el) return
-  isDownloading.value = true
-  try {
-    const canvas = await html2canvas(el, { scale: 4, backgroundColor: '#0a0401', useCORS: true })
-    const link = document.createElement('a')
-    link.download = `qr-${propsComputed.value.id}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-    toast.success('QR descargado como PNG')
-    closeAll()
-  } catch (error) { toast.error(`Error al descargar PNG: ${error}`) }
-  finally { isDownloading.value = false }
-}
-
-const handleDownloadCompactPNG = async () => {
-  const el = document.getElementById(getQrCaptureId('compact'))
-  if (!el) return
-  isDownloading.value = true
-  try {
-    const canvas = await html2canvas(el, { scale: 4, backgroundColor: '#ffffff', useCORS: true })
-    const link = document.createElement('a')
-    link.download = `qr-compact-${propsComputed.value.id}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-    toast.success('QR compacto descargado como PNG')
-    closeAll()
-  } catch (error) { toast.error(`Error al descargar QR compacto: ${error}`) }
-  finally { isDownloading.value = false }
-}
 
 const qrLogs = ref<IQRLog[]>([])
 const logsLoaded = ref(false)
@@ -391,10 +356,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-              }}</h3>
+            }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-                }}</span>
+              }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -485,7 +450,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                    }}</span>
+                  }}</span>
                 </div>
               </div>
 
@@ -498,7 +463,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                    }}</span>
+                  }}</span>
                 </div>
               </button>
             </template>
@@ -650,11 +615,43 @@ const hiddeLogsHandle = () => {
                 </div>
               </div>
 
-              <button @click="downloadStyle === 'normal' ? handleDownloadPNG() : handleDownloadCompactPNG()"
-                :disabled="isDownloading"
+              <!-- Format toggle: PNG | PDF -->
+              <div class="flex gap-2 mb-4">
+                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1">
+                  <button @click="downloadFormat = 'png'"
+                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="downloadFormat === 'png' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">PNG</button>
+                  <button @click="downloadFormat = 'pdf'"
+                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">PDF</button>
+                </div>
+                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1">
+                  <button @click="downloadStyle = 'normal'"
+                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="[downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white', downloadFormat === 'pdf' ? 'opacity-50' : '']"
+                    :disabled="downloadFormat === 'pdf'">Normal</button>
+                  <button @click="downloadStyle = 'compact'"
+                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="[downloadStyle === 'compact' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white', downloadFormat === 'pdf' ? 'opacity-30' : '']"
+                    :disabled="downloadFormat === 'pdf'">Compacto</button>
+                </div>
+                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl">
+                  <button @click="downloadSize = 'sm'"
+                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">SM</button>
+                  <button @click="downloadSize = 'md'"
+                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">MD</button>
+                  <button @click="downloadSize = 'lg'"
+                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">LG</button>
+                </div>
+              </div>
+
+              <button @click="handleDownload(closeAll)" :disabled="isDownloading"
                 class="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
                 <span class="material-symbols-outlined notranslate text-[18px]">download</span>
-                {{ isDownloading ? 'Descargando...' : 'Descargar QR' }}
+                {{ getDownloadLabel }}
               </button>
             </div>
           </div>
@@ -665,49 +662,33 @@ const hiddeLogsHandle = () => {
     <!-- ─── Hidden capture templates ─── -->
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;padding:${currentSize.width * 0.04}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;`">
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.033}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.025}px;box-sizing:border-box;`">
+        <!-- div A: QR code — centered vertically, ~38% of content area -->
         <div
-          style="position:absolute;top:0;left:0;right:0;bottom:0;opacity:0.04;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:24px 24px;">
+          :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
+          <template v-if="propsComputed.img">
+            <img :src="propsComputed.img"
+              :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+          </template>
+          <template v-else>
+            <img :src="qrHighResUrl"
+              :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+          </template>
         </div>
-        <div
-          style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:linear-gradient(135deg,rgba(251,146,60,0.1),transparent 50%,transparent);">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;position:relative;z-index:1;">
-          <div style="text-align:center;"><span
-              :style="`color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentSize.width * 0.025}px;`">ubiqueme.com</span>
-          </div>
-          <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;">
-            <div style="transform:rotate(-90deg);white-space:nowrap;margin-right:6px;"><span
-                :style="`color:rgba(243,128,32,0.8);font-weight:700;text-transform:uppercase;font-size:${currentSize.width * 0.018}px;letter-spacing:1px;`">localizarme.com</span>
-            </div>
-            <div
-              :style="`background:#fff;border-radius:${currentSize.width * 0.027}px;padding:${currentSize.width * 0.02}px;display:flex;align-items:center;justify-content:center;`">
-              <img :src="qrHighResUrl"
-                :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
-            </div>
-            <div style="display:flex;flex-direction:row;align-items:center;margin-left:12px;flex:1;min-width:0;">
-              <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;">
-                <p
-                  :style="`color:#fff;font-size:${currentSize.width * 0.037}px;font-weight:900;margin:0;line-height:1.2;`">
-                  {{ propsComputed.name || 'Código QR' }}</p>
-                <p
-                  :style="`color:#fff;font-size:${currentSize.width * 0.02}px;font-weight:700;font-family:monospace;margin:0;`">
-                  #{{ propsComputed.id }}</p>
-                <div style="width:60%;height:1px;background:rgba(255,255,255,0.1);margin:2px 0;"></div>
-                <p
-                  :style="`color:rgba(255,255,255,0.8);font-size:${currentSize.width * 0.023}px;font-weight:600;margin:0;`">
-                  Escanee este código QR para contactar al responsable de forma segura.</p>
-              </div>
-              <div style="transform:rotate(90deg);white-space:nowrap;margin-left:8px;"><span
-                  :style="`color:rgba(243,128,32,0.8);font-weight:700;text-transform:uppercase;font-size:${currentSize.width * 0.018}px;letter-spacing:1px;`">contactomio.com</span>
-              </div>
-            </div>
-          </div>
+        <!-- div B: name + static text — centered vertically, ~50% of content area -->
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
+          <p :style="`color:#fff;font-size:${currentSize.width * 0.042}px;font-weight:900;margin:0;line-height:1.15;`">
+            {{ propsComputed.name || 'Código QR' }}
+          </p>
+          <p
+            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * 0.024}px;font-weight:500;margin:0;line-height:1.25;`">
+            Escanee este código QR para contactar al responsable por whatsapp.
+          </p>
         </div>
       </div>
 
       <div :id="`qr-capture-compact-${props.id}`"
-        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.05}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.02}px;font-family:'Google Sans',sans-serif;position:relative;`">
+        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.005}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.008}px;font-family:'Google Sans',sans-serif;position:relative;`">
         <span
           :style="`color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
         <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;flex:1;width:100%;">

@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import QrcodeVue from 'qrcode.vue'
-import QRCode from 'qrcode'
-import html2canvas from 'html2canvas'
 import { collection, doc, getDoc, increment, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
@@ -13,6 +11,7 @@ import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
 import { nanoid } from 'nanoid'
+import { useQRDownload } from '@/composables/useQRDownload'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -369,99 +368,31 @@ const menuOptions = [
   },
 ]
 
-// Dynamic QR URL
-const qrScanUrl = computed(() => {
-  const id = propsComputed.value.id
-  const name = propsComputed.value.name || 'Código QR'
-  const text = `ID: ${id}\nQR: ${name}\nMensaje: Escaneé su QR *_"${name.trim()}"_* para contactarlo `
-  return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
-})
+// ─── Download composable ──────────────────────────────────────
+const downloadComposable = useQRDownload(computed(() => ({
+  id: propsComputed.value.id,
+  name: propsComputed.value.name,
+  img: propsComputed.value.img,
+  category: propsComputed.value.category,
+})))
 
-const downloadStyle = ref<'normal' | 'compact'>('normal')
-const downloadSize = ref<'sm' | 'md' | 'lg'>('md')
-const isDownloading = ref(false)
+const {
+  downloadStyle,
+  downloadSize,
+  downloadFormat,
+  isDownloading,
+  qrHighResUrl,
+  qrScanUrl,
+  currentSize,
+  currentCompactSize,
+  getDownloadLabel,
+  generateHighResQR,
+  handleDownload,
+} = downloadComposable
 
-// ─── High-res QR generation ───
-const qrHighResUrl = ref<string>('')
-
-const generateHighResQR = async () => {
-  const text = `https://wa.me/525652094079?text=${encodeURIComponent(`ID: ${propsComputed.value.id}\nQR: ${propsComputed.value.name || 'Código QR'}\nMensaje: Escaneé su QR *_"${(propsComputed.value.name || 'Código QR').trim()}"_* para contactarlo `)}`
-  const url = await QRCode.toDataURL(text, {
-    width: 600,
-    margin: 1,
-    color: { dark: '#000000', light: '#ffffff' },
-    errorCorrectionLevel: 'H',
-  })
-  qrHighResUrl.value = url
-}
-
+// Initialize high-res QR on mount and when name changes
 onMounted(generateHighResQR)
-
 watch(() => propsComputed.value.name, generateHighResQR)
-
-// Size dimensions for capture templates
-const sizeConfig = {
-  sm: { width: 400, qrSize: 100 },
-  md: { width: 600, qrSize: 160 },
-  lg: { width: 900, qrSize: 240 },
-}
-const compactSizeConfig = {
-  sm: { size: 200, qrSize: 130 },
-  md: { size: 280, qrSize: 190 },
-  lg: { size: 380, qrSize: 260 },
-}
-
-const currentSize = computed(() => sizeConfig[downloadSize.value])
-const currentCompactSize = computed(() => compactSizeConfig[downloadSize.value])
-
-// ─── html2canvas downloads ───
-const getQrCaptureId = (suffix: 'normal' | 'compact') => `qr-capture-${suffix}-${propsComputed.value.id}`
-
-const handleDownloadPNG = async () => {
-  const el = document.getElementById(getQrCaptureId('normal'))
-  if (!el) return
-  isDownloading.value = true
-  try {
-    const canvas = await html2canvas(el, {
-      scale: 4,
-      backgroundColor: '#0a0401',
-      useCORS: true,
-    })
-    const link = document.createElement('a')
-    link.download = `qr-${propsComputed.value.id}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-    toast.success('QR descargado como PNG')
-    closeAll()
-  } catch (error) {
-    toast.error(`Error al descargar PNG: ${error}`)
-  } finally {
-    isDownloading.value = false
-  }
-}
-
-const handleDownloadCompactPNG = async () => {
-  const el = document.getElementById(getQrCaptureId('compact'))
-  if (!el) return
-  isDownloading.value = true
-  try {
-    const canvas = await html2canvas(el, {
-      scale: 4,
-      backgroundColor: '#ffffff',
-      useCORS: true,
-    })
-    const link = document.createElement('a')
-    link.download = `qr-compact-${propsComputed.value.id}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-    toast.success('QR compacto descargado como PNG')
-    closeAll()
-  } catch (error) {
-    toast.error(`Error al descargar QR compacto: ${error}`)
-  } finally {
-    isDownloading.value = false
-  }
-}
 
 const qrLogs = ref<IQRLog[]>([]);
 const logsLoaded = ref(false);
@@ -930,17 +861,31 @@ const hiddeLogsHandle = () => {
               </div>
             </div>
 
-            <!-- Style + Size toggles -->
+            <!-- Format toggle: PNG | PDF -->
             <div class="flex w-full gap-2 mb-4">
+              <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
+                <button @click="downloadFormat = 'png'"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                  :class="downloadFormat === 'png' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                  PNG
+                </button>
+                <button @click="downloadFormat = 'pdf'"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                  :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                  PDF
+                </button>
+              </div>
               <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
                 <button @click="downloadStyle = 'normal'"
                   class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                  :class="[downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' && downloadStyle !== 'normal' ? 'opacity-50 cursor-not-allowed' : '']"
+                  :disabled="downloadFormat === 'pdf'">
                   Normal
                 </button>
                 <button @click="downloadStyle = 'compact'"
                   class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                  :class="[downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' ? 'opacity-30 cursor-not-allowed' : '']"
+                  :disabled="downloadFormat === 'pdf'">
                   Compacto
                 </button>
               </div>
@@ -964,14 +909,18 @@ const hiddeLogsHandle = () => {
             </div>
 
             <p class="text-white/30 text-[9px] text-center leading-relaxed mb-4">
-              💡 Al imprimir, ajuste la <strong class="text-white/50">escala</strong> en opciones de impresión.
+              <template v-if="downloadFormat === 'pdf'">
+                📄 El PDF respeta el tamaño físico exacto al imprimir.
+              </template>
+              <template v-else>
+                💡 Al imprimir, ajuste la <strong class="text-white/50">escala</strong> en opciones de impresión.
+              </template>
             </p>
 
-            <button @click="downloadStyle === 'normal' ? handleDownloadPNG() : handleDownloadCompactPNG()"
-              :disabled="isDownloading"
+            <button @click="handleDownload(closeAll)" :disabled="isDownloading"
               class="w-full py-3 bg-gradient-to-r from-[#f38020] to-[#e07010] text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
               <span class="material-symbols-outlined notranslate text-[18px]">download</span>
-              {{ isDownloading ? 'Descargando...' : 'Descargar QR' }}
+              {{ getDownloadLabel }}
             </button>
           </div>
         </Transition>
@@ -1063,17 +1012,31 @@ const hiddeLogsHandle = () => {
                 </div>
               </div>
 
-              <!-- Style + Size toggles -->
+              <!-- Format toggle: PNG | PDF -->
               <div class="flex w-full gap-2 mb-4">
+                <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
+                  <button @click="downloadFormat = 'png'"
+                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="downloadFormat === 'png' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                    PNG
+                  </button>
+                  <button @click="downloadFormat = 'pdf'"
+                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                    PDF
+                  </button>
+                </div>
                 <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
                   <button @click="downloadStyle = 'normal'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                    :class="[downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' ? 'opacity-50 cursor-not-allowed' : '']"
+                    :disabled="downloadFormat === 'pdf'">
                     Normal
                   </button>
                   <button @click="downloadStyle = 'compact'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                    :class="[downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80', downloadFormat === 'pdf' ? 'opacity-30 cursor-not-allowed' : '']"
+                    :disabled="downloadFormat === 'pdf'">
                     Compacto
                   </button>
                 </div>
@@ -1097,14 +1060,18 @@ const hiddeLogsHandle = () => {
               </div>
 
               <p class="text-white/30 text-[9px] text-center leading-relaxed mb-4">
-                💡 Al imprimir, ajuste la <strong class="text-white/50">escala</strong> en opciones de impresión.
+                <template v-if="downloadFormat === 'pdf'">
+                  📄 El PDF respeta el tamaño físico exacto al imprimir.
+                </template>
+                <template v-else>
+                  💡 Al imprimir, ajuste la <strong class="text-white/50">escala</strong> en opciones de impresión.
+                </template>
               </p>
 
-              <button @click="downloadStyle === 'normal' ? handleDownloadPNG() : handleDownloadCompactPNG()"
-                :disabled="isDownloading"
+              <button @click="handleDownload(closeAll)" :disabled="isDownloading"
                 class="w-full py-3 bg-gradient-to-r from-[#f38020] to-[#e07010] text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
                 <span class="material-symbols-outlined notranslate text-[18px]">download</span>
-                {{ isDownloading ? 'Descargando...' : 'Descargar QR' }}
+                {{ getDownloadLabel }}
               </button>
 
               <!-- Close button -->
@@ -1123,73 +1090,34 @@ const hiddeLogsHandle = () => {
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <!-- Normal capture template - dynamic size -->
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;padding:${currentSize.width * 0.04}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;`">
-        <!-- Grid pattern -->
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.033}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.025}px;box-sizing:border-box;`">
+        <!-- div A: QR code — centered vertically, ~38% of content area -->
         <div
-          style="position:absolute;top:0;left:0;right:0;bottom:0;opacity:0.04;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:24px 24px;">
+          :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
+          <template v-if="propsComputed.img">
+            <img :src="propsComputed.img"
+              :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+          </template>
+          <template v-else>
+            <img :src="qrHighResUrl"
+              :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+          </template>
         </div>
-        <!-- Orange glow -->
-        <div
-          style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:linear-gradient(135deg,rgba(251,146,60,0.1),transparent 50%,transparent);">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;position:relative;z-index:1;">
-          <!-- Row 1: ubiqueme.com centered -->
-          <div style="text-align:center;">
-            <span
-              :style="`color:#f38020;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentSize.width * 0.025}px;`">ubiqueme.com</span>
-          </div>
-
-          <!-- Row 2: localizarme.com (rotated) + QR + info + contactomio.com (rotated) -->
-          <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;">
-            <!-- localizarme.com (left, rotated -90°) -->
-            <div style="transform:rotate(-90deg);white-space:nowrap;margin-right:6px;">
-              <span
-                :style="`color:rgba(243,128,32,0.8);font-weight:700;text-transform:uppercase;font-size:${currentSize.width * 0.018}px;letter-spacing:1px;`">localizarme.com</span>
-            </div>
-
-            <!-- QR -->
-            <div
-              :style="`background:#fff;border-radius:${currentSize.width * 0.027}px;padding:${currentSize.width * 0.02}px;display:flex;align-items:center;justify-content:center;`">
-              <template v-if="propsComputed.img">
-                <img :src="propsComputed.img"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
-              </template>
-              <template v-else>
-                <img :src="qrHighResUrl"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
-              </template>
-            </div>
-
-            <!-- Info column (name, ID, divider, description) + contactomio.com at right -->
-            <div style="display:flex;flex-direction:row;align-items:center;margin-left:12px;flex:1;min-width:0;">
-              <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;">
-                <p
-                  :style="`color:#fff;font-size:${currentSize.width * 0.037}px;font-weight:900;margin:0;line-height:1.2;`">
-                  {{ propsComputed.name || 'Código QR' }}
-                </p>
-                <p
-                  :style="`color:#fff;font-size:${currentSize.width * 0.02}px;font-weight:700;font-family:monospace;margin:0;`">
-                  #{{ propsComputed.id }}
-                </p>
-                <div style="width:60%;height:1px;background:rgba(255,255,255,0.1);margin:2px 0;"></div>
-                <p
-                  :style="`color:rgba(255,255,255,0.8);font-size:${currentSize.width * 0.023}px;font-weight:600;margin:0;`">
-                  Escanee este código QR para contactar al responsable de forma segura.
-                </p>
-              </div>
-              <!-- contactomio.com (right, rotated +90°) -->
-              <div style="transform:rotate(90deg);white-space:nowrap;margin-left:8px;">
-                <span
-                  :style="`color:rgba(243,128,32,0.8);font-weight:700;text-transform:uppercase;font-size:${currentSize.width * 0.018}px;letter-spacing:1px;`">contactomio.com</span>
-              </div>
-            </div>
-          </div>
+        <!-- div B: name + static text — centered vertically, ~50% of content area -->
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
+          <p :style="`color:#fff;font-size:${currentSize.width * 0.042}px;font-weight:900;margin:0;line-height:1.15;`">
+            {{ propsComputed.name || 'Código QR' }}
+          </p>
+          <p
+            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * 0.024}px;font-weight:500;margin:0;line-height:1.25;`">
+            Escanee este código QR para contactar al responsable por whatsapp.
+          </p>
         </div>
       </div>
 
       <!-- Compact capture template - dynamic square size -->
       <div :id="`qr-capture-compact-${props.id}`"
-        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.05}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.02}px;font-family:'Google Sans',sans-serif;position:relative;`">
+        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.005}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.008}px;font-family:'Google Sans',sans-serif;position:relative;`">
 
         <!-- Row 1: ubiqueme.com -->
         <span
