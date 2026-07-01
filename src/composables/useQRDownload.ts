@@ -81,6 +81,24 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     }
   })
 
+  /** Font-size scale factors for domain texts in normal style */
+  const domainTextScale = computed(() => {
+    const isSm = downloadSize.value === 'sm'
+    return {
+      top: isSm ? 0.048 : 0.035, // ubiqueme.com
+      bottom: isSm ? 0.035 : 0.025, // localizarme / contactomio
+    }
+  })
+
+  /** Font-size scale factors for domain texts in compact style based on compactSize */
+  const compactDomainTextScale = computed(() => {
+    const isSm = downloadSize.value === 'sm'
+    return {
+      top: isSm ? 0.055 : 0.06, // ubiqueme.com
+      bottom: isSm ? 0.038 : 0.048, // localizarme / contactomio
+    }
+  })
+
   /** Logo scale factor per size — bigger logo on larger templates */
   const logoScale = computed(() => {
     const size = downloadSize.value
@@ -328,6 +346,10 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     logoScale,
     availableStyles,
     getDownloadLabel,
+
+    // Scale factors
+    domainTextScale,
+    compactDomainTextScale,
 
     // Methods
     getQrCaptureId,

@@ -388,6 +388,8 @@ const {
   currentCompactSize,
   textScale,
   logoScale,
+  domainTextScale,
+  compactDomainTextScale,
   getDownloadLabel,
   generateHighResQR,
   handleDownload,
@@ -819,10 +821,9 @@ const hiddeLogsHandle = () => {
               </div>
               <div class="relative z-10 flex flex-col items-center gap-3">
                 <template v-if="downloadStyle === 'normal'">
-                  <span class="text-black font-black tracking-[0.15em] uppercase text-[10px]">ubiqueme.com</span>
+                  <span class="text-white font-black tracking-[0.15em] uppercase"
+                    :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.top)}px` }">ubiqueme.com</span>
                   <div class="flex items-center justify-center w-full gap-2">
-                    <span class="text-black/70 font-bold uppercase text-[7px] whitespace-nowrap tracking-wider"
-                      style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
                     <div class="shrink-0 bg-white rounded-xl p-1.5">
                       <template v-if="propsComputed.img">
                         <img :src="propsComputed.img" class="w-20 h-20 object-contain" />
@@ -840,26 +841,35 @@ const hiddeLogsHandle = () => {
                       <p class="text-black/70 font-semibold text-[10px] leading-tight">Escanee este QR para contactar al
                         responsable de forma segura.</p>
                     </div>
-                    <span class="text-black/70 font-bold uppercase text-[7px] whitespace-nowrap tracking-wider"
-                      style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
+                  </div>
+                  <div class="flex items-center justify-center gap-2 mt-1">
+                    <span class="text-white font-bold uppercase tracking-wider"
+                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">localizarme.com</span>
+                    <span class="text-white/50"
+                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">•</span>
+                    <span class="text-white font-bold uppercase tracking-wider"
+                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">contactomio.com</span>
                   </div>
                 </template>
                 <template v-else>
                   <div class="bg-white rounded-2xl p-3 shadow-lg flex flex-col items-center gap-1.5 w-[160px]">
-                    <span class="text-black font-black tracking-widest uppercase text-[9px]">ubiqueme.com</span>
-                    <div class="flex items-center justify-center w-full">
-                      <span class="text-black font-bold uppercase text-[5px] tracking-wider"
-                        style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
-                      <div class="mx-1">
-                        <template v-if="propsComputed.img">
-                          <img :src="propsComputed.img" class="w-16 h-16 object-contain" />
-                        </template>
-                        <template v-else>
-                          <QrcodeVue :value="qrScanUrl" :size="64" render-as="canvas" level="H" />
-                        </template>
-                      </div>
-                      <span class="text-black font-bold uppercase text-[5px] tracking-wider"
-                        style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
+                    <span class="text-white font-black tracking-widest uppercase"
+                      :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.top)}px` }">ubiqueme.com</span>
+                    <div class="mx-1">
+                      <template v-if="propsComputed.img">
+                        <img :src="propsComputed.img" class="w-16 h-16 object-contain" />
+                      </template>
+                      <template v-else>
+                        <QrcodeVue :value="qrScanUrl" :size="64" render-as="canvas" level="H" />
+                      </template>
+                    </div>
+                    <div class="flex items-center justify-center gap-1">
+                      <span class="text-white font-bold uppercase tracking-wider"
+                        :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">localizarme.com</span>
+                      <span class="text-white/50"
+                        :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">•</span>
+                      <span class="text-white font-bold uppercase tracking-wider"
+                        :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">contactomio.com</span>
                     </div>
                     <p class="text-black font-bold text-center text-[8px]">Escanee QR para contactar al responsable
                     </p>
@@ -970,10 +980,9 @@ const hiddeLogsHandle = () => {
                   </div>
                   <div class="relative z-10 flex flex-col items-center gap-2">
                     <template v-if="downloadStyle === 'normal'">
-                      <span class="text-black font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
+                      <span class="text-white font-black tracking-[0.15em] uppercase"
+                        :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.top)}px` }">ubiqueme.com</span>
                       <div class="flex items-center justify-center w-full gap-1.5">
-                        <span class="text-black/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
-                          style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
                         <div class="shrink-0 bg-white rounded-xl p-1">
                           <template v-if="propsComputed.img">
                             <img :src="propsComputed.img" class="w-16 h-16 object-contain" />
@@ -992,26 +1001,35 @@ const hiddeLogsHandle = () => {
                             al
                             responsable.</p>
                         </div>
-                        <span class="text-black/70 font-bold uppercase text-[6px] whitespace-nowrap tracking-wider"
-                          style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
+                      </div>
+                      <div class="flex items-center justify-center gap-2 mt-1">
+                        <span class="text-white font-bold uppercase tracking-wider"
+                          :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">localizarme.com</span>
+                        <span class="text-white/50"
+                          :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">•</span>
+                        <span class="text-white font-bold uppercase tracking-wider"
+                          :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">contactomio.com</span>
                       </div>
                     </template>
                     <template v-else>
                       <div class="bg-white rounded-2xl p-2 shadow-lg flex flex-col items-center gap-1 w-[140px]">
-                        <span class="text-black font-black tracking-widest uppercase text-[8px]">ubiqueme.com</span>
-                        <div class="flex items-center justify-center w-full">
-                          <span class="text-black font-bold uppercase text-[4px] tracking-wider"
-                            style="writing-mode:vertical-rl;text-orientation:mixed;">localizarme.com</span>
-                          <div class="mx-0.5">
-                            <template v-if="propsComputed.img">
-                              <img :src="propsComputed.img" class="w-14 h-14 object-contain" />
-                            </template>
-                            <template v-else>
-                              <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
-                            </template>
-                          </div>
-                          <span class="text-black font-bold uppercase text-[4px] tracking-wider"
-                            style="writing-mode:vertical-rl;text-orientation:mixed;">contactomio.com</span>
+                        <span class="text-white font-black tracking-widest uppercase"
+                          :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.top)}px` }">ubiqueme.com</span>
+                        <div class="mx-0.5">
+                          <template v-if="propsComputed.img">
+                            <img :src="propsComputed.img" class="w-14 h-14 object-contain" />
+                          </template>
+                          <template v-else>
+                            <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
+                          </template>
+                        </div>
+                        <div class="flex items-center justify-center gap-1">
+                          <span class="text-white font-bold uppercase tracking-wider"
+                            :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">localizarme.com</span>
+                          <span class="text-white/50"
+                            :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">•</span>
+                          <span class="text-white font-bold uppercase tracking-wider"
+                            :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">contactomio.com</span>
                         </div>
                         <p class="text-black font-bold text-center text-[7px]">Escanee QR para contactar al
                           responsable</p>
@@ -1097,92 +1115,81 @@ const hiddeLogsHandle = () => {
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <!-- Normal capture template - dynamic size -->
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;`">
         <!-- Logo top-right -->
         <div
           :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
           <img :src="LogoWhite"
             :style="`width:${currentSize.width * logoScale}px;height:auto;opacity:0.9;display:block;`" alt="Ubiqueme" />
         </div>
-        <!-- div A: QR code — centered vertically -->
+        <!-- Inner layout: column -->
         <div
-          :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
-          <template v-if="propsComputed.img">
-            <img :src="propsComputed.img"
-              :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
-          </template>
-          <template v-else>
-            <img :src="qrHighResUrl"
-              :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
-          </template>
-        </div>
-        <!-- div B: name + static text — centered vertically -->
-        <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
-          <p
-            :style="`color:#000;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
-            {{ propsComputed.name || 'Código QR' }}
-          </p>
-          <p
-            :style="`color:rgba(0,0,0,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
-            Escanee este código QR para contactar al responsable por whatsapp.
-          </p>
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:8px;">
+          <!-- ubiqueme.com top center -->
+          <span
+            :style="`color:#fff;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
+          <!-- Row: QR + info -->
+          <div
+            style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;flex:1;width:100%;">
+            <div
+              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
+              <template v-if="propsComputed.img">
+                <img :src="propsComputed.img"
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+              </template>
+              <template v-else>
+                <img :src="qrHighResUrl"
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+              </template>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
+              <p
+                :style="`color:#000;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
+                {{ propsComputed.name || 'Código QR' }}
+              </p>
+              <p
+                :style="`color:rgba(0,0,0,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
+                Escanee este código QR para contactar al responsable por whatsapp.
+              </p>
+            </div>
+          </div>
+          <!-- Domains bottom center -->
+          <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;">
+            <span
+              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
+            <span
+              :style="`color:rgba(255,255,255,0.5);font-size:${currentSize.width * domainTextScale.bottom}px;`">•</span>
+            <span
+              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
+          </div>
         </div>
       </div>
 
       <!-- Compact capture template - dynamic square size -->
       <div :id="`qr-capture-compact-${props.id}`"
-        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.005}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.008}px;font-family:'Google Sans',sans-serif;position:relative;`">
-        <!-- Logo top-right -->
-        <div
-          :style="`position:absolute;top:${currentCompactSize.size * 0.015}px;right:${currentCompactSize.size * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentCompactSize.size * 0.015}px;padding:${currentCompactSize.size * 0.008}px;z-index:5;pointer-events:none;`">
-          <img :src="LogoWhite"
-            :style="`width:${currentCompactSize.size * logoScale}px;height:auto;opacity:0.9;display:block;`"
-            alt="Ubiqueme" />
-        </div>
-        <!-- Row 1: ubiqueme.com -->
+        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:0;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:'Google Sans',sans-serif;position:relative;`">
         <span
-          :style="`color:#000;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
-
-        <!-- Row 2: 3-column flex: left domain (rotated) | QR | right domain (rotated) -->
-        <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;flex:1;width:100%;">
-          <!-- left column: localizarme.com rotated -90°, width = font-size to not compress QR -->
-          <div
-            :style="`width:${currentCompactSize.size * 0.035}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;`">
-            <div style="transform:rotate(-90deg);white-space:nowrap;">
-              <span
-                :style="`color:#000;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">localizarme.com</span>
-            </div>
-          </div>
-
-          <!-- QR column -->
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-            <div style="display:flex;align-items:center;justify-content:center;">
-              <template v-if="propsComputed.img">
-                <img :src="propsComputed.img"
-                  :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
-              </template>
-              <template v-else>
-                <img :src="qrHighResUrl"
-                  :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
-              </template>
-            </div>
-          </div>
-
-          <!-- right column: contactomio.com rotated +90°, width = font-size -->
-          <div
-            :style="`width:${currentCompactSize.size * 0.035}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;`">
-            <div style="transform:rotate(90deg);white-space:nowrap;">
-              <span
-                :style="`color:#000;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * 0.035}px;letter-spacing:1px;`">contactomio.com</span>
-            </div>
+          :style="`color:#fff;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;">
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <template v-if="propsComputed.img">
+              <img :src="propsComputed.img"
+                :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
+            </template>
+            <template v-else>
+              <img :src="qrHighResUrl"
+                :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
+            </template>
           </div>
         </div>
-
-        <!-- Row 3: text -->
-        <p
-          :style="`color:#000;font-weight:700;text-align:center;font-size:${currentCompactSize.size * 0.036}px;margin:0;`">
-          Escanee QR para contactar al responsable
-        </p>
+        <div
+          style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;padding-bottom:4px;">
+          <span
+            :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
+          <span style="color:rgba(255,255,255,0.5);">•</span>
+          <span
+            :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
+        </div>
       </div>
     </div>
   </div>
