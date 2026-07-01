@@ -17,10 +17,11 @@ export interface QRDownloadProps {
 
 // ─── Size configs for template rendering ────────────────────────
 // height = width / aspectRatio to match the physical PDF dimensions
+// SM stays as-is. MD and LG have larger templates so QR, name & text scale up.
 export const sizeConfig: Record<DownloadSize, { width: number; height: number; qrSize: number }> = {
   sm: { width: 400, height: 173, qrSize: 130 },
-  md: { width: 600, height: 417, qrSize: 200 },
-  lg: { width: 900, height: 598, qrSize: 300 },
+  md: { width: 720, height: 500, qrSize: 260 },
+  lg: { width: 1080, height: 718, qrSize: 380 },
 }
 
 export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: number }> = {
