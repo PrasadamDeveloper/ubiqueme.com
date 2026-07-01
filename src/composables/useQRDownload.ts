@@ -34,7 +34,7 @@ export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: num
 export const PHYSICAL_SIZE_MM: Record<DownloadSize, { widthMm: number; heightMm: number }> = {
   sm: { widthMm: 132, heightMm: 57 },
   md: { widthMm: 170, heightMm: 118 },
-  lg: { widthMm: 205, heightMm: 142 },
+  lg: { widthMm: 210, heightMm: 146 },
 }
 
 // ─── Composable ─────────────────────────────────────────────────
