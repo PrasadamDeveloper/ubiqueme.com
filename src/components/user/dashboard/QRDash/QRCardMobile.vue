@@ -12,6 +12,7 @@ import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
 import { nanoid } from 'nanoid'
 import { useQRDownload } from '@/composables/useQRDownload'
+import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -555,6 +556,9 @@ const hiddeLogsHandle = () => {
               <div class="flex justify-center mb-4">
                 <div
                   class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 w-full max-w-[260px]">
+                  <!-- Logo top-right -->
+                  <img :src="LogoWhite" class="absolute top-2 right-2 w-8 h-auto opacity-60 pointer-events-none z-10"
+                    alt="Ubiqueme" />
                   <template v-if="downloadStyle === 'normal'">
                     <span
                       class="block text-center text-black font-black tracking-[0.15em] uppercase text-[9px] mb-2">ubiqueme.com</span>
@@ -662,6 +666,10 @@ const hiddeLogsHandle = () => {
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <div :id="`qr-capture-normal-${props.id}`"
         :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
+        <!-- Logo top-right -->
+        <img :src="LogoWhite"
+          :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;width:${currentSize.width * 0.065}px;height:auto;opacity:0.6;pointer-events:none;z-index:5;`"
+          alt="Ubiqueme" />
         <!-- div A: QR code — centered vertically -->
         <div
           :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
@@ -689,6 +697,10 @@ const hiddeLogsHandle = () => {
 
       <div :id="`qr-capture-compact-${props.id}`"
         :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.005}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.008}px;font-family:'Google Sans',sans-serif;position:relative;`">
+        <!-- Logo top-right -->
+        <img :src="LogoWhite"
+          :style="`position:absolute;top:${currentCompactSize.size * 0.015}px;right:${currentCompactSize.size * 0.015}px;width:${currentCompactSize.size * 0.065}px;height:auto;opacity:0.6;pointer-events:none;z-index:5;`"
+          alt="Ubiqueme" />
         <span
           :style="`color:#000;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
         <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;flex:1;width:100%;">

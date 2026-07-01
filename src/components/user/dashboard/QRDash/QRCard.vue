@@ -12,6 +12,7 @@ import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
 import { nanoid } from 'nanoid'
 import { useQRDownload } from '@/composables/useQRDownload'
+import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -811,6 +812,9 @@ const hiddeLogsHandle = () => {
               <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                 style="background-image: linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
               </div>
+              <!-- Logo top-right -->
+              <img :src="LogoWhite" class="absolute top-2 right-2 w-10 h-auto opacity-60 pointer-events-none z-10"
+                alt="Ubiqueme" />
               <div class="relative z-10 flex flex-col items-center gap-3">
                 <template v-if="downloadStyle === 'normal'">
                   <span class="text-black font-black tracking-[0.15em] uppercase text-[10px]">ubiqueme.com</span>
@@ -958,6 +962,9 @@ const hiddeLogsHandle = () => {
                   <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style="background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
                   </div>
+                  <!-- Logo top-right -->
+                  <img :src="LogoWhite" class="absolute top-2 right-2 w-9 h-auto opacity-60 pointer-events-none z-10"
+                    alt="Ubiqueme" />
                   <div class="relative z-10 flex flex-col items-center gap-2">
                     <template v-if="downloadStyle === 'normal'">
                       <span class="text-black font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
@@ -1088,6 +1095,10 @@ const hiddeLogsHandle = () => {
       <!-- Normal capture template - dynamic size -->
       <div :id="`qr-capture-normal-${props.id}`"
         :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
+        <!-- Logo top-right -->
+        <img :src="LogoWhite"
+          :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;width:${currentSize.width * 0.065}px;height:auto;opacity:0.6;pointer-events:none;z-index:5;`"
+          alt="Ubiqueme" />
         <!-- div A: QR code — centered vertically -->
         <div
           :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
@@ -1116,7 +1127,10 @@ const hiddeLogsHandle = () => {
       <!-- Compact capture template - dynamic square size -->
       <div :id="`qr-capture-compact-${props.id}`"
         :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.005}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.008}px;font-family:'Google Sans',sans-serif;position:relative;`">
-
+        <!-- Logo top-right -->
+        <img :src="LogoWhite"
+          :style="`position:absolute;top:${currentCompactSize.size * 0.015}px;right:${currentCompactSize.size * 0.015}px;width:${currentCompactSize.size * 0.065}px;height:auto;opacity:0.6;pointer-events:none;z-index:5;`"
+          alt="Ubiqueme" />
         <!-- Row 1: ubiqueme.com -->
         <span
           :style="`color:#000;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
