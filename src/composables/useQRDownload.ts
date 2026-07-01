@@ -21,7 +21,7 @@ export interface QRDownloadProps {
 export const sizeConfig: Record<DownloadSize, { width: number; height: number; qrSize: number }> = {
   sm: { width: 400, height: 173, qrSize: 130 },
   md: { width: 720, height: 500, qrSize: 300 },
-  lg: { width: 1080, height: 718, qrSize: 440 },
+  lg: { width: 1080, height: 749, qrSize: 460 },
 }
 
 export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: number }> = {
@@ -34,7 +34,7 @@ export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: num
 export const PHYSICAL_SIZE_MM: Record<DownloadSize, { widthMm: number; heightMm: number }> = {
   sm: { widthMm: 132, heightMm: 57 },
   md: { widthMm: 170, heightMm: 118 },
-  lg: { widthMm: 167, heightMm: 111 },
+  lg: { widthMm: 205, heightMm: 142 },
 }
 
 // ─── Composable ─────────────────────────────────────────────────
