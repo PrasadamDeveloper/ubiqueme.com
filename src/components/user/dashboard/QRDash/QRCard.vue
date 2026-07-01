@@ -965,7 +965,7 @@ const hiddeLogsHandle = () => {
                   </div>
                   <!-- Logo top-right -->
                   <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
-                    <img :src="LogoWhite" class="w-[38px] h-auto opacity-90" alt="Ubiqueme" />
+                    <img :src="LogoWhite" class="w-[24px] sm:w-[38px] h-auto opacity-90" alt="Ubiqueme" />
                   </div>
                   <div class="relative z-10 flex flex-col items-center gap-2">
                     <template v-if="downloadStyle === 'normal'">
