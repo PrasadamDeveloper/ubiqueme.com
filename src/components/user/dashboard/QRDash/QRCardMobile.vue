@@ -358,10 +358,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-            }}</h3>
+              }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-              }}</span>
+                }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -452,7 +452,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                  }}</span>
+                    }}</span>
                 </div>
               </div>
 
@@ -465,7 +465,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                  }}</span>
+                    }}</span>
                 </div>
               </button>
             </template>
@@ -557,8 +557,9 @@ const hiddeLogsHandle = () => {
                 <div
                   class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 w-full max-w-[260px]">
                   <!-- Logo top-right -->
-                  <img :src="LogoWhite" class="absolute top-2 right-2 w-8 h-auto opacity-60 pointer-events-none z-10"
-                    alt="Ubiqueme" />
+                  <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
+                    <img :src="LogoWhite" class="w-[72px] h-auto opacity-90" alt="Ubiqueme" />
+                  </div>
                   <template v-if="downloadStyle === 'normal'">
                     <span
                       class="block text-center text-black font-black tracking-[0.15em] uppercase text-[9px] mb-2">ubiqueme.com</span>
@@ -667,9 +668,11 @@ const hiddeLogsHandle = () => {
       <div :id="`qr-capture-normal-${props.id}`"
         :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
         <!-- Logo top-right -->
-        <img :src="LogoWhite"
-          :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;width:${currentSize.width * 0.065}px;height:auto;opacity:0.6;pointer-events:none;z-index:5;`"
-          alt="Ubiqueme" />
+        <div
+          :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
+          <img :src="LogoWhite" :style="`width:${currentSize.width * 0.22}px;height:auto;opacity:0.9;display:block;`"
+            alt="Ubiqueme" />
+        </div>
         <!-- div A: QR code — centered vertically -->
         <div
           :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
@@ -698,9 +701,12 @@ const hiddeLogsHandle = () => {
       <div :id="`qr-capture-compact-${props.id}`"
         :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:${currentCompactSize.size * 0.005}px;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${currentCompactSize.size * 0.008}px;font-family:'Google Sans',sans-serif;position:relative;`">
         <!-- Logo top-right -->
-        <img :src="LogoWhite"
-          :style="`position:absolute;top:${currentCompactSize.size * 0.015}px;right:${currentCompactSize.size * 0.015}px;width:${currentCompactSize.size * 0.065}px;height:auto;opacity:0.6;pointer-events:none;z-index:5;`"
-          alt="Ubiqueme" />
+        <div
+          :style="`position:absolute;top:${currentCompactSize.size * 0.015}px;right:${currentCompactSize.size * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentCompactSize.size * 0.015}px;padding:${currentCompactSize.size * 0.008}px;z-index:5;pointer-events:none;`">
+          <img :src="LogoWhite"
+            :style="`width:${currentCompactSize.size * 0.22}px;height:auto;opacity:0.9;display:block;`"
+            alt="Ubiqueme" />
+        </div>
         <span
           :style="`color:#000;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * 0.045}px;text-align:center;`">ubiqueme.com</span>
         <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;flex:1;width:100%;">
