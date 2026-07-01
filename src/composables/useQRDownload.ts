@@ -85,7 +85,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   const logoScale = computed(() => {
     const size = downloadSize.value
     if (size === 'sm') return 0.1
-    if (size === 'md') return 0.07
+    if (size === 'md') return 0.097
     if (size === 'lg') return 0.1
     return 0.06
   })
