@@ -1090,8 +1090,8 @@ const hiddeLogsHandle = () => {
     <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
       <!-- Normal capture template - dynamic size -->
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.033}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.025}px;box-sizing:border-box;`">
-        <!-- div A: QR code — centered vertically, ~38% of content area -->
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:#0a0401;font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:${currentSize.width * 0.015}px;box-sizing:border-box;`">
+        <!-- div A: QR code — centered vertically -->
         <div
           :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
           <template v-if="propsComputed.img">
@@ -1103,13 +1103,13 @@ const hiddeLogsHandle = () => {
               :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
           </template>
         </div>
-        <!-- div B: name + static text — centered vertically, ~50% of content area -->
+        <!-- div B: name + static text — centered vertically -->
         <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
-          <p :style="`color:#fff;font-size:${currentSize.width * 0.042}px;font-weight:900;margin:0;line-height:1.15;`">
+          <p :style="`color:#fff;font-size:${currentSize.width * 0.055}px;font-weight:900;margin:0;line-height:1.1;`">
             {{ propsComputed.name || 'Código QR' }}
           </p>
           <p
-            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * 0.024}px;font-weight:500;margin:0;line-height:1.25;`">
+            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * 0.032}px;font-weight:500;margin:0;line-height:1.2;`">
             Escanee este código QR para contactar al responsable por whatsapp.
           </p>
         </div>

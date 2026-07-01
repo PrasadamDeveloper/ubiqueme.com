@@ -20,8 +20,8 @@ export interface QRDownloadProps {
 // SM stays as-is. MD and LG have larger templates so QR, name & text scale up.
 export const sizeConfig: Record<DownloadSize, { width: number; height: number; qrSize: number }> = {
   sm: { width: 400, height: 173, qrSize: 130 },
-  md: { width: 720, height: 500, qrSize: 260 },
-  lg: { width: 1080, height: 718, qrSize: 380 },
+  md: { width: 720, height: 500, qrSize: 300 },
+  lg: { width: 1080, height: 718, qrSize: 440 },
 }
 
 export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: number }> = {
