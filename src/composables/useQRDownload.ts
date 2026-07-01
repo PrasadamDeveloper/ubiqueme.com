@@ -81,6 +81,15 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     }
   })
 
+  /** Logo scale factor per size — bigger logo on larger templates */
+  const logoScale = computed(() => {
+    const size = downloadSize.value
+    if (size === 'sm') return 0.04
+    if (size === 'md') return 0.07
+    if (size === 'lg') return 0.1
+    return 0.06
+  })
+
   /** Both styles are available for PNG and PDF */
   const availableStyles = computed<DownloadStyle[]>(() => {
     return ['normal', 'compact']
@@ -316,6 +325,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     currentSize,
     currentCompactSize,
     textScale,
+    logoScale,
     availableStyles,
     getDownloadLabel,
 

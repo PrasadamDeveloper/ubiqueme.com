@@ -269,6 +269,7 @@ const {
   currentSize,
   currentCompactSize,
   textScale,
+  logoScale,
   getDownloadLabel,
   generateHighResQR,
   handleDownload,
@@ -358,10 +359,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-              }}</h3>
+            }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-                }}</span>
+              }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -452,7 +453,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                    }}</span>
+                  }}</span>
                 </div>
               </div>
 
@@ -465,7 +466,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                    }}</span>
+                  }}</span>
                 </div>
               </button>
             </template>
@@ -558,7 +559,7 @@ const hiddeLogsHandle = () => {
                   class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 w-full max-w-[260px]">
                   <!-- Logo top-right -->
                   <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
-                    <img :src="LogoWhite" class="w-[16px] sm:w-[38px] h-auto opacity-90" alt="Ubiqueme" />
+                    <img :src="LogoWhite" class="w-[16px] md:w-[38px] h-auto opacity-90" alt="Ubiqueme" />
                   </div>
                   <template v-if="downloadStyle === 'normal'">
                     <span
@@ -670,8 +671,8 @@ const hiddeLogsHandle = () => {
         <!-- Logo top-right -->
         <div
           :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
-          <img :src="LogoWhite" :style="`width:${currentSize.width * 0.06}px;height:auto;opacity:0.9;display:block;`"
-            alt="Ubiqueme" />
+          <img :src="LogoWhite"
+            :style="`width:${currentSize.width * logoScale}px;height:auto;opacity:0.9;display:block;`" alt="Ubiqueme" />
         </div>
         <!-- div A: QR code — centered vertically -->
         <div
@@ -704,7 +705,7 @@ const hiddeLogsHandle = () => {
         <div
           :style="`position:absolute;top:${currentCompactSize.size * 0.015}px;right:${currentCompactSize.size * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentCompactSize.size * 0.015}px;padding:${currentCompactSize.size * 0.008}px;z-index:5;pointer-events:none;`">
           <img :src="LogoWhite"
-            :style="`width:${currentCompactSize.size * 0.06}px;height:auto;opacity:0.9;display:block;`"
+            :style="`width:${currentCompactSize.size * logoScale}px;height:auto;opacity:0.9;display:block;`"
             alt="Ubiqueme" />
         </div>
         <span
