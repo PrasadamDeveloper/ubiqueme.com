@@ -65,6 +65,15 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   /** Current size config for compact style */
   const currentCompactSize = computed(() => compactSizeConfig[downloadSize.value])
 
+  /** Font-size scale factors per size — SM gets 1.2×, MD/LG get 1.5× */
+  const textScale = computed(() => {
+    const isSm = downloadSize.value === 'sm'
+    return {
+      name: isSm ? 0.066 : 0.082,
+      desc: isSm ? 0.038 : 0.048,
+    }
+  })
+
   /** When PDF format is selected, only normal style is available */
   const availableStyles = computed<DownloadStyle[]>(() => {
     return downloadFormat.value === 'pdf' ? ['normal'] : ['normal', 'compact']
@@ -254,6 +263,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     qrScanUrl,
     currentSize,
     currentCompactSize,
+    textScale,
     availableStyles,
     getDownloadLabel,
 

@@ -385,6 +385,7 @@ const {
   qrScanUrl,
   currentSize,
   currentCompactSize,
+  textScale,
   getDownloadLabel,
   generateHighResQR,
   handleDownload,
@@ -1105,11 +1106,12 @@ const hiddeLogsHandle = () => {
         </div>
         <!-- div B: name + static text — centered vertically -->
         <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
-          <p :style="`color:#fff;font-size:${currentSize.width * 0.082}px;font-weight:900;margin:0;line-height:1.1;`">
+          <p
+            :style="`color:#fff;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
             {{ propsComputed.name || 'Código QR' }}
           </p>
           <p
-            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * 0.048}px;font-weight:500;margin:0;line-height:1.2;`">
+            :style="`color:rgba(255,255,255,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
             Escanee este código QR para contactar al responsable por whatsapp.
           </p>
         </div>
