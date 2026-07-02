@@ -277,6 +277,24 @@ const {
   handleDownload,
 } = downloadComposable
 
+// Rotate wrapper dimensions for compact side domains
+const compactSideWrapStyle = computed(() => {
+  const fontSize = currentCompactSize.value.size * compactDomainTextScale.value.bottom
+  const wrapWidth = Math.round(fontSize * 2.5)
+  const wrapHeight = Math.round(fontSize * 0.62 * 15)
+  return {
+    width: `${wrapWidth}px`,
+    height: `${wrapHeight}px`,
+  }
+})
+
+const compactSideTextStyle = computed(() => {
+  const fontSize = currentCompactSize.value.size * compactDomainTextScale.value.bottom
+  return {
+    fontSize: `${Math.round(fontSize)}px`,
+  }
+})
+
 onMounted(generateHighResQR)
 watch(() => propsComputed.value.name, generateHighResQR)
 
@@ -361,10 +379,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-            }}</h3>
+              }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-              }}</span>
+                }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -455,7 +473,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                  }}</span>
+                    }}</span>
                 </div>
               </div>
 
@@ -468,7 +486,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                  }}</span>
+                    }}</span>
                 </div>
               </button>
             </template>
@@ -735,30 +753,25 @@ const hiddeLogsHandle = () => {
       <!-- === NORMAL CAPTURE TEMPLATE END === -->
 
       <!-- === COMPACT CAPTURE TEMPLATE START === -->
-      <div :id="`qr-capture-compact-${props.id}`"
-        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:0;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:'Google Sans',sans-serif;position:relative;margin-bottom:24px;`">
-        <span
-          :style="`color:#fff;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;">
-          <div style="display:flex;align-items:center;justify-content:center;">
+      <div :id="`qr-capture-compact-${props.id}`" class="compact-wrap">
+        <span class="compact-top">ubiqueme.com</span>
+        <div class="compact-row">
+          <div class="compact-side-wrap" :style="compactSideWrapStyle">
+            <span class="compact-side-text" translate="no" :style="compactSideTextStyle">contactomio.com</span>
+          </div>
+          <div class="compact-qr-holder">
             <template v-if="propsComputed.img">
-              <img :src="propsComputed.img"
-                :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
+              <img :src="propsComputed.img" class="compact-qr" />
             </template>
             <template v-else>
-              <img :src="qrHighResUrl"
-                :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
+              <img :src="qrHighResUrl" class="compact-qr" />
             </template>
           </div>
+          <div class="compact-side-wrap" :style="compactSideWrapStyle">
+            <span class="compact-side-text" translate="no" :style="compactSideTextStyle">localizarme.com</span>
+          </div>
         </div>
-        <div
-          style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;padding-bottom:4px;">
-          <span
-            :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
-          <span style="color:rgba(255,255,255,0.5);">•</span>
-          <span
-            :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
-        </div>
+        <span class="compact-bottom">Escanee este QR para contactar al responsable</span>
       </div>
       <!-- === COMPACT CAPTURE TEMPLATE END === -->
     </div>
@@ -785,5 +798,84 @@ const hiddeLogsHandle = () => {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(249, 115, 22, 0.4);
+}
+
+/* Compact template */
+.compact-wrap {
+  padding: 2px;
+  background: linear-gradient(125deg, #f97316, #fcbd74);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-family: 'Google Sans', sans-serif;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+  width: v-bind('currentCompactSize.size + "px"');
+  height: v-bind('currentCompactSize.size + "px"');
+}
+
+.compact-top {
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  padding-bottom: 2px;
+  font-size: v-bind('Math.round(currentCompactSize.size * compactDomainTextScale.top) + "px"');
+}
+
+.compact-row {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 4px;
+}
+
+.compact-side-wrap {
+  position: relative;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.compact-side-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+  white-space: nowrap;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+.compact-qr-holder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.compact-qr {
+  object-fit: contain;
+  display: block;
+  width: v-bind('currentCompactSize.qrSize + "px"');
+  height: v-bind('currentCompactSize.qrSize + "px"');
+}
+
+.compact-bottom {
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  padding-bottom: 6px;
+  font-size: v-bind('Math.round(currentCompactSize.size * compactDomainTextScale.bottom) + "px"');
 }
 </style>
