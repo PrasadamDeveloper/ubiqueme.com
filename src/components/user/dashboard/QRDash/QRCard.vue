@@ -1137,7 +1137,7 @@ const hiddeLogsHandle = () => {
 
       <!-- === NORMAL CAPTURE TEMPLATE START === -->
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;margin-bottom:24px;`">
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;margin-bottom:24px;`">
         <!-- Logo top-right -->
         <div
           :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
@@ -1154,7 +1154,7 @@ const hiddeLogsHandle = () => {
           <div
             style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;flex:1;width:100%;">
             <div
-              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:2px;display:flex;align-items:center;justify-content:center;`">
+              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:5px;display:flex;align-items:center;justify-content:center;`">
               <template v-if="propsComputed.img">
                 <img :src="propsComputed.img"
                   :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
@@ -1168,17 +1168,18 @@ const hiddeLogsHandle = () => {
             <div
               style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center; text-align: center;">
               <p
-                :style="`color:#000;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
+                :style="`color:#171717;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;  `">
                 {{ propsComputed.name || 'Código QR' }}
               </p>
               <p
-                :style="`color:rgba(0,0,0,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
+                :style="`color:#303030;font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
                 Escanee este código QR para contactar al responsable.
               </p>
             </div>
           </div>
           <!-- Domains bottom center -->
-          <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;">
+          <div
+            style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px; padding-bottom: 9px;">
             <span translate="no"
               :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
             <span
@@ -1191,10 +1192,20 @@ const hiddeLogsHandle = () => {
       <!-- === NORMAL CAPTURE TEMPLATE END === -->
 
       <!-- === COMPACT CAPTURE TEMPLATE START === -->
-      <div :id="`qr-capture-compact-${props.id}`"
-        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:0;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:'Google Sans',sans-serif;position:relative;margin-bottom:24px;`">
-        <span
-          :style="`color:#fff;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
+      <div :id="`qr-capture-compact-${props.id}`" style="position: relative;"
+        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:2px;background:linear-gradient(125deg,#f97316,#fcbd74);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:'Google Sans',sans-serif;position:relative;margin-bottom:24px;`">
+        <article style="
+      position: absolute;
+      right: 0px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      transform-origin: center;
+      white-space: nowrap;
+    ">
+          <p style="margin:0;">Contactomio.com</p>
+        </article>
+        <span :style="`color:#fff;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size *
+          compactDomainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
         <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;">
           <div style="display:flex;align-items:center;justify-content:center;">
             <template v-if="propsComputed.img">
@@ -1202,18 +1213,19 @@ const hiddeLogsHandle = () => {
                 :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
             </template>
             <template v-else>
-              <img :src="qrHighResUrl"
-                :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
+              <div style="padding: 4px; background: #fff; border-radius: 10px;">
+                <img :src="qrHighResUrl"
+                  :style="`width:${currentCompactSize.qrSize}px;height:${currentCompactSize.qrSize}px;object-fit:contain;display:block;`" />
+              </div>
             </template>
           </div>
         </div>
         <div
-          style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;padding-bottom:4px;">
+          style="display:flex;align-items:center;justify-content:center;gap:4px;padding-bottom:10px; text-align: center;">
           <span
-            :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
-          <span style="color:rgba(255,255,255,0.5);">•</span>
-          <span
-            :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
+            :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">Escanee
+            este QR para contactar al responsable</span>
+
         </div>
       </div>
       <!-- === COMPACT CAPTURE TEMPLATE END === -->
