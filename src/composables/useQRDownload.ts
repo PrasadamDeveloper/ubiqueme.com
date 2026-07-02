@@ -19,13 +19,13 @@ export interface QRDownloadProps {
 // height = width / aspectRatio to match the physical PDF dimensions
 // SM stays as-is. MD and LG have larger templates so QR, name & text scale up.
 export const sizeConfig: Record<DownloadSize, { width: number; height: number; qrSize: number }> = {
-  sm: { width: 400, height: 173, qrSize: 130 },
+  sm: { width: 400, height: 173, qrSize: 100 },
   md: { width: 720, height: 500, qrSize: 300 },
   lg: { width: 1080, height: 749, qrSize: 460 },
 }
 
 export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: number }> = {
-  sm: { size: 200, qrSize: 130 },
+  sm: { size: 200, qrSize: 100 },
   md: { size: 280, qrSize: 190 },
   lg: { size: 380, qrSize: 260 },
 }
@@ -86,7 +86,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     const isSm = downloadSize.value === 'sm'
     return {
       top: isSm ? 0.048 : 0.035, // ubiqueme.com
-      bottom: isSm ? 0.035 : 0.025, // localizarme / contactomio
+      bottom: isSm ? 0.04 : 0.025, // localizarme / contactomio
     }
   })
 
@@ -95,7 +95,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     const isSm = downloadSize.value === 'sm'
     return {
       top: isSm ? 0.055 : 0.06, // ubiqueme.com
-      bottom: isSm ? 0.038 : 0.048, // localizarme / contactomio
+      bottom: isSm ? 0.045 : 0.048, // localizarme / contactomio
     }
   })
 

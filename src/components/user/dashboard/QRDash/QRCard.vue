@@ -839,15 +839,15 @@ const hiddeLogsHandle = () => {
                       <p class="text-black/60 font-mono font-bold text-[10px]">#{{ propsComputed.id }}</p>
                       <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
                       <p class="text-black/70 font-semibold text-[10px] leading-tight">Escanee este QR para contactar al
-                        responsable de forma segura.</p>
+                        responsable por whatsapp</p>
                     </div>
                   </div>
                   <div class="flex items-center justify-center gap-2 mt-1">
-                    <span class="text-white font-bold uppercase tracking-wider"
+                    <span class="text-white font-bold uppercase tracking-wider" translate="no"
                       :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">localizarme.com</span>
-                    <span class="text-white/50"
+                    <span class="text-white/50" translate="no"
                       :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">•</span>
-                    <span class="text-white font-bold uppercase tracking-wider"
+                    <span class="text-white font-bold uppercase tracking-wider" translate="no"
                       :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">contactomio.com</span>
                   </div>
                 </template>
@@ -864,11 +864,11 @@ const hiddeLogsHandle = () => {
                       </template>
                     </div>
                     <div class="flex items-center justify-center gap-1">
-                      <span class="text-white font-bold uppercase tracking-wider"
+                      <span class="text-white font-bold uppercase tracking-wider" translate="no"
                         :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">localizarme.com</span>
-                      <span class="text-white/50"
+                      <span class="text-white/50" translate="no"
                         :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">•</span>
-                      <span class="text-white font-bold uppercase tracking-wider"
+                      <span class="text-white font-bold uppercase tracking-wider" translate="no"
                         :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">contactomio.com</span>
                     </div>
                     <p class="text-black font-bold text-center text-[8px]">Escanee QR para contactar al responsable
@@ -1003,11 +1003,11 @@ const hiddeLogsHandle = () => {
                         </div>
                       </div>
                       <div class="flex items-center justify-center gap-2 mt-1">
-                        <span class="text-white font-bold uppercase tracking-wider"
+                        <span class="text-white font-bold uppercase tracking-wider" translate="no"
                           :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">localizarme.com</span>
-                        <span class="text-white/50"
+                        <span class="text-white/50" translate="no"
                           :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">•</span>
-                        <span class="text-white font-bold uppercase tracking-wider"
+                        <span class="text-white font-bold uppercase tracking-wider" translate="no"
                           :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">contactomio.com</span>
                       </div>
                     </template>
@@ -1024,11 +1024,11 @@ const hiddeLogsHandle = () => {
                           </template>
                         </div>
                         <div class="flex items-center justify-center gap-1">
-                          <span class="text-white font-bold uppercase tracking-wider"
+                          <span class="text-white font-bold uppercase tracking-wider" translate="no"
                             :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">localizarme.com</span>
-                          <span class="text-white/50"
+                          <span class="text-white/50" translate="no"
                             :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">•</span>
-                          <span class="text-white font-bold uppercase tracking-wider"
+                          <span class="text-white font-bold uppercase tracking-wider" translate="no"
                             :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">contactomio.com</span>
                         </div>
                         <p class="text-black font-bold text-center text-[7px]">Escanee QR para contactar al
@@ -1124,15 +1124,15 @@ const hiddeLogsHandle = () => {
         </div>
         <!-- Inner layout: column -->
         <div
-          style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:8px;">
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:4px;">
           <!-- ubiqueme.com top center -->
           <span
             :style="`color:#fff;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
           <!-- Row: QR + info -->
           <div
-            style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;flex:1;width:100%;">
+            style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;flex:1;width:100%;">
             <div
-              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
+              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:2px;display:flex;align-items:center;justify-content:center;`">
               <template v-if="propsComputed.img">
                 <img :src="propsComputed.img"
                   :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
@@ -1154,12 +1154,12 @@ const hiddeLogsHandle = () => {
             </div>
           </div>
           <!-- Domains bottom center -->
-          <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;">
-            <span
+          <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;">
+            <span translate="no"
               :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
             <span
               :style="`color:rgba(255,255,255,0.5);font-size:${currentSize.width * domainTextScale.bottom}px;`">•</span>
-            <span
+            <span translate="no"
               :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
           </div>
         </div>
