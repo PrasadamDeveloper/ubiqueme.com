@@ -1146,12 +1146,7 @@ const hiddeLogsHandle = () => {
     <!-- Estas plantillas se renderizan VISIBLEMENTE aquí abajo con el diseño exacto que se usa para generar PNG/PDF. -->
     <!-- Se ocultan visualmente dentro del card mediante overflow:hidden y position:relative en el contenedor padre. -->
     <!-- Para editarlas manualmente, busca "CAPTURE TEMPLATE START" para cada estilo. -->
-    <div
-      style="margin-top:32px;padding-top:16px;border-top:2px dashed rgba(249,115,22,0.3);width:100%;background:#0a0401;">
-      <div
-        style="padding:8px 0;font-size:11px;color:rgba(249,115,22,0.6);font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:monospace;">
-        ⬇ PLANTILLAS DE DESCARGA (lo que se captura para PNG/PDF) ⬇
-      </div>
+    <div style="position:absolute;left:-9999px;top:0;">
 
       <!-- === NORMAL CAPTURE TEMPLATE START === -->
       <div :id="`qr-capture-normal-${props.id}`"
