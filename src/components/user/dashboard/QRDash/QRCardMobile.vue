@@ -361,10 +361,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-              }}</h3>
+            }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-                }}</span>
+              }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -455,7 +455,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                    }}</span>
+                  }}</span>
                 </div>
               </div>
 
@@ -468,7 +468,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                    }}</span>
+                  }}</span>
                 </div>
               </button>
             </template>
@@ -673,11 +673,17 @@ const hiddeLogsHandle = () => {
       </div>
     </Transition>
 
-    <!-- ─── Hidden capture templates ─── -->
-    <div style="position:fixed;left:-9999px;top:0;pointer-events:none;opacity:0;z-index:-1">
-      <!-- Normal capture template -->
+    <!-- === PLANTILLAS DE DESCARGA (CAPTURA html2canvas) === -->
+    <div
+      style="margin-top:32px;padding-top:16px;border-top:2px dashed rgba(249,115,22,0.3);width:100%;background:#0a0401;">
+      <div
+        style="padding:8px 0;font-size:11px;color:rgba(249,115,22,0.6);font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:monospace;">
+        ⬇ PLANTILLAS DE DESCARGA (lo que se captura para PNG/PDF) ⬇
+      </div>
+
+      <!-- === NORMAL CAPTURE TEMPLATE START === -->
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;`">
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(135deg,#f97316,#fed7aa);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;margin-bottom:24px;`">
         <!-- Logo top-right -->
         <div
           :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
@@ -726,10 +732,11 @@ const hiddeLogsHandle = () => {
           </div>
         </div>
       </div>
+      <!-- === NORMAL CAPTURE TEMPLATE END === -->
 
-      <!-- Compact capture template -->
+      <!-- === COMPACT CAPTURE TEMPLATE START === -->
       <div :id="`qr-capture-compact-${props.id}`"
-        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:0;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:'Google Sans',sans-serif;position:relative;`">
+        :style="`width:${currentCompactSize.size}px;height:${currentCompactSize.size}px;padding:0;background:#fff;border-radius:${currentCompactSize.size * 0.05}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:'Google Sans',sans-serif;position:relative;margin-bottom:24px;`">
         <span
           :style="`color:#fff;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
         <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;">
@@ -753,6 +760,7 @@ const hiddeLogsHandle = () => {
             :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentCompactSize.size * compactDomainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
         </div>
       </div>
+      <!-- === COMPACT CAPTURE TEMPLATE END === -->
     </div>
   </div>
 </template>

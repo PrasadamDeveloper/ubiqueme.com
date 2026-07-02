@@ -18,12 +18,14 @@ export interface QRDownloadProps {
 // ─── Size configs for template rendering ────────────────────────
 // height = width / aspectRatio to match the physical PDF dimensions
 // SM stays as-is. MD and LG have larger templates so QR, name & text scale up.
+// === NORMAL STYLE CONFIG START ===
 export const sizeConfig: Record<DownloadSize, { width: number; height: number; qrSize: number }> = {
   sm: { width: 400, height: 173, qrSize: 100 },
   md: { width: 720, height: 500, qrSize: 300 },
   lg: { width: 1080, height: 749, qrSize: 460 },
 }
 
+// === COMPACT STYLE CONFIG START ===
 export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: number }> = {
   sm: { size: 200, qrSize: 100 },
   md: { size: 280, qrSize: 190 },
@@ -31,6 +33,7 @@ export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: num
 }
 
 // ─── Physical dimensions for PDF (mm) — estilo Normal only ──────
+// === NORMAL PHYSICAL SIZE CONFIG (PDF) START ===
 export const PHYSICAL_SIZE_MM: Record<DownloadSize, { widthMm: number; heightMm: number }> = {
   sm: { widthMm: 132, heightMm: 57 },
   md: { widthMm: 170, heightMm: 118 },
@@ -38,6 +41,7 @@ export const PHYSICAL_SIZE_MM: Record<DownloadSize, { widthMm: number; heightMm:
 }
 
 // ─── Physical dimensions for PDF (mm) — Compact (square) ────────
+// === COMPACT PHYSICAL SIZE CONFIG (PDF) START ===
 export const PHYSICAL_SIZE_MM_COMPACT: Record<DownloadSize, { sizeMm: number }> = {
   sm: { sizeMm: 55 },
   md: { sizeMm: 85 },
@@ -156,7 +160,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   }
 
   // ── Download: PNG (normal style) ─────────────────────────────
-
+  // === NORMAL PNG DOWNLOAD HANDLER START ===
   const handleDownloadPNG = async (onClose?: () => void) => {
     const elId = getQrCaptureId('normal')
     const el = document.getElementById(elId)
@@ -187,7 +191,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   }
 
   // ── Download: PNG (compact style) ────────────────────────────
-
+  // === COMPACT PNG DOWNLOAD HANDLER START ===
   const handleDownloadCompactPNG = async (onClose?: () => void) => {
     const elId = getQrCaptureId('compact')
     const el = document.getElementById(elId)
@@ -218,7 +222,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   }
 
   // ── Download: PDF (from compact style canvas) ────────────────
-
+  // === COMPACT PDF DOWNLOAD HANDLER START ===
   const handleDownloadCompactPDF = async (onClose?: () => void) => {
     const elId = getQrCaptureId('compact')
     const el = document.getElementById(elId)
@@ -260,7 +264,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   }
 
   // ── Download: PDF (from normal style canvas) ─────────────────
-
+  // === NORMAL PDF DOWNLOAD HANDLER START ===
   const handleDownloadPDF = async (onClose?: () => void) => {
     const elId = getQrCaptureId('normal')
     const el = document.getElementById(elId)
