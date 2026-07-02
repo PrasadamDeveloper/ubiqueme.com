@@ -30,6 +30,7 @@ const showMenu = ref(false)
 const activePrompt = ref<'cancel' | 'renew' | 'edit' | 'amplify' | 'download' | null>(null)
 
 const qrName = ref(propsComputed.value.name);
+const displayName = computed(() => propsComputed.value.name || 'Código QR');
 
 const statusConfig = {
   Active: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', dot: 'bg-emerald-400', label: 'Activo' },
@@ -812,13 +813,13 @@ const hiddeLogsHandle = () => {
           </div>
         </Transition>
 
-        <!-- Download Prompt - Desktop version -->
+        <!-- Download Prompt - Desktop version (redesign: format cards → style/size → preview → CTA) -->
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
           <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-sm flex-col items-center">
-            <!-- Close (X) button -->
-            <div class="flex items-center justify-between w-full mb-4">
+            <!-- Header -->
+            <div class="flex items-center justify-between w-full mb-5">
               <h3 class="text-white font-black text-lg tracking-tight">Descargar QR</h3>
               <button @click="closeAll"
                 class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
@@ -826,139 +827,192 @@ const hiddeLogsHandle = () => {
               </button>
             </div>
 
-            <!-- Preview card with glass effect -->
-            <div
-              class="w-full mb-5 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-5 relative overflow-hidden">
-              <!-- Subtle grid behind -->
-              <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-                style="background-image: linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
-              </div>
-              <!-- Logo top-right -->
-              <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
-                <img :src="LogoWhite" class="w-[48px] h-auto opacity-90" alt="Ubiqueme" />
-              </div>
-              <div class="relative z-10 flex flex-col items-center gap-3">
-                <template v-if="downloadStyle === 'normal'">
-                  <span class="text-white font-black tracking-[0.15em] uppercase"
-                    :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.top)}px` }">ubiqueme.com</span>
-                  <div class="flex items-center justify-center w-full gap-2">
-                    <div class="shrink-0 bg-white rounded-xl p-1.5">
-                      <template v-if="propsComputed.img">
-                        <img :src="propsComputed.img" class="w-20 h-20 object-contain" />
-                      </template>
-                      <template v-else>
-                        <QrcodeVue :value="qrScanUrl" :size="80" render-as="canvas" level="H" />
-                      </template>
-                    </div>
-                    <div class="flex flex-col flex-1 min-w-0 gap-0.5">
-                      <p class="text-black font-extrabold text-sm leading-tight truncate">{{ propsComputed.name ||
-                        'Código QR' }}
-                      </p>
-                      <p class="text-black/60 font-mono font-bold text-[10px]">#{{ propsComputed.id }}</p>
-                      <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
-                      <p class="text-black/70 font-semibold text-[10px] leading-tight">Escanee este QR para contactar al
-                        responsable.</p>
-                    </div>
+            <!-- ─── Step 1: Format Selection (cards) ─── -->
+            <div class="w-full mb-4">
+              <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2 block">Formato de
+                descarga</label>
+              <div class="grid grid-cols-2 gap-3">
+                <!-- PNG Card -->
+                <button @click="downloadFormat = 'png'"
+                  class="flex flex-col items-start gap-1.5 p-3 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
+                  :class="downloadFormat === 'png'
+                    ? 'bg-orange-500/10 border-orange-500/50 shadow-[0_0_12px_rgba(249,115,22,0.15)]'
+                    : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'">
+                  <div class="flex items-center gap-2 w-full">
+                    <span :class="downloadFormat === 'png' ? 'text-orange-400' : 'text-white/40'"
+                      class="material-symbols-outlined notranslate text-[20px]">image</span>
+                    <span :class="downloadFormat === 'png' ? 'text-orange-300' : 'text-white/70'"
+                      class="text-sm font-bold">PNG</span>
+                    <span v-if="downloadFormat === 'png'"
+                      class="ml-auto px-1.5 py-0.5 bg-orange-500/20 rounded text-[8px] font-bold text-orange-400 uppercase tracking-wider">
+                      Recomendado
+                    </span>
                   </div>
-                  <div class="flex items-center justify-center gap-2 mt-1">
-                    <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 5}px` }">localizarme.com</span>
-                    <span class="text-white/50" translate="no"
-                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 10}px` }">•</span>
-                    <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 5}px` }">contactoddmio.com</span>
+                  <p :class="downloadFormat === 'png' ? 'text-white/50' : 'text-white/30'"
+                    class="text-[10px] leading-tight">Imagen digital con fondo degradado</p>
+                  <p class="text-[9px] text-white/20 font-mono">400×173 px</p>
+                </button>
+
+                <!-- PDF Card -->
+                <button @click="downloadFormat = 'pdf'"
+                  class="flex flex-col items-start gap-1.5 p-3 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
+                  :class="downloadFormat === 'pdf'
+                    ? 'bg-orange-500/10 border-orange-500/50 shadow-[0_0_12px_rgba(249,115,22,0.15)]'
+                    : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'">
+                  <div class="flex items-center gap-2 w-full">
+                    <span :class="downloadFormat === 'pdf' ? 'text-orange-400' : 'text-white/40'"
+                      class="material-symbols-outlined notranslate text-[20px]">picture_as_pdf</span>
+                    <span :class="downloadFormat === 'pdf' ? 'text-orange-300' : 'text-white/70'"
+                      class="text-sm font-bold">PDF</span>
+                  </div>
+                  <p :class="downloadFormat === 'pdf' ? 'text-white/50' : 'text-white/30'"
+                    class="text-[10px] leading-tight">Documento imprimible a escala real</p>
+                  <p class="text-[9px] text-white/20 font-mono">132×57 mm</p>
+                </button>
+              </div>
+            </div>
+
+            <!-- ─── Step 2: Style & Size ─── -->
+            <div class="w-full mb-4">
+              <label
+                class="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2 block">Personalizar</label>
+              <div class="flex flex-col gap-2">
+                <!-- Style row -->
+                <div class="flex items-center gap-3">
+                  <span class="text-[9px] font-bold uppercase tracking-wider text-white/25 w-12 shrink-0">Estilo</span>
+                  <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
+                    <button @click="downloadStyle = 'normal'"
+                      class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                      :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                      Normal
+                    </button>
+                    <button @click="downloadStyle = 'compact'"
+                      class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                      :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
+                      Compacto
+                    </button>
+                  </div>
+                </div>
+                <!-- Size row -->
+                <div class="flex items-center gap-3">
+                  <span class="text-[9px] font-bold uppercase tracking-wider text-white/25 w-12 shrink-0">Tamaño</span>
+                  <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl">
+                    <button @click="downloadSize = 'sm'"
+                      class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                      :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
+                      SM
+                    </button>
+                    <button @click="downloadSize = 'md'"
+                      class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                      :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
+                      MD
+                    </button>
+                    <button @click="downloadSize = 'lg'"
+                      class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                      :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
+                      LG
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── Step 3: Preview (static — no depende de estilo/tamaño) ─── -->
+            <div class="w-full mb-4">
+              <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2 block">Vista
+                previa</label>
+              <div
+                class="w-full rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 relative overflow-hidden">
+                <!-- Subtle grid -->
+                <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+                  style="background-image: linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
+                </div>
+                <!-- Logo top-right -->
+                <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
+                  <img :src="LogoWhite" class="w-[38px] h-auto opacity-90" alt="Ubiqueme" />
+                </div>
+                <!-- Static layouts for each style (no dynamic variables) -->
+                <template v-if="downloadStyle === 'normal'">
+                  <div class="relative z-10 flex flex-col items-center gap-2">
+                    <span class="text-white/90 font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
+                    <div class="flex items-center justify-center w-full gap-2">
+                      <div class="shrink-0 bg-white rounded-xl p-1.5">
+                        <template v-if="propsComputed.img">
+                          <img :src="propsComputed.img" class="w-[68px] h-[68px] object-contain" />
+                        </template>
+                        <template v-else>
+                          <QrcodeVue :value="qrScanUrl" :size="68" render-as="canvas" level="H" />
+                        </template>
+                      </div>
+                      <div class="flex flex-col flex-1 min-w-0 gap-0.5">
+                        <p class="text-black font-extrabold text-sm leading-tight truncate">{{ displayName }}</p>
+                        <p class="text-black/60 font-mono font-bold text-[9px]">#{{ propsComputed.id }}</p>
+                        <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
+                        <p class="text-black/70 font-semibold text-[9px] leading-tight">Escanee este QR para contactar
+                          al
+                          responsable.</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 mt-0.5">
+                      <span class="text-white font-bold uppercase tracking-wider text-[8px]"
+                        translate="no">localizarme.com</span>
+                      <span class="text-white/50 text-[8px]" translate="no">•</span>
+                      <span class="text-white font-bold uppercase tracking-wider text-[8px]"
+                        translate="no">contactomio.com</span>
+                    </div>
                   </div>
                 </template>
                 <template v-else>
-                  <div class="bg-white rounded-2xl p-3 shadow-lg flex flex-col items-center gap-1.5 w-[160px]">
-                    <span class="text-white font-black tracking-widest uppercase"
-                      :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.top)}px` }">ubiqueme.com</span>
-                    <div class="mx-1">
-                      <template v-if="propsComputed.img">
-                        <img :src="propsComputed.img" class="w-16 h-16 object-contain" />
-                      </template>
-                      <template v-else>
-                        <QrcodeVue :value="qrScanUrl" :size="64" render-as="canvas" level="H" />
-                      </template>
+                  <!-- Compact static preview (square layout) -->
+                  <div class="relative z-10 flex flex-col items-center gap-1.5">
+                    <span class="text-white font-black tracking-[0.15em] uppercase text-[7px]">ubiqueme.com</span>
+                    <div class="relative flex items-center justify-center mx-auto" style="width:140px;height:140px;">
+                      <span
+                        class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[6px] whitespace-nowrap origin-center -rotate-90"
+                        translate="no">contactomio.com</span>
+                      <div class="bg-white rounded-xl p-1.5"
+                        style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;">
+                        <template v-if="propsComputed.img">
+                          <img :src="propsComputed.img" class="w-full h-full object-contain" />
+                        </template>
+                        <template v-else>
+                          <QrcodeVue :value="qrScanUrl" :size="68" render-as="canvas" level="H" />
+                        </template>
+                      </div>
+                      <span
+                        class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[6px] whitespace-nowrap origin-center rotate-90"
+                        translate="no">localizarme.com</span>
                     </div>
-                    <div class="flex items-center justify-center gap-1">
-                      <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                        :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">localizarme.com</span>
-                      <span class="text-white/50" translate="no"
-                        :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">•</span>
-                      <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                        :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">contactomio.com</span>
-                    </div>
-                    <p class="text-black font-bold text-center text-[8px]">Escanee QR para contactar al responsable
-                    </p>
+                    <p class="text-white/80 text-[7px] text-center font-semibold">Escanee QR para contactar al
+                      responsable</p>
                   </div>
                 </template>
               </div>
             </div>
 
-            <!-- Format toggle: PNG | PDF -->
-            <div class="flex w-full gap-2 mb-4">
-              <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
-                <button @click="downloadFormat = 'png'"
-                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadFormat === 'png' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                  PNG
-                </button>
-                <button @click="downloadFormat = 'pdf'"
-                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                  PDF
-                </button>
-              </div>
-              <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
-                <button @click="downloadStyle = 'normal'"
-                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                  Normal
-                </button>
-                <button @click="downloadStyle = 'compact'"
-                  class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                  Compacto
-                </button>
-              </div>
-              <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl">
-                <button @click="downloadSize = 'sm'"
-                  class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                  SM
-                </button>
-                <button @click="downloadSize = 'md'"
-                  class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                  MD
-                </button>
-                <button @click="downloadSize = 'lg'"
-                  class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                  :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                  LG
-                </button>
-              </div>
-            </div>
-
-            <p class="text-white/30 text-[9px] text-center leading-relaxed mb-4">
+            <!-- Info text -->
+            <p class="text-white/25 text-[9px] text-center leading-relaxed mb-4">
               <template v-if="downloadFormat === 'pdf'">
-                📄 El PDF respeta el tamaño físico exacto al imprimir.
+                El PDF respeta el tamaño físico exacto al imprimir. No requiere ajuste de escala.
               </template>
               <template v-else>
-                💡 Al imprimir, ajuste la <strong class="text-white/50">escala</strong> en opciones de impresión.
+                Al imprimir, ajuste la <strong class="text-white/50">escala al 100%</strong> en opciones de impresión.
               </template>
             </p>
 
+            <!-- ─── Step 4: CTA ─── -->
             <button @click="handleDownload(closeAll)" :disabled="isDownloading"
               class="w-full py-3 bg-gradient-to-r from-[#f38020] to-[#e07010] text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
               <span class="material-symbols-outlined notranslate text-[18px]">download</span>
-              {{ getDownloadLabel }}
+              Descargar como {{ downloadFormat === 'pdf' ? 'PDF' : 'PNG' }}
+              <span class="text-white/60 text-[10px] font-normal">({{ downloadSize === 'sm' ? 'Pequeño' : downloadSize
+                === 'md' ?
+                'Mediano' : 'Grande' }})</span>
             </button>
           </div>
         </Transition>
 
-        <!-- Mobile Download Bottom Sheet (Teleported to body) -->
+        <!-- Mobile Download Bottom Sheet (Teleported to body) — redesigned with same hierarchy -->
         <Teleport to="body">
           <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0"
             enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
@@ -973,8 +1027,8 @@ const hiddeLogsHandle = () => {
             <div v-if="activePrompt === 'download'"
               class="sm:hidden fixed bottom-0 left-0 right-0 z-[120] bg-[#0b0808] border-t border-orange-500/20 rounded-t-2xl p-4 pb-8 max-h-[85vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
               <!-- Handle bar -->
-              <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
-              <!-- Header with back button -->
+              <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3"></div>
+              <!-- Header -->
               <div class="flex items-center justify-center mb-4 relative">
                 <button @click="closeAll"
                   class="absolute left-0 w-8 h-8 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-white/5">
@@ -985,136 +1039,160 @@ const hiddeLogsHandle = () => {
                   QR</span>
               </div>
 
-              <!-- Preview -->
-              <div class="flex justify-center mb-5">
-                <div
-                  class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-5 relative overflow-hidden w-full max-w-[280px]">
-                  <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-                    style="background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
+              <!-- ─── Step 1: Format ─── -->
+              <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-white/25 mb-2 block">Formato</label>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <button @click="downloadFormat = 'png'"
+                  class="flex flex-col items-start gap-1 p-2.5 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
+                  :class="downloadFormat === 'png'
+                    ? 'bg-orange-500/10 border-orange-500/50'
+                    : 'bg-white/[0.02] border-white/10'">
+                  <div class="flex items-center gap-1.5 w-full">
+                    <span :class="downloadFormat === 'png' ? 'text-orange-400' : 'text-white/40'"
+                      class="material-symbols-outlined notranslate text-[18px]">image</span>
+                    <span :class="downloadFormat === 'png' ? 'text-orange-300' : 'text-white/70'"
+                      class="text-xs font-bold">PNG</span>
+                    <span v-if="downloadFormat === 'png'"
+                      class="ml-auto px-1 py-0.5 bg-orange-500/20 rounded text-[7px] font-bold text-orange-400 uppercase">Recomendado</span>
                   </div>
-                  <!-- Logo top-right -->
-                  <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
-                    <img :src="LogoWhite" class="w-[16px] md:w-[38px] h-auto opacity-90" alt="Ubiqueme" />
+                  <p :class="downloadFormat === 'png' ? 'text-white/50' : 'text-white/30'"
+                    class="text-[9px] leading-tight">
+                    Imagen digital</p>
+                  <p class="text-[8px] text-white/20 font-mono">400×173px</p>
+                </button>
+                <button @click="downloadFormat = 'pdf'"
+                  class="flex flex-col items-start gap-1 p-2.5 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
+                  :class="downloadFormat === 'pdf'
+                    ? 'bg-orange-500/10 border-orange-500/50'
+                    : 'bg-white/[0.02] border-white/10'">
+                  <div class="flex items-center gap-1.5 w-full">
+                    <span :class="downloadFormat === 'pdf' ? 'text-orange-400' : 'text-white/40'"
+                      class="material-symbols-outlined notranslate text-[18px]">picture_as_pdf</span>
+                    <span :class="downloadFormat === 'pdf' ? 'text-orange-300' : 'text-white/70'"
+                      class="text-xs font-bold">PDF</span>
                   </div>
-                  <div class="relative z-10 flex flex-col items-center gap-2">
-                    <template v-if="downloadStyle === 'normal'">
-                      <span class="text-white font-black tracking-[0.15em] uppercase"
-                        :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.top)}px` }">ubiqueme.com</span>
-                      <div class="flex items-center justify-center w-full gap-1.5">
-                        <div class="shrink-0 bg-white rounded-xl p-1">
-                          <template v-if="propsComputed.img">
-                            <img :src="propsComputed.img" class="w-16 h-16 object-contain" />
-                          </template>
-                          <template v-else>
-                            <QrcodeVue :value="qrScanUrl" :size="64" render-as="canvas" level="H" />
-                          </template>
-                        </div>
-                        <div class="flex flex-col flex-1 min-w-0 gap-0.5">
-                          <p class="text-black font-extrabold text-xs leading-tight truncate">{{ propsComputed.name ||
-                            'Código QR' }}
-                          </p>
-                          <p class="text-black/60 font-mono font-bold text-[8px]">#{{ propsComputed.id }}</p>
-                          <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
-                          <p class="text-black/70 font-semibold text-[8px] leading-tight">Escanee este QR para contactar
-                            al
-                            responsable.</p>
-                        </div>
-                      </div>
-                      <div class="flex items-center justify-center gap-2 mt-1">
-                        <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                          :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">localizarme.com</span>
-                        <span class="text-white/50" translate="no"
-                          :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">•</span>
-                        <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                          :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">contactomio.com</span>
-                      </div>
-                    </template>
-                    <template v-else>
-                      <div class="bg-white rounded-2xl p-2 shadow-lg flex flex-col items-center gap-1 w-[140px]">
-                        <span class="text-white font-black tracking-widest uppercase"
-                          :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.top)}px` }">ubiqueme.com</span>
-                        <div class="mx-0.5">
-                          <template v-if="propsComputed.img">
-                            <img :src="propsComputed.img" class="w-14 h-14 object-contain" />
-                          </template>
-                          <template v-else>
-                            <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
-                          </template>
-                        </div>
-                        <div class="flex items-center justify-center gap-1">
-                          <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                            :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">localizarme.com</span>
-                          <span class="text-white/50" translate="no"
-                            :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">•</span>
-                          <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                            :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">contactomio.com</span>
-                        </div>
-                        <p class="text-black font-bold text-center text-[7px]">Escanee QR para contactar al
-                          responsable</p>
-                      </div>
-                    </template>
-                  </div>
-                </div>
+                  <p :class="downloadFormat === 'pdf' ? 'text-white/50' : 'text-white/30'"
+                    class="text-[9px] leading-tight">
+                    Documento imprimible</p>
+                  <p class="text-[8px] text-white/20 font-mono">132×57mm</p>
+                </button>
               </div>
 
-              <!-- Format toggle: PNG | PDF -->
-              <div class="flex w-full gap-2 mb-4">
-                <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
-                  <button @click="downloadFormat = 'png'"
-                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadFormat === 'png' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                    PNG
-                  </button>
-                  <button @click="downloadFormat = 'pdf'"
-                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                    PDF
-                  </button>
-                </div>
+              <!-- ─── Step 2: Style & Size ─── -->
+              <label
+                class="text-[9px] font-bold uppercase tracking-[0.15em] text-white/25 mb-2 block">Personalizar</label>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-[8px] font-bold uppercase tracking-wider text-white/20 w-10 shrink-0">Estilo</span>
                 <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
                   <button @click="downloadStyle = 'normal'"
-                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    class="flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                     :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
                     Normal
                   </button>
                   <button @click="downloadStyle = 'compact'"
-                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    class="flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                     :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
                     Compacto
                   </button>
                 </div>
+              </div>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-[8px] font-bold uppercase tracking-wider text-white/20 w-10 shrink-0">Tamaño</span>
                 <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl">
                   <button @click="downloadSize = 'sm'"
-                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    class="px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                     :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
                     SM
                   </button>
                   <button @click="downloadSize = 'md'"
-                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    class="px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                     :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
                     MD
                   </button>
                   <button @click="downloadSize = 'lg'"
-                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    class="px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                     :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
                     LG
                   </button>
                 </div>
               </div>
 
-              <p class="text-white/30 text-[9px] text-center leading-relaxed mb-4">
-                <template v-if="downloadFormat === 'pdf'">
-                  📄 El PDF respeta el tamaño físico exacto al imprimir.
-                </template>
-                <template v-else>
-                  💡 Al imprimir, ajuste la <strong class="text-white/50">escala</strong> en opciones de impresión.
-                </template>
-              </p>
+              <!-- ─── Step 3: Preview (static — no depende de estilo/tamaño) ─── -->
+              <div class="flex justify-center mb-4">
+                <div
+                  class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 relative overflow-hidden w-full max-w-[260px]">
+                  <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+                    style="background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
+                  </div>
+                  <!-- Logo top-right -->
+                  <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1 z-10 pointer-events-none">
+                    <img :src="LogoWhite" class="w-[30px] h-auto opacity-90" alt="Ubiqueme" />
+                  </div>
+                  <!-- Static layouts for each style (mobile) -->
+                  <template v-if="downloadStyle === 'normal'">
+                    <div class="relative z-10 flex flex-col items-center gap-2">
+                      <span class="text-white/90 font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
+                      <div class="flex items-center justify-center w-full gap-1.5">
+                        <div class="shrink-0 bg-white rounded-xl p-1">
+                          <template v-if="propsComputed.img">
+                            <img :src="propsComputed.img" class="w-[56px] h-[56px] object-contain" />
+                          </template>
+                          <template v-else>
+                            <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
+                          </template>
+                        </div>
+                        <div class="flex flex-col flex-1 min-w-0 gap-0.5">
+                          <p class="text-black font-extrabold text-[10px] leading-tight truncate">{{ displayName }}</p>
+                          <p class="text-black/60 font-mono font-bold text-[7px]">#{{ propsComputed.id }}</p>
+                          <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
+                          <p class="text-black/70 font-semibold text-[7px] leading-tight">Escanee QR para contactar al
+                            responsable.</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-center gap-1.5 mt-0.5">
+                        <span class="text-white font-bold uppercase tracking-wider text-[7px]"
+                          translate="no">localizarme.com</span>
+                        <span class="text-white/50 text-[7px]" translate="no">•</span>
+                        <span class="text-white font-bold uppercase tracking-wider text-[7px]"
+                          translate="no">contactomio.com</span>
+                      </div>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <!-- Compact static preview (mobile, square layout) -->
+                    <div class="relative z-10 flex flex-col items-center gap-1.5">
+                      <span class="text-white font-black tracking-[0.15em] uppercase text-[7px]">ubiqueme.com</span>
+                      <div class="relative flex items-center justify-center mx-auto" style="width:120px;height:120px;">
+                        <span
+                          class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[5px] whitespace-nowrap origin-center -rotate-90"
+                          translate="no">contactomio.com</span>
+                        <div class="bg-white rounded-xl p-1"
+                          style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;">
+                          <template v-if="propsComputed.img">
+                            <img :src="propsComputed.img" class="w-full h-full object-contain" />
+                          </template>
+                          <template v-else>
+                            <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
+                          </template>
+                        </div>
+                        <span
+                          class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[5px] whitespace-nowrap origin-center rotate-90"
+                          translate="no">localizarme.com</span>
+                      </div>
+                      <p class="text-white/80 text-[6px] text-center font-semibold">Escanee QR para contactar</p>
+                    </div>
+                  </template>
+                </div>
+              </div>
 
+              <!-- ─── Step 4: CTA ─── -->
               <button @click="handleDownload(closeAll)" :disabled="isDownloading"
                 class="w-full py-3 bg-gradient-to-r from-[#f38020] to-[#e07010] text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
                 <span class="material-symbols-outlined notranslate text-[18px]">download</span>
-                {{ getDownloadLabel }}
+                Descargar como {{ downloadFormat === 'pdf' ? 'PDF' : 'PNG' }}
+                <span class="text-white/60 text-[10px] font-normal">({{ downloadSize === 'sm' ? 'Pequeño' : downloadSize
+                  === 'md'
+                  ? 'Mediano' : 'Grande' }})</span>
               </button>
 
               <!-- Close button -->
@@ -1167,7 +1245,7 @@ const hiddeLogsHandle = () => {
           <div
             style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;flex:1;width:100%;">
             <div
-              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:5px;display:flex;align-items:center;justify-content:center;`">
+              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:8px;display:flex;align-items:center;justify-content:center;`">
               <template v-if="propsComputed.img">
                 <img :src="propsComputed.img"
                   :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
