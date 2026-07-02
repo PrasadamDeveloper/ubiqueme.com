@@ -839,16 +839,16 @@ const hiddeLogsHandle = () => {
                       <p class="text-black/60 font-mono font-bold text-[10px]">#{{ propsComputed.id }}</p>
                       <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
                       <p class="text-black/70 font-semibold text-[10px] leading-tight">Escanee este QR para contactar al
-                        responsable por whatsapp</p>
+                        responsable.</p>
                     </div>
                   </div>
                   <div class="flex items-center justify-center gap-2 mt-1">
                     <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">localizarme.com</span>
+                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 5}px` }">localizarme.com</span>
                     <span class="text-white/50" translate="no"
-                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">•</span>
+                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 10}px` }">•</span>
                     <span class="text-white font-bold uppercase tracking-wider" translate="no"
-                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">contactomio.com</span>
+                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 5}px` }">contactoddmio.com</span>
                   </div>
                 </template>
                 <template v-else>
@@ -1149,7 +1149,7 @@ const hiddeLogsHandle = () => {
               </p>
               <p
                 :style="`color:rgba(0,0,0,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
-                Escanee este código QR para contactar al responsable por whatsapp.
+                Escanee este código QR para contactar al responsable.
               </p>
             </div>
           </div>
