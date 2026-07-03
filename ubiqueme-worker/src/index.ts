@@ -340,7 +340,7 @@ async function sendQRInactiveReply(env: Env, to: string, message: string): Promi
 	});
 }
 
-// ─── Resend scan copy email (only for ubiqueme.com@gmail.com) ──
+// ─── Resend scan copy email (only for ubiqueme.services@gmail.com) ──
 const SCAN_EMAIL_WRAPPER = (content: string) =>
 	`<!DOCTYPE html>
 <html lang="es">
@@ -647,8 +647,8 @@ async function handleImageWithCaption(
 			return new Response('Meta API Error', { status: 200 });
 		}
 
-		// 6a. If owner email is ubiqueme.com@gmail.com, send a copy via Resend
-		if (ownerData.email === 'ubiqueme.com@gmail.com') {
+		// 6a. If owner email is ubiqueme.services@gmail.com, send a copy via Resend
+		if (ownerData.email === 'ubiqueme.services@gmail.com') {
 			await sendScanEmail(
 				env,
 				ownerData.email,
@@ -1071,8 +1071,8 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		const msgStatus = 'ACEPTADO por Meta (message_id presente)';
 		console.log(`[Worker] Notificación al dueño: ${msgStatus}.`);
 
-		// 6a. If owner email is ubiqueme.com@gmail.com, send a copy via Resend (text flow, no image)
-		if (ownerData.email === 'ubiqueme.com@gmail.com') {
+		// 6a. If owner email is ubiqueme.services@gmail.com, send a copy via Resend (text flow, no image)
+		if (ownerData.email === 'ubiqueme.services@gmail.com') {
 			await sendScanEmail(
 				env,
 				ownerData.email,
