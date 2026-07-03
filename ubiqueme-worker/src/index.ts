@@ -483,7 +483,13 @@ function parseScanFields(text: string): ParsedScanData {
 	return {
 		qrId: idMatch![1],
 		qrName: qrNameMatch && qrNameMatch[1] ? qrNameMatch[1].trim() : 'objeto',
-		scanTime: timeMatch && timeMatch[1] ? timeMatch[1].trim() : new Date().toLocaleString('es-MX'),
+		scanTime:
+			timeMatch && timeMatch[1]
+				? timeMatch[1].trim()
+				: new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) +
+					' (hora CDMX) • ' +
+					new Date().toISOString().replace('T', ' ').replace('Z', '') +
+					' UTC',
 		customMessage: msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.',
 	};
 }
