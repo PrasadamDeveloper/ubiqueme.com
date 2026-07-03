@@ -504,89 +504,97 @@ const hiddeLogsHandle = () => {
     <div class="relative z-10 flex flex-col sm:flex-row">
 
       <!-- ─── Columna Izquierda: Info + Stats + Logs ─── -->
-      <div class="flex-1 flex flex-col min-w-0 p-5 md:p-6">
+      <div class="flex-1 flex flex-col min-w-0 p-6 md:p-7 lg:p-8">
 
         <!-- Header Row -->
-        <div class="flex items-start justify-between gap-2 mb-3">
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="material-symbols-outlined notranslate text-orange-500 text-[18px] shrink-0">location_on</span>
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-xl shrink-0">location_on</span>
+            <span class="text-white font-black tracking-widest text-xs uppercase whitespace-nowrap">ubiqueme.com</span>
             <span
-              class="text-white font-black tracking-widest text-[10px] uppercase whitespace-nowrap">ubiqueme.com</span>
-            <span
-              class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-white"
-              :class="currentStatus.bg">
-              <span :class="['w-1.5 h-1.5 rounded-full text-white!', currentStatus.dot]"></span>
+              class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white shadow-sm"
+              :class="[currentStatus.bg, 'border border-white/5']">
+              <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
               {{ currentStatus.label }}
             </span>
           </div>
           <!-- Menu button (top right on mobile) -->
           <button data-name="hamMenu" @click="toggleMenu($event)"
-            class="sm:hidden text-orange-500/90 hover:text-white transition-colors cursor-pointer w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 shrink-0">
-            <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[22px]">more_horiz</span>
+            class="sm:hidden text-orange-500/90 hover:text-white transition-colors cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 shrink-0">
+            <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[24px]">more_horiz</span>
           </button>
         </div>
 
         <!-- Name + ID -->
-        <h3 class="text-xl sm:text-2xl font-black text-white leading-tight mb-1 tracking-tighter truncate">
+        <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight mb-2 tracking-tighter truncate">
           {{ propsComputed.name || 'Código QR' }}
         </h3>
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-white/30 text-[9px]  tracking-[0.2em] font-black font-mono">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-white/30 text-[10px] tracking-[0.2em] font-black font-mono">
             #{{ propsComputed.id }}
           </span>
         </div>
 
-        <!-- Stats Row -->
-        <div class="flex items-center gap-5 mb-3">
-          <div class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined notranslate text-white/30 text-[14px]">qr_code_scanner</span>
-            <span class="text-white/50 text-[10px] uppercase tracking-[0.1em] font-black">Escaneos</span>
-            <span class="text-orange-400 font-mono text-sm font-bold">{{ qrStatus.totalScans }}</span>
+        <!-- Stats Row — Cards -->
+        <div class="flex items-center gap-4 mb-5">
+          <div class="flex items-center gap-3 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-2.5">
+            <div class="w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center">
+              <span class="material-symbols-outlined notranslate text-orange-400 text-lg">qr_code_scanner</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-white/40 text-[9px] uppercase tracking-[0.15em] font-black">Escaneos</span>
+              <span class="text-orange-400 font-mono text-lg font-bold leading-tight">{{ qrStatus.totalScans }}</span>
+            </div>
           </div>
-          <div class="flex items-center gap-1.5 sm:hidden">
-            <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
-            <span class="text-white/60 text-[10px] font-bold uppercase tracking-wider">{{ currentStatus.label }}</span>
+          <div class="flex items-center gap-3 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-2.5 sm:hidden">
+            <div :class="['w-9 h-9 rounded-lg flex items-center justify-center', currentStatus.bg]">
+              <span :class="['w-2 h-2 rounded-full', currentStatus.dot]"></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-white/40 text-[9px] uppercase tracking-[0.15em] font-black">Estado</span>
+              <span class="text-white font-semibold text-sm leading-tight">{{ currentStatus.label }}</span>
+            </div>
           </div>
         </div>
 
         <!-- Description -->
-        <p class="text-white/40 text-xs leading-relaxed mb-4 max-w-[400px]">
-          Este es su codigo para {{ propsComputed.name || 'este QR' }}. Escanee este código para contactar al
-          responsable de forma
+        <p class="text-white/40 text-sm leading-relaxed mb-5 max-w-[480px]">
+          Este es su código para <strong class="text-white/70">{{ propsComputed.name || 'este QR' }}</strong>.
+          Escanee este código para contactar al responsable de forma
           <span class="text-white/70">segura y anónima</span>.
         </p>
 
         <!-- Divider -->
-        <div class="border-t border-white/10 mb-3"></div>
+        <div class="border-t border-white/10 mb-4"></div>
 
         <!-- Logs Section -->
         <div class="min-h-0 w-full">
           <button v-if="!logsLoaded && !showLogs" @click="loadLogs"
-            class="text-xs w-full text-center justify-center text-orange-500 hover:text-orange-400 transition-colors flex items-center bg-amber-900 gap-1.5 cursor-pointer group border-spacing-0.5 border border-orange-500 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
+            class="text-sm w-full text-center justify-center text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-2 cursor-pointer group border border-orange-500/20 rounded-xl px-3 py-2 mb-3 hover:bg-orange-500/10">
             <span
-              class="material-symbols-outlined notranslate text-[16px] group-hover:scale-110 transition-transform">history</span>
-            <span class="font-medium text-white">Ver registros de escaneo</span>
+              class="material-symbols-outlined notranslate text-lg group-hover:scale-110 transition-transform">history</span>
+            <span class="font-semibold text-white/80">Ver registros de escaneo</span>
             <span v-if="isLogsLoading"
               class="material-symbols-outlined notranslate text-sm animate-spin ml-1">progress_activity</span>
           </button>
           <button v-if="logsLoaded && showLogs" @click="hiddeLogsHandle"
-            class="text-xs text-orange-600 hover:text-orange-400 transition-colors flex items-center gap-1.5 cursor-pointer group border-spacing-0.5 border-dotted border-2 border-orange-600 rounded-md px-2 py-1 mb-2 hover:bg-orange-500/10">
+            class="text-sm text-orange-500/60 hover:text-orange-400 transition-colors flex items-center gap-2 cursor-pointer group border border-dashed border-orange-500/20 rounded-xl px-3 py-2 mb-3 hover:bg-orange-500/10">
             <span
-              class="material-symbols-outlined notranslate text-[16px]! group-hover:scale-110 transition-transform">hide</span>
-            <span class="font-medium">Ocultar registros</span>
+              class="material-symbols-outlined notranslate text-lg group-hover:scale-110 transition-transform">hide_source</span>
+            <span class="font-semibold">Ocultar registros</span>
             <span v-if="isLogsLoading"
               class="material-symbols-outlined notranslate text-sm animate-spin ml-1">progress_activity</span>
           </button>
 
-          <div v-if="logsLoaded && isLogsLoading" class="flex items-center gap-2 text-xs text-white/30 py-2">
-            <span class="w-3 h-3 border border-orange-400/40 border-t-transparent rounded-full animate-spin"></span>
+          <div v-if="logsLoaded && isLogsLoading" class="flex items-center gap-2 text-sm text-white/30 py-3">
+            <span class="w-4 h-4 border border-orange-400/40 border-t-transparent rounded-full animate-spin"></span>
             Cargando registros...
           </div>
 
           <div v-if="logsLoaded && !isLogsLoading"
             class="space-y-2 lg:max-h-72 max-h-96 overflow-y-auto pr-1 scrollbar-thin">
-            <div v-if="qrLogs.length === 0" class="text-white/20 text-xs py-3 text-center">
-              <span class="material-symbols-outlined notranslate text-[20px] block mb-1">history_off</span>
+            <div v-if="qrLogs.length === 0" class="text-white/20 text-sm py-4 text-center">
+              <span class="material-symbols-outlined notranslate text-2xl block mb-2">history_off</span>
               Sin registros de escaneo aún
             </div>
             <QRCardLog v-for="log in qrLogs" :key="log.id" v-bind="log" />
@@ -596,69 +604,72 @@ const hiddeLogsHandle = () => {
 
       <!-- ─── Columna Derecha: QR Code ─── -->
       <div
-        class="w-full sm:w-[200px] bg-[#0c0500] border-t sm:border-t-0 sm:border-l md:rounded-r-4xl border-white/5 flex flex-col items-center justify-center p-6 shrink-0 relative">
+        class="w-full sm:w-[260px] lg:w-[300px] bg-[#0c0500] border-t sm:border-t-0 sm:border-l md:rounded-r-4xl border-white/5 flex flex-col items-center justify-center p-6 lg:p-8 shrink-0 relative">
         <div
-          class="w-34 h-34 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center bg-[#fff7ed] p-2.5 shadow-lg relative border border-[#f7b05c]">
+          class="w-40 h-40 sm:w-36 sm:h-36 lg:w-44 lg:h-44 rounded-3xl flex items-center justify-center bg-[#fff7ed] p-3 shadow-lg relative border border-[#f7b05c]">
           <template v-if="propsComputed.img">
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
           <template v-else>
-            <QrcodeVue :value="qrScanUrl" :size="110" render-as="svg" level="H" />
+            <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" />
           </template>
         </div>
-        <!-- Direct download button (visible on both mobile and desktop) -->
-        <button @click="openPrompt('download')" v-tooltip="{ content: 'Descargar QR', placement: 'top' }"
-          class="mt-3 flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-95 border border-orange-500/20">
-          <span class="material-symbols-outlined notranslate text-[16px]">download</span>
-          Descargar
+        <!-- Direct download button — more prominent -->
+        <button @click="openPrompt('download')"
+          class="mt-4 w-full max-w-[180px] flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white rounded-xl text-sm font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-[0.97] shadow-lg shadow-orange-500/20 border border-orange-400/30">
+          <span class="material-symbols-outlined notranslate text-lg">download</span>
+          Descargar QR
         </button>
         <!-- Menu button (desktop only) -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
-          class="hidden sm:flex text-orange-400 hover:text-white transition-colors cursor-pointer px-3 py-0.5 items-center justify-center gap-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 active:scale-95 absolute top-4 right-4 border border-orange-500/20 text-[11px] font-bold ">
-          <span class="text-white/80">Menú</span>
-          <span data-name="hamMenu" class="material-symbols-outlined notranslate text-[16px]">more_horiz</span>
+          class="hidden sm:flex text-orange-300 hover:text-white transition-colors cursor-pointer px-4 py-2 items-center justify-center gap-2 rounded-xl bg-white/[0.04] hover:bg-orange-500/15 active:scale-95 absolute top-5 right-5 border border-white/10 hover:border-orange-500/30 text-xs font-bold uppercase tracking-wider">
+          <span data-name="hamMenu" class="material-symbols-outlined notranslate text-lg">more_horiz</span>
+          Opciones
         </button>
       </div>
-      <!-- Desktop Full-Card Menu Overlay -->
+      <!-- Desktop Full-Card Menu Overlay — redesigned -->
       <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
         enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
         leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
         <div v-if="showMenu"
-          class="hidden sm:flex absolute inset-0 z-40 bg-[#0a0401]/95 rounded-[2rem] p-5 md:p-6 flex-col">
+          class="hidden sm:flex absolute inset-0 z-40 bg-[#0a0401]/95 rounded-[2rem] p-6 md:p-8 flex-col">
           <!-- Back button -->
           <button @click="showMenu = false"
-            class="flex items-center gap-2 text-white/50 hover:text-orange-400 transition-colors cursor-pointer w-fit mb-4">
-            <span class="material-symbols-outlined notranslate text-[20px]">arrow_back</span>
-            <span class="text-xs font-bold ">Volver</span>
+            class="flex items-center gap-2 text-white/50 hover:text-orange-400 transition-colors cursor-pointer w-fit mb-6 group">
+            <span
+              class="material-symbols-outlined notranslate text-2xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            <span class="text-sm font-bold uppercase tracking-wider">Volver</span>
           </button>
 
           <!-- Title -->
-          <h3 class="text-lg font-black text-white/90 mb-4">Opciones del QR</h3>
+          <h3 class="text-xl font-black text-white/90 mb-6">Opciones del QR</h3>
 
-          <!-- Options grid — chocolate bar: 3 cols, no dividers, compact buttons with description -->
-          <div class="grid grid-cols-3 gap-1.5 flex-1 content-start overflow-y-auto pr-1">
+          <!-- Options grid — 2 columns, more spacious -->
+          <div class="grid grid-cols-2 gap-3 flex-1 content-start overflow-y-auto pr-2">
             <template v-for="(option, index) in menuOptions.filter(o => !o.divider)" :key="index">
               <!-- Locked option -->
               <div v-if="option.locked" v-tooltip="{ content: option.lockTooltip, placement: 'top' }"
-                class="flex flex-col items-start gap-0.5 p-1.5 rounded-xl bg-white/[0.02] border border-white/5 text-left cursor-not-allowed opacity-40">
-                <span class="material-symbols-outlined notranslate text-[18px] text-white/30">lock</span>
-                <div>
-                  <p class="text-xs font-medium text-white/40 leading-tight">{{ option.label }}</p>
-                  <p class="text-[9px] text-white/20 leading-tight mt-0.5">{{ option.lockTooltip }}</p>
+                class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-left cursor-not-allowed opacity-40">
+                <span class="material-symbols-outlined notranslate text-xl text-white/30 mt-0.5">lock</span>
+                <div class="flex flex-col min-w-0">
+                  <p class="text-sm font-semibold text-white/40">{{ option.label }}</p>
+                  <p class="text-[11px] text-white/20 leading-relaxed mt-1">{{ option.lockTooltip }}</p>
                 </div>
               </div>
 
               <!-- Action option -->
               <button v-else @click="option.action" :class="[
-                'flex flex-col items-start gap-0.5 p-1.5 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]',
-                option.color ? `${option.color} border-${option.color}/20` : 'text-white/80 border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5'
+                'flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.98]',
+                option.color
+                  ? `${option.color} border-white/5 hover:border-rose-500/30 hover:bg-rose-500/5`
+                  : 'text-white/90 border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5'
               ]">
                 <span
-                  :class="[option.color ? option.color : 'text-orange-400', 'material-symbols-outlined notranslate text-[18px]']">{{
+                  :class="[option.color ? 'text-rose-400' : 'text-orange-400', 'material-symbols-outlined notranslate text-xl mt-0.5']">{{
                     option.icon }}</span>
-                <div>
-                  <p class="text-xs font-medium leading-tight">{{ option.label }}</p>
-                  <p class="text-[9px] text-white/40 leading-tight mt-0.5">{{ option.description }}</p>
+                <div class="flex flex-col min-w-0">
+                  <p class="text-sm font-semibold leading-tight">{{ option.label }}</p>
+                  <p class="text-[11px] text-white/50 leading-relaxed mt-1">{{ option.description }}</p>
                 </div>
               </button>
             </template>
@@ -817,7 +828,7 @@ const hiddeLogsHandle = () => {
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-md flex-col items-center ">
+          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-lg flex-col items-center ">
             <!-- Header -->
             <div class="flex items-center justify-between w-full mb-5">
               <h3 class="text-white font-black text-lg tracking-tight">Descargar QR</h3>
