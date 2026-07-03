@@ -244,7 +244,7 @@ const menuOptions = [
   { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR', action: () => openPrompt('edit') },
   { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo', action: () => openPrompt('renew') },
   { divider: true },
-  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para México (+52)' },
+  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico', action: () => { closeAll(); emit('request-physical', props.subscriptionId) }, locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para México (+52)' },
   { label: 'Activar QR', icon: 'public', description: 'Activa el QR para escaneo público', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Plan Plata u Oro requerido' },
   { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR temporalmente', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Plan Plata u Oro requerido' },
   { divider: true },
@@ -379,10 +379,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-            }}</h3>
+              }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-              }}</span>
+                }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -457,9 +457,13 @@ const hiddeLogsHandle = () => {
           <!-- Handle bar -->
           <div class="w-10 h-1 bg-[#CAC4D0]/20 rounded-full mx-auto my-3"></div>
 
-          <!-- Title -->
-          <div class="text-center mb-2">
+          <!-- Title + Close button -->
+          <div class="flex items-center justify-between px-4 mb-2">
             <span class="text-[#CAC4D0]/50 text-[10px] font-bold uppercase tracking-widest">Opciones del QR</span>
+            <button @click="showMenu = false"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-[#CAC4D0]/60 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+              <span class="material-symbols-outlined notranslate text-[18px]">close</span>
+            </button>
           </div>
 
           <div class="px-2 pb-2 space-y-0.5">
@@ -473,7 +477,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                  }}</span>
+                    }}</span>
                 </div>
               </div>
 
@@ -486,18 +490,12 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                  }}</span>
+                    }}</span>
                 </div>
               </button>
             </template>
           </div>
 
-          <!-- Close button -->
-          <button @click="showMenu = false"
-            class="w-full mt-1 py-3.5 bg-white/5 text-[#CAC4D0]/60 rounded-xl text-sm font-medium hover:bg-white/10 hover:text-white transition-colors cursor-pointer active:scale-[0.98] mx-2 mb-2"
-            style="width:calc(100% - 16px);">
-            Cerrar
-          </button>
         </div>
       </Transition>
     </Teleport>
@@ -564,26 +562,30 @@ const hiddeLogsHandle = () => {
         </div>
 
         <!-- Download Bottom Sheet (mobile - within activePrompt) -->
-        <div v-else-if="activePrompt === 'download'" class="fixed inset-0 flex items-end z-[120]">
+        <div v-else-if="activePrompt === 'download'" class="fixed inset-0 flex items-end z-[120] bottom-16">
           <div @click="closeAll" class="absolute inset-0 bg-black/60 cursor-default"></div>
           <div
             class="relative w-full bg-[#2B2930] rounded-t-2xl pb-[env(safe-area-inset-bottom,16px)] max-h-[85vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
             <!-- Handle bar -->
             <div class="w-10 h-1 bg-[#CAC4D0]/20 rounded-full mx-auto my-3"></div>
             <div class="px-5 pb-6">
-              <h3 class="text-[#E6E1E5] font-bold text-base text-center mb-4">Descargar QR</h3>
+              <div class="flex items-center justify-between mb-4 px-1">
+                <h3 class="text-[#E6E1E5] font-bold text-base">Descargar QR</h3>
+                <button @click="closeAll"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-[#CAC4D0]/60 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+                  <span class="material-symbols-outlined notranslate text-[18px]">close</span>
+                </button>
+              </div>
 
               <!-- Preview -->
               <div class="flex justify-center mb-4">
                 <div
                   class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 w-full max-w-[260px]">
                   <!-- Logo top-right -->
-                  <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
-                    <img :src="LogoWhite" class="w-[16px] md:w-[38px] h-auto opacity-90" alt="Ubiqueme" />
-                  </div>
+
                   <template v-if="downloadStyle === 'normal'">
                     <span class="block text-center text-white font-black tracking-[0.15em] uppercase mb-2"
-                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.top)}px` }">ubiqueme.com</span>
+                      :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.top) - 5}px` }">ubiqueme.com</span>
                     <div class="flex items-center justify-center gap-1.5">
                       <div class="shrink-0 bg-white rounded-xl p-1">
                         <QrcodeVue :value="qrScanUrl" :size="64" render-as="canvas" level="H" />
@@ -598,44 +600,48 @@ const hiddeLogsHandle = () => {
                     </div>
                     <div class="flex items-center justify-center gap-2 mt-1.5">
                       <span class="text-white font-bold uppercase tracking-wider"
-                        :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">localizarme.com</span>
+                        :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 9}px` }">localizarme.com</span>
                       <span class="text-white/50"
                         :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">•</span>
                       <span class="text-white font-bold uppercase tracking-wider"
-                        :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom)}px` }">contactomio.com</span>
+                        :style="{ fontSize: `${Math.round(currentSize.width * domainTextScale.bottom) - 9}px` }">contactomio.com</span>
                     </div>
                   </template>
                   <template v-else>
                     <!-- Compact static preview (mobile, square 150×150) -->
                     <div class="relative z-10 flex flex-col items-center justify-center gap-0.5 mx-auto"
                       style="width:150px;height:150px;">
-                      <span class="text-white font-black tracking-[0.15em] uppercase text-[6px]">ubiqueme.com</span>
+                      <span
+                        class="text-white font-black tracking-[0.15em] uppercase text-[6px] scale-250">ubiqueme.com</span>
                       <div class="relative flex items-center justify-center mx-auto flex-1 w-full"
                         style="min-height:0;">
                         <span
-                          class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center -rotate-90"
+                          class="absolute -left-13 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center -rotate-90 scale-200"
                           translate="no">contactomio.com</span>
-                        <div class="bg-white rounded-lg p-1"
-                          style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+                        <div class="bg-white rounded-lg p-1">
                           <template v-if="propsComputed.img">
                             <img :src="propsComputed.img" class="w-full h-full object-contain" />
                           </template>
                           <template v-else>
-                            <QrcodeVue :value="qrScanUrl" :size="36" render-as="canvas" level="H" />
+                            <QrcodeVue :value="qrScanUrl" :size="96" render-as="canvas" level="H" />
                           </template>
                         </div>
                         <span
-                          class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center rotate-90"
+                          class="absolute -right-13 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center rotate-90 scale-200"
                           translate="no">localizarme.com</span>
                       </div>
-                      <p class="text-white/80 text-[5px] text-center font-semibold">Escanee QR para contactar</p>
+                      <p class="text-white/80 text-[5px] text-center font-semibold scale-200">Escanee este QR para
+                        contactar
+                        al
+                        responsable.
+                      </p>
                     </div>
                   </template>
                 </div>
               </div>
 
               <!-- Style + Size toggles -->
-              <div class="flex gap-2 mb-4">
+              <div class="flex gap-2 mb-4 ">
                 <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1">
                   <button @click="downloadStyle = 'normal'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
@@ -667,7 +673,7 @@ const hiddeLogsHandle = () => {
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                     :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">PDF</button>
                 </div>
-                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1">
+                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1 hidden">
                   <button @click="downloadStyle = 'normal'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                     :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">Normal</button>

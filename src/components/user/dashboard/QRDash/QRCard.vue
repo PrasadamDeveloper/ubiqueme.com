@@ -817,7 +817,7 @@ const hiddeLogsHandle = () => {
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-md flex-col items-center">
+          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-md flex-col items-center bg-black">
             <!-- Header -->
             <div class="flex items-center justify-between w-full mb-5">
               <h3 class="text-white font-black text-lg tracking-tight">Descargar QR</h3>

@@ -149,7 +149,7 @@ const handleClose = () => {
     <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 translate-y-full"
       leave-active-class="transition-all duration-200 ease-in" leave-to-class="opacity-0 translate-y-full">
       <div v-if="visible" v-auto-height
-        class="fixed bottom-0 left-0 right-0 z-50 bg-[#2B2930] rounded-t-2xl pb-[env(safe-area-inset-bottom,24px)] max-h-[92vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)] font-google-sans">
+        class="fixed bottom-15 left-0 right-0 z-50 bg-[#2B2930] rounded-t-2xl pb-[env(safe-area-inset-bottom,24px)] max-h-[92vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)] font-google-sans">
 
         <!-- Handle bar -->
         <div class="w-10 h-1 bg-[#CAC4D0]/20 rounded-full mx-auto my-3"></div>
@@ -338,7 +338,7 @@ const handleClose = () => {
             </span>
             <span v-else>
               <span class="material-symbols-outlined notranslate text-[18px]">{{ hasFreeShipment ? 'redeem' : 'payments'
-                }}</span>
+              }}</span>
               {{ hasFreeShipment ? 'Solicitar Envío Gratis' : 'Pagar $199 MXN' }}
             </span>
           </button>
