@@ -817,7 +817,7 @@ const hiddeLogsHandle = () => {
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-md flex-col items-center bg-black">
+          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-md flex-col items-center ">
             <!-- Header -->
             <div class="flex items-center justify-between w-full mb-5">
               <h3 class="text-white font-black text-lg tracking-tight">Descargar QR</h3>
@@ -843,14 +843,10 @@ const hiddeLogsHandle = () => {
                       class="material-symbols-outlined notranslate text-[20px]">image</span>
                     <span :class="downloadFormat === 'png' ? 'text-orange-300' : 'text-white/70'"
                       class="text-sm font-bold">PNG</span>
-                    <span v-if="downloadFormat === 'png'"
-                      class="ml-auto px-1.5 py-0.5 bg-orange-500/20 rounded text-[8px] font-bold text-orange-400 uppercase tracking-wider">
-                      Recomendado
-                    </span>
+
                   </div>
                   <p :class="downloadFormat === 'png' ? 'text-white/50' : 'text-white/30'"
-                    class="text-[10px] leading-tight">Imagen digital con fondo degradado</p>
-                  <p class="text-[9px] text-white/20 font-mono">400×173 px</p>
+                    class="text-[10px] leading-tight">Imagen digital</p>
                 </button>
 
                 <!-- PDF Card -->
@@ -867,7 +863,6 @@ const hiddeLogsHandle = () => {
                   </div>
                   <p :class="downloadFormat === 'pdf' ? 'text-white/50' : 'text-white/30'"
                     class="text-[10px] leading-tight">Documento imprimible a escala real</p>
-                  <p class="text-[9px] text-white/20 font-mono">132×57 mm</p>
                 </button>
               </div>
             </div>
