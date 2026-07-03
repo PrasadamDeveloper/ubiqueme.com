@@ -817,7 +817,7 @@ const hiddeLogsHandle = () => {
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-sm flex-col items-center">
+          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-md flex-col items-center">
             <!-- Header -->
             <div class="flex items-center justify-between w-full mb-5">
               <h3 class="text-white font-black text-lg tracking-tight">Descargar QR</h3>
@@ -918,7 +918,7 @@ const hiddeLogsHandle = () => {
             </div>
 
             <!-- ─── Step 3: Preview (static — no depende de estilo/tamaño) ─── -->
-            <div class="w-full mb-4">
+            <div class="mb-4 " :class="[downloadStyle === 'normal' ? 'w-full' : 'w-65']">
               <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2 block">Vista
                 previa</label>
               <div
@@ -928,7 +928,7 @@ const hiddeLogsHandle = () => {
                   style="background-image: linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
                 </div>
                 <!-- Logo top-right -->
-                <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1.5 z-10 pointer-events-none">
+                <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-0.5 z-10 pointer-events-none">
                   <img :src="LogoWhite" class="w-[38px] h-auto opacity-90" alt="Ubiqueme" />
                 </div>
                 <!-- Static layouts for each style (no dynamic variables) -->
@@ -963,27 +963,28 @@ const hiddeLogsHandle = () => {
                   </div>
                 </template>
                 <template v-else>
-                  <!-- Compact static preview (square layout) -->
-                  <div class="relative z-10 flex flex-col items-center gap-1.5">
-                    <span class="text-white font-black tracking-[0.15em] uppercase text-[7px]">ubiqueme.com</span>
-                    <div class="relative flex items-center justify-center mx-auto" style="width:140px;height:140px;">
+                  <!-- Compact static preview (square 200×200) -->
+                  <div class="relative z-10 flex flex-col items-center justify-center gap-0.5 mx-auto"
+                    style="width:200px;height:200px;">
+                    <span
+                      class="text-white font-black tracking-[0.15em] uppercase text-[7px] scale-200">ubiqueme.com</span>
+                    <div class="relative flex items-center justify-center mx-auto flex-1 w-full" style="min-height:0;">
                       <span
-                        class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[6px] whitespace-nowrap origin-center -rotate-90"
+                        class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[5px] whitespace-nowrap origin-center -rotate-90 scale-200"
                         translate="no">contactomio.com</span>
-                      <div class="bg-white rounded-xl p-1.5"
-                        style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;">
+                      <div class="bg-white rounded-lg p-1.5">
                         <template v-if="propsComputed.img">
                           <img :src="propsComputed.img" class="w-full h-full object-contain" />
                         </template>
                         <template v-else>
-                          <QrcodeVue :value="qrScanUrl" :size="68" render-as="canvas" level="H" />
+                          <QrcodeVue :value="qrScanUrl" :size="90" render-as="canvas" level="H" />
                         </template>
                       </div>
                       <span
-                        class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[6px] whitespace-nowrap origin-center rotate-90"
+                        class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[5px] whitespace-nowrap origin-center rotate-90 scale-200"
                         translate="no">localizarme.com</span>
                     </div>
-                    <p class="text-white/80 text-[7px] text-center font-semibold">Escanee QR para contactar al
+                    <p class="text-white/80 text-[6px] text-center font-semibold scale-200">Escanee QR para contactar al
                       responsable</p>
                   </div>
                 </template>
@@ -1159,27 +1160,29 @@ const hiddeLogsHandle = () => {
                     </div>
                   </template>
                   <template v-else>
-                    <!-- Compact static preview (mobile, square layout) -->
-                    <div class="relative z-10 flex flex-col items-center gap-1.5">
-                      <span class="text-white font-black tracking-[0.15em] uppercase text-[7px]">ubiqueme.com</span>
-                      <div class="relative flex items-center justify-center mx-auto" style="width:120px;height:120px;">
+                    <!-- Compact static preview (mobile, square 150×150) -->
+                    <div class="relative z-10 flex flex-col items-center justify-center gap-0.5 mx-auto"
+                      style="width:150px;height:150px;">
+                      <span class="text-white font-black tracking-[0.15em] uppercase text-[6px]">ubiqueme.com</span>
+                      <div class="relative flex items-center justify-center mx-auto flex-1 w-full"
+                        style="min-height:0;">
                         <span
-                          class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[5px] whitespace-nowrap origin-center -rotate-90"
+                          class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center -rotate-90"
                           translate="no">contactomio.com</span>
-                        <div class="bg-white rounded-xl p-1"
-                          style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;">
+                        <div class="bg-white rounded-lg p-1"
+                          style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
                           <template v-if="propsComputed.img">
                             <img :src="propsComputed.img" class="w-full h-full object-contain" />
                           </template>
                           <template v-else>
-                            <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
+                            <QrcodeVue :value="qrScanUrl" :size="36" render-as="canvas" level="H" />
                           </template>
                         </div>
                         <span
-                          class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[5px] whitespace-nowrap origin-center rotate-90"
+                          class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center rotate-90"
                           translate="no">localizarme.com</span>
                       </div>
-                      <p class="text-white/80 text-[6px] text-center font-semibold">Escanee QR para contactar</p>
+                      <p class="text-white/80 text-[5px] text-center font-semibold">Escanee QR para contactar</p>
                     </div>
                   </template>
                 </div>

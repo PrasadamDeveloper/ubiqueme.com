@@ -606,21 +606,29 @@ const hiddeLogsHandle = () => {
                     </div>
                   </template>
                   <template v-else>
-                    <div class="bg-white rounded-2xl p-2 shadow-lg flex flex-col items-center gap-1 w-[140px] mx-auto">
-                      <span class="text-white font-black tracking-widest uppercase"
-                        :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.top)}px` }">ubiqueme.com</span>
-                      <div class="mx-0.5">
-                        <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
+                    <!-- Compact static preview (mobile, square 150×150) -->
+                    <div class="relative z-10 flex flex-col items-center justify-center gap-0.5 mx-auto"
+                      style="width:150px;height:150px;">
+                      <span class="text-white font-black tracking-[0.15em] uppercase text-[6px]">ubiqueme.com</span>
+                      <div class="relative flex items-center justify-center mx-auto flex-1 w-full"
+                        style="min-height:0;">
+                        <span
+                          class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center -rotate-90"
+                          translate="no">contactomio.com</span>
+                        <div class="bg-white rounded-lg p-1"
+                          style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+                          <template v-if="propsComputed.img">
+                            <img :src="propsComputed.img" class="w-full h-full object-contain" />
+                          </template>
+                          <template v-else>
+                            <QrcodeVue :value="qrScanUrl" :size="36" render-as="canvas" level="H" />
+                          </template>
+                        </div>
+                        <span
+                          class="absolute right-0 text-white font-bold uppercase tracking-[0.15em] text-[4px] whitespace-nowrap origin-center rotate-90"
+                          translate="no">localizarme.com</span>
                       </div>
-                      <div class="flex items-center justify-center gap-1">
-                        <span class="text-white font-bold uppercase tracking-wider"
-                          :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">localizarme.com</span>
-                        <span class="text-white/50"
-                          :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">•</span>
-                        <span class="text-white font-bold uppercase tracking-wider"
-                          :style="{ fontSize: `${Math.round(currentCompactSize.size * compactDomainTextScale.bottom)}px` }">contactomio.com</span>
-                      </div>
-                      <p class="text-black font-bold text-center text-[7px]">Escanee QR para contactar</p>
+                      <p class="text-white/80 text-[5px] text-center font-semibold">Escanee QR para contactar</p>
                     </div>
                   </template>
                 </div>
