@@ -559,15 +559,21 @@ const hiddeLogsHandle = () => {
 
         <!-- Description -->
         <p class="text-white/40 text-sm leading-relaxed mb-5 max-w-[480px]">
-          Este es su código para <strong class="text-white/70">{{ propsComputed.name || 'este QR' }}</strong>.
-          Escanee este código para contactar al responsable de forma
-          <span class="text-white/70">segura y anónima</span>.
+          Este es el código QR de <strong class="text-white/70">{{ propsComputed.name || 'este QR' }}</strong>.
+
+          Cuando alguien lo escanee, Ubiqueme le enviará una notificación por WhatsApp.
+
+          <strong class="text-slate-400">La persona que escanee el QR no podrá ver su número de teléfono.</strong>
+          Su número permanecerá privado hasta que usted decida responderle con un mensaje.
         </p>
 
         <!-- Divider -->
         <div class="border-t border-white/10 mb-4"></div>
 
         <!-- Logs Section -->
+        <small class="text-slate-400 font-poppins text-center text-xs my-1.5">Aquí podrá ver los números que han
+          escaneado su
+          QR</small>
         <div class="min-h-0 w-full">
           <button v-if="!logsLoaded && !showLogs" @click="loadLogs"
             class="text-sm w-full text-center justify-center text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-2 cursor-pointer group border border-orange-500/20 rounded-xl px-3 py-2 mb-3 hover:bg-orange-500/10">
@@ -622,7 +628,7 @@ const hiddeLogsHandle = () => {
         </button>
         <!-- Menu button (desktop only) -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
-          class="hidden sm:flex text-orange-300 hover:text-white transition-colors cursor-pointer px-4 py-2 items-center justify-center gap-2 rounded-xl bg-white/[0.04] hover:bg-orange-500/15 active:scale-95 absolute top-5 right-5 border border-white/10 hover:border-orange-500/30 text-xs font-bold uppercase tracking-wider">
+          class="hidden sm:flex text-orange-400 hover:text-white transition-colors cursor-pointer px-4 py-2 items-center justify-center gap-2 rounded-xl bg-white/[0.04] hover:bg-orange-500/15 active:scale-95 absolute top-5 right-5 border border-white/10 hover:border-orange-500/30 text-xs font-bold uppercase tracking-wider">
           <span data-name="hamMenu" class="material-symbols-outlined notranslate text-lg">more_horiz</span>
           Opciones
         </button>
@@ -1235,6 +1241,11 @@ const hiddeLogsHandle = () => {
     <!-- Para editarlas manualmente, busca "CAPTURE TEMPLATE START" para cada estilo. -->
     <div style="position:absolute;left:-9999px;top:0;">
 
+      <!--
+            <div style="position:absolute;left:-0;top:0; z-index: 999999999999;">
+
+      -->
+
       <!-- === NORMAL CAPTURE TEMPLATE START === -->
       <div :id="`qr-capture-normal-${props.id}`"
         :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;margin-bottom:24px;`">
@@ -1280,11 +1291,28 @@ const hiddeLogsHandle = () => {
           <!-- Domains bottom center -->
           <div
             style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px; padding-bottom: 9px;">
-            <span translate="no"
+            <!--Domain SM-->
+            <span v-if="downloadSize === 'sm'" translate="no"
+              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px; translate: 0px -10px;`">localizarme.com</span>
+
+            <!-- NOT Domain SM-->
+            <span v-if="downloadSize !== 'sm'" translate="no"
               :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
-            <span
+
+            <!--Dot SM-->
+            <span v-if="downloadSize === 'sm'" style="margin: 0px 10px 0px 10px;"
+              :style="`color:rgba(255,255,255,0.5);font-size:${currentSize.width * domainTextScale.bottom}px;  translate: 0px -10px;`">•</span>
+
+            <!--NOT Dot SM-->
+            <span v-if="downloadSize !== 'sm'" style="margin: 0px 25px 0px 20px;"
               :style="`color:rgba(255,255,255,0.5);font-size:${currentSize.width * domainTextScale.bottom}px;`">•</span>
-            <span translate="no"
+
+            <!--Domain SM-->
+            <span v-if="downloadSize === 'sm'" translate="no"
+              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px; translate: 0px -10px;`">contactomio.com</span>
+
+            <!--NOT Domain SM-->
+            <span v-if="downloadSize !== 'sm'" translate="no"
               :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
           </div>
         </div>
