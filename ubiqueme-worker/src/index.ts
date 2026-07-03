@@ -397,18 +397,18 @@ async function sendScanEmail(
 ): Promise<void> {
 	try {
 		const rows = [
-			{ icon: '📦', label: 'Objeto', value: qrName },
-			{ icon: '📱', label: 'Teléfono del escáner', value: scannerPhone },
-			{ icon: '💬', label: 'Mensaje', value: customMessage },
-			{ icon: '🕐', label: 'Hora del escaneo', value: scanTime },
-			{ icon: '👤', label: 'Propietario', value: displayName },
+			{ label: 'Objeto', value: qrName },
+			{ label: 'Teléfono del escáner', value: scannerPhone },
+			{ label: 'Mensaje', value: customMessage },
+			{ label: 'Hora del escaneo', value: scanTime },
+			{ label: 'Propietario', value: displayName },
 		];
 
-		const fieldsHtml = rows.map((r) => `<tr><td class="fl">${r.icon} ${r.label}</td><td class="fv">${r.value}</td></tr>`).join('');
+		const fieldsHtml = rows.map((r) => `<tr><td class="fl">${r.label}</td><td class="fv">${r.value}</td></tr>`).join('');
 
 		const hasImage = !!imageBase64 && !!imageMimeType;
 		const imgHtml = hasImage
-			? `<div class="image-wrap"><div class="image-label">📷 Imagen del escaneo</div><img src="cid:scan-image" alt="Imagen del escaneo" /></div>`
+			? `<div class="image-wrap"><div class="image-label">Imagen del escaneo</div><img src="cid:scan-image" alt="Imagen del escaneo" /></div>`
 			: '';
 
 		const content = `
