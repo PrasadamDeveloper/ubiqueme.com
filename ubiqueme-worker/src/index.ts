@@ -346,27 +346,39 @@ const SCAN_EMAIL_WRAPPER = (content: string) =>
 <html lang="es">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body{margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-  .container{max-width:560px;margin:0 auto;padding:32px 16px}
-  .card{background:#fff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden}
-  .header{padding:24px;border-bottom:1px solid #e4e4e7;text-align:center}
-  .header span{color:#111;font-size:22px;font-weight:800;letter-spacing:-0.5px}
-  .header .orange{color:#ff7900}
-  .body{padding:32px 28px;color:#111;font-size:14px;line-height:1.7}
-  .footer{padding:32px 24px;border-top:1px solid #e4e4e7;text-align:center;font-size:11px;color:#999}
-  .badge{display:inline-block;padding:4px 12px;border-radius:100px;background:#fff7ed;border:1px solid #ffedd5;color:#ff7900;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
-  .field-row{padding:10px 14px;border-radius:8px;margin-bottom:4px}
-  .field-label{font-size:12px;color:#666;font-weight:500}
-  .field-value{font-size:13px;color:#111;font-weight:500}
-  img.scan-img{max-width:100%;border-radius:12px;border:1px solid #e4e4e7;margin-top:12px}
+  body{margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+  .container{max-width:580px;margin:0 auto;padding:40px 20px}
+  .card{background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.06)}
+  .header{padding:28px 32px 20px;text-align:center;background:#ffffff}
+  .header-logo{font-size:26px;font-weight:800;color:#1a1a1a;letter-spacing:-0.8px;text-decoration:none}
+  .header-logo .hl-orange{color:#ff7900}
+  .header-divider{height:1px;background:linear-gradient(to right,transparent,#e0e0e0,transparent);margin:0 32px}
+  .body{padding:28px 32px 24px;color:#1a1a1a;font-size:15px;line-height:1.6}
+  .badge{display:inline-block;padding:5px 14px;border-radius:100px;background:#fff7ed;border:1px solid #ffd9a3;color:#c25e00;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px}
+  .qr-title{font-size:20px;font-weight:700;color:#1a1a1a;margin:0 0 20px;letter-spacing:-0.4px}
+  .fields-table{width:100%;border-collapse:collapse;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec}
+  .fields-table td{padding:13px 16px;font-size:14px;border-bottom:1px solid #f0f0f0;vertical-align:top}
+  .fields-table tr:last-child td{border-bottom:none}
+  .fields-table .fl{color:#888;font-weight:500;width:38%;background:#fafafa}
+  .fields-table .fv{color:#1a1a1a;font-weight:600;width:62%}
+  .image-wrap{margin-top:20px;border-radius:14px;overflow:hidden;border:1px solid #ececec}
+  .image-wrap img{display:block;max-width:100%;height:auto}
+  .image-label{display:flex;align-items:center;gap:6px;padding:10px 16px;background:#fafafa;font-size:12px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #ececec}
+  .footer{padding:24px 32px 28px;background:#fafafa;text-align:center}
+  .footer-text{font-size:12px;color:#aaa;line-height:1.6;margin:0}
+  .footer-text strong{color:#888}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="card">
-    <div class="header"><span>ubiqueme</span><span class="orange">.com</span></div>
+    <div class="header"><span class="header-logo">ubiqueme<span class="hl-orange">.com</span></span></div>
+    <div class="header-divider"></div>
     <div class="body">${content}</div>
-    <div class="footer">&copy; 2026 Ubiqueme. Todos los derechos reservados.</div>
+    <div class="footer">
+      <p class="footer-text">Este es un correo automático enviado por el sistema de escaneo de Ubiqueme. No es necesario responder a este mensaje.<br><br><strong>ubiqueme</strong> &mdash; Protege lo que más te importa.</p>
+      <p class="footer-text" style="margin-top:14px">&copy; 2026 Ubiqueme. Todos los derechos reservados.</p>
+    </div>
   </div>
 </div>
 </body>
@@ -385,34 +397,25 @@ async function sendScanEmail(
 ): Promise<void> {
 	try {
 		const rows = [
-			{ label: 'QR', value: qrName },
-			{ label: 'Teléfono del escáner', value: scannerPhone },
-			{ label: 'Mensaje', value: customMessage },
-			{ label: 'Hora del escaneo', value: scanTime },
-			{ label: 'Propietario', value: displayName },
+			{ icon: '📦', label: 'Objeto', value: qrName },
+			{ icon: '📱', label: 'Teléfono del escáner', value: scannerPhone },
+			{ icon: '💬', label: 'Mensaje', value: customMessage },
+			{ icon: '🕐', label: 'Hora del escaneo', value: scanTime },
+			{ icon: '👤', label: 'Propietario', value: displayName },
 		];
 
-		const fieldsHtml = rows
-			.map(
-				(r) =>
-					`<table width="100%" cellpadding="0" cellspacing="0"><tr>
-            <td bgcolor="#f9f9f9" style="width:40%;padding:10px 14px;border-radius:8px 0 0 8px;font-size:12px;color:#666;font-weight:500;vertical-align:top">${r.label}</td>
-            <td bgcolor="#f9f9f9" style="width:60%;padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#111;font-weight:500;vertical-align:top">${r.value}</td>
-          </tr></table>`,
-			)
-			.join('');
+		const fieldsHtml = rows.map((r) => `<tr><td class="fl">${r.icon} ${r.label}</td><td class="fv">${r.value}</td></tr>`).join('');
 
 		const hasImage = !!imageBase64 && !!imageMimeType;
-		const imgHtml = hasImage ? `<img class="scan-img" src="cid:scan-image" alt="Imagen del escaneo" />` : '';
+		const imgHtml = hasImage
+			? `<div class="image-wrap"><div class="image-label">📷 Imagen del escaneo</div><img src="cid:scan-image" alt="Imagen del escaneo" /></div>`
+			: '';
 
 		const content = `
       <span class="badge">Nuevo escaneo QR</span>
-      <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;letter-spacing:-0.3px">${qrName}</h2>
-      <div style="padding:0">${fieldsHtml}</div>
-      ${imgHtml ? `<div style="margin-top:16px">${imgHtml}</div>` : ''}
-      <p style="margin-top:20px;font-size:12px;color:#999;border-top:1px solid #e4e4e7;padding-top:16px">
-        Este es un aviso automático enviado por el sistema de escaneo de Ubiqueme.
-      </p>`;
+      <h1 class="qr-title">${qrName}</h1>
+      <table class="fields-table" cellpadding="0" cellspacing="0">${fieldsHtml}</table>
+      ${imgHtml}`;
 
 		const emailPayload: {
 			from: string;
