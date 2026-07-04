@@ -258,6 +258,15 @@ async function sendFormatInstruction(env: Env, to: string): Promise<void> {
 	});
 }
 
+/**
+ * Sanitizes a string for use in WhatsApp template parameters.
+ * Replaces newlines, tabs, and carriage returns with spaces,
+ * and collapses multiple consecutive spaces to a single space.
+ */
+function sanitizeTemplateParam(value: string): string {
+	return value.replace(/[\n\r\t]+/g, ' ').replace(/ {4,}/g, ' ');
+}
+
 async function sendOwnerNotification(
 	env: Env,
 	to: string,
@@ -267,6 +276,8 @@ async function sendOwnerNotification(
 	qrName: string,
 	scanTime: string,
 ): Promise<boolean> {
+	const sanitizedMessage = sanitizeTemplateParam(message);
+	const sanitizedQrName = sanitizeTemplateParam(qrName);
 	const payload = {
 		messaging_product: 'whatsapp',
 		recipient_type: 'individual',
@@ -285,8 +296,8 @@ async function sendOwnerNotification(
 					parameters: [
 						{ type: 'text', text: displayName },
 						{ type: 'text', text: scannerPhone },
-						{ type: 'text', text: message },
-						{ type: 'text', text: qrName },
+						{ type: 'text', text: sanitizedMessage },
+						{ type: 'text', text: sanitizedQrName },
 						{ type: 'text', text: scanTime },
 					],
 				},
@@ -294,7 +305,7 @@ async function sendOwnerNotification(
 					type: 'button',
 					sub_type: 'url',
 					index: 0,
-					parameters: [{ type: 'text', text: encodeURIComponent(qrName) }],
+					parameters: [{ type: 'text', text: encodeURIComponent(sanitizedQrName) }],
 				},
 			],
 		},
@@ -431,9 +442,10 @@ async function sendScanEmail(
 		};
 
 		if (hasImage) {
+			const ext = imageMimeType?.split('/')[1] || 'jpg';
 			emailPayload.attachments = [
 				{
-					filename: 'scan-image',
+					filename: `scan-image.${ext}`,
 					content: imageBase64!,
 					content_id: 'scan-image',
 					disposition: 'inline',
@@ -648,7 +660,7 @@ async function handleImageWithCaption(
 		}
 
 		// 6a. If owner email is ubiqueme.services@gmail.com, send a copy via Resend
-		if (ownerData.email === 'ubiqueme.services@gmail.com') {
+		if (ownerData.email === 'eduardoalanismexico@gmail.com') {
 			await sendScanEmail(
 				env,
 				ownerData.email,
@@ -1072,7 +1084,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		console.log(`[Worker] Notificación al dueño: ${msgStatus}.`);
 
 		// 6a. If owner email is ubiqueme.services@gmail.com, send a copy via Resend (text flow, no image)
-		if (ownerData.email === 'ubiqueme.services@gmail.com') {
+		if (ownerData.email === 'eduardoalanismexico@gmail.com') {
 			await sendScanEmail(
 				env,
 				ownerData.email,
