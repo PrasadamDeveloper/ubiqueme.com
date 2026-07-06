@@ -1284,7 +1284,7 @@ const hiddeLogsHandle = () => {
               </p>
               <p
                 :style="`color:#303030;font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
-                Escanee este código QR para contactar al responsable.
+                Escanee este código QR para contactar- al responsable.
               </p>
             </div>
           </div>

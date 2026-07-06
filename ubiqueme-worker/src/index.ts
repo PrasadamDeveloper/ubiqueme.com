@@ -357,7 +357,7 @@ const SCAN_EMAIL_WRAPPER = (content: string) =>
 <html lang="es">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body{margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+  body{margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
   .container{max-width:580px;margin:0 auto;padding:40px 20px}
   .card{background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.06)}
   .header{padding:28px 32px 20px;text-align:center;background:#ffffff}
@@ -367,8 +367,8 @@ const SCAN_EMAIL_WRAPPER = (content: string) =>
   .body{padding:28px 32px 24px;color:#1a1a1a;font-size:15px;line-height:1.6}
   .badge{display:inline-block;padding:5px 14px;border-radius:100px;background:#fff7ed;border:1px solid #ffd9a3;color:#c25e00;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px}
   .qr-title{font-size:20px;font-weight:700;color:#1a1a1a;margin:0 0 20px;letter-spacing:-0.4px}
-  .fields-table{width:100%;border-collapse:collapse;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec}
-  .fields-table td{padding:13px 16px;font-size:14px;border-bottom:1px solid #f0f0f0;vertical-align:top}
+  .fields-table{width:100%;table-layout:fixed;border-collapse:collapse;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec}
+  .fields-table td{padding:13px 16px;font-size:14px;border-bottom:1px solid #f0f0f0;vertical-align:top;word-break:break-word;overflow-wrap:break-word}
   .fields-table tr:last-child td{border-bottom:none}
   .fields-table .fl{color:#888;font-weight:500;width:38%;background:#fafafa}
   .fields-table .fv{color:#1a1a1a;font-weight:600;width:62%}
@@ -378,6 +378,23 @@ const SCAN_EMAIL_WRAPPER = (content: string) =>
   .footer{padding:24px 32px 28px;background:#fafafa;text-align:center}
   .footer-text{font-size:12px;color:#aaa;line-height:1.6;margin:0}
   .footer-text strong{color:#888}
+  @media(max-width:480px){
+    .container{padding:20px 10px}
+    .header{padding:22px 20px 16px}
+    .header-logo{font-size:22px}
+    .header-divider{margin:0 20px}
+    .body{padding:20px 18px 20px}
+    .badge{font-size:10px;padding:4px 12px;margin-bottom:14px}
+    .qr-title{font-size:18px;margin:0 0 16px}
+    .fields-table,.fields-table tbody,.fields-table tr,.fields-table td{display:block;width:100%}
+    .fields-table tr{display:block;width:100%}
+    .fields-table td{display:block;width:100%!important;box-sizing:border-box;padding:10px 14px}
+    .fields-table .fl{width:100%!important;background:#fafafa;padding-bottom:4px;font-size:12px}
+    .fields-table .fv{width:100%!important;padding-top:0;font-size:14px}
+    .fields-table tr+tr td.fl{border-top:1px solid #f0f0f0}
+    .image-label{padding:8px 14px;font-size:11px}
+    .footer{padding:18px 20px 22px}
+  }
 </style>
 </head>
 <body>
