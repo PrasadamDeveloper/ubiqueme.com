@@ -130,15 +130,15 @@ const plans = [
       <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
         <div class="flex-1">
           <h3 class="text-lg sm:text-xl font-black text-white tracking-tight">
-            1 año de Bronce gratis — únase hoy
+            1 año de Bronce — plan agregado
           </h3>
           <p class="text-white/60 text-sm font-medium mt-1">
-            Sin compromisos. Actívelo hoy.
+            Se agrega automáticamente al crear su cuenta
           </p>
         </div>
         <router-link :to="{ name: 'register' }"
           class="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-orange-500 text-black rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] active:scale-[0.97]">
-          Obtenga su año gratis
+          Agregar plan Bronce
           <span class="material-symbols-outlined notranslate text-lg">arrow_forward</span>
         </router-link>
       </div>
@@ -270,7 +270,7 @@ const plans = [
     <!-- Disclaimer (solo no logueados) -->
     <div v-if="!useUserStore().getUserId" class="text-center mb-6">
       <p class="text-[10px] text-white/30 font-medium">
-        Solo cree su cuenta gratis y obtendrá el beneficio
+        Al crear su cuenta, el plan Bronce se agrega automáticamente
       </p>
     </div>
 
