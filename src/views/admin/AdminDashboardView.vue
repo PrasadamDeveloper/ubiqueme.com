@@ -53,13 +53,7 @@
                 <option value="canceled">Cancelados</option>
                 <option value="inactive">Expirados</option>
               </select>
-              <button @click="migrateTrialsTo1Year" :disabled="processingMigration"
-                class="h-9 px-3 rounded-lg border border-orange-500/20 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
-                <span v-if="processingMigration"
-                  class="w-3 h-3 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin"></span>
-                <span v-else class="material-symbols-outlined notranslate text-[12px]">update</span>
-                Migrar trials a 1 año
-              </button>
+
             </div>
           </div>
 
