@@ -30,3 +30,10 @@
 ## Vue / Ionic / Firebase
 
 - Composition API only. Incremental UI edits — no full redesigns.
+
+## Mobile-First & Responsive (New Development)
+
+- All new UI work must be mobile-first: design and implement for the smallest screen first, then extend with responsive breakpoints.
+- Do NOT create separate mobile/desktop components. Build responsive components using CSS media queries, flexbox, grid, and utility classes. Keeping a single component avoids duplicating work when changes are needed.
+- Existing components with mobile/desktop splits (e.g., QRCard vs QRCardMobile) are left as-is. Only new work must follow this rule.
+- Prefer incremental responsive enhancements over modularization. Only extract a new component if the same UI block is reused in at least 3+ unrelated places.

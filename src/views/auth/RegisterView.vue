@@ -45,6 +45,29 @@
               </p>
             </div>
 
+            <!-- Promo Banner Desktop -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_30px_rgba(249,115,22,0.1)] relative overflow-hidden">
+              <div class="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="relative z-10 flex items-center gap-4">
+                <div
+                  class="shrink-0 w-12 h-12 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
+                  <span class="material-symbols-outlined notranslate text-2xl text-orange-400">card_giftcard</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-white font-bold text-sm leading-tight">
+                    Cree su cuenta gratuita y obtenga 1 año de Bronce completamente gratis
+                  </p>
+                </div>
+              </div>
+              <!-- Badge OFERTA -->
+              <div
+                class="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-[8px] font-black uppercase tracking-[0.2em] text-orange-400">
+                OFERTA
+              </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4 max-w-sm">
               <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
                 <span class="material-symbols-outlined notranslate text-orange-500 mb-2">shield_check</span>
@@ -70,11 +93,33 @@
         <div class="relative grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-8 sm:p-16 z-10 pt-24!">
           <div class="w-full max-w-md space-y-8">
 
-            <div class="md:hidden flex flex-col items-center mb-10 text-center">
+            <div class="md:hidden flex flex-col items-center mb-6 text-center">
               <span class="material-symbols-outlined notranslate text-orange-500 text-6xl mb-4">location_on</span>
               <h2 class="text-2xl font-black text-white uppercase tracking-widest leading-none">Ubiqueme</h2>
               <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Security
                 Protocol</span>
+            </div>
+
+            <!-- Promo Banner Mobile -->
+            <div
+              class="md:hidden p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.08)] relative overflow-hidden mb-8">
+              <div class="absolute -top-8 -right-8 w-24 h-24 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="relative z-10 flex items-center gap-3">
+                <div
+                  class="shrink-0 w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
+                  <span class="material-symbols-outlined notranslate text-xl text-orange-400">card_giftcard</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-white font-bold text-xs leading-tight">
+                    Cree su cuenta gratuita y obtenga 1 año de Bronce completamente gratis
+                  </p>
+                </div>
+              </div>
+              <div
+                class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-[7px] font-black uppercase tracking-[0.2em] text-orange-400">
+                OFERTA
+              </div>
             </div>
 
             <header class="space-y-2">
@@ -205,7 +250,7 @@ const handleRegister = async () => {
       },
       lastLoginAt: Timestamp.now(),
       createdAt: Timestamp.now(),
-      trialActive: true, trialStartsAt: Timestamp.now(), trialEndsAt: Timestamp.fromDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)), isTrialUsed: false,
+      trialActive: true, trialStartsAt: Timestamp.now(), trialEndsAt: Timestamp.fromDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)), isTrialUsed: false,
     });
 
     const subId = generateRandomId();
@@ -215,7 +260,7 @@ const handleRegister = async () => {
       planType: 'trial',
       status: 'active',
       purchasedAt: Timestamp.now(),
-      endDate: Timestamp.fromDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
+      endDate: Timestamp.fromDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)),
       paymentProviderId: '',
       totalQRsAllowed: 1,
       totalQRsCreated: 0,

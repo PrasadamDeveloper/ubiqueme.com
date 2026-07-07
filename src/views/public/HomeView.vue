@@ -188,10 +188,38 @@ const toggleSound = (index: number) => {
             </h1>
 
             <!-- Sub-headline -->
-            <p class="text-white/50 text-lg sm:text-xl font-medium leading-relaxed max-w-2xl mb-10">
+            <p class="text-white/50 text-lg sm:text-xl font-medium leading-relaxed max-w-2xl mb-6">
               Etiquetas físicas y pulseras que permiten a cualquiera reportar sus artículos perdidos o asistir a sus
               mascotas, niños y adultos mayores al instante, manteniendo su información de contacto 100% oculta.
             </p>
+
+            <!-- Promo Banner: 1 año de Bronce gratis (solo no logueados) -->
+            <div v-if="!useUserStore().getUserId"
+              class="w-full max-w-2xl mb-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.1)] relative overflow-hidden">
+              <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+                <div class="flex-1 text-center sm:text-left">
+                  <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+                    1 AÑO DE BRONCE — TOTALMENTE GRATIS
+                  </h3>
+                  <p class="text-white/70 text-sm font-medium mt-1">
+                    Sin compromisos. Actívelo hoy.
+                  </p>
+                </div>
+                <router-link :to="{ name: 'register' }"
+                  class="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-orange-500 text-black rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] active:scale-[0.97]">
+                  Obtenga su año gratis
+                  <span class="material-symbols-outlined notranslate text-lg">arrow_forward</span>
+                </router-link>
+              </div>
+              <!-- Disclaimer -->
+              <div class="w-full mt-3 text-center">
+                <p class="text-[10px] text-white/30 font-medium">
+                  Solo cree su cuenta gratis y obtendrá el beneficio
+                </p>
+              </div>
+            </div>
 
             <!-- Premium Feature Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl mb-6">
@@ -270,16 +298,6 @@ const toggleSound = (index: number) => {
                   Tiempo real
                 </div>
               </div>
-            </div>
-
-            <!-- Free Trial Banner -->
-            <div
-              class="w-full max-w-2xl mb-8 p-4 rounded-xl bg-gradient-to-r from-amber-500/[0.06] to-amber-500/[0.02] border border-amber-500/20 flex items-center gap-3">
-              <span class="material-symbols-outlined notranslate text-2xl text-amber-400 shrink-0">rocket_launch</span>
-              <p class="text-white/70 text-sm leading-relaxed">
-                <strong class="text-amber-400 font-semibold">30 días gratis, sin tarjeta de crédito.</strong>
-                Active su código QR hoy y pruebe todas las funciones sin compromiso.
-              </p>
             </div>
 
             <!-- CTA Buttons -->

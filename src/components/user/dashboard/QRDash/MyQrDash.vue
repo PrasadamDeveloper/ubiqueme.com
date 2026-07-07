@@ -159,17 +159,59 @@
                 <div>
                   <div class="flex items-center gap-3 mb-1">
                     <h3 class="text-xl font-bold capitalize text-white">
-                      Plan {{ group.subscription.planType }}
+                      Plan {{ group.subscription.planType === 'trial' ? 'Bronce de prueba' : group.subscription.planType }}
                     </h3>
                     <span
-                      :class="group.subscription.status === 'active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-white/10 text-white/50 border-white/10'"
+                      :class="group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : group.subscription.status === 'active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-white/10 text-white/50 border-white/10'"
                       class="px-2.5 py-0.5 rounded-full border text-[10px] font-black uppercase tracking-widest">
-                      {{ group.subscription.status }}
+                      {{ group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'Acabado' : group.subscription.status === 'active' ? 'Activo' : group.subscription.status === 'canceled' ? 'Cancelado' : 'Inactivo' }}
                     </span>
                   </div>
                   <p class="text-[12px] text-white/30 font-mono">
                     ID: {{ group.subscription.id }}
                   </p>
+
+                  <!-- Info explicativa del plan -->
+                  <div class="mt-3 pt-3 border-t border-white/5 space-y-1">
+                    <p class="text-xs text-white/40 flex items-center gap-1.5 leading-relaxed">
+                      <span class="material-symbols-outlined notranslate text-sm mt-0.5 shrink-0">info</span>
+                      <template v-if="group.subscription.planType === 'trial' && group.subscription.status === 'active'">
+                        Este es un <strong class="text-white/70">plan gratuito de prueba</strong> con duración de 1 año incluido en su cuenta.
+                        Termina el <strong class="text-white/70">{{ formatEndDate(group.subscription.endDate) }}</strong>.
+                        Después de esa fecha si decide continuar con el plan podrá renovarlo.
+                      </template>
+                      <template v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'canceled'">
+                        Este <strong class="text-white/70">plan gratuito de prueba</strong> fue
+                        <strong class="text-white/70">cancelado</strong>.
+                        Los QRs asociados ya no están disponibles. Revisa los planes disponibles para activarlos.
+                      </template>
+                      <template v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'inactive'">
+                        Este <strong class="text-white/70">plan gratuito de prueba</strong> ha
+                        <strong class="text-white/70">finalizado</strong>.
+                        Terminó el {{ formatEndDate(group.subscription.endDate) }}. Adquiera un plan para reactivar sus QRs.
+                      </template>
+                      <template v-else-if="group.subscription.status === 'active'">
+                        Plan <strong class="text-white/70 capitalize">{{ group.subscription.planType }}</strong> —
+                        <span v-if="group.subscription.endDate">
+                          termina el <strong class="text-white/70">{{ formatEndDate(group.subscription.endDate) }}</strong>.
+                        </span>
+                        <span v-else>
+                          <strong class="text-white/70">sin fecha de vencimiento</strong>.
+                        </span>
+                        Tienes <strong class="text-white/70">{{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}</strong> de
+                        <strong class="text-white/70">{{ group.subscription.totalQRsAllowed }}</strong> QRs disponibles.
+                      </template>
+                      <template v-else-if="group.subscription.status === 'canceled'">
+                        Plan <strong class="text-white/70 capitalize">{{ group.subscription.planType }}</strong>
+                        <strong class="text-white/70">cancelado</strong>.
+                        Los QRs asociados ya no están disponibles.
+                      </template>
+                      <template v-else>
+                        Plan <strong class="text-white/70 capitalize">{{ group.subscription.planType }}</strong> inactivo.
+                        Adquiere o reactiva un plan para usar tus QRs.
+                      </template>
+                    </p>
+                  </div>
                 </div>
 
                 <div class="flex flex-col items-end">
@@ -181,7 +223,7 @@
                       :style="{ width: `${(group.subscription.totalQRsCreated / group.subscription.totalQRsAllowed) * 100}%` }">
                     </div>
                   </div>
-                  <button v-if="group.subscription.status == 'active'" @click="toggleCreateQrModal(group.subscription)"
+                  <button v-if="group.subscription.status === 'active'" @click="toggleCreateQrModal(group.subscription)"
                     v-tooltip="{ content: `Usted puede crear ${group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated} QRs más en este plan` }"
                     class="mt-2.5 flex items-center bg-[#FF8905] hover:bg-orange-500 active:scale-[0.98]
          text-white text-sm font-medium
@@ -203,6 +245,7 @@
                 class="grid grid-cols-1 xl:grid-cols-2 gap-8 relative z-0 pl-2 sm:pl-6 border-l-2 border-white/5">
                 <QRCard v-for="qr in group.qrs" :key="qr.id" :id="qr.id" :name="qr.name" :category="qr.category"
                   :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link"
+                  :subscriptionStatus="group.subscription.status"
                   :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason" :createdAt="qr.createdAt"
                   :subscriptionId="qr.subscriptionId" :physicalShipped="qr.physicalShipped"
                   :physicalShippedAt="qr.physicalShippedAt" :planType="group.subscription.planType"
@@ -556,6 +599,16 @@ onUnmounted(() => {
   imageStore.clearImages();
 })
 
+// ─── Helpers ────────────────────────────────────────────────────
+function formatEndDate(date: Timestamp | null): string {
+  if (!date) return 'fecha no disponible'
+  const d = date.toDate()
+  return d.toLocaleDateString('es-MX', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
 </script>
 
 <style scoped>

@@ -43,7 +43,9 @@ const statusConfig = {
 
 const isInactive = computed(() => propsComputed.value.status === 'Inactive')
 const isCanceled = computed(() => propsComputed.value.status === 'Canceled')
-const isDisabled = computed(() => isInactive.value || isCanceled.value)
+const isSubCanceled = computed(() => propsComputed.value.subscriptionStatus === 'canceled')
+const isSubInactive = computed(() => propsComputed.value.subscriptionStatus === 'inactive')
+const isDisabled = computed(() => isInactive.value || isCanceled.value || isSubCanceled.value || isSubInactive.value)
 
 const currentStatus = computed(() => {
   if (propsComputed.value.isBanned) {
@@ -499,6 +501,13 @@ const hiddeLogsHandle = () => {
     <section v-if="isLoading" class="absolute inset-0 bg-[#0a0a0a]/95 flex items-center justify-center z-50">
       <CloudLoader></CloudLoader>
     </section>
+
+    <!-- ─── Overlay bloqueador para QR cancelado/inactivo ─── -->
+    <div v-if="isDisabled"
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-[#0a0a0a]/90  rounded-[2rem] cursor-default select-none">
+      <span class="material-symbols-outlined notranslate text-5xl text-white/15">block</span>
+      <span class="text-white/70 text-sm font-medium">QR {{ isCanceled ? 'cancelado' : 'inactivo' }} — no disponible</span>
+    </div>
 
     <!-- ===== LAYOUT: Info Left + QR Right ===== -->
     <div class="relative z-10 flex flex-col sm:flex-row">

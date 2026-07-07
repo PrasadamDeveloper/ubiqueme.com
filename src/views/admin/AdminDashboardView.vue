@@ -53,6 +53,13 @@
                 <option value="canceled">Cancelados</option>
                 <option value="inactive">Expirados</option>
               </select>
+              <button @click="migrateTrialsTo1Year" :disabled="processingMigration"
+                class="h-9 px-3 rounded-lg border border-orange-500/20 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+                <span v-if="processingMigration"
+                  class="w-3 h-3 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin"></span>
+                <span v-else class="material-symbols-outlined notranslate text-[12px]">update</span>
+                Migrar trials a 1 año
+              </button>
             </div>
           </div>
 
@@ -137,14 +144,14 @@
                       <span v-if="processingCancelReason"
                         class="w-2.5 h-2.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
                       <span v-else class="material-symbols-outlined notranslate text-[11px]">cancel</span>
-                      Fin Trial
+                      Fin Bronce
                     </button>
                     <button v-else @click="addFreeTrial(user)" :disabled="processingAddTrial"
                       class="h-7 px-2.5 rounded-lg border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/60 hover:bg-[#ff7900]/10 transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
                       <span v-if="processingAddTrial"
                         class="w-2.5 h-2.5 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
                       <span v-else class="material-symbols-outlined notranslate text-[11px]">rocket_launch</span>
-                      Trial
+                      Bronce Prueba
                     </button>
                     <button @click="openBanModal(user)" :disabled="processingBanSubmit"
                       class="h-7 px-2.5 rounded-lg border transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
@@ -183,14 +190,13 @@
                           <div class="flex items-center gap-1.5">
                             <span
                               class="material-symbols-outlined notranslate text-[14px] text-[#ff7900]">workspace_premium</span>
-                            <span class="font-bold text-[#ff7900] uppercase text-[10px] tracking-wider">{{ sub.planType
+                            <span class="font-bold text-[#ff7900] uppercase text-[10px] tracking-wider">{{ planDisplayName(sub.planType)
                               }}</span>
                           </div>
                           <span
-                            :class="sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : sub.status === 'canceled' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/40 border-white/10'"
+                            :class="statusDisplayName(sub.planType, sub.status) === 'Acabado' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : sub.status === 'canceled' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/40 border-white/10'"
                             class="px-1.5 py-0.5 rounded border text-[7px] font-black uppercase tracking-widest">
-                            {{ sub.status === 'active' ? 'Activo' : sub.status === 'canceled' ? 'Cancelado' : 'Inactivo'
-                            }}
+                            {{ statusDisplayName(sub.planType, sub.status) }}
                           </span>
                         </div>
 
@@ -323,6 +329,7 @@ const processingPlanSubmit = ref(false)
 const processingAddTrial = ref(false)
 const processingCancelReason = ref(false)
 const processingRenew = ref(false)
+const processingMigration = ref(false)
 
 const usersData = ref<IUser[]>([])
 const subscriptionsData = ref<ISubscription[]>([])
@@ -539,8 +546,8 @@ const addFreeTrial = async (user: IUser) => {
   if (!user.uid) return;
   processingAddTrial.value = true;
   const now = new Date();
-  const nextMonth = new Date(now);
-  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const nextYear = new Date(now);
+  nextYear.setFullYear(nextYear.getFullYear() + 1);
 
   const subId = nanoid(15);
   const subRef = doc(firestoreDb, `users/${user.uid}/subscriptions/${subId}`);
@@ -553,7 +560,7 @@ const addFreeTrial = async (user: IUser) => {
         planType: 'trial',
         status: 'active',
         purchasedAt: Timestamp.fromDate(now),
-        endDate: Timestamp.fromDate(nextMonth),
+        endDate: Timestamp.fromDate(nextYear),
         paymentProviderId: 'admin',
         totalQRsAllowed: 1,
         totalQRsCreated: 0,
@@ -562,7 +569,7 @@ const addFreeTrial = async (user: IUser) => {
       });
     });
 
-    toast.success('Suscripción Trial agregada exitosamente al usuario ' + user.name);
+    toast.success('Bronce de prueba agregado exitosamente al usuario ' + user.name);
   } catch (error) {
     toast.error('Error al agregar trial al usuario: ' + error);
   } finally {
@@ -818,12 +825,59 @@ const usersComputed = computed(() => {
   return result;
 })
 
+const planDisplayName = (planType: string): string => {
+  return planType === 'trial' ? 'Bronce de prueba' : planType.charAt(0).toUpperCase() + planType.slice(1);
+};
+
+const statusDisplayName = (planType: string, status: string): string => {
+  if (status === 'inactive' && planType === 'trial') return 'Acabado';
+  if (status === 'active') return 'Activo';
+  if (status === 'canceled') return 'Cancelado';
+  return 'Inactivo';
+};
+
+const migrateTrialsTo1Year = async () => {
+  if (!confirm('¿Migrar todos los trials activos a 1 año desde su registro?')) return;
+  processingMigration.value = true;
+  try {
+    const batches = [];
+    const activeTrials = subscriptionsData.value.filter(
+      s => s.planType === 'trial' && s.status === 'active'
+    );
+    for (let i = 0; i < activeTrials.length; i += 500) {
+      const batch = writeBatch(firestoreDb);
+      const chunk = activeTrials.slice(i, i + 500);
+      for (const sub of chunk) {
+        const purchasedDate = sub.purchasedAt?.toDate ? sub.purchasedAt.toDate() : new Date();
+        const newEndDate = new Date(purchasedDate);
+        newEndDate.setFullYear(newEndDate.getFullYear() + 1);
+        // Si la fecha calculada ya pasó, usar now + 1 año como fallback
+        if (newEndDate < new Date()) {
+          newEndDate.setTime(Date.now() + 365 * 86400000);
+        }
+        const newEnd = Timestamp.fromDate(newEndDate);
+        const subRef = doc(firestoreDb, `users/${sub.userId}/subscriptions/${sub.id}`);
+        batch.update(subRef, { endDate: newEnd });
+        const userRef = doc(firestoreDb, `users/${sub.userId}`);
+        batch.update(userRef, { trialEndsAt: newEnd });
+      }
+      batches.push(batch.commit());
+    }
+    await Promise.all(batches);
+    toast.success(`Migrados ${activeTrials.length} trials activos a 1 año desde su registro`);
+  } catch (error) {
+    toast.error(`Error migrando trials: ${error}`);
+  } finally {
+    processingMigration.value = false;
+  }
+};
+
 const getUserIdUI = (userPayload: IUser, index: number) => {
   const initial = userPayload.name?.charAt(0).toUpperCase() ?? 'U';
   const planType = getActivePlanType(userPayload);
   const prefixMap: Record<string, string> = {
     withoutPlan: 'N',
-    trial: 'T',
+    trial: 'BP',
     bronce: 'B',
     plata: 'P',
     oro: 'O',

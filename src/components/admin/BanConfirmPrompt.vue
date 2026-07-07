@@ -89,7 +89,7 @@ const formatDate = (timestamp: { seconds?: number } | null | undefined) => {
             <div class="text-[10px] text-white/30 space-y-1">
               <div>Registro: <span class="text-white/50">{{ formatDate(user.createdAt) }}</span></div>
               <div>Último acceso: <span class="text-white/50">{{ formatDate(user.lastLoginAt) }}</span></div>
-              <div v-if="user.trialEndsAt">Trial termina: <span class="text-white/50">{{ formatDate(user.trialEndsAt)
+              <div v-if="user.trialEndsAt">Bronce de prueba termina: <span class="text-white/50">{{ formatDate(user.trialEndsAt)
                   }}</span></div>
             </div>
           </div>

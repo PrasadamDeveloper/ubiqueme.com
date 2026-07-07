@@ -47,31 +47,79 @@
         <div v-else-if="filteredGroups.length > 0" class="space-y-4">
           <div v-for="group in filteredGroups" :key="group.subscription.id" class="space-y-3">
             <!-- Subscription header card (M3 surface container) -->
-            <div class="bg-[#2B2930] rounded-xl p-3 border border-[#49454F]/30">
-              <div class="flex items-center justify-between">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <h3 class="text-sm font-bold text-[#E6E1E5] capitalize">Plan {{ group.subscription.planType }}</h3>
-                    <span :class="group.subscription.status === 'active'
-                      ? 'bg-orange-500/10 text-orange-400 border-orange-500/20'
-                      : 'bg-white/10 text-[#CAC4D0]/50 border-white/10'"
-                      class="px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest">
-                      {{ group.subscription.status }}
-                    </span>
-                  </div>
-                  <p class="text-[#CAC4D0]/30 text-[9px] font-mono mt-0.5">ID: {{ group.subscription.id.slice(0, 8) }}..
-                  </p>
+            <div class="bg-[#2B2930] rounded-xl p-3 border border-[#49454F]/30 space-y-2">
+              <!-- Row 1: Title + badge + usage -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <h3 class="text-sm font-bold text-[#E6E1E5] capitalize truncate">Plan {{ group.subscription.planType === 'trial' ? 'Bronce de prueba' : group.subscription.planType }}</h3>
+                  <span :class="group.subscription.planType === 'trial' && group.subscription.status === 'inactive'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                    : group.subscription.status === 'active'
+                    ? 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                    : 'bg-white/10 text-[#CAC4D0]/50 border-white/10'"
+                    class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest">
+                    {{ group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'Acabado' : group.subscription.status === 'active' ? 'Activo' : group.subscription.status === 'canceled' ? 'Cancelado' : 'Inactivo' }}
+                  </span>
                 </div>
-                <div class="text-right">
+                <div class="text-right shrink-0">
                   <span class="text-[11px] font-medium text-[#E6E1E5]">{{ group.subscription.totalQRsCreated }} / {{
                     group.subscription.totalQRsAllowed }}</span>
-                  <div class="w-24 h-1 bg-[#49454F]/30 rounded-full mt-1 overflow-hidden ml-auto">
-                    <div class="h-full bg-orange-500 rounded-full transition-all duration-500"
-                      :style="{ width: `${Math.min((group.subscription.totalQRsCreated / group.subscription.totalQRsAllowed) * 100, 100)}%` }">
-                    </div>
+                </div>
+              </div>
+              <!-- Row 2: ID + progress bar -->
+              <div class="flex items-center gap-3">
+                <p class="text-[#CAC4D0]/30 text-[9px] font-mono">ID: {{ group.subscription.id.slice(0, 8) }}..</p>
+                <div class="flex-1 h-1 bg-[#49454F]/30 rounded-full overflow-hidden">
+                  <div class="h-full bg-orange-500 rounded-full transition-all duration-500"
+                    :style="{ width: `${Math.min((group.subscription.totalQRsCreated / group.subscription.totalQRsAllowed) * 100, 100)}%` }">
                   </div>
                 </div>
               </div>
+
+              <!-- Row 3: Info banner compacto -->
+              <template v-if="group.subscription.planType === 'trial' && group.subscription.status === 'active'">
+                <div class="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/15">
+                  <span class="material-symbols-outlined notranslate text-[12px] mt-0.5 shrink-0 text-amber-300/70">info</span>
+                  <span class="text-[10px] text-amber-300/90 leading-tight">
+                    Este es un <strong class="text-amber-200 font-semibold">plan gratuito de prueba</strong> con duración de 1 año incluido en su cuenta. Termina el <strong class="text-amber-200 font-semibold">{{ formatEndDate(group.subscription.endDate) }}</strong>. Después de esa fecha si decide continuar con el plan podrá renovarlo.
+                  </span>
+                </div>
+              </template>
+              <template v-else-if="(group.subscription.planType === 'trial' && group.subscription.status === 'canceled') || group.subscription.status === 'canceled'">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/15">
+                  <span class="text-[11px]">✕</span>
+                  <span class="text-[10px] text-red-300/90 leading-tight">
+                    Plan <strong class="text-red-200 font-semibold capitalize">{{ group.subscription.planType === 'trial' ? 'de prueba' : group.subscription.planType }}</strong> cancelado — QRs no disponibles
+                  </span>
+                </div>
+              </template>
+              <template v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'inactive'">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-500/10 border border-gray-500/15">
+                  <span class="text-[11px]">⌛</span>
+                  <span class="text-[10px] text-gray-400 leading-tight">
+                    Plan de prueba finalizado — reactiva tus QRs
+                  </span>
+                </div>
+              </template>
+              <template v-else-if="group.subscription.status === 'active'">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/15">
+                  <span class="text-[11px]">✓</span>
+                  <span class="text-[10px] text-emerald-300/90 leading-tight">
+                    Plan <strong class="text-emerald-200 font-semibold capitalize">{{ group.subscription.planType }}</strong> activo
+                    <span v-if="group.subscription.endDate"> — termina {{ formatEndDate(group.subscription.endDate) }}</span>
+                    <span v-else> — sin vencimiento</span>
+                    · {{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}/{{ group.subscription.totalQRsAllowed }} QRs
+                  </span>
+                </div>
+              </template>
+              <template v-else>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-500/10 border border-gray-500/15">
+                  <span class="text-[11px]">⚬</span>
+                  <span class="text-[10px] text-gray-400 leading-tight">
+                    Plan <strong class="text-gray-300 font-semibold capitalize">{{ group.subscription.planType }}</strong> inactivo
+                  </span>
+                </div>
+              </template>
               <button v-if="group.subscription.status === 'active'"
                 @click="() => toggleCreateQrModal(group.subscription)"
                 class="mt-2.5 w-full h-9 rounded-xl bg-orange-500 text-black text-[9px] font-bold uppercase tracking-wider hover:bg-orange-400 transition-all active:scale-[0.98] flex items-center justify-center gap-1 cursor-pointer">
@@ -84,6 +132,7 @@
             <div v-if="group.qrs.length > 0" class="space-y-2">
               <QRCardMobile v-for="qr in group.qrs" :key="qr.id" :id="qr.id" :name="qr.name" :category="qr.category"
                 :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link"
+                :subscriptionStatus="group.subscription.status"
                 :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason" :createdAt="qr.createdAt"
                 :subscriptionId="qr.subscriptionId" :physicalShipped="qr.physicalShipped"
                 :physicalShippedAt="qr.physicalShippedAt" :planType="group.subscription.planType"
@@ -383,6 +432,17 @@ onUnmounted(() => {
   isLoading.value = true
   imageStore.clearImages()
 })
+
+// ─── Helpers ────────────────────────────────────────────────────
+function formatEndDate(date: Timestamp | null): string {
+  if (!date) return 'fecha no disponible'
+  const d = date.toDate()
+  return d.toLocaleDateString('es-MX', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
 </script>
 
 <style scoped>

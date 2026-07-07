@@ -122,8 +122,30 @@ const plans = [
       </p>
     </div>
 
+    <!-- Promo Banner: 1 año de Bronce gratis (solo no logueados) -->
+    <div v-if="!useUserStore().getUserId"
+      class="mb-10 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.1)] relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+        <div class="flex-1">
+          <h3 class="text-lg sm:text-xl font-black text-white tracking-tight">
+            1 año de Bronce gratis — únase hoy
+          </h3>
+          <p class="text-white/60 text-sm font-medium mt-1">
+            Sin compromisos. Actívelo hoy.
+          </p>
+        </div>
+        <router-link :to="{ name: 'register' }"
+          class="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-orange-500 text-black rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] active:scale-[0.97]">
+          Obtenga su año gratis
+          <span class="material-symbols-outlined notranslate text-lg">arrow_forward</span>
+        </router-link>
+      </div>
+    </div>
+
     <!-- Currency Selector -->
-    <div class="flex justify-center mb-12">
+    <div class="flex justify-center mb-10">
       <div class="inline-flex bg-black/40 rounded-2xl border border-white/[0.08] p-1 gap-0.5">
         <button v-for="c in currencies" :key="c.key" @click="selectedCurrency = c.key"
           class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer"
@@ -245,8 +267,15 @@ const plans = [
       </p>
     </div>
 
+    <!-- Disclaimer (solo no logueados) -->
+    <div v-if="!useUserStore().getUserId" class="text-center mb-6">
+      <p class="text-[10px] text-white/30 font-medium">
+        Solo cree su cuenta gratis y obtendrá el beneficio
+      </p>
+    </div>
+
     <!-- Bottom Note -->
-    <p class="text-center text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mt-12">
+    <p class="text-center text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mt-8">
       Todos los planes incluyen encriptación de extremo a extremo · Sin contratos forzosos · Cancela cuando quieras
     </p>
 

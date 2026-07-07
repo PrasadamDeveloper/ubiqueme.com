@@ -59,4 +59,6 @@ export interface IQRCard {
   freeShipmentUsed?: boolean
   /** Plan type of the subscription this QR belongs to */
   planType?: 'bronce' | 'plata' | 'oro' | 'trial'
+  /** Status of the parent subscription (e.g. 'active', 'canceled', 'inactive') */
+  subscriptionStatus?: string
 }

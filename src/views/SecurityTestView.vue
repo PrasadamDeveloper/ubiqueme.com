@@ -253,11 +253,11 @@
               <!-- Assign trial -->
               <button @click="testAssignTrial" class="action-card border-red-500/20 hover:border-red-500/40">
                 <span class="flex items-center gap-2">
-                  <span class="text-red-400 text-xs font-black uppercase tracking-wider">Assign Free Trial</span>
+                  <span class="text-red-400 text-xs font-black uppercase tracking-wider">Assign Bronce de Prueba</span>
                   <span
                     class="px-1.5 py-0.5 rounded text-[8px] font-black bg-emerald-500/10 text-emerald-400">CREATE</span>
                 </span>
-                <span class="text-white/30 text-[10px] font-mono mt-0.5">/users/{uid}/subscriptions (trial)</span>
+                <span class="text-white/30 text-[10px] font-mono mt-0.5">/users/{uid}/subscriptions (bronce-prueba)</span>
               </button>
 
               <!-- Create user document -->
@@ -777,7 +777,7 @@ const testAssignTrial = async () => {
   try {
     await setDoc(doc(db, 'users', targetUid, 'subscriptions', subId), {
       id: subId, userId: targetUid, planType: 'trial', status: 'active',
-      purchasedAt: Timestamp.now(), endDate: Timestamp.fromDate(new Date(Date.now() + 30 * 86400000)),
+      purchasedAt: Timestamp.now(), endDate: Timestamp.fromDate(new Date(Date.now() + 365 * 86400000)),
       paymentProviderId: 'admin', totalQRsAllowed: 1, totalQRsCreated: 0,
       freeShipmentsAllowed: 1, freeShipmentsUsed: 0,
     })
