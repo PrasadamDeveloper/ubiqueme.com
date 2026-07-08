@@ -249,7 +249,10 @@ const handleRegister = async () => {
     const credentials = await createUserWithEmailAndPassword(auth, form.email, form.password);
     const user = credentials.user;
     await updateProfile(user, { displayName: form.name.trim() });
-    await sendEmailVerification(user);
+    await sendEmailVerification(user, {
+      url: 'https://ubiqueme.com/verify',
+      handleCodeInApp: true,
+    });
 
     const batch = writeBatch(db);
     batch.set(doc(db, `users/${user.uid}`), {
