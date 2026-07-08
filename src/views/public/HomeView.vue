@@ -164,7 +164,8 @@ const toggleSound = (index: number) => {
             <div
               class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 rounded-full border border-amber-500/20 mb-8 transition-colors hover:bg-amber-500/20 cursor-default">
               <span class="material-symbols-outlined notranslate text-amber-500 text-sm">enhanced_encryption</span>
-              <span class="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500">Privacidad Absoluta</span>
+              <span class="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500">Notificaciones
+                privadas</span>
             </div>
 
             <!-- Main Headline -->
@@ -182,7 +183,7 @@ const toggleSound = (index: number) => {
                 <article class=" p-2 bg-white rounded-xl pb-8 relative">
                   <qrcode-vue value="https://ubiqueme.com" :size="100" render-as="canvas" />
                   <span
-                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-orange-400 leading-tight">ubiqueme.com</span>
+                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-slate-900 leading-tight">ubiqueme.com</span>
                 </article>
               </div>
             </h1>
@@ -196,12 +197,16 @@ const toggleSound = (index: number) => {
             <!-- Promo Banner: 1 año de Bronce gratis (solo no logueados) -->
             <div v-if="!useUserStore().getUserId"
               class="w-full max-w-2xl mb-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.1)] relative overflow-hidden">
-              <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
-              <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div
+                class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none">
+              </div>
+              <div
+                class="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none">
+              </div>
               <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4">
                 <div class="flex-1 text-center sm:text-left">
                   <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-                    1 AÑO DE BRONCE — TOTALMENTE GRATIS
+                    1 AÑO PLAN BRONCE — TOTALMENTE GRATIS
                   </h3>
                   <p class="text-white/70 text-sm font-medium mt-1">
                     Sin compromisos. Actívelo hoy.
@@ -337,7 +342,7 @@ const toggleSound = (index: number) => {
                   'encender' }} el sonido</span>
                 <span class="material-symbols-outlined notranslate text-xl">{{ mutedStates[index] ? 'volume_off' :
                   'volume_up'
-                }}</span>
+                  }}</span>
               </button>
             </div>
 

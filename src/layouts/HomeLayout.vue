@@ -168,12 +168,12 @@ onUnmounted(() => {
         </div>
 
         <!-- Mobile: domains like dashboard (no logo, no tagline) -->
-        <div
-          class="lg:hidden flex-1 flex justify-start mx-auto  md:justify-center min-w-0 absolute top-1/2 translate-x-1/2 translate-y-1/2 bottom-1/2 right-1/2 sm:fixed">
+        <div v-show="showCompactBadge"
+          class="lg:hidden flex-1 flex justify-start mx-auto  md:justify-center min-w-0 absolute top-1/2 translate-x-1/2 translate-y-1/2 bottom-1/2 right-1/2 sm:fixed animate-fade">
           <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
             <span
               class="material-symbols-outlined notranslate text-orange-500 text-[2rem] group-hover:rotate-12 transition-transform">location_on</span>
-            <div class="flex flex-col justify-center h-8 overflow-hidden relative min-w-[120px]">
+            <div class="flex flex-col justify-center h-8 overflow-hidden relative min-w-[130px]">
               <Transition name="slide-up">
                 <div :key="currentDomainIndex"
                   class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
@@ -232,9 +232,10 @@ onUnmounted(() => {
 
         <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-          class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
+          class="lg:hidden flex items-center justify-center p-2 bg-[#FF6800] text-white/60 font-bold hover:text-white transition-colors z-50 cursor-pointer rounded-xl ">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-            }}</span>
+          }}</span>
+          <span>{{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}</span>
         </button>
 
       </div>
@@ -302,88 +303,201 @@ onUnmounted(() => {
     <main id="main-content">
       <slot name="main"></slot>
     </main>
-    <footer
-      class="bg-[#09090b] border-t border-white/5 w-full flex flex-col justify-center items-center gap-8 px-12 py-8 text-slate-500 relative">
-      <div class="flex flex-col items-center space-y-2">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined notranslate text-white/70 text-[1.2rem]"
-            aria-hidden="true">shield</span>
-          <span class="text-xs uppercase tracking-widest">SSL Secure</span>
-        </div>
-        <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
-          ubiqueme.com</span>
-        <span class="text-[9px] text-white/15 font-medium tracking-widest uppercase">
-          Una marca de <span class="text-orange-400/60 font-semibold">AZIECHRIE PHARMA</span>
-        </span>
-        <div class="flex items-center mt-2">
-          <Transition name="slide-up">
-            <div :key="currentDomainIndex"
-              class="text-[#dce7ff] font-black text-[17px] sm:text-[22px] lowercase whitespace-nowrap">
-              <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span><span class="text-orange-500">.com</span>
-            </div>
-          </Transition>
-        </div>
+    <footer class="relative overflow-hidden border-t border-zinc-800 bg-gradient-to-b from-[#0b0b0d] to-black">
+
+      <!-- Glow -->
+      <div class="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-orange-500/5 blur-3xl">
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center justify-center">
-        <RouterLink
-          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-          :to="{ name: 'home' }">
-          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">home</span> Inicio
-        </RouterLink>
-        <RouterLink
-          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-          :to="{ name: 'help' }">
-          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">help</span> Ayuda
-        </RouterLink>
-        <RouterLink
-          class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-          :to="{ name: 'pricing' }">
-          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">attach_money</span> Precios
-        </RouterLink>
-        <template v-if="!useUserStore().getUserId">
-          <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'login' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">login</span> Iniciar
-            sesión
-          </RouterLink>
-          <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'register' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">person_add</span>
-            Registrarse
-          </RouterLink>
-        </template>
-      </div>
-      <div class="flex flex-col items-center space-y-2">
-        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
-          <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'privacy' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">privacy_tip</span>
-            Política
-            de
-            Privacidad
-          </RouterLink>
-          <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'terms' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">gavel</span> Términos de
-            Servicio
-          </RouterLink>
-          <RouterLink
-            class="flex items-center gap-1 font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
-            :to="{ name: 'contact' }">
-            <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">contact_mail</span>
-            Contacto
-          </RouterLink>
+      <div class="relative mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
+
+        <div class="grid gap-10 lg:grid-cols-3">
+
+          <!-- Marca -->
+          <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
+
+            <div
+              class="mb-5 flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/5 px-4 py-2">
+
+              <span class="material-symbols-outlined notranslate text-orange-400">
+                shield
+              </span>
+
+              <span class="text-xs uppercase tracking-[0.25em] text-zinc-300">
+                SSL
+              </span>
+
+            </div>
+
+            <Transition name="slide-up">
+              <div :key="currentDomainIndex" class="mb-3 text-3xl font-black lowercase tracking-tight">
+
+                <span class="text-white">
+                  {{ domains[currentDomainIndex]?.split('.com')[0] }}
+                </span>
+
+                <span class="text-orange-500">
+                  .com
+                </span>
+
+              </div>
+            </Transition>
+
+            <p class="text-sm text-zinc-500">
+              © {{ new Date().getFullYear() }} ubiqueme.com
+            </p>
+
+            <p class="mt-1 text-[10px] uppercase tracking-[0.25em] text-zinc-600">
+
+              Una marca de
+
+              <span class="font-semibold text-orange-400">
+                AZIECHRIE PHARMA
+              </span>
+
+            </p>
+
+          </div>
+
+          <!-- Navegación -->
+          <div class="flex flex-col items-center">
+
+            <h3 class="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500">
+
+              Navegación
+
+            </h3>
+
+            <div class="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3">
+
+              <RouterLink :to="{ name: 'home' }"
+                class="group flex items-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400">
+
+                <span class="material-symbols-outlined text-[18px]">
+                  home
+                </span>
+
+                Inicio
+
+              </RouterLink>
+
+              <RouterLink :to="{ name: 'help' }"
+                class="group flex items-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400">
+
+                <span class="material-symbols-outlined text-[18px]">
+                  help
+                </span>
+
+                Ayuda
+
+              </RouterLink>
+
+              <RouterLink :to="{ name: 'pricing' }"
+                class="group flex items-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400">
+
+                <span class="material-symbols-outlined text-[18px]">
+                  attach_money
+                </span>
+
+                Precios
+
+              </RouterLink>
+
+              <template v-if="!useUserStore().getUserId">
+
+                <RouterLink :to="{ name: 'login' }"
+                  class="group flex items-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400">
+
+                  <span class="material-symbols-outlined text-[18px]">
+                    login
+                  </span>
+
+                  Iniciar sesión
+
+                </RouterLink>
+
+                <RouterLink :to="{ name: 'register' }"
+                  class="group flex items-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400">
+
+                  <span class="material-symbols-outlined text-[18px]">
+                    person_add
+                  </span>
+
+                  Registrarse
+
+                </RouterLink>
+
+              </template>
+
+            </div>
+
+          </div>
+
+          <!-- Legal -->
+          <div class="flex flex-col items-center lg:items-end text-center lg:text-right">
+
+            <h3 class="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500">
+
+              Información
+
+            </h3>
+
+            <div class="space-y-4">
+
+              <RouterLink :to="{ name: 'privacy' }"
+                class="flex items-center justify-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400 lg:justify-end">
+
+                <span class="material-symbols-outlined text-[18px]">
+                  privacy_tip
+                </span>
+
+                Política de Privacidad
+
+              </RouterLink>
+
+              <RouterLink :to="{ name: 'terms' }"
+                class="flex items-center justify-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400 lg:justify-end">
+
+                <span class="material-symbols-outlined text-[18px]">
+                  gavel
+                </span>
+
+                Términos de Servicio
+
+              </RouterLink>
+
+              <RouterLink :to="{ name: 'contact' }"
+                class="flex items-center justify-center gap-2 text-sm text-zinc-400 transition hover:text-orange-400 lg:justify-end">
+
+                <span class="material-symbols-outlined text-[18px]">
+                  contact_mail
+                </span>
+
+                Contacto
+
+              </RouterLink>
+
+            </div>
+
+            <div
+              class="mt-8 flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/70 px-4 py-2 text-xs text-zinc-500">
+
+              <span class="material-symbols-outlined text-[18px]">
+                public
+              </span>
+
+              <span translate="no">
+                {{ domains[currentDomainIndex] }}
+              </span>
+
+            </div>
+
+          </div>
+
         </div>
-        <div class="flex items-center gap-2 text-xs text-slate-500">
-          <span class="material-symbols-outlined notranslate text-[1rem]" aria-hidden="true">public</span>
-          <span translate="no" class="font-body">{{ domains[currentDomainIndex] }}</span>
-        </div>
+
       </div>
+
     </footer>
   </div>
 </template>

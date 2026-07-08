@@ -125,12 +125,14 @@ const plans = [
     <!-- Promo Banner: 1 año de Bronce gratis (solo no logueados) -->
     <div v-if="!useUserStore().getUserId"
       class="mb-10 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.1)] relative overflow-hidden">
-      <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none">
+      </div>
+      <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none">
+      </div>
       <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
         <div class="flex-1">
           <h3 class="text-lg sm:text-xl font-black text-white tracking-tight">
-            1 año de Bronce — plan agregado
+            1 año plan Bronce — agregado
           </h3>
           <p class="text-white/60 text-sm font-medium mt-1">
             Se agrega automáticamente al crear su cuenta

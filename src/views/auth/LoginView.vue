@@ -116,7 +116,7 @@
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined notranslate text-xl">{{ showPassword ? 'visibility' :
                         'visibility_off'
-                        }}</span>
+                      }}</span>
                     </button>
                   </div>
                 </div>

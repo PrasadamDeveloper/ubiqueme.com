@@ -48,8 +48,12 @@
             <!-- Promo Banner Desktop -->
             <div
               class="p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_30px_rgba(249,115,22,0.1)] relative overflow-hidden">
-              <div class="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
-              <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div
+                class="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl pointer-events-none">
+              </div>
+              <div
+                class="absolute -bottom-10 -left-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none">
+              </div>
               <div class="relative z-10 flex items-center gap-4">
                 <div
                   class="shrink-0 w-12 h-12 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
@@ -57,7 +61,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-white font-bold text-sm leading-tight">
-                    Cree su cuenta gratuita y obtenga 1 año de Bronce completamente gratis
+                    Cree su cuenta gratuita y obtenga 1 año plan Bronce completamente gratis
                   </p>
                 </div>
               </div>
@@ -103,8 +107,12 @@
             <!-- Promo Banner Mobile -->
             <div
               class="md:hidden p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.08)] relative overflow-hidden mb-8">
-              <div class="absolute -top-8 -right-8 w-24 h-24 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
-              <div class="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div
+                class="absolute -top-8 -right-8 w-24 h-24 bg-orange-500/10 rounded-full blur-3xl pointer-events-none">
+              </div>
+              <div
+                class="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/10 rounded-full blur-3xl pointer-events-none">
+              </div>
               <div class="relative z-10 flex items-center gap-3">
                 <div
                   class="shrink-0 w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
@@ -112,7 +120,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-white font-bold text-xs leading-tight">
-                    Cree su cuenta gratuita y obtenga 1 año de Bronce completamente gratis
+                    Cree su cuenta gratuita y obtenga 1 año plan Bronce completamente gratis
                   </p>
                 </div>
               </div>
@@ -156,16 +164,27 @@
                     class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                 </div>
               </div>
+              <div
+                class="flex items-start gap-4 rounded-xl border border-orange-500/20 bg-zinc-900/80 p-4 backdrop-blur-sm transition-all hover:border-orange-500/40">
 
-              <div class="flex items-start gap-3 px-1 py-1">
                 <input id="terms" v-model="form.terms" type="checkbox"
-                  class="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 accent-orange-500 cursor-pointer focus:ring-orange-500/20 transition-all" />
-                <label for="terms" class="text-[10px] font-bold text-white/40 uppercase tracking-wider leading-relaxed">
-                  Acepto los <span
-                    class="text-white hover:text-orange-500 cursor-pointer transition-colors">Términos</span> y la <span
-                    class="text-white hover:text-orange-500 cursor-pointer transition-colors">Política de
-                    Privacidad</span>.
+                  class="mt-1 h-5 w-5 cursor-pointer rounded border-zinc-600 bg-zinc-800 accent-orange-500 focus:ring-2 focus:ring-orange-500 focus:ring-offset-0 transition-all" />
+
+                <label for="terms" class="text-sm leading-6 text-zinc-300 select-none cursor-pointer">
+                  Acepto los
+                  <RouterLink to="/terms"
+                    class="font-semibold text-orange-400 transition-colors duration-200 hover:text-orange-300 hover:underline"
+                    @click.stop>
+                    Términos y Condiciones
+                  </RouterLink>
+                  y la
+                  <RouterLink to="/privacy"
+                    class="font-semibold text-orange-400 transition-colors duration-200 hover:text-orange-300 hover:underline"
+                    @click.stop>
+                    Política de Privacidad
+                  </RouterLink>.
                 </label>
+
               </div>
 
               <button type="submit" :disabled="loading"
@@ -180,7 +199,7 @@
 
 
             <p class="text-center text-white/30 text-xs font-medium">
-              ¿Ya es parte de la red?
+              ¿Ya es parte de ubiqueme?
               <RouterLink to="/login" class="text-orange-500 font-black hover:text-white ml-2 transition-colors">
                 INICIAR SESIÓN</RouterLink>
             </p>
