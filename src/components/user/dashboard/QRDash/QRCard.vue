@@ -506,7 +506,8 @@ const hiddeLogsHandle = () => {
     <div v-if="isDisabled"
       class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-[#0a0a0a]/90  rounded-[2rem] cursor-default select-none">
       <span class="material-symbols-outlined notranslate text-5xl text-white/15">block</span>
-      <span class="text-white/70 text-sm font-medium">QR {{ isCanceled ? 'cancelado' : 'inactivo' }} — no disponible</span>
+      <span class="text-white/70 text-sm font-medium">QR {{ isCanceled ? 'cancelado' : 'inactivo' }} — no
+        disponible</span>
     </div>
 
     <!-- ===== LAYOUT: Info Left + QR Right ===== -->
@@ -1293,7 +1294,7 @@ const hiddeLogsHandle = () => {
               </p>
               <p
                 :style="`color:#303030;font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
-                Escanee este código QR para contactar- al responsable.
+                Escanee este código QR para contactar al responsable.
               </p>
             </div>
           </div>
