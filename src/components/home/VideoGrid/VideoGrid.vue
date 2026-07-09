@@ -1,8 +1,8 @@
 <template>
-  <section class="relative z-10 px-6 sm:px-8 py-24 mx-auto max-w-7xl">
+  <section class="relative z-10 px-4 sm:px-8 py-1 sm:py-24 mx-auto max-w-7xl">
 
     <!-- Section Header -->
-    <div class="text-center mb-16" data-aos="fade-up">
+    <div class="text-center mb-10 sm:mb-16" data-aos="fade-up">
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
         Ubiqueme en acción <span
           class="material-symbols-outlined notranslate text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
@@ -13,7 +13,7 @@
     </div>
 
     <!-- Responsive Grid of 6 Videos -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
 
       <!-- Video Item Wrapper -->
       <div v-for="(v, i) in videoSources" :key="i" class="flex flex-col gap-4" data-aos="fade-up"

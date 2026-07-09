@@ -1,8 +1,8 @@
 <template>
-  <section class="relative z-10 px-6 sm:px-8 py-24 mx-auto max-w-5xl">
+  <section class="relative z-10 px-4 sm:px-8 py-16 sm:py-24 mx-auto max-w-5xl">
 
     <!-- Header -->
-    <div class="text-center mb-20" data-aos="fade-up">
+    <div class="text-center mb-12 sm:mb-20" data-aos="fade-up">
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
         Protección en <span class="text-orange-500">3 simples pasos.</span> <span
           class="material-symbols-outlined notranslate text-3xl sm:text-4xl text-amber-500 align-middle">verified_user</span>
@@ -14,7 +14,7 @@
     </div>
 
     <!-- Steps Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative">
       <!-- Background Connecting Line (Desktop only) -->
       <div
         class="hidden md:block absolute top-[4.5rem] left-[15%] right-[15%] h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-0">
@@ -72,7 +72,8 @@
     </div>
 
     <!-- Benefits Summary -->
-    <div class="mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-aos="fade-up" data-aos-delay="400">
+    <div class="mt-12 sm:mt-24 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-aos="fade-up"
+      data-aos-delay="400">
 
       <div
         class="bg-slate-800/90 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">

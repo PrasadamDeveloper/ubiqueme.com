@@ -37,8 +37,8 @@ const features = [
 </script>
 
 <template>
-  <section class="pb-5 bg-[#09090b] px-8 md:px-24 mx-auto">
-    <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+  <section class="pb-5 bg-[#09090b] px-4 md:px-24 mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-20 gap-6 md:gap-8">
       <div class="max-w-xl">
         <h2 class="font-headline text-4xl font-bold mb-6 text-white">
           Diseñado para la seguridad, construido para la tranquilidad.
@@ -50,7 +50,7 @@ const features = [
       </div>
       <div class="pb-2"></div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
       <FeatureCard v-for="feature in features" :key="feature.title" :feature="feature" />
     </div>
   </section>

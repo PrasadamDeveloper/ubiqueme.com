@@ -105,10 +105,10 @@ const plans = [
 </script>
 
 <template>
-  <section class="relative z-10 px-6 md:px-24 py-28 mx-auto max-w-7xl">
+  <section class="relative z-10 px-4 md:px-24 py-16 md:py-28 mx-auto max-w-7xl">
 
     <!-- Section Header -->
-    <div class="text-center space-y-6 mb-14">
+    <div class="text-center space-y-6 mb-8 md:mb-14">
       <div class="inline-flex items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-lg border border-orange-500/20">
         <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
         <span class="text-[9px] font-black uppercase tracking-[0.4em] text-orange-500">Planes de Protección</span>
@@ -161,7 +161,7 @@ const plans = [
     </div>
 
     <!-- Plans Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-stretch">
       <div v-for="plan in plans" :key="plan.id" @mouseenter="hoveredPlan = plan.id" @mouseleave="hoveredPlan = null"
         :class="[
           'relative flex flex-col rounded-[2.5rem] border p-8 transition-all duration-500 cursor-default',

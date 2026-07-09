@@ -29,16 +29,16 @@ const steps = [
 </script>
 
 <template>
-  <section class="bg-[#09090b] pb-24">
-    <div class="px-8 md:px-24 max-w-screen-2xl mx-auto">
-      <div class="text-center mb-24 pt-32">
+  <section class="bg-[#09090b] pb-16 md:pb-24">
+    <div class="px-4 md:px-24 max-w-screen-2xl mx-auto">
+      <div class="text-center mb-12 md:mb-24 pt-16 md:pt-32">
         <h2 class="font-headline text-6xl font-bold mb-4 text-white">Ubiqueme en 3 pasos</h2>
         <p class="text-on-surface-variant max-w-2xl mx-auto">
           Desde la configuración hasta la seguridad, hemos diseñado cada interacción para que sea
           fluida y confiable.
         </p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
         <StepsCard v-for="step in steps" :key="step.number" :steps="step" />
       </div>
     </div>

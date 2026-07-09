@@ -144,13 +144,15 @@ const toggleSound = (index: number) => {
         </div>
 
 
-        <article class="relative z-10 w-full flex flex-col lg:flex-row pt-24 lg:pt-32 px-6 sm:px-8  gap-12 lg:gap-8">
+        <article class="relative z-10 w-full flex flex-col lg:flex-row pt-16 lg:pt-32 px-4 sm:px-8 gap-6 lg:gap-8">
 
           <!-- Left Content -->
-          <section class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left relative">
+          <!-- Left Content -->
+          <section
+            class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left relative pt-10 sm:pt-0">
 
             <!-- Live QR Tag (Mobile Hidden or Responsive) -->
-            <div class="hidden  absolute -left-12 top-0 flex-col items-center gap-3 animate-float-medium z-20">
+            <div class="hidden absolute -left-12 top-0 flex-col items-center gap-3 animate-float-medium z-20">
               <div
                 class="bg-white p-3 rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.1)] border border-white/20 hover:scale-110 transition-transform">
                 <QrcodeVue value="https://ubiqueme.com" :size="80" render-as="canvas" />
@@ -162,75 +164,72 @@ const toggleSound = (index: number) => {
 
             <!-- Subtle Badge -->
             <div
-              class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 rounded-full border border-amber-500/20 mb-8 transition-colors hover:bg-amber-500/20 cursor-default">
+              class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 rounded-full border border-amber-500/20 mb-6 lg:mb-8 transition-colors hover:bg-amber-500/20 cursor-default">
               <span class="material-symbols-outlined notranslate text-amber-500 text-sm">enhanced_encryption</span>
               <span class="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500">Notificaciones
                 privadas</span>
             </div>
 
-            <!-- Main Headline -->
-            <h1 class="text-4xl sm:text-6xl lg:text-[4rem] font-black text-white tracking-tight mb-6 leading-[1.1]">
-              Códigos QR inteligentes para<br />
-              <div class="flex justify-center items-center">
+            <!-- Main Headline & Mobile QR Layout -->
+            <h1
+              class="text-4xl sm:text-6xl lg:text-[4rem] font-black text-white tracking-tight mb-6 leading-[1.1] w-full">
+              <span class="block mb-2 lg:inline">Códigos QR inteligentes para</span>
+              <div class="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-6 mt-2 lg:mt-0">
                 <span
-                  class="text-transparent bg-clip-text bg-linear-to-br m-0! p-0! from-white via-sky-50 to-blue-50">recibir
-                  alertas
-                  de su familia y
-                  pertenencias
-                  <br>
-
+                  class="text-transparent bg-clip-text bg-linear-to-br m-0! p-0! from-white via-sky-50 to-blue-50 text-3xl sm:text-5xl lg:text-[4rem]">
+                  recibir alertas de su familia y pertenencias
                 </span>
-                <article class=" p-2 bg-white rounded-xl pb-8 relative">
+                <article class="p-3 bg-white rounded-xl pb-8 relative shadow-xl shrink-0 scale-90 sm:scale-100">
                   <qrcode-vue value="https://ubiqueme.com" :size="100" render-as="canvas" />
                   <span
-                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-slate-900 leading-tight">ubiqueme.com</span>
+                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-900 leading-tight tracking-wider">ubiqueme.com</span>
                 </article>
               </div>
             </h1>
 
             <!-- Sub-headline -->
-            <p class="text-white/50 text-lg sm:text-xl font-medium leading-relaxed max-w-2xl mb-6">
+            <p class="text-white/50 text-base sm:text-xl font-medium leading-relaxed max-w-2xl mb-8 px-4 lg:px-0">
               Etiquetas físicas y pulseras que permiten a cualquiera reportar sus artículos perdidos o asistir a sus
               mascotas, niños y adultos mayores al instante, manteniendo su información de contacto 100% oculta.
             </p>
 
             <!-- Promo Banner: 1 año de Bronce gratis (solo no logueados) -->
             <div v-if="!useUserStore().getUserId"
-              class="w-full max-w-2xl mb-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.1)] relative overflow-hidden">
+              class="w-full max-w-2xl mb-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.1)] relative overflow-hidden mx-auto lg:mx-0">
               <div
                 class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none">
               </div>
               <div
                 class="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none">
               </div>
-              <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4">
-                <div class="flex-1 text-center sm:text-left">
-                  <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+              <div class="relative z-10 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                <div class="flex-1">
+                  <h3 class="text-lg sm:text-2xl font-black text-white tracking-tight leading-tight">
                     1 AÑO PLAN BRONCE — TOTALMENTE GRATIS
                   </h3>
-                  <p class="text-white/70 text-sm font-medium mt-1">
+                  <p class="text-white/70 text-xs sm:text-sm font-medium mt-1">
                     Sin compromisos. Actívelo hoy.
                   </p>
                 </div>
                 <router-link :to="{ name: 'register' }"
-                  class="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-orange-500 text-black rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] active:scale-[0.97]">
+                  class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-orange-50 text-orange-950 sm:bg-orange-500 sm:text-black rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] active:scale-[0.97]">
                   Obtenga su año gratis
                   <span class="material-symbols-outlined notranslate text-lg">arrow_forward</span>
                 </router-link>
               </div>
               <!-- Disclaimer -->
-              <div class="w-full mt-3 text-center">
-                <p class="text-[10px] text-white/30 font-medium">
+              <div class="w-full mt-4 text-center sm:text-left border-t border-white/5 pt-2 sm:pt-0 sm:border-0">
+                <p class="text-[10px] text-white/40 font-medium">
                   Solo cree su cuenta gratis y obtendrá el beneficio
                 </p>
               </div>
             </div>
 
             <!-- Premium Feature Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl mb-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-5 w-full max-w-2xl mb-6 px-1 sm:px-0">
               <!-- Card 1: Alertas Inmediatas -->
               <div
-                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-amber-500/[0.08] hover:to-transparent hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] cursor-default">
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-2 sm:p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-amber-500/[0.08] hover:to-transparent hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] cursor-default text-center sm:text-left flex flex-col items-center sm:items-start">
                 <span
                   class="absolute top-3 right-3 font-mono text-[11px] font-bold text-white/[0.06] select-none pointer-events-none leading-none">01</span>
                 <span
@@ -241,7 +240,7 @@ const toggleSound = (index: number) => {
               </div>
               <!-- Card 2: Privacidad Total -->
               <div
-                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-blue-500/[0.08] hover:to-transparent hover:border-blue-500/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] cursor-default">
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-2 sm:p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-blue-500/[0.08] hover:to-transparent hover:border-blue-500/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] cursor-default text-center sm:text-left flex flex-col items-center sm:items-start">
                 <span
                   class="absolute top-3 right-3 font-mono text-[11px] font-bold text-white/[0.06] select-none pointer-events-none leading-none">02</span>
                 <span
@@ -252,7 +251,7 @@ const toggleSound = (index: number) => {
               </div>
               <!-- Card 3: Cobertura Global -->
               <div
-                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-emerald-500/[0.08] hover:to-transparent hover:border-emerald-500/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] cursor-default">
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-2 sm:p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-emerald-500/[0.08] hover:to-transparent hover:border-emerald-500/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] cursor-default text-center sm:text-left flex flex-col items-center sm:items-start">
                 <span
                   class="absolute top-3 right-3 font-mono text-[11px] font-bold text-white/[0.06] select-none pointer-events-none leading-none">03</span>
                 <span
@@ -263,7 +262,7 @@ const toggleSound = (index: number) => {
               </div>
               <!-- Card 4: Sin App. Sin Instalación. -->
               <div
-                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-violet-500/[0.08] hover:to-transparent hover:border-violet-500/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] cursor-default">
+                class="group relative overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.06] p-2 sm:p-6 transition-all duration-500 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-violet-500/[0.08] hover:to-transparent hover:border-violet-500/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] cursor-default text-center sm:text-left flex flex-col items-center sm:items-start">
                 <span
                   class="absolute top-3 right-3 font-mono text-[11px] font-bold text-white/[0.06] select-none pointer-events-none leading-none">04</span>
                 <span
@@ -276,7 +275,7 @@ const toggleSound = (index: number) => {
 
             <!-- Featured Card: WhatsApp (col-span-2 destacado) -->
             <div
-              class="group relative overflow-hidden w-full max-w-2xl mb-10 rounded-xl bg-gradient-to-r from-green-500/[0.04] to-green-500/[0.01] border border-green-500/20 p-6 transition-all duration-500 hover:scale-[1.01] hover:border-green-500/50 hover:shadow-[0_0_40px_rgba(34,197,94,0.12)] cursor-default sm:col-span-2">
+              class="group relative overflow-hidden w-full max-w-2xl mb-10 rounded-xl bg-gradient-to-r from-green-500/[0.04] to-green-500/[0.01] border border-green-500/20 p-5 sm:p-6 transition-all duration-500 hover:scale-[1.01] hover:border-green-500/50 hover:shadow-[0_0_40px_rgba(34,197,94,0.12)] cursor-default sm:col-span-2 mx-auto lg:mx-0">
               <!-- Glow edge top -->
               <div
                 class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -286,7 +285,8 @@ const toggleSound = (index: number) => {
                 class="absolute -top-[1px] right-6 px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-b-lg text-[9px] font-black uppercase tracking-[0.2em] text-green-400">
                 ★ Destacado
               </div>
-              <div class="flex items-start gap-5">
+              <div
+                class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
                 <div
                   class="shrink-0 w-14 h-14 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center group-hover:scale-110 group-hover:shadow-[0_0_25px_rgba(34,197,94,0.2)] transition-all duration-500">
                   <v-icon name="bi-whatsapp" class="text-3xl text-green-400 notranslate" />
@@ -298,7 +298,7 @@ const toggleSound = (index: number) => {
                     complicaciones.</p>
                 </div>
                 <div
-                  class="hidden sm:flex shrink-0 items-center gap-2 px-4 py-2 rounded-lg bg-green-500/5 border border-green-500/10 text-green-400/60 text-[10px] font-black uppercase tracking-widest">
+                  class="inline-flex sm:flex shrink-0 items-center gap-2 px-4 py-2 rounded-lg bg-green-500/10 sm:bg-green-500/5 border border-green-500/10 text-green-400/90 sm:text-green-400/60 text-[10px] font-black uppercase tracking-widest mt-2 sm:mt-0">
                   <span class="material-symbols-outlined notranslate text-sm">bolt</span>
                   Tiempo real
                 </div>
@@ -306,15 +306,14 @@ const toggleSound = (index: number) => {
             </div>
 
             <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto hidden">
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto hidden px-4 sm:px-0">
               <router-link :to="{ name: 'pricing' }"
-                class="w-full max-w-xs flex justify-center items-center gap-2 px-6 py-3 bg-slate-700/50 border border-white/20 text-amber-400 font-semibold rounded-lg hover:bg-amber-400 hover:text-black transition-all duration-300">
+                class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3.5 bg-slate-700/50 border border-white/20 text-amber-400 font-semibold rounded-lg hover:bg-amber-400 hover:text-black transition-all duration-300 text-center">
                 Obtener mi Código QR <span class="material-symbols-outlined notranslate">qr_code_scanner</span>
               </router-link>
 
-
               <router-link v-if="!useUserStore().getUserId" :to="{ name: 'login' }"
-                class="w-full sm:w-auto px-6 py-3 bg-transparent border border-[#ff9800]/50 text-[#ff9800] font-bold text-sm tracking-wider rounded-lg hover:bg-[#ff9800]/10 hover:border-[#ff9800] transition-all duration-200 text-center">
+                class="w-full sm:w-auto px-6 py-3.5 bg-transparent border border-[#ff9800]/50 text-[#ff9800]/90 font-bold text-sm tracking-wider rounded-lg hover:bg-[#ff9800]/10 hover:border-[#ff9800] transition-all duration-200 text-center">
                 INICIAR SESIÓN
               </router-link>
             </div>
@@ -392,8 +391,8 @@ const toggleSound = (index: number) => {
         </article>
 
         <!-- Lightweight Features Grid (full-width, centered) -->
-        <div class="w-full flex justify-center px-6 sm:px-8 mt-24 pt-12 border-t border-white/5">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-16 max-w-3xl w-full">
+        <div class="w-full flex justify-center px-4 sm:px-8 mt-12 pt-8 border-t border-white/5">
+          <div class="grid grid-cols-3 sm:grid-cols-3 gap-6 sm:gap-16 max-w-3xl w-full">
             <div class="flex flex-col items-center gap-2 text-white/40 group text-center">
               <span
                 class="material-symbols-outlined notranslate text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">notifications_active</span>
