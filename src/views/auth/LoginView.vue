@@ -39,7 +39,7 @@
             <div
               class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-lg border border-orange-500/20">
               <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
-              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-orange-500">Acceso Seguro v4.0</span>
+              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-orange-500">Login</span>
             </div>
 
             <h1 class="text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
@@ -78,7 +78,7 @@
         </div>
 
         <!-- 🚀 RIGHT SIDE: LOGIN FORM -->
-        <div class="relative grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-8 sm:p-16 z-10">
+        <div class="relative grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-11 sm:p-16 z-10">
           <div class="w-full max-w-sm space-y-10">
 
             <div class="md:hidden flex flex-col items-center mb-10 text-center">
@@ -116,7 +116,7 @@
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined notranslate text-xl">{{ showPassword ? 'visibility' :
                         'visibility_off'
-                      }}</span>
+                        }}</span>
                     </button>
                   </div>
                 </div>
