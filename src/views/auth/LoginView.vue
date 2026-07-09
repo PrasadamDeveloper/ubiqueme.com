@@ -106,14 +106,13 @@
                 </div>
 
                 <div class="space-y-2">
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Contraseña</label>
                   <div class="group relative">
-                    <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Contraseña</label>
-
                     <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
                       :disabled="loading" placeholder="••••••••"
                       class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
                     <button type="button" @click="showPassword = !showPassword"
-                      class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
+                      class="absolute right-5 inset-y-0 my-auto flex items-center text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined notranslate text-xl">{{ showPassword ? 'visibility' :
                         'visibility_off'
                         }}</span>

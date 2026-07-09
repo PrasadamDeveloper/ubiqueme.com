@@ -232,9 +232,9 @@ onUnmounted(() => {
 
         <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-          class="lg:hidden flex items-center justify-center p-2 bg-[#FF6800] text-white/60 font-bold hover:text-white transition-colors z-50 cursor-pointer rounded-xl ">
+          class="lg:hidden flex items-center justify-center p-2 bg-[#dd5c00] text-white/60 font-bold hover:text-white transition-colors z-50 cursor-pointer rounded-xl ">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-            }}</span>
+          }}</span>
           <span>{{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}</span>
         </button>
 
