@@ -503,7 +503,613 @@ Con Capacitor App API (`appUrlOpen` listener).
 
 ---
 
-## 15. Recomendaciones Finales
+## 15. Flujo de Autenticación Detallado
+
+### 15.1 Login (Email + Password)
+
+Basado en `src/views/auth/LoginView.vue` del proyecto web:
+
+```ts
+// Comportamiento esperado en LoginView.vue
+
+const form = reactive({
+  email: '',
+  password: '',
+})
+
+const handleLogin = async () => {
+  if (!form.email || !form.password) {
+    toast.error('Por favor, complete todos los campos.')
+    return
+  }
+
+  loading.value = true
+  const user = await signInWithEmailAndPassword(auth, form.email, form.password)
+
+  // Si el email NO está verificado → cerrar sesión y mostrar VerificationBanner
+  if (!user.user.emailVerified) {
+    loading.value = false
+    emailVerified.value = false // ← muestra el VerificationBanner
+    await signOut(auth)
+    return
+  }
+
+  // Login exitoso → guardar datos en store y redirigir
+  userStore.setFullName(user.user.displayName || '')
+  userStore.setEmail(user.user.email || '')
+  userStore.setUserId(user.user.uid)
+  // ...
+  navigateAfterAuth()
+}
+```
+
+**Flujo visual en la app:**
+
+1. Usuario ingresa email + password → "Iniciar Sesión"
+2. Si no verificó email → se cierra la sesión, se oculta el formulario, se muestra `<VerificationBanner>`
+3. `VerificationBanner` permite reenviar el email de verificación
+4. Botón "Volver al Login" para reintentar
+
+**Forgot Password:**
+
+```ts
+const handleForgotPassword = async () => {
+  if (!form.email) {
+    toast.error('Por favor, ingrese su correo electrónico primero.')
+    return
+  }
+  await sendPasswordResetEmail(auth, form.email)
+  toast.success('Correo de restablecimiento enviado.')
+}
+```
+
+### 15.2 Register (Creación de Cuenta)
+
+Basado en `src/views/auth/RegisterView.vue`:
+
+```ts
+const form = reactive({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  terms: false,
+})
+
+const handleRegister = async () => {
+  // Validaciones
+  if (form.name === '' || form.email === '' || form.password === '') return
+  if (form.password !== form.confirmPassword) return
+  if (!form.terms) return
+
+  loading.value = true
+
+  // 1. Crear usuario en Firebase Auth
+  const credentials = await createUserWithEmailAndPassword(auth, form.email, form.password)
+  const user = credentials.user
+
+  // 2. Actualizar displayName
+  await updateProfile(user, { displayName: form.name.trim() })
+
+  // 3. Enviar email de verificación
+  await sendEmailVerification(user, {
+    url: 'https://ubiqueme.com/verify',
+    handleCodeInApp: true,
+  })
+
+  // 4. Crear documento en Firestore (batch)
+  const batch = writeBatch(db)
+  batch.set(doc(db, `users/${user.uid}`), {
+    uid: user.uid,
+    name: form.name.trim(),
+    email: form.email.trim(),
+    phone: '',
+    role: 'user',
+    isActive: true,
+    isBanned: false,
+    banReason: '',
+    totalQRs: 0,
+    preferences: {
+      emailNotifications: false,
+      smsNotifications: false,
+      whatsappNotifications: false,
+    },
+    lastLoginAt: Timestamp.now(),
+    createdAt: Timestamp.now(),
+    trialActive: true,
+    trialStartsAt: Timestamp.now(),
+    trialEndsAt: Timestamp.fromDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)),
+    isTrialUsed: false,
+  })
+
+  // 5. Crear suscripción trial (1 año)
+  const subId = nanoid(15)
+  batch.set(doc(db, `users/${user.uid}/subscriptions/${subId}`), {
+    id: subId,
+    userId: user.uid,
+    planType: 'trial',
+    status: 'active',
+    purchasedAt: Timestamp.now(),
+    endDate: Timestamp.fromDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)),
+    paymentProviderId: '',
+    totalQRsAllowed: 1,
+    totalQRsCreated: 0,
+    freeShipmentsAllowed: 0,
+    freeShipmentsUsed: 0,
+  })
+
+  await batch.commit()
+  await signOut(auth) // Cerrar sesión para forzar verificación
+  toast.success('Registro completado. Verifique su correo.')
+  router.push({ name: 'verify' })
+}
+```
+
+**Campos del formulario Register:**
+
+- Nombre Completo (text)
+- Correo Electrónico (email)
+- Contraseña (password)
+- Confirmar Contraseña (password)
+- Checkbox: Acepto Términos y Condiciones + Política de Privacidad
+
+### 15.3 Verify (Post-Registro)
+
+Basado en `src/views/auth/VerifyView.vue`:
+
+La vista `/verify` tiene **dos modos**:
+
+**Modo 1 — Sin oobCode (post-registro):**
+
+- Muestra un mensaje: "Le hemos enviado un correo de verificación"
+- Botón "Ir al Login"
+
+**Modo 2 — Con oobCode (click en enlace del correo):**
+
+- Firebase `applyActionCode` para verificar email
+- Si el código es válido → mensaje de éxito y redirigir a login
+- Si el código expiró → mensaje de error con botón para reenviar
+
+**Reset Password (dentro de VerifyView):**
+
+- Si el `oobCode` corresponde a `resetPassword`:
+  - Formulario: Nueva Contraseña + Confirmar Contraseña
+  - `confirmPasswordReset(auth, oobCode, newPassword)`
+  - Éxito → toast + redirigir a login
+
+---
+
+## 16. Contratos de Componentes (Props / Emits / Slots)
+
+### 16.1 `QRCard.vue`
+
+```vue
+<!-- Basado en src/components/user/dashboard/QRDash/QRCard.vue -->
+<script setup lang="ts">
+import type { IQRCard } from '@/interfaces/IQRCard'
+
+// ─── Props ───
+// Usa IQRCard completa:
+interface QRCardProps {
+  name: string
+  category: string
+  isActive: boolean
+  isBanned: boolean
+  banReason: string
+  status: 'Active' | 'Canceled' | 'Process' | 'Error' | 'Paused' | 'Inactive'
+  scans: number
+  lastScan: string | Timestamp | null
+  id: string
+  createdAt: Timestamp
+  docId: string
+  img?: string
+  subscriptionId: string
+  link?: string
+  physicalShipped?: boolean
+  physicalShippedAt?: Timestamp | string
+  shippingNotes?: string
+  freeShipmentUsed?: boolean
+  planType?: 'bronce' | 'plata' | 'oro' | 'trial'
+  subscriptionStatus?: string
+}
+
+// ─── Emits ───
+const emit = defineEmits<{
+  (e: 'request-physical', subscriptionId: string): void
+  (e: 'cancel', qrId: string): void
+  (e: 'renew', qrId: string): void
+  (e: 'edit', qrId: string, newName: string): void
+  (e: 'download', qrId: string): void
+  (e: 'toggle-public', qrId: string, makePublic: boolean): void
+}>()
+```
+
+**Estados visuales:**
+
+- `status === 'Inactive'` → opacidad reducida, overlay "QR inactivo"
+- `status === 'Canceled'` → filtro sepia/gris, overlay "QR cancelado"
+- `isBanned === true` → estado muestra "Baneado" en rojo
+
+**Menú de opciones (mobile bottom sheet / desktop grid):**
+
+1. Descargar QR → emit `'download'`
+2. Editar nombre → emit `'edit'`
+3. Reemplazar QR → emit `'renew'`
+4. Pedir QR físico → emit `'request-physical'` (locked si no es teléfono MX)
+5. Activar/Desactivar QR → emit `'toggle-public'`
+6. Eliminar QR → emit `'cancel'`
+
+### 16.2 `CreateQRModal.vue`
+
+```vue
+<script setup lang="ts">
+interface CreateQRProps {
+  isOpen: boolean
+  subscriptions: Array<{ id: string; planType: string; totalQRsAllowed: number; totalQRsCreated: number }>
+}
+
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'create', data: {
+    name: string
+    category: string
+    img?: string
+    subscriptionId: string
+    link?: string
+  }): void
+}>()
+```
+
+**Campos del formulario:**
+
+- Nombre del QR (requerido)
+- Categoría (select: vehicle, home, phone, laptop, pet, other)
+- Imagen del objeto (opcional, file input → comprimir con `browser-image-compression`)
+- Enlace (opcional)
+- Suscripción a usar (select, si el usuario tiene múltiples)
+
+**Validaciones:**
+
+- `totalQRsCreated < totalQRsAllowed` de la suscripción seleccionada
+- Nombre no vacío
+
+### 16.3 `NotificationCard.vue`
+
+```vue
+<script setup lang="ts">
+import type { INotification } from '@/interfaces/INotification'
+
+interface NotificationProps {
+  id: number
+  type: 'qr_scan' | 'system' | 'billing'
+  title: string
+  message: string
+  date: string
+  read: boolean
+}
+
+const emit = defineEmits<{
+  (e: 'mark-read', id: number): void
+  (e: 'delete', id: number): void
+}>()
+```
+
+**Tipos de notificación (determinan ícono y color):**
+
+- `qr_scan` → ícono `qr_code_scanner`, color naranja
+- `system` → ícono `info`, color azul
+- `billing` → ícono `credit_card`, color verde
+
+**Estados:**
+
+- `read === false` → fondo ligeramente más claro o indicador de "no leído" (dot)
+- `read === true` → opacidad reducida
+
+### 16.4 `SettingsForm.vue`
+
+```vue
+<script setup lang="ts">
+interface SettingsFormProps {
+  user: {
+    name: string
+    email: string
+    phone: string
+    preferences: {
+      emailNotifications: boolean
+      smsNotifications: boolean
+      whatsappNotifications: boolean
+    }
+  }
+}
+
+const emit = defineEmits<{
+  (e: 'save', data: {
+    name: string
+    phone: string
+    preferences: {
+      emailNotifications: boolean
+      smsNotifications: boolean
+      whatsappNotifications: boolean
+    }
+  }): void
+  (e: 'logout'): void
+  (e: 'delete-account'): void
+}>()
+```
+
+**Secciones del formulario:**
+
+1. Información personal: Nombre (editable), Email (solo lectura)
+2. Teléfono (editable, con formateo para +52)
+3. Preferencias de notificación: 3 toggles (Email, SMS, WhatsApp)
+4. Botón "Cerrar Sesión" (rojo)
+5. Botón "Eliminar Cuenta" (rojo, con confirmación)
+
+---
+
+## 17. Manejo de Errores Global
+
+### 17.1 Error Handler en Firebase
+
+```ts
+// utils/firebaseErrors.ts
+const firebaseErrorMessages: Record<string, string> = {
+  'auth/user-not-found': 'No encontramos una cuenta con ese correo electrónico.',
+  'auth/wrong-password': 'Contraseña incorrecta. Intente de nuevo.',
+  'auth/invalid-email': 'El correo electrónico no es válido.',
+  'auth/email-already-in-use': 'Este correo ya está registrado.',
+  'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+  'auth/too-many-requests': 'Demasiados intentos. Espere unos minutos.',
+  'auth/invalid-verification-code': 'El código de verificación no es válido.',
+  'auth/expired-action-code': 'El enlace de verificación ha expirado. Solicite uno nuevo.',
+  'permission-denied': 'No tienes permisos para realizar esta acción.',
+  unavailable: 'El servicio no está disponible en este momento. Intente más tarde.',
+}
+
+export const getFirebaseErrorMessage = (error: { code?: string; message?: string }): string => {
+  return firebaseErrorMessages[error.code || ''] || error.message || 'Error desconocido.'
+}
+```
+
+### 17.2 Conexión / Offline
+
+```vue
+<!-- components/ui/OfflineBanner.vue -->
+<template>
+  <ion-banner v-if="!isOnline" color="warning">
+    <ion-icon :icon="cloudOfflineOutline" slot="start" />
+    Sin conexión. Los datos se sincronizarán cuando vuelva a tener internet.
+  </ion-banner>
+</template>
+```
+
+```ts
+// En App.vue o composable
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const isOnline = ref(navigator.onLine)
+
+const handleOnline = () => {
+  isOnline.value = true
+}
+const handleOffline = () => {
+  isOnline.value = false
+}
+
+onMounted(() => {
+  window.addEventListener('online', handleOnline)
+  window.addEventListener('offline', handleOffline)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('online', handleOnline)
+  window.removeEventListener('offline', handleOffline)
+})
+```
+
+### 17.3 Toast Global
+
+Usar `vue-sonner` igual que en web:
+
+```ts
+import { toast } from 'vue-sonner'
+
+// Success
+toast.success('QR creado exitosamente.')
+
+// Error
+toast.error('Error al crear QR. Intente de nuevo.')
+
+// Info
+toast.info('No hay escaneos registrados aún.')
+```
+
+---
+
+## 18. Estados Vacíos y de Carga
+
+### 18.1 Lista Vacía de QR
+
+```vue
+<template>
+  <div class="flex flex-col items-center justify-center py-12 px-4">
+    <ion-icon :icon="qrCodeOutline" class="text-6xl text-white/20 mb-4" />
+    <h3 class="text-lg font-semibold text-white/60 mb-2">No tienes códigos QR aún</h3>
+    <p class="text-sm text-white/40 mb-6 text-center max-w-xs">
+      Crea tu primer código QR para empezar a proteger tus pertenencias.
+    </p>
+    <ion-button color="primary" @click="$emit('create')">
+      <ion-icon :icon="addOutline" slot="start" />
+      Crear QR
+    </ion-button>
+  </div>
+</template>
+```
+
+### 18.2 Lista Vacía de Notificaciones
+
+```vue
+<template>
+  <div class="flex flex-col items-center justify-center py-12 px-4">
+    <ion-icon :icon="notificationsOffOutline" class="text-6xl text-white/20 mb-4" />
+    <h3 class="text-lg font-semibold text-white/60 mb-2">Sin notificaciones</h3>
+    <p class="text-sm text-white/40 text-center max-w-xs">
+      No tienes notificaciones nuevas. Cuando alguien escanee tu QR, recibirás una alerta aquí.
+    </p>
+  </div>
+</template>
+```
+
+### 18.3 Loader Principal
+
+```vue
+<!-- components/ui/MainLoader.vue (igual que web) -->
+<template>
+  <div class="flex items-center justify-center p-8">
+    <ion-spinner name="crescent" color="warning" />
+  </div>
+</template>
+```
+
+### 18.4 Pull-to-Refresh (Ionic)
+
+```vue
+<template>
+  <ion-refresher slot="fixed" @ionRefresh="handleRefresh($event)">
+    <ion-refresher-content
+      pulling-text="Desliza para actualizar..."
+      refreshing-text="Actualizando..."
+    />
+  </ion-refresher>
+</template>
+
+<script setup lang="ts">
+const handleRefresh = async (event: CustomEvent) => {
+  // Recargar datos
+  await loadQRs()
+  event.detail.complete()
+}
+</script>
+```
+
+---
+
+## 19. Patrones Comunes de Ionic
+
+### 19.1 IonModal en lugar de modales custom
+
+```vue
+<template>
+  <ion-modal :is-open="isOpen" @didDismiss="$emit('close')">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Crear QR</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="$emit('close')">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <!-- formulario -->
+    </ion-content>
+  </ion-modal>
+</template>
+```
+
+### 19.2 IonInput reemplazando inputs HTML
+
+```vue
+<template>
+  <ion-item>
+    <ion-label position="floating">Correo Electrónico</ion-label>
+    <ion-input v-model="email" type="email" placeholder="nombre@dominio.com" :disabled="loading" />
+  </ion-item>
+</template>
+```
+
+### 19.3 IonList + IonItem para listas
+
+```vue
+<template>
+  <ion-list>
+    <ion-item v-for="notif in notifications" :key="notif.id" button @click="markAsRead(notif.id)">
+      <ion-icon :icon="getIcon(notif.type)" slot="start" />
+      <ion-label>
+        <h2>{{ notif.title }}</h2>
+        <p>{{ notif.message }}</p>
+      </ion-label>
+      <ion-note slot="end">{{ notif.date }}</ion-note>
+    </ion-item>
+  </ion-list>
+</template>
+```
+
+### 19.4 Safe Areas (Notch / Dynamic Island)
+
+```css
+/* src/styles.css */
+:root {
+  --ion-safe-area-top: env(safe-area-inset-top);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+.ion-padding-top-safe {
+  padding-top: var(--ion-safe-area-top);
+}
+
+.ion-padding-bottom-safe {
+  padding-bottom: var(--ion-safe-area-bottom);
+}
+```
+
+### 19.5 Manejo de Teclado
+
+```ts
+// En Capacitor, usar Keyboard plugin
+import { Keyboard } from '@capacitor/keyboard'
+
+Keyboard.addListener('keyboardWillShow', (info) => {
+  // Ajustar layout cuando el teclado aparece
+})
+
+Keyboard.addListener('keyboardWillHide', () => {
+  // Restaurar layout
+})
+```
+
+### 19.6 IonRouterOutlet con Transiciones
+
+```vue
+<!-- App.vue -->
+<template>
+  <ion-app>
+    <ion-router-outlet :animated="true" />
+  </ion-app>
+</template>
+```
+
+### 19.7 Permisos de Cámara y Galería
+
+```bash
+npm install @capacitor/camera @capacitor/filesystem
+```
+
+```ts
+import { Camera, CameraResultType } from '@capacitor/camera'
+
+const takePicture = async () => {
+  const image = await Camera.getPhoto({
+    quality: 90,
+    resultType: CameraResultType.Uri,
+  })
+  // image.webPath para mostrar preview
+  // image.path para guardar/subir
+}
+```
+
+---
+
+## 20. Recomendaciones Finales (Extendido)
 
 1. **Mobile-first** — Ionic ya fuerza mobile, pero los layouts deben probarse en 320px–428px.
 2. **Pull-to-refresh** — Usar `ion-refresher` en listas (QR, notificaciones).
@@ -513,3 +1119,10 @@ Con Capacitor App API (`appUrlOpen` listener).
 6. **Mismo Firestore** — Usar la misma base de datos que la web para que los datos sean compartidos.
 7. **Store de user.ts** — Usar **exactamente el mismo** para que la lógica de auth coincida.
 8. **Animated transitions** — Ionic tiene transiciones nativas entre páginas (usar `ion-router-outlet`).
+9. **Error handling centralizado** — Usar `getFirebaseErrorMessage()` en todos los catch.
+10. **Estados vacíos** — Implementar pantallas vacías para QR, notificaciones y logs de escaneo.
+11. **Formateo de teléfono** — El número debe guardarse con código de país (+52 para MX) en Firestore.
+12. **Suscripción trial** — Todo usuario nuevo obtiene 1 año Bronce gratis (1 QR permitido).
+13. **Email de verificación obligatorio** — Sin email verificado no se puede iniciar sesión.
+14. **Deep link para QR** — Configurar esquema `ubiqueme://` para que escanear un QR abra la app.
+15. **Fondo de la app** — Usar `#09090b` para mantener consistencia con la web.
