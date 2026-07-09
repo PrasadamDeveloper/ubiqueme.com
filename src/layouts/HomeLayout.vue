@@ -234,7 +234,7 @@ onUnmounted(() => {
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 bg-[#FF6800] text-white/60 font-bold hover:text-white transition-colors z-50 cursor-pointer rounded-xl ">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-          }}</span>
+            }}</span>
           <span>{{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}</span>
         </button>
 
@@ -496,6 +496,30 @@ onUnmounted(() => {
 
         </div>
 
+      </div>
+
+      <!-- PACA Credit -->
+      <div class="group/credit relative flex justify-center pb-4 pt-2">
+        <span class="text-[10px] tracking-[0.25em] text-zinc-700/50 cursor-default">
+          © Created by
+          <span class="relative inline-block">
+            <span
+              class="font-semibold text-zinc-600/40 hover:text-zinc-500/60 transition-colors duration-300">PACA</span>
+            <!-- Tooltip with 3s hover delay -->
+            <div
+              class="absolute -top-2 left-1/2 -translate-x-1/2 translate-y-[-100%] opacity-0 group-hover/credit:opacity-100 transition-opacity duration-300 delay-[0s] group-hover/credit:delay-[3000ms] pointer-events-none z-50 w-max max-w-[280px]">
+              <div class="bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-2.5 shadow-2xl">
+                <p class="text-[11px] leading-relaxed text-white/70 whitespace-nowrap">
+                  Pablo Alejandro Carbajal Aburto
+                </p>
+              </div>
+              <!-- Arrow -->
+              <div
+                class="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#1a1a1a] border-r border-b border-white/10 rotate-45">
+              </div>
+            </div>
+          </span>
+        </span>
       </div>
 
     </footer>
