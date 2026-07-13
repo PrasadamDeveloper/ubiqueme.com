@@ -65,8 +65,8 @@ onUnmounted(() => {
     <nav :class="[
       'fixed top-0 w-full z-50 transition-all duration-500',
       isScrolled
-        ? 'bg-[#09090b]/95  border-b border-white/5 shadow-[0_4px_40px_rgba(0,0,0,0.4)]'
-        : 'bg-[#09090b] border-b border-white/5'
+        ? 'bg-white/95 border-b border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)]'
+        : 'bg-white border-b border-gray-200'
     ]">
 
       <!-- Subtle Orange Top Line -->
@@ -124,16 +124,16 @@ onUnmounted(() => {
             <!-- Tooltip (hover en cualquier estado) -->
             <div
               class="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-all duration-300 z-50 w-max max-w-[220px]">
-              <div class="bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2 shadow-2xl">
-                <p class="text-[10px] leading-relaxed text-white/70">
-                  <span class="text-orange-400 font-bold">🔒 SSL 256-bit</span><br>
+              <div class="bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-lg">
+                <p class="text-[10px] leading-relaxed text-gray-600">
+                  <span class="text-orange-500 font-bold">🔒 SSL 256-bit</span><br>
                   Tu información viaja cifrada y protegida.
                 </p>
               </div>
             </div>
           </div>
           <RouterLink :to="{ name: 'home' }"
-            class="flex items-center gap-2 group cursor-pointer z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] rounded-lg">
+            class="flex items-center gap-2 group cursor-pointer z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-lg">
             <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
               class="hidden sm:block w-10 h-10 sm:w-12 sm:h-12 object-contain" />
             <!-- Desktop: domains side by side -->
@@ -141,7 +141,7 @@ onUnmounted(() => {
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
                 <Transition name="slide-up">
                   <div :key="currentDomainIndex"
-                    class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[15px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
+                    class="absolute left-0 flex items-baseline text-gray-900 font-black tracking-tighter text-[15px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
                     <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                     <span class="text-orange-500">.com</span>
                   </div>
@@ -150,7 +150,7 @@ onUnmounted(() => {
               <div class="relative h-4 sm:h-5 overflow-hidden flex items-center">
                 <Transition name="slide-up">
                   <div :key="currentTaglineIndex"
-                    class="absolute left-0 text-[9px]! sm:text-[10px] text-white/30 font-medium tracking-wider whitespace-nowrap font-google-sans"
+                    class="absolute left-0 text-[9px]! sm:text-[10px] text-gray-400 font-medium tracking-wider whitespace-nowrap font-google-sans"
                     style="font-variation-settings: normal">
                     <template v-if="taglines[currentTaglineIndex]!.clickable">
                       por <span @click.stop="openAziechrie"
@@ -176,7 +176,7 @@ onUnmounted(() => {
             <div class="flex flex-col justify-center h-8 overflow-hidden relative min-w-[130px]">
               <Transition name="slide-up">
                 <div :key="currentDomainIndex"
-                  class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
+                  class="absolute left-0 flex items-baseline text-gray-900 font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
                   <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                   <span class="text-orange-500">.com</span>
                 </div>
@@ -190,9 +190,9 @@ onUnmounted(() => {
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
             :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
             class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group relative"
-            :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(255,255,255,0.4)' }"
+            :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)' }"
             @mouseenter="($event.target as HTMLElement).style.color = '#f97316'"
-            @mouseleave="($event.target as HTMLElement).style.color = $route.name === link.pathName ? '#f97316' : 'rgba(255,255,255,0.4)'">
+            @mouseleave="($event.target as HTMLElement).style.color = $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)'">
             <span
               class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
                 link.icon
@@ -212,18 +212,18 @@ onUnmounted(() => {
         <div class="hidden lg:flex items-center space-x-4 z-50">
           <template v-if="!useUserStore().getUserId">
             <RouterLink :to="{ name: 'login' }"
-              class="text-white/40 hover:text-white transition-colors duration-300 text-[11px] font-black uppercase tracking-widest px-4 py-2 cursor-pointer">
+              class="text-gray-500 hover:text-gray-900 transition-colors duration-300 text-[11px] font-black uppercase tracking-widest px-4 py-2 cursor-pointer">
               Iniciar sesión
             </RouterLink>
 
             <RouterLink :to="{ name: 'register' }"
-              class="bg-orange-500 text-[#f7f7f7] px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
+              class="bg-orange-500 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
               Registrarse
             </RouterLink>
           </template>
           <template v-else>
             <RouterLink :to="{ name: 'dashboard' }"
-              class="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
+              class="bg-gray-100 border border-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
               <span class="material-symbols-outlined notranslate text-sm">dashboard</span>
               Panel
             </RouterLink>
