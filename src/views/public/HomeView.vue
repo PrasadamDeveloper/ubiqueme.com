@@ -206,12 +206,14 @@ onMounted(() => {
 
               </span>
 
-              <span :key="`place-${currentPlace}`"
-                class="block animate-fade-up mt-4 block bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent">
-
-                {{ currentPlace?.name }}
-
-              </span>
+              <div class="relative h-12 sm:h-14 overflow-hidden flex items-center justify-center mt-4">
+                <Transition name="slide-up">
+                  <div :key="currentPlace?.name"
+                    class="bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1]">
+                    {{ currentPlace?.name }}
+                  </div>
+                </Transition>
+              </div>
 
             </h1>
 
@@ -803,5 +805,21 @@ button {
 
 .testimonials-track:hover {
   animation-play-state: paused;
+}
+
+/* Slide-up transition for place name rotation */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 </style>
