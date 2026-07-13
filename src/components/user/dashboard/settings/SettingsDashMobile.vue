@@ -62,23 +62,11 @@ onMounted(async () => {
     subscriptions.value = subsSnapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
 
     const qrsSnapshot = await getDocs(collection(db, `users/${userId}/qrs`))
-    const qrDocs = qrsSnapshot.docs.map((d) => ({
+    userQrs.value = qrsSnapshot.docs.map((d) => ({
       id: d.id,
       docId: d.id,
       ...d.data(),
     }))
-
-    const qrScanPromises = qrDocs.map(async (qr: any) => {
-      try {
-        const publicQrRef = doc(db, 'publicQR', qr.id)
-        const publicSnap = await getDoc(publicQrRef)
-        if (publicSnap.exists()) {
-          qr.scans = publicSnap.data().totalScans ?? 0
-        }
-      } catch { /* publicQR may not exist */ }
-      return qr
-    })
-    userQrs.value = await Promise.all(qrScanPromises)
   } catch (error) {
     toast.error(`Error al cargar datos: ${error}`)
   } finally {
@@ -270,7 +258,7 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
               class="bg-[#1C1B1F] border border-[#49454F]/30 rounded-xl p-3 hover:border-orange-500/30 transition-all text-left cursor-pointer active:scale-[0.98]">
               <div class="flex items-center justify-between mb-1">
                 <span class="text-[8px] font-mono text-[#CAC4D0]/30 truncate max-w-[70px]">{{ qr.id?.slice(0, 8)
-                  }}..</span>
+                }}..</span>
                 <span :class="qrStatusColor(qr.status)"
                   class="px-1 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-widest border">{{ qr.status
                   }}</span>
@@ -306,7 +294,7 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
                   <span
                     :class="sub.status === 'active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-white/10 text-[#CAC4D0]/50 border-white/10'"
                     class="px-1.5 py-0.5 rounded-full border text-[7px] font-bold uppercase tracking-widest">{{
-                    sub.status }}</span>
+                      sub.status }}</span>
                 </div>
                 <div class="text-right">
                   <p class="text-[10px] font-medium text-[#E6E1E5]">{{ sub.totalQRsCreated ?? 0 }}/{{
@@ -382,7 +370,7 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
               <button v-for="r in deleteReasons" :key="r" @click="deleteReason = r"
                 class="w-full text-left px-3 py-2 rounded-xl border text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]"
                 :class="deleteReason === r ? 'border-rose-500/40 bg-rose-500/10 text-rose-400' : 'border-[#49454F]/30 bg-[#1C1B1F] text-[#CAC4D0]/60 hover:border-white/20'">{{
-                r }}</button>
+                  r }}</button>
             </div>
             <div v-if="deleteReason === 'Otro (especificar)'">
               <textarea v-model="deleteCustomReason" rows="2" placeholder="Describe el motivo..."

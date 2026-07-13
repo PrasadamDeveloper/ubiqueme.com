@@ -5,6 +5,19 @@ import { useAuth } from '@/handleAuth'
 
 const { handleLogout } = useAuth()
 
+const switchLanguage = (lang: string) => {
+  document.cookie = `googtrans=/es/${lang}; path=/; max-age=31536000`;
+  window.location.reload();
+}
+
+const currentLang = ref('es')
+
+const languages = [
+  { code: 'es', label: 'Español' },
+  { code: 'en', label: 'English' },
+  { code: 'pt', label: 'Português' },
+]
+
 const navLinks = [
   { name: 'Inicio', pathName: 'home', icon: 'home' },
   { name: 'Ayuda', pathName: 'help', icon: 'help' },
@@ -15,9 +28,13 @@ const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
 const currentDomainIndex = ref(0);
 const isMobileMenuOpen = ref(false);
 const showCompactBadge = ref(false);
-let intervalId: any;
+let intervalId: ReturnType<typeof setInterval> | undefined;
 
 onMounted(() => {
+  // Detect current language from GTranslate cookie
+  const match = document.cookie.match(/googtrans=\/es\/(\w+)/)
+  if (match?.[1]) currentLang.value = match[1]
+
   // Compact SSL badge after 4s
   setTimeout(() => {
     showCompactBadge.value = true;
@@ -151,6 +168,19 @@ onUnmounted(() => {
               <span class="material-symbols-outlined notranslate text-[22px]">{{ link.icon }}</span>
               <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
             </RouterLink>
+          </div>
+
+          <!-- Language selector -->
+          <div class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/5 bg-white/[0.03] my-4">
+            <span class="material-symbols-outlined notranslate text-[22px] text-white/40">language</span>
+            <span class="text-xs font-black uppercase tracking-widest text-white/40">Idioma</span>
+            <div class="ml-auto flex items-center gap-1">
+              <button v-for="lang in languages" :key="lang.code" @click="switchLanguage(lang.code)"
+                class="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                :class="currentLang === lang.code ? 'bg-orange-500 text-black' : 'text-white/40 hover:text-white/70 hover:bg-white/10'">
+                {{ lang.code }}
+              </button>
+            </div>
           </div>
 
           <!-- Actions -->

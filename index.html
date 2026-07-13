@@ -130,8 +130,12 @@
     }
   </script>
 
-  <!-- GTranslate: hide on mobile -->
+  <!-- GTranslate: hidden on mobile (inline selector in menu replaces it) -->
   <style>
+    .gtranslate_wrapper {
+      display: block;
+    }
+
     @media (max-width: 767px) {
       .gtranslate_wrapper {
         display: none !important;

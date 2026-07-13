@@ -42,6 +42,7 @@ const mobileButtons = [
   { name: 'Planes', label: 'Planes', icon: 'ri-medal-line', iconActive: 'ri-medal-fill' },
   { name: 'Configuración', label: 'Ajustes', icon: 'co-settings', iconActive: 'md-settings' },
   { name: 'Soporte', label: 'Ayuda', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
+  { name: 'Cerrar Sesión', label: 'Salir', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' },
 ]
 
 type ComponentName = 'Mis QR' | 'Configuración' | 'Cerrar Sesión' | 'Soporte' | 'Planes'
@@ -110,9 +111,9 @@ const changeComponent = (component: ComponentName) => {
               class="w-18 h-12 bg-[#090300] rounded-xl flex items-center justify-center shadow-2xl overflow-hidden absolute left-0">
               <span v-if="!hoverOnSideBar" class="text-orange-100 text-xs font-google-sans font-medium">{{
                 'Hola'
-              }}</span>
+                }}</span>
               <span v-else class="text-white text-xs font-google-sans animate-fade-right">{{ useUserStore().getFirstName
-              }}</span>
+                }}</span>
             </div>
           </div>
 
