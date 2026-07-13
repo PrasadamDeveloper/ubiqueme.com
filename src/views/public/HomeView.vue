@@ -166,8 +166,15 @@ onMounted(() => {
 
 
         <!-- HERO -->
-        <section class="px-6 sm:px-10 lg:px-12 pt-24 lg:pt-32 pb-20 relative z-20 min-h-[600px]"
-          :style="{ backgroundImage: `url(${currentPlace?.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }">
+        <section class="px-6 sm:px-10 lg:px-12 pt-24 lg:pt-32 pb-20 relative z-20 min-h-[600px]">
+
+          <!-- Background images with crossfade -->
+          <div aria-hidden="true" class="absolute inset-0 -z-20 overflow-hidden">
+            <Transition name="crossfade" mode="out-in">
+              <img :key="currentPlace?.image" :src="currentPlace?.image" alt=""
+                class="absolute inset-0 h-full w-full object-cover" />
+            </Transition>
+          </div>
 
           <!-- Gradient overlay -->
           <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-b from-slate-200/50 to-white to-90%">
@@ -263,7 +270,7 @@ onMounted(() => {
 
           <!-- Trust indicators -->
 
-          <div class="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-6 border-t border-slate-200 pt-10 sm:grid-cols-3">
+          <div class=" mt-16 grid  grid-cols-1 gap-6 border-t border-slate-200 pt-10 sm:grid-cols-3 ">
 
             <div class="text-center">
 
@@ -821,5 +828,16 @@ button {
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(-20px);
+}
+
+/* Crossfade transition for background images */
+.crossfade-enter-active,
+.crossfade-leave-active {
+  transition: opacity 0.6s ease;
+}
+
+.crossfade-enter-from,
+.crossfade-leave-to {
+  opacity: 0;
 }
 </style>
