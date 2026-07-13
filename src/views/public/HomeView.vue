@@ -206,8 +206,8 @@ onMounted(() => {
 
               </span>
 
-              <div class="relative h-12 sm:h-14 overflow-hidden flex items-center justify-center mt-4">
-                <Transition name="slide-up">
+              <div class="relative overflow-hidden mt-4">
+                <Transition name="slide-up" mode="out-in">
                   <div :key="currentPlace?.name"
                     class="bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1]">
                     {{ currentPlace?.name }}
