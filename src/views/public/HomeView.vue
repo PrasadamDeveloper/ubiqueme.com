@@ -6,7 +6,7 @@ import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
 import VideoGrid from '@/components/home/VideoGrid/VideoGrid.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { useUserStore } from '@/stores/user';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import bag from '@/assets/images/bag-ubq.webp'
 import dog from '@/assets/images/dog-ubq.webp'
@@ -144,15 +144,21 @@ const qrPlaces = [
   },
 ]
 const currentPlace = ref<{ name: string, image: string } | undefined>(qrPlaces[0]);
+let placeInterval: ReturnType<typeof setInterval> | undefined;
+
 const switchPlaces = () => {
-  setInterval(() => {
+  placeInterval = setInterval(() => {
     const placeIndexRandom = Math.round(Math.random() * qrPlaces.length - 1);
     currentPlace.value = qrPlaces[placeIndexRandom]
-  }, 1600);
+  }, 3600);
 }
 
 onMounted(() => {
   switchPlaces()
+})
+
+onUnmounted(() => {
+  if (placeInterval) clearInterval(placeInterval);
 })
 
 //Frase: Por que localizar es seguridad y tranquilidad
@@ -206,10 +212,9 @@ onMounted(() => {
 
               Códigos QR para
 
-              <span
-                class="mt-4 block bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent">
+              <span class="mt-4 block text-slate-700">
 
-                cuidar su
+                notificar de su
 
               </span>
 
