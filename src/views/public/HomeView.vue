@@ -2,12 +2,11 @@
 import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue'
 import HowItWorks from '@/components/home/HowItWorks/HowItWorks.vue'
 import PricingPlans from '@/components/home/Pricing/PricingPlans.vue'
-import QRDemoCard from '@/components/home/QRDemoCard/QRDemoCard.vue'
 import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
 import VideoGrid from '@/components/home/VideoGrid/VideoGrid.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { useUserStore } from '@/stores/user';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import bag from '@/assets/images/bag-ubq.webp'
 import dog from '@/assets/images/dog-ubq.webp'
@@ -145,6 +144,11 @@ const qrPlaces = [
   },
 ]
 const currentPlace = ref<{ name: string, image: string } | undefined>(qrPlaces[0]);
+const qrDynamicUrl = computed(() => {
+  const name = currentPlace.value?.name ?? 'Objeto'
+  const text = `Hola, escaneé tu QR de ${name} para contactarte`
+  return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
+})
 let placeInterval: ReturnType<typeof setInterval> | undefined;
 
 const switchPlaces = () => {
@@ -204,79 +208,90 @@ onUnmounted(() => {
 
           </div>
 
-          <!-- Title -->
+          <!-- Hero Content: QR Left + Text Right on desktop -->
+          <div class="mx-auto mt-10 max-w-6xl flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
 
-          <div class="mx-auto mt-10 max-w-5xl text-center ">
+            <!-- Left: QR Code -->
+            <div class="shrink-0 order-2 lg:order-1">
+              <div
+                class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-3xl flex items-center justify-center bg-white p-3 shadow-lg border border-amber-200">
+                <QrcodeVue :value="qrDynamicUrl" :size="220" render-as="svg" level="H" />
+              </div>
+              <p class="mt-3 text-center text-xs text-slate-500 font-medium">
+                QR dinámico para <span class="font-semibold text-slate-700">{{ currentPlace?.name }}</span>
+              </p>
+            </div>
 
-            <h1
-              class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1] text-slate-800">
+            <!-- Right: Text Content -->
+            <div class="flex-1 text-center lg:text-left order-1 lg:order-2">
 
-              Códigos QR para
+              <h1
+                class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] text-slate-800">
 
-              <span class="mt-4 block text-slate-700">
+                Códigos QR para
 
-                notificar de su
+                <span class="mt-3 block text-slate-600 text-2xl sm:text-3xl lg:text-4xl font-semibold">
 
-              </span>
+                  notificar de su
 
-              <div class="relative overflow-hidden mt-4">
-                <Transition name="slide-up" mode="out-in">
-                  <div :key="currentPlace?.name"
-                    class="bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1]">
-                    {{ currentPlace?.name }}
-                  </div>
-                </Transition>
+                </span>
+
+                <div class="relative overflow-hidden mt-3 h-14 sm:h-16 lg:h-20">
+                  <Transition name="slide-up" mode="out-in">
+                    <div :key="currentPlace?.name"
+                      class="bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-[1.1]">
+                      {{ currentPlace?.name }}
+                    </div>
+                  </Transition>
+                </div>
+
+              </h1>
+
+              <!-- Description -->
+
+              <p class="mt-6 text-base sm:text-lg leading-8 text-slate-600 max-w-xl mx-auto lg:mx-0">
+
+                Etiquetas físicas y pulseras inteligentes para recuperar
+                objetos perdidos, ayudar a mascotas, niños y adultos mayores,
+                manteniendo siempre protegida su información personal.
+
+              </p>
+
+              <!-- Buttons -->
+
+              <div class="mt-8 flex flex-col items-center lg:items-start gap-4 sm:flex-row">
+
+                <router-link :to="{ name: 'register' }"
+                  class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-8 py-4 text-white font-semibold transition hover:bg-slate-800">
+
+                  Crear cuenta gratis
+
+                  <span class="material-symbols-outlined">
+                    arrow_forward
+                  </span>
+
+                </router-link>
+
+                <router-link :to="{ name: 'pricing' }"
+                  class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-8 py-4 font-semibold text-slate-700 transition hover:bg-slate-50">
+
+                  Ver planes
+
+                  <span class="material-symbols-outlined">
+                    payments
+                  </span>
+
+                </router-link>
+
               </div>
 
-            </h1>
-
-          </div>
-
-          <!-- Description -->
-
-          <div class="mx-auto mt-10 max-w-3xl">
-
-            <p class="text-center text-lg sm:text-xl leading-9 text-slate-600">
-
-              Etiquetas físicas y pulseras inteligentes para recuperar
-              objetos perdidos, ayudar a mascotas, niños y adultos mayores,
-              manteniendo siempre protegida su información personal.
-
-            </p>
-
-          </div>
-
-          <!-- Buttons -->
-
-          <div class="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-
-            <router-link :to="{ name: 'register' }"
-              class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-8 py-4 text-white font-semibold transition hover:bg-slate-800">
-
-              Crear cuenta gratis
-
-              <span class="material-symbols-outlined">
-                arrow_forward
-              </span>
-
-            </router-link>
-
-            <router-link :to="{ name: 'pricing' }"
-              class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-8 py-4 font-semibold text-slate-700 transition hover:bg-slate-50">
-
-              Ver planes
-
-              <span class="material-symbols-outlined">
-                payments
-              </span>
-
-            </router-link>
+            </div>
 
           </div>
 
           <!-- Trust indicators -->
 
-          <div class=" mt-16 grid  grid-cols-1 gap-6 border-t border-slate-200 pt-10 sm:grid-cols-3 ">
+          <div class="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-6 border-t border-slate-200 pt-10 sm:grid-cols-3 ">
 
             <div class="text-center">
 
@@ -514,8 +529,6 @@ onUnmounted(() => {
           </div>
 
         </section>
-
-        <QRDemoCard :place-name="currentPlace?.name ?? 'Código QR'" />
 
         <!-- Lightweight Features Grid (full-width, centered) -->
         <!-- FEATURES -->
