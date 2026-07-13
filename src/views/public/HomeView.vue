@@ -2,6 +2,7 @@
 import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue'
 import HowItWorks from '@/components/home/HowItWorks/HowItWorks.vue'
 import PricingPlans from '@/components/home/Pricing/PricingPlans.vue'
+import QRDemoCard from '@/components/home/QRDemoCard/QRDemoCard.vue'
 import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
 import VideoGrid from '@/components/home/VideoGrid/VideoGrid.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
@@ -183,7 +184,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Gradient overlay -->
-          <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-b from-slate-200/50 to-white to-90%">
+          <div aria-hidden="true" class="absolute inset-0 -z-10 bg-linear-to-b from-slate-200/50 to-white to-100%">
           </div>
 
           <!-- Badge -->
@@ -513,6 +514,8 @@ onUnmounted(() => {
           </div>
 
         </section>
+
+        <QRDemoCard :place-name="currentPlace?.name ?? 'Código QR'" />
 
         <!-- Lightweight Features Grid (full-width, centered) -->
         <!-- FEATURES -->
