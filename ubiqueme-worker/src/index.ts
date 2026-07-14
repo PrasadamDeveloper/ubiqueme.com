@@ -1066,12 +1066,19 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('No text body', { status: 200 });
 		}
 
-		// 2. Extract QR ID and optional fields
-		const idMatch = bodyText.match(/ID:\s*([A-Za-z0-9_-]+)/i);
-		if (!idMatch || !idMatch[1]) {
-			// No QR ID detected → send welcome/promotional message instead of format error
+		// 2. Check for promotional QR scan message
+		const PROMO_MESSAGE = 'Hola, es mi primera vez escaneando en ubiqueme';
+		if (bodyText.trim() === PROMO_MESSAGE) {
 			await sendWelcomeMessage(env, senderPhone);
 			console.log(`[Worker] Mensaje de bienvenida enviado a ${senderPhone}`);
+			return new Response('OK', { status: 200 });
+		}
+
+		// 3. Extract QR ID and optional fields
+		const idMatch = bodyText.match(/ID:\s*([A-Za-z0-9_-]+)/i);
+		if (!idMatch || !idMatch[1]) {
+			await sendFormatInstruction(env, senderPhone);
+			console.log(`[Worker] Formato incorrecto, se instruyó al usuario ${senderPhone}`);
 			return new Response('OK', { status: 200 });
 		}
 
