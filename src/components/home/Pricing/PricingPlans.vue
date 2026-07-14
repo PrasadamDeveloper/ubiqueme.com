@@ -113,11 +113,11 @@ const plans = [
         <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
         <span class="text-[9px] font-black uppercase tracking-[0.4em] text-orange-500">Planes de Protección</span>
       </div>
-      <h2 class="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter uppercase">
+      <h2 class="text-5xl md:text-7xl font-black text-gray-900 leading-[0.9] tracking-tighter uppercase">
         Elegir <br /><span class="text-orange-500">Plan</span> <span
           class="material-symbols-outlined notranslate text-5xl md:text-7xl text-amber-500 align-middle">shopping_bag</span>
       </h2>
-      <p class="text-white/40 text-lg max-w-xl mx-auto font-medium leading-relaxed">
+      <p class="text-gray-500 text-lg max-w-xl mx-auto font-medium leading-relaxed">
         Desde protección básica hasta control total de tus bienes. Sin contratos, sin complicaciones.
       </p>
     </div>
@@ -131,10 +131,10 @@ const plans = [
       </div>
       <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
         <div class="flex-1">
-          <h3 class="text-lg sm:text-xl font-black text-white tracking-tight">
+          <h3 class="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
             1 año plan Bronce — agregado
           </h3>
-          <p class="text-white/60 text-sm font-medium mt-1">
+          <p class="text-gray-600 text-sm font-medium mt-1">
             Se agrega automáticamente al crear su cuenta
           </p>
         </div>
@@ -148,12 +148,12 @@ const plans = [
 
     <!-- Currency Selector -->
     <div class="flex justify-center mb-10">
-      <div class="inline-flex bg-black/40 rounded-2xl border border-white/[0.08] p-1 gap-0.5">
+      <div class="inline-flex bg-gray-100 rounded-2xl border border-gray-200 p-1 gap-0.5">
         <button v-for="c in currencies" :key="c.key" @click="selectedCurrency = c.key"
           class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer"
           :class="selectedCurrency === c.key
             ? 'bg-orange-500 text-black shadow-lg shadow-orange-500/20'
-            : 'text-white/40 hover:text-white/70'">
+            : 'text-gray-500 hover:text-gray-700'">
           <span class="text-sm">{{ c.flag }}</span>
           {{ c.label }}
         </button>
@@ -177,7 +177,7 @@ const plans = [
         <div v-if="plan.badge" class="absolute -top-4 left-1/2 -translate-x-1/2">
           <div
             class="px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border whitespace-nowrap"
-            :style="{ color: plan.accentText, borderColor: plan.accentBorder, background: '#09090b' }">
+            :style="{ color: plan.accentText, borderColor: plan.accentBorder, background: '#ffffff' }">
             {{ plan.badge }}
           </div>
         </div>
@@ -189,7 +189,7 @@ const plans = [
               <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-1" :style="{ color: plan.accentText }">
                 Plan
               </p>
-              <h3 class="text-4xl font-black text-white tracking-tight leading-none">{{ plan.name }}</h3>
+              <h3 class="text-4xl font-black text-gray-900 tracking-tight leading-none">{{ plan.name }}</h3>
             </div>
             <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0"
               :style="{ borderColor: plan.accentBorder, background: plan.accent }">
@@ -198,11 +198,11 @@ const plans = [
               </span>
             </div>
           </div>
-          <p class="text-white/40 text-sm font-medium">{{ plan.tagline }}</p>
+          <p class="text-gray-500 text-sm font-medium">{{ plan.tagline }}</p>
         </div>
 
         <!-- Price -->
-        <div class="mb-8 pb-8 border-b border-white/[0.06]">
+        <div class="mb-8 pb-8 border-b border-gray-200">
           <!-- ANNUAL badge -->
           <div
             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-orange-500/30 bg-orange-500/15 text-orange-400 text-[10px] font-black uppercase tracking-[0.25em] mb-3 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
@@ -210,12 +210,13 @@ const plans = [
             ANUAL
           </div>
           <div class="flex items-baseline gap-2">
-            <span class="text-5xl font-black text-white tracking-tighter">{{ plan.prices[selectedCurrency].symbol }}{{
-              plan.prices[selectedCurrency].price }}</span>
+            <span class="text-5xl font-black text-gray-900 tracking-tighter">{{ plan.prices[selectedCurrency].symbol
+              }}{{
+                plan.prices[selectedCurrency].price }}</span>
             <span class="text-orange-400/70 text-sm font-black uppercase tracking-widest">{{
               plan.prices[selectedCurrency].label }} / año</span>
           </div>
-          <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-2">~&thinsp;${{
+          <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-2">~&thinsp;${{
             plan.prices[selectedCurrency].monthly }} /mes · {{
               plan.prices[selectedCurrency].note }}</p>
         </div>
@@ -225,14 +226,14 @@ const plans = [
           <li v-for="(feat, i) in plan.features" :key="i" class="flex items-start gap-3">
             <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" :style="feat.included
               ? { background: plan.accentBorder, boxShadow: `0 0 10px ${plan.accentBorder}` }
-              : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }">
+              : { background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)' }">
               <span class="material-symbols-outlined notranslate text-[12px]! font-black"
-                :style="feat.included ? { color: plan.accentText } : { color: 'rgba(255,255,255,0.15)' }">
+                :style="feat.included ? { color: plan.accentText } : { color: 'rgba(0,0,0,0.15)' }">
                 {{ feat.included ? 'check' : 'remove' }}
               </span>
             </div>
             <span class="text-sm font-medium leading-snug"
-              :class="feat.included ? 'text-white/80' : 'text-white/20 line-through decoration-white/10'">
+              :class="feat.included ? 'text-gray-700' : 'text-gray-300 line-through decoration-gray-300'">
               {{ feat.label }}
             </span>
           </li>
@@ -242,7 +243,7 @@ const plans = [
         <button @click="handlePlanClick(plan.id)"
           class="w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-[0.97] border cursor-pointer"
           :style="plan.id === 'bronce'
-            ? { background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.15)', color: '#ffffff' }
+            ? { background: '#f3f4f6', borderColor: '#e5e7eb', color: '#374151' }
             : { background: plan.accentText, borderColor: plan.accentText, color: '#09090b' }">
           {{ plan.cta }}
         </button>
@@ -257,27 +258,27 @@ const plans = [
         <span class="material-symbols-outlined notranslate text-[16px]">local_shipping</span>
         Información de Envío Física (Sólo México)
       </div>
-      <p class="text-sm text-white/80 leading-relaxed">
+      <p class="text-sm text-gray-700 leading-relaxed">
         Cada plan incluye <strong class="text-orange-400">1 envío físico gratuito</strong> a cualquier parte de la
         República Mexicana.
       </p>
-      <p class="text-xs text-white/60 leading-relaxed">
-        💡 <strong class="text-white">Recomendación importante:</strong> Le sugerimos solicitar todos los códigos QR
+      <p class="text-xs text-gray-500 leading-relaxed">
+        💡 <strong class="text-gray-900">Recomendación importante:</strong> Le sugerimos solicitar todos los códigos QR
         permitidos en su plan (1 en Bronce, 3 en Plata, 5 en Oro) en su primer envío gratuito. Los QRs adicionales o
         solicitados posteriormente siguen siendo completamente gratuitos, pero se cobrará una tarifa de de envío de
-        <strong class="text-white">$199 MXN</strong> por paquete.
+        <strong class="text-gray-900">$199 MXN</strong> por paquete.
       </p>
     </div>
 
     <!-- Disclaimer (solo no logueados) -->
     <div v-if="!useUserStore().getUserId" class="text-center mb-6">
-      <p class="text-[10px] text-white/30 font-medium">
+      <p class="text-[10px] text-gray-400 font-medium">
         Al crear su cuenta, el plan Bronce se agrega automáticamente
       </p>
     </div>
 
     <!-- Bottom Note -->
-    <p class="text-center text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mt-8">
+    <p class="text-center text-gray-400 text-[10px] font-black uppercase tracking-[0.3em] mt-8">
       Todos los planes incluyen encriptación de extremo a extremo · Sin contratos forzosos · Cancela cuando quieras
     </p>
 

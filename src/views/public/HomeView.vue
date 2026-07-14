@@ -18,7 +18,7 @@ import eldery from '@/assets/images/eldery.webp'
 import laptop from '@/assets/images/laptop-ubq.webp'
 import smartphone from '@/assets/images/smartphone.webp'
 
-import QrcodeVue from 'qrcode.vue'
+import QrcodeVue, { type ImageSettings } from 'qrcode.vue'
 
 interface Testimonial {
   id: number;
@@ -102,7 +102,15 @@ const toggleSound = (index: number) => {
   toast.info(video.muted ? 'Sonido desactivado' : 'Sonido activado');
 };
 
-
+const imageSettings = ref<ImageSettings>({
+  src: 'https://files.catbox.moe/eslt94.webp',
+  width: 40,
+  height: 40,
+  // x: 10,
+  // y: 10,
+  excavate: false,
+  // crossOrigin: 'anonymous', // Set this when you need to export the canvas to an image.
+})
 
 
 const qrPlaces = [
@@ -146,7 +154,7 @@ const qrPlaces = [
 const currentPlace = ref<{ name: string, image: string } | undefined>(qrPlaces[0]);
 const qrDynamicUrl = computed(() => {
   const name = currentPlace.value?.name ?? 'Objeto'
-  const text = `Hola, escaneé tu QR de ${name} para contactarte`
+  const text = `Hola, es mi primera vez escaneando en ubiqueme`
   return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
 })
 let placeInterval: ReturnType<typeof setInterval> | undefined;
@@ -188,15 +196,15 @@ onUnmounted(() => {
           </div>
 
           <!-- Gradient overlay -->
-          <div aria-hidden="true" class="absolute inset-0 -z-10 bg-linear-to-b from-slate-200/50 to-white to-100%">
+          <div aria-hidden="true" class="absolute inset-0 -z-10 bg-linear-to-b from-slate-200/50 to-slate-50 to-100%">
           </div>
 
           <!-- Badge -->
           <div class="flex justify-center">
 
-            <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-5 py-2">
+            <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-5 py-2">
 
-              <span class="material-symbols-outlined text-amber-600 text-[20px]">
+              <span class="material-symbols-outlined text-green-900 text-[20px]">
                 verified_user
               </span>
 
@@ -208,22 +216,41 @@ onUnmounted(() => {
 
           </div>
 
-          <!-- Hero Content: QR Left + Text Right on desktop -->
-          <div class="mx-auto mt-10 max-w-6xl flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+          <!-- Hero Content: QR + Text + Image -->
+          <div class="mx-auto mt-0 max-w-6xl flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
 
-            <!-- Left: QR Code -->
-            <div class="shrink-0 order-2 lg:order-1">
+            <!-- QR Code -->
+            <div class="shrink-0">
+              <!-- Banner promocional llamativo -->
               <div
-                class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-3xl flex items-center justify-center bg-white p-3 shadow-lg border border-amber-200">
-                <QrcodeVue :value="qrDynamicUrl" :size="220" render-as="svg" level="H" />
+                class="mb-4 w-48 sm:w-56 lg:w-64 rounded-2xl bg-gradient-to-br from-blue-50 to-white p-4 text-sky-900 text-center ">
+                <div class="flex items-center justify-center gap-1.5">
+                  <span class="material-symbols-outlined text-[22px]">touch_app</span>
+                  <span class="text-sm font-extrabold tracking-tight">¡Pruébelo Gratis Ahora!</span>
+                </div>
+
+                <p class="mt-3 text-[11px] leading-tight text-slate-800/85 font-medium ">
+                  Escanee este QR y vea cómo funciona Ubiqueme.com
+                </p>
+                <div class="flex  items-center mt-2">
+                  <v-icon name="fa-whatsapp" scale=".9" />
+                  <small class="text-[9px]"> Será redirigido al WhatsApp Oficial de
+                    Ubiqueme</small>
+                </div>
+                <div class="mt-1.5 flex justify-center">
+                  <span class="material-symbols-outlined text-lg animate-jump   text-blue-700/90">expand_more</span>
+                </div>
               </div>
-              <p class="mt-3 text-center text-xs text-slate-500 font-medium">
-                QR dinámico para <span class="font-semibold text-slate-700">{{ currentPlace?.name }}</span>
-              </p>
+
+              <div
+                class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-3xl flex items-center justify-center bg-white p-3 border border-slate-200">
+                <QrcodeVue :value="qrDynamicUrl" :size="220" render-as="svg" level="Q"
+                  :image-settings="imageSettings" />
+              </div>
             </div>
 
-            <!-- Right: Text Content -->
-            <div class="flex-1 text-center lg:text-left order-1 lg:order-2">
+            <!-- Text Content -->
+            <div class="flex-1 text-center lg:text-left">
 
               <h1
                 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] text-slate-800">
@@ -231,9 +258,7 @@ onUnmounted(() => {
                 Códigos QR para
 
                 <span class="mt-3 block text-slate-600 text-2xl sm:text-3xl lg:text-4xl font-semibold">
-
-                  notificar de su
-
+                  notificarle de su
                 </span>
 
                 <div class="relative overflow-hidden mt-3 h-14 sm:h-16 lg:h-20">
@@ -247,43 +272,133 @@ onUnmounted(() => {
 
               </h1>
 
-              <!-- Description -->
-
               <p class="mt-6 text-base sm:text-lg leading-8 text-slate-600 max-w-xl mx-auto lg:mx-0">
-
                 Etiquetas físicas y pulseras inteligentes para recuperar
                 objetos perdidos, ayudar a mascotas, niños y adultos mayores,
                 manteniendo siempre protegida su información personal.
-
               </p>
-
-              <!-- Buttons -->
 
               <div class="mt-8 flex flex-col items-center lg:items-start gap-4 sm:flex-row">
 
                 <router-link :to="{ name: 'register' }"
                   class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-8 py-4 text-white font-semibold transition hover:bg-slate-800">
-
                   Crear cuenta gratis
-
-                  <span class="material-symbols-outlined">
-                    arrow_forward
-                  </span>
-
+                  <span class="material-symbols-outlined">arrow_forward</span>
                 </router-link>
 
                 <router-link :to="{ name: 'pricing' }"
                   class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-8 py-4 font-semibold text-slate-700 transition hover:bg-slate-50">
-
                   Ver planes
-
-                  <span class="material-symbols-outlined">
-                    payments
-                  </span>
-
+                  <span class="material-symbols-outlined">payments</span>
                 </router-link>
 
               </div>
+
+            </div>
+
+            <!-- Right content image -->
+            <div class="shrink-0 max-lg:mx-auto relative z-20">
+
+              <!-- Marco del teléfono -->
+              <img src="../../assets/images/phonemockup-ubq.webp" alt=""
+                class="w-48 sm:w-56 lg:w-72 xl:w-80 relative z-20">
+
+              <!-- Pantalla -->
+              <section
+                class="absolute inset-[10px] rounded-[38px] overflow-hidden bg-[#efeae2] z-10 flex flex-col p-0.5">
+
+                <!-- Barra superior -->
+                <div class="h-6 bg-[#00342e] text-white text-[10px] flex justify-between items-center px-4">
+                  <span class="pl-3.5">9:41</span>
+
+                  <div class="flex items-center gap-1">
+                    <i class="ri-signal-wifi-fill text-[9px]"></i>
+                    <i class="ri-wifi-fill text-[9px]"></i>
+                    <i class="ri-battery-fill text-[10px]"></i>
+                  </div>
+                </div>
+
+                <!-- Header -->
+                <header class="bg-[#075E54] h-14 flex items-center px-3 text-white">
+
+                  <i class="ri-arrow-left-line text-xl mr-2"></i>
+
+                  <div
+                    class="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center text-[#075E54] font-bold">
+                    <img src="../../assets/Logo_Ubiqueme.webp" class="rounded-full p-0.5 bg-emerald-50">
+                  </div>
+
+                  <div class="ml-3 flex-1">
+                    <p class="font-medium text-sm">Ubiqueme</p>
+                    <p class="text-[11px] text-green-100">
+                      en línea
+                    </p>
+                  </div>
+
+                  <div class="flex gap-3 text-lg">
+                    <i class="ri-video-line"></i>
+                    <i class="ri-phone-line"></i>
+                    <i class="ri-more-2-fill"></i>
+                  </div>
+                </header>
+
+                <!-- Conversación -->
+                <main
+                  class="flex-1 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')] p-3 space-y-3 overflow-hidden font-google-sans">
+
+                  <!-- Recibido -->
+                  <div class="flex">
+                    <div :key="currentPlace?.name"
+                      class="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow text-xs animate-fade-left">
+                      Hola Juan, <br> <br>
+
+                      Alguien acaba de escanear su código QR <b>{{ currentPlace?.name }}</b>.
+                      <br><br>
+
+                      Número de contacto: <br> <b class="italic">+52 55555555</b><br> <br>
+
+                      Hora del escaneo: <br><b>21/6/2026, 8:27:03 p.m.</b> <br><br>
+
+                      Mensaje: <br> "Escaneé su QR <span class="font-bold">{{ currentPlace?.name }}</span> para
+                      contactarlo"
+
+                      <br><br>
+
+                      Recuerde <b>NO compartir datos personales</b> si decide contactar al usuario que escaneó su QR.
+                      <br>
+                      <br>
+
+                      <i>Gracias por usar los servicios de Ubiqueme.</i>
+                      <div class="text-right text-[9px] text-gray-500 mt-1">
+                        9:40
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
+                </main>
+
+                <!-- Input -->
+                <footer class="bg-[#f0f2f5] h-14 px-3 flex items-center gap-2">
+
+                  <i class="ri-emotion-line text-xl text-gray-500"></i>
+
+                  <div class="flex-1 bg-white rounded-full px-4 py-2 text-xs text-gray-400">
+                    Escribe un mensaje...
+                  </div>
+
+                  <i class="ri-attachment-2 text-lg text-gray-500"></i>
+                  <i class="ri-camera-line text-lg text-gray-500"></i>
+
+                  <div class="w-9 h-9 rounded-full bg-[#25D366] flex items-center justify-center">
+                    <i class="ri-mic-fill text-white"></i>
+                  </div>
+
+                </footer>
+
+              </section>
 
             </div>
 

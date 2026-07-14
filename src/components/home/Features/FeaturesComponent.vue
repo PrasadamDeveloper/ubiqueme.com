@@ -37,13 +37,13 @@ const features = [
 </script>
 
 <template>
-  <section class="pb-5 bg-[#09090b] px-4 md:px-24 mx-auto">
+  <section class="pb-5 bg-gray-50 px-4 md:px-24 mx-auto">
     <div class="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-20 gap-6 md:gap-8">
       <div class="max-w-xl">
-        <h2 class="font-headline text-4xl font-bold mb-6 text-white">
+        <h2 class="font-headline text-4xl font-bold mb-6 text-gray-900">
           Diseñado para la seguridad, construido para la tranquilidad.
         </h2>
-        <p class="text-on-surface-variant text-lg">
+        <p class="text-gray-600 text-lg">
           Cada función está diseñada para mantener su privacidad mientras lo mantiene perfectamente
           localizable en los momentos que más importan.
         </p>

@@ -29,11 +29,11 @@ const steps = [
 </script>
 
 <template>
-  <section class="bg-[#09090b] pb-16 md:pb-24">
+  <section class="bg-gray-50 pb-16 md:pb-24">
     <div class="px-4 md:px-24 max-w-screen-2xl mx-auto">
       <div class="text-center mb-12 md:mb-24 pt-16 md:pt-32">
-        <h2 class="font-headline text-6xl font-bold mb-4 text-white">Ubiqueme en 3 pasos</h2>
-        <p class="text-on-surface-variant max-w-2xl mx-auto">
+        <h2 class="font-headline text-6xl font-bold mb-4 text-gray-900">Ubiqueme en 3 pasos</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
           Desde la configuración hasta la seguridad, hemos diseñado cada interacción para que sea
           fluida y confiable.
         </p>

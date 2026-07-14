@@ -3,11 +3,11 @@
 
     <!-- Section Header -->
     <div class="text-center mb-10 sm:mb-16" data-aos="fade-up">
-      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+      <h2 class="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight mb-4">
         Ubiqueme en acción <span
           class="material-symbols-outlined notranslate text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
       </h2>
-      <p class="text-white/50 text-base sm:text-lg font-medium max-w-2xl mx-auto">
+      <p class="text-gray-500 text-base sm:text-lg font-medium max-w-2xl mx-auto">
         Descubra cómo nuestra tecnología protege lo que más valora.
       </p>
     </div>
@@ -20,11 +20,10 @@
         :data-aos-delay="(i - 1) * 100">
 
         <!-- Title Above Video -->
-        <h3 class="text-xl sm:text-2xl font-bold text-white text-center px-2">{{ v.title }}</h3>
+        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 text-center px-2">{{ v.title }}</h3>
 
         <!-- Video Card -->
-        <div class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group"
-          :id="`video-${i}`">
+        <div class="relative bg-white border border-gray-200 rounded-[2rem] overflow-hidden group" :id="`video-${i}`">
           <!-- User's Main Video -->
           <video class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video"
             v-lazy-video="v.src" autoplay loop muted playsinline :ref="setVideoRef(i)">
@@ -32,18 +31,18 @@
 
           <!-- Hover Overlay for Description -->
           <div
-            class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
-            <p class="text-white/90 text-sm md:text-base font-medium leading-relaxed mb-8">{{ v.description }}</p>
+            class="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
+            <p class="text-gray-700 text-sm md:text-base font-medium leading-relaxed mb-8">{{ v.description }}</p>
           </div>
 
           <!-- Bottom Gradient for button readability -->
           <div
-            class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#09090b]/80 to-transparent pointer-events-none transition-opacity duration-300 z-10">
+            class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/80 to-transparent pointer-events-none transition-opacity duration-300 z-10">
           </div>
 
           <!-- Sound Activation Button -->
           <button @click="activateSound(i)"
-            class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-[#09090b] hover:bg-orange-500 border border-orange-500/30 hover:border-transparent text-white/90 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 z-30 flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_25px_rgba(249,115,22,0.3)]">
+            class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-white hover:bg-orange-500 border border-orange-500/30 hover:border-transparent text-gray-700 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 z-30 flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_25px_rgba(249,115,22,0.3)]">
             <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' :
               'volume_up' }}</span>
             {{ mutedStates[i] ? 'Haga click para activar el sonido' : 'Haga click para silenciar' }}
