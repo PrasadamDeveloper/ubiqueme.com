@@ -222,10 +222,10 @@ onUnmounted(() => {
           <div class=" mt-0 flex flex-col lg:grid lg:grid-cols-6 gap-6 lg:gap-4">
 
             <!-- QR Code - visible solo en mobile -->
-            <div v-motion="[{
+            <div v-motion="{
               initial: { opacity: 0, scale: 0.8 },
               visibleOnce: { opacity: 1, scale: 1, transition: { duration: 500, delay: 0 } }
-            }]" class="flex justify-center lg:hidden">
+            }" class="flex justify-center lg:hidden">
               <div
                 class="w-48 h-48 sm:w-56 sm:h-56 rounded-3xl flex items-center justify-center bg-white p-3 border border-slate-200">
                 <QrcodeVue :value="qrDynamicUrl" :size="220" render-as="svg" level="Q"
@@ -237,9 +237,11 @@ onUnmounted(() => {
             <div class="flex flex-col gap-4">
 
               <!-- Cobertura mundial -->
-              <div
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 100 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
-                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+              <div v-motion="{
+                initial: { opacity: 0, y: 40 },
+                visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 100 } },
+                hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
                 <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
                   <span class="material-symbols-outlined text-blue-600 text-lg">public</span>
                 </div>
@@ -248,9 +250,9 @@ onUnmounted(() => {
               </div>
 
               <!-- Alertas inmediatas -->
-              <div
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 180 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
-                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+              <div v-motion="{
+                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 180 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
                 <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
                   <span class="material-symbols-outlined text-blue-600 text-lg">notifications_active</span>
                 </div>
@@ -259,9 +261,9 @@ onUnmounted(() => {
               </div>
 
               <!-- Privacidad protegida -->
-              <div
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 260 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
-                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+              <div v-motion="{
+                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 260 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
                 <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
                   <span class="material-symbols-outlined text-blue-600 text-lg">shield_lock</span>
                 </div>
@@ -270,8 +272,9 @@ onUnmounted(() => {
               </div>
 
               <!-- CTA: 1 año gratis -->
-              <router-link :to="{ name: 'register' }"
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 340 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
+              <router-link :to="{ name: 'register' }" v-motion="{
+                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 340 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }"
                 class="block w-full rounded-2xl border border-blue-200 bg-blue-50/80 p-4 text-center hover:bg-blue-100/80 transition">
                 <div class="mb-1 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 mx-auto">
                   <span class="material-symbols-outlined text-blue-600 text-lg">workspace_premium</span>
@@ -288,9 +291,9 @@ onUnmounted(() => {
             <div class="flex flex-col gap-4">
 
               <!-- Sin aplicaciones -->
-              <div
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 500 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
-                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+              <div v-motion="{
+                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 500 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
                 <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
                   <span class="material-symbols-outlined text-blue-600 text-lg">install_mobile</span>
                 </div>
@@ -299,9 +302,9 @@ onUnmounted(() => {
               </div>
 
               <!-- WhatsApp en tiempo real -->
-              <div
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 580 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
-                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+              <div v-motion="{
+                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 580 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
                 <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
                   <v-icon name="bi-whatsapp" class="text-blue-600 text-lg notranslate" />
                 </div>
@@ -315,9 +318,9 @@ onUnmounted(() => {
               </div>
 
               <!-- Recuperación exprés -->
-              <div
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 660 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
-                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+              <div v-motion="{
+                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 660 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
                 <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
                   <span class="material-symbols-outlined text-blue-600 text-lg">bolt</span>
                 </div>
@@ -326,9 +329,9 @@ onUnmounted(() => {
               </div>
 
               <!-- Notificaciones 24/7 -->
-              <div
-                v-motion="[{ initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 740 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } } }]"
-                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+              <div v-motion="{
+                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 740 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
+              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
                 <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
                   <span class="material-symbols-outlined text-blue-600 text-lg">schedule</span>
                 </div>
@@ -338,9 +341,9 @@ onUnmounted(() => {
             </div>
 
             <!-- COL 3-4: Text Content (span 2 columns) -->
-            <div
-              v-motion="[{ initial: { opacity: 0, x: -30 }, visibleOnce: { opacity: 1, x: 0, transition: { duration: 500, delay: 200 } } }]"
-              class="text-center lg:text-left lg:col-span-2">
+            <div v-motion="{
+              initial: { opacity: 0, x: -30 }, visibleOnce: { opacity: 1, x: 0, transition: { duration: 500, delay: 200 } }
+            }" class="text-center lg:text-left lg:col-span-2">
 
               <h1
                 class="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold tracking-tight leading-[1.1] text-slate-800">
@@ -386,9 +389,9 @@ onUnmounted(() => {
             </div>
 
             <!-- COL 5-6: Phone Mockup (span 2 columns) -->
-            <div
-              v-motion="[{ initial: { opacity: 0, x: 30 }, visibleOnce: { opacity: 1, x: 0, transition: { duration: 500, delay: 300 } } }]"
-              class="flex justify-center lg:items-start lg:pt-4 lg:col-span-2">
+            <div v-motion="{
+              initial: { opacity: 0, x: 30 }, visibleOnce: { opacity: 1, x: 0, transition: { duration: 500, delay: 300 } }
+            }" class="flex justify-center lg:items-start lg:pt-4 lg:col-span-2">
               <div
                 class="relative z-20 origin-top scale-[0.85] sm:scale-[0.9] lg:scale-[0.85] xl:scale-[0.9] 2xl:scale-100 shrink-0">
 
