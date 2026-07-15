@@ -9,6 +9,7 @@ import VueViewer from 'v-viewer'
 import FloatingVue from 'floating-vue'
 import 'floating-vue/dist/style.css'
 import { vLazyVideo } from './directives/vLazyVideo'
+import { MotionPlugin } from '@vueuse/motion'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import {
   FaFlag,
@@ -65,6 +66,7 @@ const app = createApp(App)
 app.component('v-icon', OhVueIcon)
 app.use(VueViewer)
 app.use(FloatingVue)
+app.use(MotionPlugin)
 app.directive('lazy-video', vLazyVideo)
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
