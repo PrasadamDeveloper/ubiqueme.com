@@ -218,34 +218,121 @@ onUnmounted(() => {
 
           </div>
 
-          <!-- Hero Content: QR + Text + Image -->
-          <div class="mx-auto mt-0 max-w-6xl flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+          <!-- Hero Content: Grid 6 columnas en desktop, QR oculto en desktop -->
+          <div class=" mt-0 flex flex-col lg:grid lg:grid-cols-6 gap-6 lg:gap-4">
 
-            <!-- QR Code -->
-            <div class="shrink-0">
-
-
+            <!-- QR Code - visible solo en mobile -->
+            <div class="flex justify-center lg:hidden">
               <div
-                class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-3xl flex items-center justify-center bg-white p-3 border border-slate-200">
+                class="w-48 h-48 sm:w-56 sm:h-56 rounded-3xl flex items-center justify-center bg-white p-3 border border-slate-200">
                 <QrcodeVue :value="qrDynamicUrl" :size="220" render-as="svg" level="Q"
                   :image-settings="imageSettings" />
               </div>
             </div>
 
-            <!-- Text Content -->
-            <div class="flex-1 text-center lg:text-left">
+            <!-- COL 1: Cards 1-4 -->
+            <div class="flex flex-col gap-4">
+
+              <!-- Cobertura mundial -->
+              <div class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+                  <span class="material-symbols-outlined text-blue-600 text-lg">public</span>
+                </div>
+                <h3 class="font-semibold text-slate-900 text-xs">Cobertura mundial</h3>
+                <p class="mt-1 text-[11px] leading-4 text-slate-500">Funciona desde cualquier lugar con internet.</p>
+              </div>
+
+              <!-- Alertas inmediatas -->
+              <div class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+                  <span class="material-symbols-outlined text-blue-600 text-lg">notifications_active</span>
+                </div>
+                <h3 class="font-semibold text-slate-900 text-xs">Alertas inmediatas</h3>
+                <p class="mt-1 text-[11px] leading-4 text-slate-500">Notificación en segundos al escanear tu QR.</p>
+              </div>
+
+              <!-- Privacidad protegida -->
+              <div class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+                  <span class="material-symbols-outlined text-blue-600 text-lg">shield_lock</span>
+                </div>
+                <h3 class="font-semibold text-slate-900 text-xs">Privacidad protegida</h3>
+                <p class="mt-1 text-[11px] leading-4 text-slate-500">Nunca compartimos tu info personal.</p>
+              </div>
+
+              <!-- CTA: 1 año gratis -->
+              <router-link :to="{ name: 'register' }"
+                class="block w-full rounded-2xl border border-blue-200 bg-blue-50/80 p-4 text-center hover:bg-blue-100/80 transition">
+                <div class="mb-1 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 mx-auto">
+                  <span class="material-symbols-outlined text-blue-600 text-lg">workspace_premium</span>
+                </div>
+                <h3 class="font-semibold text-blue-800 text-xs">1 año Plan Bronce GRATIS</h3>
+                <p class="mt-1 text-[11px] leading-4 text-blue-600/80">Crea tu cuenta y actívalo hoy sin costo.</p>
+                <span
+                  class="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1.5 text-[11px] font-semibold text-white">Crear
+                  cuenta</span>
+              </router-link>
+            </div>
+
+            <!-- COL 2: Cards 5-8 -->
+            <div class="flex flex-col gap-4">
+
+              <!-- Sin aplicaciones -->
+              <div class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+                  <span class="material-symbols-outlined text-blue-600 text-lg">install_mobile</span>
+                </div>
+                <h3 class="font-semibold text-slate-900 text-xs">Sin aplicaciones</h3>
+                <p class="mt-1 text-[11px] leading-4 text-slate-500">Solo escanea el QR, el navegador hace todo.</p>
+              </div>
+
+              <!-- WhatsApp en tiempo real -->
+              <div class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+                  <v-icon name="bi-whatsapp" class="text-blue-600 text-lg notranslate" />
+                </div>
+                <h3 class="font-semibold text-slate-900 text-xs">
+                  <span class="flex items-center gap-1 justify-center">
+                    WhatsApp en tiempo real
+                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
+                  </span>
+                </h3>
+                <p class="mt-1 text-[11px] leading-4 text-slate-500">Alerta directa a WhatsApp, sin apps extra.</p>
+              </div>
+
+              <!-- Recuperación exprés -->
+              <div class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+                  <span class="material-symbols-outlined text-blue-600 text-lg">bolt</span>
+                </div>
+                <h3 class="font-semibold text-slate-900 text-xs">Recuperación exprés</h3>
+                <p class="mt-1 text-[11px] leading-4 text-slate-500">Recupera tus objetos en cuestión de minutos.</p>
+              </div>
+
+              <!-- Notificaciones 24/7 -->
+              <div class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
+                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+                  <span class="material-symbols-outlined text-blue-600 text-lg">schedule</span>
+                </div>
+                <h3 class="font-semibold text-slate-900 text-xs">Notificaciones 24/7</h3>
+                <p class="mt-1 text-[11px] leading-4 text-slate-500">Monitoreo constante, incluso mientras duermes.</p>
+              </div>
+            </div>
+
+            <!-- COL 3-4: Text Content (span 2 columns) -->
+            <div class="text-center lg:text-left lg:col-span-2">
 
               <h1
-                class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] text-slate-800">
+                class="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold tracking-tight leading-[1.1] text-slate-800">
 
                 Códigos QR para notificar
 
                 <span class="text-center">sobre su</span>
 
-                <div class="relative overflow-hidden mt-3 h-14 sm:h-16 lg:h-20">
+                <div class="relative overflow-hidden mt-3 h-14 sm:h-16 lg:h-14 xl:h-16 2xl:h-20">
                   <Transition name="slide-up" mode="out-in">
                     <div :key="currentPlace?.name"
-                      class="bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-[1.1]">
+                      class="bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500 bg-clip-text text-transparent text-4xl sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-black tracking-tight leading-[1.1]">
                       {{ currentPlace?.name }}
                     </div>
                   </Transition>
@@ -253,22 +340,23 @@ onUnmounted(() => {
 
               </h1>
 
-              <p class="mt-6 text-base sm:text-lg leading-8 text-slate-600 max-w-xl mx-auto lg:mx-0">
+              <p
+                class="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-slate-600 max-w-xl mx-auto lg:mx-0">
                 Etiquetas físicas y pulseras inteligentes para recuperar
                 objetos perdidos, ayudar a mascotas, niños y adultos mayores,
                 manteniendo siempre protegida su información personal.
               </p>
 
-              <div class="mt-8 flex flex-col items-center lg:items-start gap-4 sm:flex-row">
+              <div class="mt-6 sm:mt-8 flex flex-col items-center lg:items-start gap-3 sm:gap-4 sm:flex-row">
 
                 <router-link :to="{ name: 'register' }"
-                  class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-8 py-4 text-white font-semibold transition hover:bg-slate-800">
+                  class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-6 sm:px-8 py-3 sm:py-4 text-white font-semibold transition hover:bg-slate-800 text-sm sm:text-base">
                   Crear cuenta gratis
                   <span class="material-symbols-outlined">arrow_forward</span>
                 </router-link>
 
                 <router-link :to="{ name: 'pricing' }"
-                  class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-8 py-4 font-semibold text-slate-700 transition hover:bg-slate-50">
+                  class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 sm:px-8 py-3 sm:py-4 font-semibold text-slate-700 transition hover:bg-slate-50 text-sm sm:text-base">
                   Ver planes
                   <span class="material-symbols-outlined">payments</span>
                 </router-link>
@@ -277,205 +365,87 @@ onUnmounted(() => {
 
             </div>
 
-            <!-- Right content image -->
-            <!-- Right content image -->
-            <div class="shrink-0 max-lg:mx-auto relative z-20 origin-top scale-[0.8]">
+            <!-- COL 5-6: Phone Mockup (span 2 columns) -->
+            <div class="flex justify-center lg:items-start lg:pt-4 lg:col-span-2">
+              <div
+                class="relative z-20 origin-top scale-[0.85] sm:scale-[0.9] lg:scale-[0.85] xl:scale-[0.9] 2xl:scale-100 shrink-0">
 
-              <!-- Marco del teléfono -->
-              <img src="../../assets/images/phonemockup-ubq.webp" alt=""
-                class="w-48 sm:w-56 lg:w-72 xl:w-80 relative z-20">
+                <!-- Marco del teléfono -->
+                <img src="../../assets/images/phonemockup-ubq.webp" alt=""
+                  class="w-48 sm:w-56 lg:w-56 xl:w-64 relative z-20">
 
-              <!-- Pantalla -->
-              <section
-                class="absolute inset-[10px] rounded-[38px] overflow-hidden bg-[#efeae2] z-10 flex flex-col p-0.5">
+                <!-- Pantalla -->
+                <section
+                  class="absolute inset-[10px] rounded-[38px] overflow-hidden bg-[#efeae2] z-10 flex flex-col p-0.5">
 
-                <!-- Barra superior -->
-                <div class="h-6 bg-[#00342e] text-white text-[10px] flex justify-between items-center px-4">
-                  <span class="pl-3.5">9:41</span>
-
-                  <div class="flex items-center gap-1">
-                    <i class="ri-signal-wifi-fill text-[9px]"></i>
-                    <i class="ri-wifi-fill text-[9px]"></i>
-                    <i class="ri-battery-fill text-[10px]"></i>
-                  </div>
-                </div>
-
-                <!-- Header -->
-                <header class="bg-[#075E54] h-14 flex items-center px-3 text-white">
-
-                  <i class="ri-arrow-left-line text-xl mr-2"></i>
-
-                  <div
-                    class="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center text-[#075E54] font-bold">
-                    <img src="../../assets/Logo_Ubiqueme.webp" class="rounded-full p-0.5 bg-emerald-50">
-                  </div>
-
-                  <div class="ml-3 flex-1">
-                    <p class="font-medium text-sm">Ubiqueme</p>
-                    <p class="text-[11px] text-green-100">
-                      en línea
-                    </p>
-                  </div>
-
-                  <div class="flex gap-3 text-lg">
-                    <i class="ri-video-line"></i>
-                    <i class="ri-phone-line"></i>
-                    <i class="ri-more-2-fill"></i>
-                  </div>
-                </header>
-
-                <!-- Conversación -->
-                <main
-                  class="flex-1 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')] p-3 space-y-3 overflow-hidden font-google-sans">
-
-                  <div class="flex">
-                    <div :key="currentPlace?.name"
-                      class="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow text-xs animate-fade-left">
-
-                      Hola Juan,
-                      <br><br>
-
-                      Alguien acaba de escanear su código QR
-                      <b>{{ currentPlace?.name }}</b>.
-                      <br><br>
-
-                      Número de contacto:
-                      <br>
-                      <b class="italic">+52 55555555</b>
-                      <br><br>
-
-                      Hora del escaneo:
-                      <br>
-                      <b>21/6/2026, 8:27:03 p.m.</b>
-                      <br><br>
-
-                      Mensaje:
-                      <br>
-                      "Escaneé su QR
-                      <span class="font-bold">{{ currentPlace?.name }}</span>
-                      para contactarlo"
-                      <br><br>
-
-                      Recuerde <b>NO compartir datos personales</b> si decide contactar al usuario que escaneó su QR.
-                      <br><br>
-
-                      <i>Gracias por usar los servicios de Ubiqueme.</i>
-
-                      <div class="text-right text-[9px] text-gray-500 mt-1">
-                        9:40
-                      </div>
-
+                  <!-- Barra superior -->
+                  <div class="h-6 bg-[#00342e] text-white text-[10px] flex justify-between items-center px-4">
+                    <span class="pl-3.5">9:41</span>
+                    <div class="flex items-center gap-1">
+                      <i class="ri-signal-wifi-fill text-[9px]"></i>
+                      <i class="ri-wifi-fill text-[9px]"></i>
+                      <i class="ri-battery-fill text-[10px]"></i>
                     </div>
                   </div>
 
-                </main>
+                  <!-- Header -->
+                  <header class="bg-[#075E54] h-14 flex items-center px-3 text-white">
+                    <i class="ri-arrow-left-line text-xl mr-2"></i>
+                    <div
+                      class="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center text-[#075E54] font-bold">
+                      <img src="../../assets/Logo_Ubiqueme.webp" class="rounded-full p-0.5 bg-emerald-50">
+                    </div>
+                    <div class="ml-3 flex-1">
+                      <p class="font-medium text-sm">Ubiqueme</p>
+                      <p class="text-[11px] text-green-100">en línea</p>
+                    </div>
+                    <div class="flex gap-3 text-lg">
+                      <i class="ri-video-line"></i>
+                      <i class="ri-phone-line"></i>
+                      <i class="ri-more-2-fill"></i>
+                    </div>
+                  </header>
 
-                <!-- Input -->
-                <footer class="bg-[#f0f2f5] h-14 px-3 flex items-center gap-2">
+                  <!-- Conversación -->
+                  <main
+                    class="flex-1 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')] p-3 space-y-3 overflow-hidden font-google-sans">
+                    <div class="flex">
+                      <div :key="currentPlace?.name"
+                        class="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow text-xs animate-fade-left">
+                        Hola Juan,<br><br>
+                        Alguien acaba de escanear su código QR
+                        <b>{{ currentPlace?.name }}</b>.<br><br>
+                        Número de contacto:<br>
+                        <b class="italic">+52 55555555</b><br><br>
+                        Hora del escaneo:<br>
+                        <b>21/6/2026, 8:27:03 p.m.</b><br><br>
+                        Mensaje:<br>
+                        "Escaneé su QR
+                        <span class="font-bold">{{ currentPlace?.name }}</span>
+                        para contactarlo"<br><br>
+                        Recuerde <b>NO compartir datos personales</b> si decide contactar al usuario que escaneó su
+                        QR.<br><br>
+                        <i>Gracias por usar los servicios de Ubiqueme.</i>
+                        <div class="text-right text-[9px] text-gray-500 mt-1">9:40</div>
+                      </div>
+                    </div>
+                  </main>
 
-                  <i class="ri-emotion-line text-xl text-gray-500"></i>
+                  <!-- Input -->
+                  <footer class="bg-[#f0f2f5] h-14 px-3 flex items-center gap-2">
+                    <i class="ri-emotion-line text-xl text-gray-500"></i>
+                    <div class="flex-1 bg-white rounded-full px-4 py-2 text-xs text-gray-400">Escribe un mensaje...
+                    </div>
+                    <i class="ri-attachment-2 text-lg text-gray-500"></i>
+                    <i class="ri-camera-line text-lg text-gray-500"></i>
+                    <div class="w-9 h-9 rounded-full bg-[#25D366] flex items-center justify-center">
+                      <i class="ri-mic-fill text-white"></i>
+                    </div>
+                  </footer>
 
-                  <div class="flex-1 bg-white rounded-full px-4 py-2 text-xs text-gray-400">
-                    Escribe un mensaje...
-                  </div>
-
-                  <i class="ri-attachment-2 text-lg text-gray-500"></i>
-                  <i class="ri-camera-line text-lg text-gray-500"></i>
-
-                  <div class="w-9 h-9 rounded-full bg-[#25D366] flex items-center justify-center">
-                    <i class="ri-mic-fill text-white"></i>
-                  </div>
-
-                </footer>
-
-              </section>
-
-            </div>
-          </div>
-
-          <!-- Trust indicators -->
-
-          <div class="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-6 border-t border-slate-200 pt-10 sm:grid-cols-3 ">
-
-            <div class="text-center">
-
-              <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50">
-
-                <span class="material-symbols-outlined text-amber-600">
-
-                  notifications_active
-
-                </span>
-
-              </div>
-
-              <h3 class="font-semibold text-slate-900">
-
-                Alertas inmediatas
-
-              </h3>
-
-              <p class="mt-2 text-sm leading-6 text-slate-600">
-
-                Reciba una notificación en segundos cuando alguien
-                escanee su código QR.
-
-              </p>
-
-            </div>
-
-            <div class="text-center">
-
-              <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50">
-
-                <span class="material-symbols-outlined text-blue-600">
-
-                  shield_lock
-
-                </span>
+                </section>
 
               </div>
-
-              <h3 class="font-semibold text-slate-900">
-
-                Privacidad protegida
-
-              </h3>
-
-              <p class="mt-2 text-sm leading-6 text-slate-600">
-
-                Nunca compartimos su información personal.
-                Todo el contacto se realiza de forma segura.
-
-              </p>
-
-            </div>
-
-            <div class="text-center">
-
-              <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
-
-                <span class="material-symbols-outlined text-emerald-600">
-
-                  public
-
-                </span>
-
-              </div>
-
-              <h3 class="font-semibold text-slate-900">
-
-                Cobertura mundial
-
-              </h3>
-
-              <p class="mt-2 text-sm leading-6 text-slate-600">
-
-                Funciona desde cualquier lugar utilizando
-                únicamente un teléfono con internet.
-
-              </p>
-
             </div>
 
           </div>
