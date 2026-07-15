@@ -3,18 +3,107 @@ import { useUserStore } from '@/stores/user';
 import { RouterLink } from 'vue-router'
 
 import { onMounted, onUnmounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import UbiquemeLogo from '@/assets/Ubiqueme_Logo_white.webp';
 
+const router = useRouter();
 const openAziechrie = () => window.open('https://www.aziechriepharma.com', '_blank');
 const isScrolled = ref(false);
 
-const navLinks = [
-  { name: 'Inicio', pathName: 'home', icon: 'home', requiredLogin: false },
+interface NavChild {
+  label: string
+  href?: string
+  pathName?: string
+  params?: Record<string, string>
+  icon?: string
+}
+
+interface NavLink {
+  name: string
+  pathName: string
+  icon: string
+  requiredLogin: boolean
+  children?: NavChild[]
+}
+
+const navLinks: NavLink[] = [
+  {
+    name: 'Inicio', pathName: 'home', icon: 'home', requiredLogin: false,
+    children: [
+      { label: 'Beneficios', href: '#features', icon: 'verified' },
+      { label: 'Cómo funciona', href: '#how-it-works', icon: 'settings' },
+      { label: 'Paso a paso', href: '#steps', icon: 'format_list_numbered' },
+      { label: 'Planes y precios', href: '#pricing', icon: 'payments' },
+      { label: 'Videos', href: '#videos', icon: 'play_circle' },
+      { label: 'Ver página completa', pathName: 'home', icon: 'open_in_new' },
+    ],
+  },
   { name: 'Dashboard', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
-  { name: 'Ayuda', pathName: 'help', icon: 'help', requiredLogin: false },
-  { name: 'Precios', pathName: 'pricing', icon: 'payments', requiredLogin: false },
+  {
+    name: 'Ayuda', pathName: 'help', icon: 'help', requiredLogin: false,
+    children: [
+      { label: 'Preguntas frecuentes', pathName: 'help', icon: 'quiz' },
+      { label: 'Contacto', pathName: 'contact', icon: 'contact_mail' },
+      { label: 'Guía de uso', pathName: 'help', icon: 'menu_book' },
+    ],
+  },
+  {
+    name: 'Precios', pathName: 'pricing', icon: 'payments', requiredLogin: false,
+    children: [
+      { label: 'Plan Bronce', pathName: 'checkout', params: { planId: 'bronce' }, icon: 'workspace_premium' },
+      { label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium' },
+      { label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium' },
+      { label: 'Ver todos los planes', pathName: 'pricing', icon: 'apps' },
+    ],
+  },
 ]
+
+const activeMenu = ref<string | null>(null)
+let menuTimeout: ReturnType<typeof setTimeout> | null = null
+
+const openMenu = (name: string) => {
+  if (menuTimeout) clearTimeout(menuTimeout)
+  activeMenu.value = name
+}
+
+const closeMenu = () => {
+  if (menuTimeout) clearTimeout(menuTimeout)
+  menuTimeout = setTimeout(() => {
+    activeMenu.value = null
+  }, 200)
+}
+
+const cancelClose = () => {
+  if (menuTimeout) {
+    clearTimeout(menuTimeout)
+    menuTimeout = null
+  }
+}
+
+const scrollToSection = (href: string) => {
+  const id = href.replace('#', '')
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+  activeMenu.value = null
+}
+
+const handleChildClick = (child: NavChild) => {
+  activeMenu.value = null
+  if (child.href) {
+    if (router.currentRoute.value.name === 'home') {
+      scrollToSection(child.href!)
+    } else {
+      router.push({ name: 'home' }).then(() => {
+        setTimeout(() => scrollToSection(child.href!), 300)
+      })
+    }
+  } else if (child.pathName) {
+    router.push({ name: child.pathName, params: child.params ?? {} })
+  }
+}
 
 const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
 const currentDomainIndex = ref(0);
@@ -187,25 +276,66 @@ onUnmounted(() => {
 
         <!-- Menu -->
         <div class="hidden lg:flex items-center space-x-2 tracking-tight">
-          <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
-            :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
-            class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group relative"
-            :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)' }"
-            @mouseenter="($event.target as HTMLElement).style.color = '#f97316'"
-            @mouseleave="($event.target as HTMLElement).style.color = $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)'">
-            <span
-              class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
-                link.icon
-              }}</span>
-            <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
+          <template v-for="link in navLinks" :key="link.name">
+            <div v-if="!useUserStore().getUserId && link.requiredLogin" class="hidden"></div>
+            <div v-else class="relative" @mouseenter="openMenu(link.name)" @mouseleave="closeMenu()">
+              <!-- Nav link (clickable) -->
+              <RouterLink v-if="!link.children" :to="{ name: link.pathName }"
+                class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group relative"
+                :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)' }"
+                @mouseenter="($event.target as HTMLElement).style.color = '#f97316'"
+                @mouseleave="($event.target as HTMLElement).style.color = $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)'">
+                <span
+                  class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
+                    link.icon }}</span>
+                <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
+                <!-- Indicator Line -->
+                <div :class="[
+                  'absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 transition-transform origin-center duration-300',
+                  $route.name === link.pathName ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                ]"></div>
+              </RouterLink>
 
-            <!-- Indicator Line (always visible on active route) -->
-            <div :class="[
-              'absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 transition-transform origin-center duration-300',
-              $route.name === link.pathName ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-            ]">
+              <!-- Nav link with children (not directly clickable, opens dropdown) -->
+              <button v-if="link.children"
+                class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group relative cursor-pointer"
+                :class="{ 'text-orange-500': $route.name === link.pathName, 'text-gray-500': $route.name !== link.pathName }"
+                :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)' }">
+                <span
+                  class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
+                    link.icon }}</span>
+                <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
+                <span class="material-symbols-outlined notranslate text-[14px] transition-transform duration-200"
+                  :class="activeMenu === link.name ? 'rotate-180' : ''">expand_more</span>
+                <!-- Indicator Line -->
+                <div :class="[
+                  'absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 transition-transform origin-center duration-300',
+                  activeMenu === link.name ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                ]"></div>
+              </button>
+
+              <!-- Dropdown -->
+              <Transition name="dropdown">
+                <div v-if="link.children && activeMenu === link.name"
+                  class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden z-50"
+                  @mouseenter="cancelClose()" @mouseleave="closeMenu()">
+                  <!-- Optional header -->
+                  <div class="px-4 py-3 border-b border-gray-100">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">{{ link.name }}</span>
+                  </div>
+                  <div class="py-2">
+                    <button v-for="child in link.children" :key="child.label" @click="handleChildClick(child)"
+                      class="flex items-center gap-3 w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors duration-150 cursor-pointer">
+                      <span v-if="child.icon"
+                        class="material-symbols-outlined notranslate text-[18px] text-gray-400 shrink-0">{{ child.icon
+                        }}</span>
+                      <span class="font-medium">{{ child.label }}</span>
+                    </button>
+                  </div>
+                </div>
+              </Transition>
             </div>
-          </RouterLink>
+          </template>
         </div>
 
         <!-- Buttons (Desktop Only) -->
@@ -234,7 +364,7 @@ onUnmounted(() => {
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 bg-[#dd5c00] text-white/60 font-bold hover:text-white transition-colors z-50 cursor-pointer rounded-xl ">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-          }}</span>
+            }}</span>
           <span>{{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}</span>
         </button>
 
@@ -601,6 +731,25 @@ onUnmounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Dropdown transition */
+.dropdown-enter-active {
+  transition: all 0.15s ease-out;
+}
+
+.dropdown-leave-active {
+  transition: all 0.1s ease-in;
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-2px);
 }
 
 /* Smooth scrolling for anchor links */

@@ -222,10 +222,7 @@ onUnmounted(() => {
           <div class=" mt-0 flex flex-col lg:grid lg:grid-cols-6 gap-6 lg:gap-4">
 
             <!-- QR Code - visible solo en mobile -->
-            <div v-motion="{
-              initial: { opacity: 0, scale: 0.8 },
-              visibleOnce: { opacity: 1, scale: 1, transition: { duration: 500, delay: 0 } }
-            }" class="flex justify-center lg:hidden">
+            <div class="flex justify-center lg:hidden">
               <div
                 class="w-48 h-48 sm:w-56 sm:h-56 rounded-3xl flex items-center justify-center bg-white p-3 border border-slate-200">
                 <QrcodeVue :value="qrDynamicUrl" :size="220" render-as="svg" level="Q"
@@ -233,117 +230,110 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <!-- COL 1: Cards 1-4 -->
-            <div class="flex flex-col gap-4">
+            <!-- COL 1: Cards 1-3 + CTA (colspan-2) -->
+            <div class="flex flex-col gap-3">
 
               <!-- Cobertura mundial -->
-              <div v-motion="{
-                initial: { opacity: 0, y: 40 },
-                visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 100 } },
-                hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
-                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+              <div
+                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-3 text-left shadow-xs flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                   <span class="material-symbols-outlined text-blue-600 text-lg">public</span>
                 </div>
-                <h3 class="font-semibold text-slate-900 text-xs">Cobertura mundial</h3>
-                <p class="mt-1 text-[11px] leading-4 text-slate-500">Funciona desde cualquier lugar con internet.</p>
+                <div>
+                  <h3 class="font-semibold text-slate-900 text-xs">Cobertura mundial</h3>
+                  <p class="mt-0.5 text-[11px] leading-4 text-slate-500">Funciona desde cualquier lugar con internet.
+                  </p>
+                </div>
               </div>
 
               <!-- Alertas inmediatas -->
-              <div v-motion="{
-                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 180 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
-                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+              <div
+                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-3 text-left shadow-xs flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                   <span class="material-symbols-outlined text-blue-600 text-lg">notifications_active</span>
                 </div>
-                <h3 class="font-semibold text-slate-900 text-xs">Alertas inmediatas</h3>
-                <p class="mt-1 text-[11px] leading-4 text-slate-500">Notificación en segundos al escanear tu QR.</p>
+                <div>
+                  <h3 class="font-semibold text-slate-900 text-xs">Alertas inmediatas</h3>
+                  <p class="mt-0.5 text-[11px] leading-4 text-slate-500">Notificación en segundos al escanear tu QR.</p>
+                </div>
               </div>
 
               <!-- Privacidad protegida -->
-              <div v-motion="{
-                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 260 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
-                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+              <div
+                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-3 text-left shadow-xs flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                   <span class="material-symbols-outlined text-blue-600 text-lg">shield_lock</span>
                 </div>
-                <h3 class="font-semibold text-slate-900 text-xs">Privacidad protegida</h3>
-                <p class="mt-1 text-[11px] leading-4 text-slate-500">Nunca compartimos tu info personal.</p>
+                <div>
+                  <h3 class="font-semibold text-slate-900 text-xs">Privacidad protegida</h3>
+                  <p class="mt-0.5 text-[11px] leading-4 text-slate-500">Nunca compartimos tu info personal.</p>
+                </div>
               </div>
 
               <!-- CTA: 1 año gratis -->
-              <router-link :to="{ name: 'register' }" v-motion="{
-                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 340 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }"
-                class="block w-full rounded-2xl border border-blue-200 bg-blue-50/80 p-4 text-center hover:bg-blue-100/80 transition">
-                <div class="mb-1 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 mx-auto">
+              <router-link :to="{ name: 'register' }"
+                class="block w-full rounded-2xl border border-blue-200 bg-blue-50/80 p-3 text-left hover:bg-blue-100/80 transition flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-100">
                   <span class="material-symbols-outlined text-blue-600 text-lg">workspace_premium</span>
                 </div>
-                <h3 class="font-semibold text-blue-800 text-xs">1 año Plan Bronce GRATIS</h3>
-                <p class="mt-1 text-[11px] leading-4 text-blue-600/80">Crea tu cuenta y actívalo hoy sin costo.</p>
-                <span
-                  class="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1.5 text-[11px] font-semibold text-white">Crear
-                  cuenta</span>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-blue-800 text-xs">1 año Plan Bronce GRATIS</h3>
+                  <p class="text-[11px] leading-4 text-blue-600/80">Crea tu cuenta y actívalo hoy sin costo.</p>
+                  <span
+                    class="mt-1.5 inline-block rounded-lg bg-blue-600 px-3 py-1 text-[11px] font-semibold text-white">Crear
+                    cuenta</span>
+                </div>
               </router-link>
             </div>
 
-            <!-- COL 2: Cards 5-8 -->
-            <div class="flex flex-col gap-4">
+            <!-- COL 2: Cards 5-7 (sin Recuperación exprés) -->
+            <div class="flex flex-col gap-3">
 
               <!-- Sin aplicaciones -->
-              <div v-motion="{
-                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 500 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
-                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+              <div
+                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-3 text-left shadow-xs flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                   <span class="material-symbols-outlined text-blue-600 text-lg">install_mobile</span>
                 </div>
-                <h3 class="font-semibold text-slate-900 text-xs">Sin aplicaciones</h3>
-                <p class="mt-1 text-[11px] leading-4 text-slate-500">Solo escanea el QR, el navegador hace todo.</p>
+                <div>
+                  <h3 class="font-semibold text-slate-900 text-xs">Sin aplicaciones</h3>
+                  <p class="mt-0.5 text-[11px] leading-4 text-slate-500">Solo escanea el QR, el navegador hace todo.</p>
+                </div>
               </div>
 
               <!-- WhatsApp en tiempo real -->
-              <div v-motion="{
-                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 580 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
-                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+              <div
+                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-3 text-left shadow-xs flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                   <v-icon name="bi-whatsapp" class="text-blue-600 text-lg notranslate" />
                 </div>
-                <h3 class="font-semibold text-slate-900 text-xs">
-                  <span class="flex items-center gap-1 justify-center">
-                    WhatsApp en tiempo real
-                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
-                  </span>
-                </h3>
-                <p class="mt-1 text-[11px] leading-4 text-slate-500">Alerta directa a WhatsApp, sin apps extra.</p>
-              </div>
-
-              <!-- Recuperación exprés -->
-              <div v-motion="{
-                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 660 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
-                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
-                  <span class="material-symbols-outlined text-blue-600 text-lg">bolt</span>
+                <div>
+                  <h3 class="font-semibold text-slate-900 text-xs">
+                    <span class="flex items-center gap-1">
+                      WhatsApp en tiempo real
+                      <span class="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse inline-block"></span>
+                    </span>
+                  </h3>
+                  <p class="mt-0.5 text-[11px] leading-4 text-slate-500">Alerta directa a WhatsApp, sin apps extra.</p>
                 </div>
-                <h3 class="font-semibold text-slate-900 text-xs">Recuperación exprés</h3>
-                <p class="mt-1 text-[11px] leading-4 text-slate-500">Recupera tus objetos en cuestión de minutos.</p>
               </div>
 
               <!-- Notificaciones 24/7 -->
-              <div v-motion="{
-                initial: { opacity: 0, y: 40 }, visibleOnce: { opacity: 1, y: 0, transition: { duration: 400, delay: 740 } }, hover: { scale: 1.02, boxShadow: '0 4px 20px rgba(0,0,0,0.06)', transition: { duration: 200 } }
-              }" class="w-full rounded-2xl border border-slate-100 bg-white/80 p-4 text-center shadow-xs">
-                <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 mx-auto">
+              <div
+                class="w-full rounded-2xl border border-slate-100 bg-white/80 p-3 text-left shadow-xs flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                   <span class="material-symbols-outlined text-blue-600 text-lg">schedule</span>
                 </div>
-                <h3 class="font-semibold text-slate-900 text-xs">Notificaciones 24/7</h3>
-                <p class="mt-1 text-[11px] leading-4 text-slate-500">Monitoreo constante, incluso mientras duermes.</p>
+                <div>
+                  <h3 class="font-semibold text-slate-900 text-xs">Notificaciones 24/7</h3>
+                  <p class="mt-0.5 text-[11px] leading-4 text-slate-500">Monitoreo constante, incluso mientras duermes.
+                  </p>
+                </div>
               </div>
             </div>
 
             <!-- COL 3-4: Text Content (span 2 columns) -->
-            <div v-motion="{
-              initial: { opacity: 0, x: -30 }, visibleOnce: { opacity: 1, x: 0, transition: { duration: 500, delay: 200 } }
-            }" class="text-center lg:text-left lg:col-span-2">
+            <div class="text-center lg:text-left lg:col-span-2">
 
               <h1
                 class="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold tracking-tight leading-[1.1] text-slate-800">
@@ -389,9 +379,7 @@ onUnmounted(() => {
             </div>
 
             <!-- COL 5-6: Phone Mockup (span 2 columns) -->
-            <div v-motion="{
-              initial: { opacity: 0, x: 30 }, visibleOnce: { opacity: 1, x: 0, transition: { duration: 500, delay: 300 } }
-            }" class="flex justify-center lg:items-start lg:pt-4 lg:col-span-2">
+            <div class="flex justify-center lg:items-start lg:pt-4 lg:col-span-2">
               <div
                 class="relative z-20 origin-top scale-[0.85] sm:scale-[0.9] lg:scale-[0.85] xl:scale-[0.9] 2xl:scale-100 shrink-0">
 
@@ -849,11 +837,21 @@ onUnmounted(() => {
           </div>
 
         </section>
-        <HowItWorks />
-        <VideoGrid />
-        <StepByStep />
-        <FeaturesComponent />
-        <PricingPlans />
+        <section id="how-it-works">
+          <HowItWorks />
+        </section>
+        <section id="videos">
+          <VideoGrid />
+        </section>
+        <section id="steps">
+          <StepByStep />
+        </section>
+        <section id="features">
+          <FeaturesComponent />
+        </section>
+        <section id="pricing">
+          <PricingPlans />
+        </section>
       </main>
     </template>
   </HomeLayout>
