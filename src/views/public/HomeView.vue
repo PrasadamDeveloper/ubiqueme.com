@@ -4,6 +4,7 @@ import HowItWorks from '@/components/home/HowItWorks/HowItWorks.vue'
 import PricingPlans from '@/components/home/Pricing/PricingPlans.vue'
 import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
 import VideoGrid from '@/components/home/VideoGrid/VideoGrid.vue'
+import VideoMarquee from '@/components/home/VideoMarquee/VideoMarquee.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { useUserStore } from '@/stores/user';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -182,10 +183,8 @@ onUnmounted(() => {
     <template #main>
       <main class="relative bg-gray-50 overflow-hidden font-google-sans">
 
-
-
         <!-- HERO -->
-        <section class="px-6 sm:px-10 lg:px-12 pt-24 lg:pt-32 pb-20 relative z-20 min-h-[600px]">
+        <section class="px-6 sm:px-10 lg:px-12 pt-24 lg:pt-20 pb-20 relative z-20 min-h-[600px]">
 
           <!-- Background images with crossfade -->
           <div aria-hidden="true" class="absolute inset-0 -z-20 overflow-hidden">
@@ -199,8 +198,11 @@ onUnmounted(() => {
           <div aria-hidden="true" class="absolute inset-0 -z-10 bg-linear-to-b from-slate-200/50 to-slate-50 to-100%">
           </div>
 
+          <!-- VIDEO MARQUEE -->
+          <VideoMarquee />
+
           <!-- Badge -->
-          <div class="flex justify-center">
+          <div class="flex justify-center hidden">
 
             <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-5 py-2">
 
@@ -221,26 +223,7 @@ onUnmounted(() => {
 
             <!-- QR Code -->
             <div class="shrink-0">
-              <!-- Banner promocional llamativo -->
-              <div
-                class="mb-4 w-48 sm:w-56 lg:w-64 rounded-2xl bg-gradient-to-br from-blue-50 to-white p-4 text-sky-900 text-center ">
-                <div class="flex items-center justify-center gap-1.5">
-                  <span class="material-symbols-outlined text-[22px]">touch_app</span>
-                  <span class="text-sm font-extrabold tracking-tight">¡Pruébelo Gratis Ahora!</span>
-                </div>
 
-                <p class="mt-3 text-[11px] leading-tight text-slate-800/85 font-medium ">
-                  Escanee este QR y vea cómo funciona Ubiqueme.com
-                </p>
-                <div class="flex  items-center mt-2">
-                  <v-icon name="fa-whatsapp" scale=".9" />
-                  <small class="text-[9px]"> Será redirigido al WhatsApp Oficial de
-                    Ubiqueme</small>
-                </div>
-                <div class="mt-1.5 flex justify-center">
-                  <span class="material-symbols-outlined text-lg animate-jump   text-blue-700/90">expand_more</span>
-                </div>
-              </div>
 
               <div
                 class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-3xl flex items-center justify-center bg-white p-3 border border-slate-200">
@@ -255,11 +238,9 @@ onUnmounted(() => {
               <h1
                 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] text-slate-800">
 
-                Códigos QR para
+                Códigos QR para notificar
 
-                <span class="mt-3 block text-slate-600 text-2xl sm:text-3xl lg:text-4xl font-semibold">
-                  notificarle de su
-                </span>
+                <span class="text-center">sobre su</span>
 
                 <div class="relative overflow-hidden mt-3 h-14 sm:h-16 lg:h-20">
                   <Transition name="slide-up" mode="out-in">
@@ -297,7 +278,8 @@ onUnmounted(() => {
             </div>
 
             <!-- Right content image -->
-            <div class="shrink-0 max-lg:mx-auto relative z-20">
+            <!-- Right content image -->
+            <div class="shrink-0 max-lg:mx-auto relative z-20 origin-top scale-[0.8]">
 
               <!-- Marco del teléfono -->
               <img src="../../assets/images/phonemockup-ubq.webp" alt=""
@@ -346,37 +328,45 @@ onUnmounted(() => {
                 <main
                   class="flex-1 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')] p-3 space-y-3 overflow-hidden font-google-sans">
 
-                  <!-- Recibido -->
                   <div class="flex">
                     <div :key="currentPlace?.name"
                       class="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow text-xs animate-fade-left">
-                      Hola Juan, <br> <br>
 
-                      Alguien acaba de escanear su código QR <b>{{ currentPlace?.name }}</b>.
+                      Hola Juan,
                       <br><br>
 
-                      Número de contacto: <br> <b class="italic">+52 55555555</b><br> <br>
+                      Alguien acaba de escanear su código QR
+                      <b>{{ currentPlace?.name }}</b>.
+                      <br><br>
 
-                      Hora del escaneo: <br><b>21/6/2026, 8:27:03 p.m.</b> <br><br>
+                      Número de contacto:
+                      <br>
+                      <b class="italic">+52 55555555</b>
+                      <br><br>
 
-                      Mensaje: <br> "Escaneé su QR <span class="font-bold">{{ currentPlace?.name }}</span> para
-                      contactarlo"
+                      Hora del escaneo:
+                      <br>
+                      <b>21/6/2026, 8:27:03 p.m.</b>
+                      <br><br>
 
+                      Mensaje:
+                      <br>
+                      "Escaneé su QR
+                      <span class="font-bold">{{ currentPlace?.name }}</span>
+                      para contactarlo"
                       <br><br>
 
                       Recuerde <b>NO compartir datos personales</b> si decide contactar al usuario que escaneó su QR.
-                      <br>
-                      <br>
+                      <br><br>
 
                       <i>Gracias por usar los servicios de Ubiqueme.</i>
+
                       <div class="text-right text-[9px] text-gray-500 mt-1">
                         9:40
                       </div>
+
                     </div>
                   </div>
-
-
-
 
                 </main>
 
@@ -401,7 +391,6 @@ onUnmounted(() => {
               </section>
 
             </div>
-
           </div>
 
           <!-- Trust indicators -->
