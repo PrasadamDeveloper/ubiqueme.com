@@ -28,24 +28,41 @@ const handleSideBarLeave = () => {
   }, 50)
 }
 
-const dashButtons = [
-  { name: 'Mis QR', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
-  { name: 'Planes', icon: 'ri-medal-line', iconActive: 'ri-medal-fill' },
-  { name: 'Configuración', icon: 'co-settings', iconActive: 'md-settings' },
-  { name: 'Soporte', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
-  { name: 'Cerrar Sesión', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' },
+const userStore = useUserStore()
 
-]
+const dashButtons = computed(() => {
+  const buttons = [
+    { name: 'Mis QR', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
+    { name: 'Planes', icon: 'ri-medal-line', iconActive: 'ri-medal-fill' },
+    { name: 'Configuración', icon: 'co-settings', iconActive: 'md-settings' },
+    { name: 'Soporte', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
+  ]
 
-const mobileButtons = [
-  { name: 'Mis QR', label: 'QRs', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
-  { name: 'Planes', label: 'Planes', icon: 'ri-medal-line', iconActive: 'ri-medal-fill' },
-  { name: 'Configuración', label: 'Ajustes', icon: 'co-settings', iconActive: 'md-settings' },
-  { name: 'Soporte', label: 'Ayuda', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
-  { name: 'Cerrar Sesión', label: 'Salir', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' },
-]
+  if (userStore.getRole === 'admin') {
+    buttons.push({ name: 'Admin', icon: 'co-settings', iconActive: 'md-settings' })
+  }
 
-type ComponentName = 'Mis QR' | 'Configuración' | 'Cerrar Sesión' | 'Soporte' | 'Planes'
+  buttons.push({ name: 'Cerrar Sesión', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' })
+  return buttons
+})
+
+const mobileButtons = computed(() => {
+  const buttons = [
+    { name: 'Mis QR', label: 'QRs', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
+    { name: 'Planes', label: 'Planes', icon: 'ri-medal-line', iconActive: 'ri-medal-fill' },
+    { name: 'Configuración', label: 'Ajustes', icon: 'co-settings', iconActive: 'md-settings' },
+    { name: 'Soporte', label: 'Ayuda', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
+  ]
+
+  if (userStore.getRole === 'admin') {
+    buttons.push({ name: 'Admin', label: 'Admin', icon: 'co-settings', iconActive: 'md-settings' })
+  }
+
+  buttons.push({ name: 'Cerrar Sesión', label: 'Salir', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' })
+  return buttons
+})
+
+type ComponentName = 'Mis QR' | 'Configuración' | 'Cerrar Sesión' | 'Soporte' | 'Planes' | 'Admin'
 
 const withLoader = (viewPath: () => Promise<any>) => {
   return defineAsyncComponent({
@@ -89,6 +106,10 @@ const changeComponent = (component: ComponentName) => {
     return
   }
 
+  if (component === 'Admin') {
+    window.location.href = '/admin'
+    return
+  }
 
   componentsStore.changeComponent(component)
 }
@@ -111,9 +132,9 @@ const changeComponent = (component: ComponentName) => {
               class="w-18 h-12 bg-[#090300] rounded-xl flex items-center justify-center shadow-2xl overflow-hidden absolute left-0">
               <span v-if="!hoverOnSideBar" class="text-orange-100 text-xs font-google-sans font-medium">{{
                 'Hola'
-                }}</span>
+              }}</span>
               <span v-else class="text-white text-xs font-google-sans animate-fade-right">{{ useUserStore().getFirstName
-                }}</span>
+              }}</span>
             </div>
           </div>
 
