@@ -1,10 +1,17 @@
 import { EmailMessage } from 'cloudflare:email';
 import { Resend } from 'resend';
+import { initializeApp, FirebaseOptions, FirebaseApp } from 'firebase/app';
+import { getFirestore, Firestore, doc, getDoc, Timestamp, collection, addDoc } from 'firebase/firestore/lite';
+import { getAuth, Auth, signInWithEmailAndPassword } from 'firebase/auth';
 
-// Extend Env with the Resend API key secret (set via `wrangler secret put`)
+// Extend Env with secrets
 declare global {
 	interface Env {
 		RESEND_API_KEY: string;
+		FIREBASE_PROJECT_ID: string;
+		FIREBASE_API_KEY: string;
+		FIREBASE_AUTH_EMAIL: string;
+		FIREBASE_AUTH_PASSWORD: string;
 	}
 }
 
@@ -209,6 +216,130 @@ function isAutoReplyOrBounce(headers: Headers): boolean {
 	return false;
 }
 
+// ─── Firebase Singleton (lazy) ────────────────────────────────
+let firebaseApp: FirebaseApp | null = null;
+let firestoreDb: Firestore | null = null;
+let firebaseAuth: Auth | null = null;
+
+function getFirebase(env: Env) {
+	if (!firebaseApp) {
+		const config: FirebaseOptions = {
+			apiKey: env.FIREBASE_API_KEY,
+			authDomain: `${env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
+			projectId: env.FIREBASE_PROJECT_ID,
+			storageBucket: `${env.FIREBASE_PROJECT_ID}.firebasestorage.app`,
+			messagingSenderId: 'worker',
+			appId: 'worker:soporte',
+		};
+		firebaseApp = initializeApp(config);
+		firestoreDb = getFirestore(firebaseApp);
+		firebaseAuth = getAuth(firebaseApp);
+	}
+	return { app: firebaseApp, db: firestoreDb, auth: firebaseAuth };
+}
+
+async function ensureAuthenticated(env: Env) {
+	const { auth } = getFirebase(env);
+	if (!auth) throw new Error('Firebase Auth no inicializado');
+	if (!auth.currentUser) {
+		await signInWithEmailAndPassword(auth, env.FIREBASE_AUTH_EMAIL, env.FIREBASE_AUTH_PASSWORD);
+		console.log('[SoporteWorker] Firebase Auth: sesi\u00f3n iniciada');
+	}
+	return auth;
+}
+
+function escapeHtml(text: string): string {
+	const amp = String.fromCharCode(38) + 'amp;';
+	const lt = String.fromCharCode(38) + 'lt;';
+	const gt = String.fromCharCode(38) + 'gt;';
+	return text
+		.replace(new RegExp(String.fromCharCode(38), 'g'), amp)
+		.replace(/</g, lt)
+		.replace(/>/g, gt);
+}
+
+function getAdminEmailHtml(subject: string, message: string): string {
+	const safeSubject = escapeHtml(subject);
+	const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
+	const content = `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%">
+  <tr>
+    <td style="padding-bottom:16px">
+      <h1 style="margin:0;font-size:20px;color:#111111;font-weight:700;letter-spacing:-0.3px">${safeSubject}</h1>
+    </td>
+  </tr>
+  <tr>
+    <td style="font-size:14px;color:#333333;line-height:1.7">
+      ${safeMessage}
+    </td>
+  </tr>
+</table>`.trim();
+	return EMAIL_WRAPPER(content);
+}
+
+// ─── Admin send-email endpoint ─────────────────────────────────
+async function handleAdminSendEmail(request: Request, env: Env): Promise<Response> {
+	try {
+		const body = await request.json<{
+			to: string;
+			toName: string;
+			toUid: string;
+			subject: string;
+			message: string;
+			category: string;
+			sentBy: { uid: string; name: string; email: string };
+		}>();
+
+		if (!body.to || !body.subject || !body.message || !body.sentBy) {
+			return json({ error: 'Missing required fields: to, subject, message, sentBy' }, 400);
+		}
+
+		// Send via Resend from soporte@ubiqueme.com
+		const resend = new Resend(env.RESEND_API_KEY);
+		const sendResult = await resend.emails.send({
+			from: 'Ubiqueme <soporte@ubiqueme.com>',
+			to: [body.to],
+			subject: body.subject,
+			html: getAdminEmailHtml(body.subject, body.message),
+		});
+
+		if (sendResult.error) {
+			console.error('[SoporteWorker] Resend error:', sendResult.error);
+			return json({ error: 'Failed to send email' }, 500);
+		}
+
+		// Save to Firestore sentEmails collection
+		try {
+			await ensureAuthenticated(env);
+			const { db } = getFirebase(env);
+			await addDoc(collection(db!, 'sentEmails'), {
+				toEmail: body.to,
+				toName: body.toName || '',
+				toUid: body.toUid || '',
+				subject: body.subject,
+				message: body.message,
+				category: body.category || 'general',
+				sentBy: {
+					uid: body.sentBy.uid,
+					name: body.sentBy.name,
+					email: body.sentBy.email,
+				},
+				fromAddress: 'soporte@ubiqueme.com',
+				sentAt: Timestamp.now(),
+				resendMessageId: sendResult.data?.id || null,
+			});
+		} catch (fsError) {
+			// Non-critical: log but don't fail the request
+			console.error('[SoporteWorker] Failed to save sentEmail to Firestore:', fsError);
+		}
+
+		return json({ success: true });
+	} catch (e) {
+		console.error('[SoporteWorker] Error in handleAdminSendEmail:', e);
+		return json({ error: 'Internal error' }, 500);
+	}
+}
+
 // ─── Main export ──────────────────────────────────────────────
 export default {
 	// ── Incoming email (Email Routing) ────────────────────────
@@ -231,7 +362,7 @@ export default {
 			await resend.emails.send({
 				from: 'Ubiqueme <soporte@ubiqueme.com>',
 				to: [from],
-				subject: 'Hemos recibido su mensaje — Ubiqueme',
+				subject: 'Hemos recibido su mensaje \u2014 Ubiqueme',
 				html: EMAIL_WRAPPER(AUTO_REPLY_HTML),
 			});
 		} catch (error) {
@@ -282,7 +413,7 @@ export default {
 				const notifResult = await resend.emails.send({
 					from: 'Ubiqueme <soporte@ubiqueme.com>',
 					to: ['informes@prasadam.mx'],
-					subject: `Nuevo mensaje de contacto — ${name}`,
+					subject: `Nuevo mensaje de contacto \u2014 ${name}`,
 					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Nuevo mensaje de contacto', fields)),
 				});
 
@@ -296,7 +427,7 @@ export default {
 					.send({
 						from: 'Ubiqueme <soporte@ubiqueme.com>',
 						to: [email],
-						subject: 'Hemos recibido su mensaje — Ubiqueme',
+						subject: 'Hemos recibido su mensaje \u2014 Ubiqueme',
 						html: EMAIL_WRAPPER(AUTO_REPLY_HTML),
 					})
 					.catch(() => null);
@@ -330,8 +461,8 @@ export default {
 				const notifResult = await resend.emails.send({
 					from: 'Ubiqueme <soporte@ubiqueme.com>',
 					to: ['informes@prasadam.mx'],
-					subject: 'Solicitud de cancelación de cuenta',
-					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Solicitud de cancelación de cuenta', fields)),
+					subject: 'Solicitud de cancelaci\u00f3n de cuenta',
+					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Solicitud de cancelaci\u00f3n de cuenta', fields)),
 				});
 
 				if (notifResult.error) {
@@ -344,6 +475,11 @@ export default {
 				console.error('Resend error:', error);
 				return json({ error: 'Failed to send email' }, 500);
 			}
+		}
+
+		// ── POST /api/admin-send-email (admin console) ─────────
+		if (url.pathname === '/api/admin-send-email') {
+			return handleAdminSendEmail(request, env);
 		}
 
 		// ── POST /api/physical-request (notify QR shipment) ──
@@ -363,9 +499,9 @@ export default {
 				'IDs de QR': body.qrIds || 'N/A',
 				Costo: body.cost || 'N/A',
 				Ciudad: body.city || 'N/A',
-				'Código Postal': body.postalCode || 'N/A',
+				'C\u00f3digo Postal': body.postalCode || 'N/A',
 				Teléfono: body.phone || 'N/A',
-				'Notas de envío': body.shippingNotes || 'Ninguna',
+				'Notas de env\u00edo': body.shippingNotes || 'Ninguna',
 				'Notas adicionales': body.notes || 'Ninguna',
 			};
 
@@ -374,8 +510,8 @@ export default {
 				const notifResult = await resend.emails.send({
 					from: 'Ubiqueme <soporte@ubiqueme.com>',
 					to: ['informes@prasadam.mx'],
-					subject: 'Nueva solicitud de QR físico',
-					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Nueva solicitud de QR físico', fields)),
+					subject: 'Nueva solicitud de QR f\u00edsico',
+					html: EMAIL_WRAPPER(NOTIF_TABLE_HTML('Nueva solicitud de QR f\u00edsico', fields)),
 				});
 
 				if (notifResult.error) {

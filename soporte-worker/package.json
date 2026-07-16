@@ -17,6 +17,7 @@
     "wrangler": "^4.95.0"
   },
   "dependencies": {
+    "firebase": "^11.10.0",
     "resend": "^6.12.4"
   }
 }

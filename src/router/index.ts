@@ -54,6 +54,14 @@ const router = createRouter({
       component: () => import('@/views/admin/AdminDashboardView.vue'),
     },
     {
+      path: '/admin/send-email',
+      name: 'admin-send-email',
+      meta: {
+        requiresAuth: true,
+      },
+      component: () => import('@/views/admin/AdminEmailView.vue'),
+    },
+    {
       path: '/qr/:qrId?',
       name: 'qr-scanned',
       meta: {
