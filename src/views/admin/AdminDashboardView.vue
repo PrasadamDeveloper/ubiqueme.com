@@ -16,6 +16,11 @@
               <h1 class="text-lg font-bold text-white tracking-tight">Admin</h1>
               <span
                 class="px-2 py-0.5 rounded-md bg-[#ff7900]/10 text-[#ff7900] text-[9px] font-black uppercase tracking-widest">Beta</span>
+              <RouterLink :to="{ name: 'admin-send-email' }"
+                class="ml-auto sm:ml-0 h-7 px-2.5 rounded-lg border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition-all flex items-center gap-1 text-[9px] font-black uppercase tracking-widest shrink-0 cursor-pointer">
+                <span class="material-symbols-outlined notranslate text-[11px]">mail</span>
+                Enviar correo
+              </RouterLink>
             </div>
 
             <div class="flex items-center gap-3 text-xs text-white/50">
@@ -27,7 +32,7 @@
               <span class="flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-green-400"></span>
                 <span class="font-medium text-green-400">{{usersData.filter(u => u.isActive && !u.isBanned).length
-                  }}</span> activos
+                }}</span> activos
               </span>
               <span class="w-px h-4 bg-white/10"></span>
               <span class="flex items-center gap-1.5">
@@ -165,7 +170,7 @@
                     <span>Registro: <span class="text-white/50">{{ formatedDate(user.createdAt) }}</span></span>
                     <span>Último login: <span class="text-white/50">{{ formatedDate(user.lastLoginAt) }}</span></span>
                     <span v-if="user.isBanned && user.banReason" class="text-red-300/70">Motivo: {{ user.banReason
-                      }}</span>
+                    }}</span>
                   </div>
 
                   <!-- Subscriptions -->
@@ -184,7 +189,8 @@
                           <div class="flex items-center gap-1.5">
                             <span
                               class="material-symbols-outlined notranslate text-[14px] text-[#ff7900]">workspace_premium</span>
-                            <span class="font-bold text-[#ff7900] uppercase text-[10px] tracking-wider">{{ planDisplayName(sub.planType)
+                            <span class="font-bold text-[#ff7900] uppercase text-[10px] tracking-wider">{{
+                              planDisplayName(sub.planType)
                               }}</span>
                           </div>
                           <span
@@ -219,7 +225,7 @@
                         <!-- Dates -->
                         <div class="flex items-center gap-3 text-[9px] text-white/30">
                           <span>Inicio: <span class="text-white/50 font-mono">{{ formatedDate(sub.purchasedAt)
-                              }}</span></span>
+                          }}</span></span>
                           <span>Ven: <span class="font-mono"
                               :class="sub.status === 'active' && sub.endDate && sub.endDate.toDate() < new Date() ? 'text-red-400' : 'text-white/50'">{{
                                 formatedDate(sub.endDate) }}</span></span>
