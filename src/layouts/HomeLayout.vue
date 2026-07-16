@@ -35,7 +35,7 @@ const navLinks: NavLink[] = [
       { label: 'Cómo funciona', href: '#how-it-works', icon: 'settings' },
       { label: 'Paso a paso', href: '#steps', icon: 'format_list_numbered' },
       { label: 'Planes y precios', href: '#pricing', icon: 'payments' },
-      { label: 'Videos', href: '#videos', icon: 'play_circle' },
+      { label: 'Videos de su Uso', href: '#videos', icon: 'play_circle' },
       { label: 'Ver página completa', pathName: 'home', icon: 'open_in_new' },
     ],
   },
@@ -152,17 +152,17 @@ onUnmounted(() => {
     <nav :class="[
       'fixed top-0 w-full z-50 transition-all duration-500',
       isScrolled
-        ? 'bg-white/95 border-b border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)]'
+        ? 'bg-orange-50 border-b text-white! border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)]'
         : 'bg-white border-b border-gray-200'
     ]">
 
       <!-- Subtle Orange Top Line -->
       <div
-        class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent">
+        class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-600 to-transparent">
       </div>
 
       <!-- Grain texture overlay -->
-      <div class="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay grain-overlay">
+      <div class="absolute hidedn inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay grain-overlay">
       </div>
 
       <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto relative">
@@ -218,7 +218,7 @@ onUnmounted(() => {
           <RouterLink :to="{ name: 'home' }"
             class="flex items-center gap-2 group cursor-pointer z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-lg">
             <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
-              class="hidden sm:block w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+              class="hidden sm:block w-10 h-10 sm:w-12 sm:h-12 object-contain bg-black rounded-xl" />
             <div class="hidden lg:flex flex-col min-w-[140px] sm:min-w-[200px]">
               <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
                 <Transition name="slide-up">
@@ -279,7 +279,7 @@ onUnmounted(() => {
                 @mouseleave="($event.target as HTMLElement).style.color = $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)'">
                 <span
                   class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
-                  link.icon }}</span>
+                    link.icon }}</span>
                 <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
                 <div :class="[
                   'absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 transition-transform origin-center duration-300',
@@ -293,7 +293,7 @@ onUnmounted(() => {
                 :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)' }">
                 <span
                   class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
-                  link.icon }}</span>
+                    link.icon }}</span>
                 <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
                 <span class="material-symbols-outlined notranslate text-[14px] transition-transform duration-200"
                   :class="activeMenu === link.name ? 'rotate-180' : ''">expand_more</span>
@@ -350,7 +350,7 @@ onUnmounted(() => {
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="lg:hidden flex items-center justify-center p-2 bg-[#dd5c00] text-white/60 font-bold hover:text-white transition-colors z-50 cursor-pointer rounded-xl">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-            }}</span>
+          }}</span>
           <span>{{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}</span>
         </button>
 
@@ -486,6 +486,91 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+      <!-- Trust badges marquee -->
+      <div class="border-t border-zinc-800 pt-10 pb-6">
+        <p class="text-center text-xs uppercase tracking-[0.3em] text-zinc-500 mb-6">
+          Medios de pago y confianza
+        </p>
+        <div class="trust-marquee-mask overflow-hidden">
+          <div class="trust-marquee-track flex gap-16 items-center">
+            <!-- SSL -->
+            <div
+              class="flex items-center gap-2 shrink-0 px-4 py-2 rounded-lg border border-orange-500/20 bg-orange-500/5">
+              <span class="material-symbols-outlined notranslate text-orange-400" style="font-size:20px">shield</span>
+              <span class="text-xs font-semibold text-zinc-300 tracking-wider">SSL 256-bit</span>
+            </div>
+            <!-- PayPal -->
+            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
+              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
+                <rect width="36" height="36" rx="6" fill="#003087" />
+                <text x="18" y="23" text-anchor="middle" fill="white" font-size="10" font-weight="bold"
+                  font-family="Arial">Pay</text>
+              </svg>
+              <span class="text-xs font-semibold tracking-wide">
+                <span style="color:#0079C1">Pay</span><span style="color:#27346A">Pal</span>
+              </span>
+            </div>
+            <!-- Mercado Pago -->
+            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
+              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
+                <rect width="36" height="36" rx="6" fill="#00B5E2" />
+                <text x="18" y="23" text-anchor="middle" fill="white" font-size="7" font-weight="bold"
+                  font-family="Arial">M
+                  P</text>
+              </svg>
+              <span class="text-xs font-semibold text-zinc-300 tracking-tight">Mercado Pago</span>
+            </div>
+            <!-- Mercado Libre -->
+            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
+              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
+                <rect width="36" height="36" rx="6" fill="#FFE600" />
+                <text x="18" y="23" text-anchor="middle" fill="#333" font-size="6" font-weight="bold"
+                  font-family="Arial">M
+                  L</text>
+              </svg>
+              <span class="text-xs font-semibold tracking-tight">
+                <span style="color:#FFE600">Mercado</span> <span style="color:#333">Libre</span>
+              </span>
+            </div>
+            <!-- Dúplica para scroll seamless -->
+            <div
+              class="flex items-center gap-2 shrink-0 px-4 py-2 rounded-lg border border-orange-500/20 bg-orange-500/5">
+              <span class="material-symbols-outlined notranslate text-orange-400" style="font-size:20px">shield</span>
+              <span class="text-xs font-semibold text-zinc-300 tracking-wider">SSL 256-bit</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
+              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
+                <rect width="36" height="36" rx="6" fill="#003087" />
+                <text x="18" y="23" text-anchor="middle" fill="white" font-size="10" font-weight="bold"
+                  font-family="Arial">Pay</text>
+              </svg>
+              <span class="text-xs font-semibold tracking-wide">
+                <span style="color:#0079C1">Pay</span><span style="color:#27346A">Pal</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
+              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
+                <rect width="36" height="36" rx="6" fill="#00B5E2" />
+                <text x="18" y="23" text-anchor="middle" fill="white" font-size="7" font-weight="bold"
+                  font-family="Arial">M
+                  P</text>
+              </svg>
+              <span class="text-xs font-semibold text-zinc-300 tracking-tight">Mercado Pago</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
+              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
+                <rect width="36" height="36" rx="6" fill="#FFE600" />
+                <text x="18" y="23" text-anchor="middle" fill="#333" font-size="6" font-weight="bold"
+                  font-family="Arial">M
+                  L</text>
+              </svg>
+              <span class="text-xs font-semibold tracking-tight">
+                <span style="color:#FFE600">Mercado</span> <span style="color:#333">Libre</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- PACA Credit -->
       <div class="group/credit relative flex justify-center pb-4 pt-2">
         <span class="text-[10px] tracking-[0.25em] text-zinc-700/50 cursor-default">
@@ -600,11 +685,48 @@ onUnmounted(() => {
   transform: translateY(-2px);
 }
 
+/* Trust marquee horizontal infinite scroll */
+@keyframes trust-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.trust-marquee-mask {
+  mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%);
+}
+
+.trust-marquee-track {
+  animation: trust-marquee 30s linear infinite;
+  will-change: transform;
+}
+
+.trust-marquee-track:hover {
+  animation-play-state: paused;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .trust-marquee-track {
+    animation: none;
+  }
+
   .animate-pulse-ring-orange {
     animation: none;
   }

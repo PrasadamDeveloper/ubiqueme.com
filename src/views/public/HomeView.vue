@@ -170,15 +170,6 @@ onUnmounted(() => {
           <!-- Hero Content: Grid 3 columnas [cards_scroll] [texto] [phone] -->
           <div class="mt-0 flex flex-col lg:grid lg:grid-cols-[1fr_3fr_1fr] gap-6 lg:gap-4">
 
-            <!-- QR Code - visible solo en mobile -->
-            <div class="flex justify-center lg:hidden">
-              <div
-                class="w-48 h-48 sm:w-56 sm:h-56 rounded-3xl flex items-center justify-center bg-white p-3 border border-slate-200">
-                <QrcodeVue :value="qrDynamicUrl" :size="220" render-as="svg" level="Q"
-                  :image-settings="imageSettings" />
-              </div>
-            </div>
-
             <!-- COL 1: Cards con scroll infinito hacia arriba (solo desktop) -->
             <div class="hidden lg:block relative max-h-[600px] cards-scroll-mask">
               <div class="cards-scroll-track flex flex-col gap-3">
@@ -482,9 +473,8 @@ onUnmounted(() => {
 
             <!-- COL 2: Text Content -->
             <div class="text-center lg:text-left  flex flex-col items-center">
-
               <h1
-                class="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold tracking-tight leading-[1.1] text-slate-800">
+                class="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold tracking-tight leading-[1.1] pt-2 text-slate-800">
 
                 Códigos QR para notificar
 
@@ -506,34 +496,78 @@ onUnmounted(() => {
               </div>
 
               <p
-                class="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-slate-600 max-w-xl mx-auto lg:mx-0">
+                class="mt-2 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-slate-600  lg:mx-0 text-center lg:px-2">
                 Etiquetas físicas y pulseras inteligentes para recuperar
                 objetos perdidos, ayudar a mascotas, niños y adultos mayores,
                 manteniendo siempre protegida su información personal.
               </p>
 
-              <div class="mt-6 sm:mt-8 flex flex-col items-center lg:items-start gap-3 sm:gap-4 sm:flex-row">
+              <!-- QR + CTA: row en lg, columna en mobile -->
+              <div class="mt-8 flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-8">
 
-                <router-link :to="{ name: 'register' }"
-                  class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-6 sm:px-8 py-3 sm:py-4 text-white font-semibold transition hover:bg-slate-800 text-sm sm:text-base">
-                  Crear cuenta gratis
-                  <span class="material-symbols-outlined">arrow_forward</span>
-                </router-link>
+                <!-- QR -->
+                <div
+                  class="relative -rotate-2 hover:rotate-0 transition-all duration-300 bg-white rounded-3xl border border-neutral-200 p-4 shadow-[0_18px_40px_rgba(0,0,0,.12)] w-fit">
 
-                <router-link :to="{ name: 'pricing' }"
-                  class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 sm:px-8 py-3 sm:py-4 font-semibold text-slate-700 transition hover:bg-slate-50 text-sm sm:text-base">
-                  Ver planes
-                  <span class="material-symbols-outlined">payments</span>
-                </router-link>
+                  <!-- Header -->
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="text-[11px] uppercase tracking-[0.35em] text-neutral-400">
+                      Prueba Gratuita
+                    </span>
+
+                    <div class="flex-1 h-px bg-neutral-200 mx-3"></div>
+
+                    <span class="text-xs font-semibold text-orange-500">
+                      WhatsApp
+                    </span>
+                  </div>
+
+                  <!-- QR -->
+                  <div class="rounded-2xl border border-neutral-100 bg-white p-2 flex justify-center">
+                    <QrcodeVue :value="qrDynamicUrl" :size="185" render-as="svg" level="Q"
+                      :image-settings="imageSettings" />
+                  </div>
+
+                  <!-- Texto -->
+                  <p class="mt-3 text-xs text-neutral-500 leading-relaxed text-center">
+                    Escanee para probar cómo funciona.
+                  </p>
+
+                  <!-- Detalle inferior -->
+                  <div
+                    class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-orange-500 ring-4 ring-white">
+                  </div>
+
+                </div>
+                <!-- CTA buttons -->
+                <div class="flex flex-col items-center lg:items-end gap-3 sm:gap-4">
+
+                  <router-link :to="{ name: 'register' }"
+                    class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-6 sm:px-8 py-3 sm:py-4 text-white font-semibold transition hover:bg-slate-800 text-sm sm:text-base">
+                    Crear cuenta gratis
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  </router-link>
+
+                  <router-link :to="{ name: 'pricing' }"
+                    class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 sm:px-8 py-3 sm:py-4 font-semibold text-slate-700 transition hover:bg-slate-50 text-sm sm:text-base">
+                    Ver planes
+                    <span class="material-symbols-outlined">payments</span>
+                  </router-link>
+
+                </div>
 
               </div>
 
             </div>
 
             <!-- COL 3: Phone Mockup -->
-            <div class="flex justify-center lg:items-start lg:pt-4">
+            <div class="flex justify-center lg:items-start lg:pt-4 relative group">
+              <article
+                class="bg-black w-16 min-h-5 group-hover:w-22  rounded-3xl absolute top-7 z-40 transition-all duration-300 ease-in-out flex justify-center items-center text-white/70 text-[8px]">
+                <p>Ubiqueme.com</p>
+              </article>
               <div
-                class="relative z-20 origin-top scale-[0.85] sm:scale-[0.9] lg:scale-[0.85] xl:scale-[0.9] 2xl:scale-100 shrink-0">
+                class="relative z-20 origin-top scale-[0.85] sm:scale-[0.9] lg:scale-[1] xl:scale-[0.9] 2xl:scale-100 shrink-0">
 
                 <!-- Marco del teléfono -->
                 <img src="../../assets/images/phonemockup-ubq.webp" alt=""
@@ -541,7 +575,7 @@ onUnmounted(() => {
 
                 <!-- Pantalla -->
                 <section
-                  class="absolute inset-[10px] rounded-[38px] overflow-hidden bg-[#efeae2] z-10 flex flex-col p-0.5">
+                  class="absolute inset-[10px] rounded-[36px] overflow-hidden bg-[#efeae2] z-10 flex flex-col p-0">
 
                   <!-- Barra superior -->
                   <div class="h-6 bg-[#00342e] text-white text-[10px] flex justify-between items-center px-4">
@@ -561,7 +595,7 @@ onUnmounted(() => {
                       <img src="../../assets/Logo_Ubiqueme.webp" class="rounded-full p-0.5 bg-emerald-50">
                     </div>
                     <div class="ml-3 flex-1">
-                      <p class="font-medium text-sm">Ubiqueme</p>
+                      <p class="font-medium text-xs">Ubiqueme</p>
                       <p class="text-[11px] text-green-100">en línea</p>
                     </div>
                     <div class="flex gap-3 text-lg">
@@ -576,7 +610,7 @@ onUnmounted(() => {
                     class="flex-1 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')] p-3 space-y-3 overflow-hidden font-google-sans">
                     <div class="flex">
                       <div :key="currentPlace?.name"
-                        class="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow text-xs animate-fade-left">
+                        class="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow text-[9px] animate-fade-left">
                         Hola Juan,<br><br>
                         Alguien acaba de escanear su código QR
                         <b>{{ currentPlace?.name }}</b>.<br><br>
