@@ -70,7 +70,7 @@
                       <div class="text-[13px] font-medium text-gray-800 truncate">{{ user.name || 'Sin nombre' }}</div>
                       <div class="text-[11px] text-gray-400 truncate">{{ user.email || 'Sin email' }}</div>
                       <div class="text-[9px] text-gray-300 font-mono truncate mt-0.5">{{ user.uid?.slice(0, 12) || ''
-                        }}…</div>
+                      }}…</div>
                     </div>
                   </button>
                 </div>
@@ -186,7 +186,7 @@ import type { IUser } from '@/interfaces/IUser'
 
 const userStore = useUserStore()
 
-const SOPORTE_WORKER_URL = 'https://soporte-worker.ubiqueme.workers.dev'
+const SOPORTE_WORKER_URL = 'https://soporte-worker.miarrendatario.workers.dev'
 
 const categories = [
   { value: 'general', label: 'General' },
