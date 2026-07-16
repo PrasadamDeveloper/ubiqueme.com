@@ -310,9 +310,17 @@ async function handleAdminSendEmail(request: Request, env: Env): Promise<Respons
 
 		// Save to Firestore sentEmails collection
 		try {
+			console.log('[SoporteWorker] Attempting to save sentEmail to Firestore...');
+			console.log('[SoporteWorker] Firebase env vars present:', {
+				projectId: !!env.FIREBASE_PROJECT_ID,
+				apiKey: !!env.FIREBASE_API_KEY,
+				authEmail: !!env.FIREBASE_AUTH_EMAIL,
+				authPass: !!env.FIREBASE_AUTH_PASSWORD,
+			});
 			await ensureAuthenticated(env);
+			console.log('[SoporteWorker] Firebase authenticated successfully');
 			const { db } = getFirebase(env);
-			await addDoc(collection(db!, 'sentEmails'), {
+			const docRef = await addDoc(collection(db!, 'sentEmails'), {
 				toEmail: body.to,
 				toName: body.toName || '',
 				toUid: body.toUid || '',

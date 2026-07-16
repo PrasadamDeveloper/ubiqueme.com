@@ -167,6 +167,23 @@ function isValidLogData(data) {
 // for collectionGroup queries.
 // ===============================================================
 
+// ===============================================================
+// 📦 COLLECTION: sentEmails (admin console)
+// ===============================================================
+// The soporte-worker uses Firebase Auth (email/password) to write.
+// Any authenticated worker/service user can create documents.
+// ===============================================================
+
+match /sentEmails/{docId} {
+  allow create: if isAuth();
+  allow read: if isAdmin();
+  allow update, delete: if isAdmin();
+}
+
+// ===============================================================
+// 📦 COLLECTION GROUP: subscriptions/{subId} (admin only)
+// ===============================================================
+
 match /{path=**}/subscriptions/{subId} {
   allow read: if isAdmin();
 }
