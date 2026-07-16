@@ -1,17 +1,24 @@
 <template>
-  <section class="relative z-10 overflow-hidden py-2 sm:py-3">
+  <section ref="marqueeSectionRef" class="relative z-10 overflow-hidden py-2 sm:py-3">
     <!-- Marquee container -->
     <div class="marquee-container overflow-hidden" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
-      <div class="marquee-track flex gap-3 sm:gap-4" :class="{ 'paused': isHovering }">
+      <div v-if="videosLoaded" class="marquee-track flex gap-3 sm:gap-4" :class="{ 'paused': isHovering }">
         <!-- Two copies for seamless loop -->
         <template v-for="copy in 2" :key="'copy-' + copy">
           <div v-for="(video, i) in videoSources" :key="copy + '-' + i"
             class="marquee-item flex-shrink-0 cursor-pointer rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-white transition-transform duration-300 hover:scale-105 hover:shadow-lg"
             :class="{ 'active-preview': selectedVideoIndex === i }" @click="openPreview(i)">
             <video :src="video.src" muted autoplay loop playsinline
-              class="h-full w-full object-cover pointer-events-none" />
+              class="h-full w-full object-cover pointer-events-none"></video>
           </div>
         </template>
+      </div>
+      <!-- Placeholder skeleton mientras los videos no están cargados -->
+      <div v-else class="marquee-track flex gap-3 sm:gap-4">
+        <div v-for="i in 4" :key="'placeholder-' + i"
+          class="marquee-item flex-shrink-0 rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-100 skeleton-pulse flex items-center justify-center">
+          <span class="material-symbols-outlined notranslate text-gray-300 text-2xl">slideshow</span>
+        </div>
       </div>
     </div>
 
@@ -32,7 +39,7 @@
 
               <!-- Video -->
               <video ref="previewVideoRef" :src="videoSources[selectedVideoIndex]?.src" autoplay loop controls
-                playsinline class="w-full aspect-video object-contain bg-black" />
+                playsinline class="w-full aspect-video object-contain bg-black"></video>
 
               <!-- Caption -->
               <div
@@ -53,13 +60,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 interface VideoSource {
   src: string
   title: string
   description: string
 }
+
+const marqueeSectionRef = ref<HTMLElement | null>(null)
+const videosLoaded = ref(false)
+let observer: IntersectionObserver | null = null
+
+onMounted(() => {
+  if (!marqueeSectionRef.value) return
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting) {
+        videosLoaded.value = true
+        if (observer) {
+          observer.disconnect()
+          observer = null
+        }
+      }
+    },
+    { rootMargin: '200px' }
+  )
+
+  observer!.observe(marqueeSectionRef.value)
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+})
 
 const videoSources: VideoSource[] = [
   {
@@ -140,6 +177,7 @@ function closePreview() {
 .marquee-track {
   width: max-content;
   animation: marquee-scroll 60s linear infinite;
+  will-change: transform;
 }
 
 .marquee-track.paused {
@@ -208,6 +246,23 @@ function closePreview() {
 .modal-scale-leave-to {
   opacity: 0;
   transform: scale(0.9) translateY(10px);
+}
+
+/* Skeleton pulse animation */
+.skeleton-pulse {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .material-symbols-outlined {
