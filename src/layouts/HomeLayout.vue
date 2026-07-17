@@ -6,6 +6,17 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import UbiquemeLogo from '@/assets/Ubiqueme_Logo_white.webp';
+import FacebookLogo from '@/assets/logos/facebook-com-logo.png';
+import InstagramLogo from '@/assets/logos/instagram-com-logo.png';
+import MastercardLogo from '@/assets/logos/mastercard-logo.png';
+import MercadoLibreLogo from '@/assets/logos/mercadolibre-logo.png';
+import MercadoPagoLogo from '@/assets/logos/mercadopago-logo.png';
+import MetaLogo from '@/assets/logos/meta-com-logo.png';
+import PayPalLogo from '@/assets/logos/paypal-logo.png';
+import TikTokLogo from '@/assets/logos/tiktok-com-logo.png';
+import VisaLogo from '@/assets/logos/visa-com-logo.png';
+import XLogo from '@/assets/logos/x-com-logo.png';
+import YoutubeLogo from '@/assets/logos/youtube-com-logo.png';
 
 const router = useRouter();
 const openAziechrie = () => window.open('https://www.aziechriepharma.com', '_blank');
@@ -144,7 +155,7 @@ onUnmounted(() => {
   <div class="font-google-sans">
     <!-- Skip to main content (accessibility) -->
     <a href="#main-content"
-      class="fixed -top-10 left-4 z-[100] bg-orange-500 text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest rounded-b-lg transition-all duration-300 focus-visible:top-0 focus-visible:outline-none">
+      class="fixed -top-10 left-4 z-[100] bg-orange-500 text-white px-4 py-2 text-[11px] font-google-sans rounded-b-lg transition-all duration-300 focus-visible:top-0 focus-visible:outline-none">
       Saltar al contenido
     </a>
 
@@ -165,246 +176,437 @@ onUnmounted(() => {
       <div class="absolute hidedn inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay grain-overlay">
       </div>
 
-      <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto relative">
+      <div
+        class="relative mx-auto flex h-22 w-full max-w-screen-2xl items-center justify-between px-5 md:px-10 xl:px-14">
 
-        <!-- Logo -->
-        <div class="flex items-center gap-3 relative">
-          <!-- SSL Badge -->
-          <div
-            class="group/badge relative flex items-center gap-1.5 ml-4 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] active:scale-[0.97] cursor-default"
-            :class="showCompactBadge ? 'px-2 py-1' : 'px-2.5 py-1.5'"
-            :style="{ transition: 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)' }">
-            <Transition name="fade">
-              <span v-if="!showCompactBadge"
-                class="absolute inset-0 rounded-lg animate-pulse-ring-orange pointer-events-none"></span>
-            </Transition>
+        <!-- LEFT -->
+        <div class="flex items-center gap-5">
 
-            <div class="relative w-4 h-4 flex items-center justify-center shrink-0">
-              <Transition name="fade">
-                <span v-if="!showCompactBadge" key="lock"
-                  class="material-symbols-outlined notranslate absolute inset-0 flex items-center justify-center text-orange-400 z-[1]"
-                  style="font-size:16px">lock</span>
-              </Transition>
-              <Transition name="fade">
-                <span v-if="showCompactBadge" key="shield"
-                  class="material-symbols-outlined notranslate absolute inset-0 flex items-center justify-center text-orange-500/50 z-[1]"
-                  style="font-size:16px">shield</span>
-              </Transition>
-            </div>
-
-            <div class="relative flex items-center"
-              :style="{ minWidth: showCompactBadge ? '20px' : '105px', transition: 'min-width 0.45s cubic-bezier(0.4, 0, 0.2, 1)' }">
-              <Transition name="fade">
-                <span v-if="!showCompactBadge" key="conexion"
-                  class="absolute left-0 font-black whitespace-nowrap text-[10px] sm:text-[11px] text-orange-500/80 z-[1]">Conexión
-                  segura</span>
-              </Transition>
-              <Transition name="fade">
-                <span v-if="showCompactBadge" key="ssl"
-                  class="absolute left-0 font-black whitespace-nowrap text-[9px] tracking-[0.15em] text-orange-500/40 z-[1]">SSL</span>
-              </Transition>
-            </div>
+          <!-- SSL -->
+          <div class="group relative hidden md:flex">
 
             <div
-              class="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-all duration-300 z-50 w-max max-w-[220px]">
-              <div class="bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-lg">
-                <p class="text-[10px] leading-relaxed text-gray-600">
-                  <span class="text-orange-500 font-bold">🔒 SSL 256-bit</span><br>
-                  Tu información viaja cifrada y protegida.
+              class="flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-2 transition-all duration-300 hover:bg-orange-100">
+
+              <span class="material-symbols-outlined notranslate text-[16px] text-orange-600">
+                lock
+              </span>
+
+              <span class="text-[11px] font-semibold tracking-wide text-orange-700 whitespace-nowrap">
+                SSL 256-bit
+              </span>
+
+            </div>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute left-1/2 top-full mt-3 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:translate-y-1 group-hover:opacity-100">
+
+              <div class="rounded-xl border border-gray-200 bg-white px-4 py-2 shadow-xl">
+
+                <p class="text-[11px] text-gray-500 whitespace-nowrap">
+                  🔒 Conexión cifrada y protegida
                 </p>
+
               </div>
+
             </div>
+
           </div>
+
+          <!-- LOGO -->
           <RouterLink :to="{ name: 'home' }"
-            class="flex items-center gap-2 group cursor-pointer z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-lg">
+            class="group flex items-center gap-3 rounded-xl transition-all duration-300">
+
             <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
-              class="hidden sm:block w-10 h-10 sm:w-12 sm:h-12 object-contain bg-black rounded-xl" />
-            <div class="hidden lg:flex flex-col min-w-[140px] sm:min-w-[200px]">
-              <div class="relative h-9 sm:h-10 overflow-hidden flex items-center">
+              class="hidden h-11 w-11 rounded-xl bg-black object-contain transition-transform duration-300 group-hover:rotate-3 group-hover:scale-105 sm:block" />
+
+            <div class="hidden min-w-[200px] flex-col justify-center lg:flex">
+
+              <!-- Dominio -->
+              <div class="relative h-8 overflow-hidden">
+
                 <Transition name="slide-up">
+
                   <div :key="currentDomainIndex"
-                    class="absolute left-0 flex items-baseline text-gray-900 font-black tracking-tighter text-[15px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
-                    <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                    <span class="text-orange-500">.com</span>
+                    class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none">
+
+                    <span translate="no" class="text-gray-900">
+                      {{ domains[currentDomainIndex]?.split('.com')[0] }}
+                    </span>
+
+                    <span class="text-orange-500">
+                      .com
+                    </span>
+
                   </div>
+
                 </Transition>
+
               </div>
-              <div class="relative h-4 sm:h-5 overflow-hidden flex items-center">
+
+              <!-- Tagline -->
+              <div class="relative mt-1 h-5 overflow-hidden">
+
                 <Transition name="slide-up">
+
                   <div :key="currentTaglineIndex"
-                    class="absolute left-0 text-[9px]! sm:text-[10px] text-gray-400 font-medium tracking-wider whitespace-nowrap font-google-sans"
-                    style="font-variation-settings: normal">
+                    class="absolute inset-0 flex items-center text-[11px] tracking-wide text-gray-400">
+
                     <template v-if="taglines[currentTaglineIndex]!.clickable">
-                      por <span @click.stop="openAziechrie"
-                        class="font-semibold text-orange-400/60 hover:text-orange-400 transition-colors cursor-pointer">AZIECHRIE
-                        PHARMA</span>
+
+                      <span class="mr-1">
+                        por
+                      </span>
+
+                      <span @click.stop="openAziechrie"
+                        class="cursor-pointer font-semibold text-orange-400 transition-colors hover:text-orange-500">
+
+                        AZIECHRIE PHARMA
+
+                      </span>
+
                     </template>
+
                     <template v-else>
+
                       {{ taglines[currentTaglineIndex]!.text }}
+
                     </template>
+
                   </div>
+
                 </Transition>
+
               </div>
+
             </div>
+
           </RouterLink>
+
         </div>
+        <!-- CENTER | Desktop Navigation -->
+        <div class="hidden flex-1 items-center justify-center lg:flex">
 
-        <!-- Mobile -->
-        <div v-show="showCompactBadge"
-          class="lg:hidden flex-1 flex justify-start mx-auto md:justify-center min-w-0 absolute top-1/2 translate-x-1/2 translate-y-1/2 bottom-1/2 right-1/2 sm:fixed animate-fade">
-          <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
-            <span
-              class="material-symbols-outlined notranslate text-orange-500 text-[2rem] group-hover:rotate-12 transition-transform">location_on</span>
-            <div class="flex flex-col justify-center h-8 overflow-hidden relative min-w-[130px]">
-              <Transition name="slide-up">
-                <div :key="currentDomainIndex"
-                  class="absolute left-0 flex items-baseline text-gray-900 font-black tracking-tighter text-[16px] lowercase leading-none whitespace-nowrap">
-                  <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                  <span class="text-orange-500">.com</span>
-                </div>
-              </Transition>
-            </div>
-          </RouterLink>
-        </div>
+          <nav
+            class="flex items-center gap-1 rounded-full border border-gray-200 bg-white/70 p-1 shadow-sm backdrop-blur-md">
 
-        <!-- Menu -->
-        <div class="hidden lg:flex items-center space-x-2 tracking-tight">
-          <template v-for="link in navLinks" :key="link.name">
-            <div v-if="!useUserStore().getUserId && link.requiredLogin" class="hidden"></div>
-            <div v-else class="relative" @mouseenter="openMenu(link.name)" @mouseleave="closeMenu()">
-              <RouterLink v-if="!link.children" :to="{ name: link.pathName }"
-                class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group relative"
-                :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)' }"
-                @mouseenter="($event.target as HTMLElement).style.color = '#f97316'"
-                @mouseleave="($event.target as HTMLElement).style.color = $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)'">
-                <span
-                  class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
-                    link.icon }}</span>
-                <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
-                <div :class="[
-                  'absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 transition-transform origin-center duration-300',
-                  $route.name === link.pathName ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                ]"></div>
-              </RouterLink>
+            <template v-for="link in navLinks" :key="link.name">
 
-              <button v-if="link.children"
-                class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group relative cursor-pointer"
-                :class="{ 'text-orange-500': $route.name === link.pathName, 'text-gray-500': $route.name !== link.pathName }"
-                :style="{ color: $route.name === link.pathName ? '#f97316' : 'rgba(107,114,128,1)' }">
-                <span
-                  class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
-                    link.icon }}</span>
-                <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
-                <span class="material-symbols-outlined notranslate text-[14px] transition-transform duration-200"
-                  :class="activeMenu === link.name ? 'rotate-180' : ''">expand_more</span>
-                <div :class="[
-                  'absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 transition-transform origin-center duration-300',
-                  activeMenu === link.name ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                ]"></div>
-              </button>
+              <template v-if="!useUserStore().getUserId && link.requiredLogin">
+              </template>
 
-              <Transition name="dropdown">
-                <div v-if="link.children && activeMenu === link.name"
-                  class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden z-50"
-                  @mouseenter="cancelClose()" @mouseleave="closeMenu()">
-                  <div class="px-4 py-3 border-b border-gray-100">
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">{{ link.name }}</span>
+              <div v-else class="relative" @mouseenter="openMenu(link.name)" @mouseleave="closeMenu()">
+
+                <!-- NORMAL LINK -->
+                <RouterLink v-if="!link.children" :to="{ name: link.pathName }"
+                  class="group flex items-center gap-2 rounded-full px-4 py-2.5 transition-all duration-300" :class="[
+                    $route.name === link.pathName
+                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                      : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                  ]">
+
+                  <span
+                    class="material-symbols-outlined notranslate text-[20px] transition-transform duration-300 group-hover:-translate-y-0.5">
+
+                    {{ link.icon }}
+
+                  </span>
+
+                  <span class="font-google-sans text-sm font-medium">
+
+                    {{ link.name }}
+
+                  </span>
+
+                </RouterLink>
+
+                <!-- LINK WITH DROPDOWN -->
+                <button v-else
+                  class="group flex cursor-pointer items-center gap-2 rounded-full px-4 py-2.5 transition-all duration-300"
+                  :class="[
+                    activeMenu === link.name
+                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                      : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+                  ]">
+
+                  <span
+                    class="material-symbols-outlined notranslate text-[20px] transition-transform duration-300 group-hover:-translate-y-0.5">
+
+                    {{ link.icon }}
+
+                  </span>
+
+                  <span class="font-google-sans text-sm font-medium">
+
+                    {{ link.name }}
+
+                  </span>
+
+                  <span class="material-symbols-outlined notranslate text-[18px] transition-all duration-300"
+                    :class="activeMenu === link.name ? 'rotate-180' : ''">
+
+                    expand_more
+
+                  </span>
+
+                </button>
+
+                <!-- DROPDOWN -->
+                <Transition name="dropdown">
+
+                  <div v-if="link.children && activeMenu === link.name"
+                    class="absolute left-1/2 top-full z-50 mt-4 w-72 -translate-x-1/2 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl"
+                    @mouseenter="cancelClose()" @mouseleave="closeMenu()">
+
+                    <!-- Header -->
+                    <div class="border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white px-5 py-4">
+
+                      <h4 class="font-google-sans text-sm font-semibold text-gray-700">
+
+                        {{ link.name }}
+
+                      </h4>
+
+                    </div>
+
+                    <!-- ITEMS -->
+                    <div class="p-2">
+
+                      <button v-for="child in link.children" :key="child.label" @click="handleChildClick(child)"
+                        class="group flex w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 hover:bg-orange-50">
+
+                        <span v-if="child.icon"
+                          class="material-symbols-outlined notranslate text-[20px] text-gray-400 transition-colors duration-300 group-hover:text-orange-500">
+
+                          {{ child.icon }}
+
+                        </span>
+
+                        <div class="flex flex-col items-start">
+
+                          <span class="text-sm font-medium text-gray-700 transition-colors group-hover:text-orange-600">
+
+                            {{ child.label }}
+
+                          </span>
+
+                        </div>
+
+                      </button>
+
+                    </div>
+
                   </div>
-                  <div class="py-2">
-                    <button v-for="child in link.children" :key="child.label" @click="handleChildClick(child)"
-                      class="flex items-center gap-3 w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors duration-150 cursor-pointer">
-                      <span v-if="child.icon"
-                        class="material-symbols-outlined notranslate text-[18px] text-gray-400 shrink-0">{{ child.icon
-                        }}</span>
-                      <span class="font-medium">{{ child.label }}</span>
-                    </button>
-                  </div>
-                </div>
-              </Transition>
-            </div>
-          </template>
-        </div>
 
-        <!-- Buttons -->
-        <div class="hidden lg:flex items-center space-x-4 z-50">
+                </Transition>
+
+              </div>
+
+            </template>
+
+          </nav>
+
+        </div>
+        <!-- RIGHT | Actions -->
+        <div class="hidden lg:flex items-center gap-3 ml-8">
+
           <template v-if="!useUserStore().getUserId">
+
             <RouterLink :to="{ name: 'login' }"
-              class="text-gray-500 hover:text-gray-900 transition-colors duration-300 text-[11px] font-black uppercase tracking-widest px-4 py-2 cursor-pointer">
+              class="rounded-full px-5 py-2.5 text-sm font-medium text-gray-600 transition-all duration-300 hover:bg-gray-100 hover:text-gray-900">
+
               Iniciar sesión
+
             </RouterLink>
+
             <RouterLink :to="{ name: 'register' }"
-              class="bg-orange-500 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
+              class="flex items-center gap-2 rounded-full bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-orange-300 active:scale-95">
+
+              <span class="material-symbols-outlined notranslate text-[18px]">
+
+                person_add
+
+              </span>
+
               Registrarse
+
             </RouterLink>
+
           </template>
+
           <template v-else>
+
             <RouterLink :to="{ name: 'dashboard' }"
-              class="bg-gray-100 border border-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
-              <span class="material-symbols-outlined notranslate text-sm">dashboard</span>
+              class="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-300 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600">
+
+              <span class="material-symbols-outlined notranslate text-[18px]">
+
+                dashboard
+
+              </span>
+
               Panel
+
             </RouterLink>
+
           </template>
+
         </div>
 
-        <!-- Hamburger -->
-        <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-          class="lg:hidden flex items-center justify-center p-2 bg-[#dd5c00] text-white/60 font-bold hover:text-white transition-colors z-50 cursor-pointer rounded-xl">
-          <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
-          }}</span>
-          <span>{{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}</span>
-        </button>
+        <!-- MOBILE -->
+        <div class="flex items-center lg:hidden">
 
-      </div>
+          <button @click="isMobileMenuOpen = !isMobileMenuOpen"
+            class="flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-2.5 text-white shadow-lg shadow-orange-200 transition-all duration-300 hover:bg-orange-600 active:scale-95">
 
-      <!-- Mobile Menu -->
-      <Transition name="mobile-menu">
-        <div v-if="isMobileMenuOpen"
-          class="fixed top-20 left-0 w-full h-[calc(100dvh-80px)] bg-[#1C1B1F] z-40 border-t border-[#49454F]/30 flex flex-col lg:hidden overflow-y-auto">
-          <div class="flex items-center gap-3 px-6 pt-6 pb-4">
-            <span class="material-symbols-outlined notranslate text-[#E6E1E5] text-[28px]">menu</span>
-            <span class="text-[#E6E1E5] text-lg font-bold">Menú</span>
-          </div>
+            <span class="material-symbols-outlined notranslate text-[24px]">
 
-          <template v-if="!useUserStore().getUserId">
-            <div class="px-4 space-y-2 pb-4">
-              <RouterLink :to="{ name: 'register' }" @click="isMobileMenuOpen = false"
-                class="flex items-center justify-center gap-2 w-full bg-orange-500 text-black py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
-                <span class="material-symbols-outlined notranslate text-[18px]">person_add</span>
-                Registrarse
-              </RouterLink>
-              <RouterLink :to="{ name: 'login' }" @click="isMobileMenuOpen = false"
-                class="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] text-[#CAC4D0] hover:text-[#E6E1E5] hover:bg-[#2B2930] cursor-pointer">
-                <span class="material-symbols-outlined notranslate text-[18px]">login</span>
-                Iniciar sesión
-              </RouterLink>
+              {{ isMobileMenuOpen ? 'close' : 'menu' }}
+
+            </span>
+
+            <span class="text-sm font-medium">
+
+              {{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}
+
+            </span>
+
+          </button>
+
+        </div>
+
+        <!-- MOBILE MENU -->
+        <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 -translate-y-4"
+          enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-200 ease-in"
+          leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-4">
+
+          <div v-if="isMobileMenuOpen" class="absolute left-0 right-0 top-full z-[90] mt-3 px-4 lg:hidden">
+
+            <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl">
+
+              <!-- USER ACTIONS -->
+              <div class="border-b border-gray-100 p-4">
+
+                <template v-if="!useUserStore().getUserId">
+
+                  <RouterLink :to="{ name: 'login' }" @click="isMobileMenuOpen = false"
+                    class="mb-3 flex items-center justify-center rounded-2xl border border-gray-200 px-4 py-3 font-medium text-gray-700 transition hover:border-orange-300 hover:text-orange-500">
+
+                    Iniciar sesión
+
+                  </RouterLink>
+
+                  <RouterLink :to="{ name: 'register' }" @click="isMobileMenuOpen = false"
+                    class="flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 py-3 font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600">
+
+                    <span class="material-symbols-outlined notranslate">
+
+                      person_add
+
+                    </span>
+
+                    Registrarse
+
+                  </RouterLink>
+
+                </template>
+
+                <template v-else>
+
+                  <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
+                    class="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 font-medium text-gray-700 transition hover:bg-orange-50 hover:text-orange-600">
+
+                    <span class="material-symbols-outlined notranslate">
+
+                      dashboard
+
+                    </span>
+
+                    Panel
+
+                  </RouterLink>
+
+                </template>
+
+              </div>
+
+              <!-- NAVIGATION -->
+              <div class="p-2">
+
+                <template v-for="link in navLinks" :key="link.name">
+
+                  <template v-if="!useUserStore().getUserId && link.requiredLogin">
+                  </template>
+
+                  <!-- LINK -->
+                  <RouterLink v-if="!link.children" :to="{ name: link.pathName }" @click="isMobileMenuOpen = false"
+                    class="group mb-1 flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200 hover:bg-orange-50">
+
+                    <span class="material-symbols-outlined notranslate text-gray-400 group-hover:text-orange-500">
+
+                      {{ link.icon }}
+
+                    </span>
+
+                    <span class="font-medium text-gray-700 group-hover:text-orange-600">
+
+                      {{ link.name }}
+
+                    </span>
+
+                  </RouterLink>
+
+                  <!-- GROUP -->
+                  <div v-else class="mb-2 overflow-hidden rounded-2xl border border-gray-100">
+
+                    <div class="flex items-center gap-3 bg-gray-50 px-4 py-3">
+
+                      <span class="material-symbols-outlined notranslate text-gray-400">
+
+                        {{ link.icon }}
+
+                      </span>
+
+                      <span class="font-semibold text-gray-700">
+
+                        {{ link.name }}
+
+                      </span>
+
+                    </div>
+
+                    <button v-for="child in link.children" :key="child.label" @click="
+                      handleChildClick(child);
+                    isMobileMenuOpen = false;
+                    " class="flex w-full items-center gap-3 px-5 py-3 text-left transition hover:bg-orange-50">
+
+                      <span v-if="child.icon" class="material-symbols-outlined notranslate text-gray-400">
+
+                        {{ child.icon }}
+
+                      </span>
+
+                      <span class="text-sm text-gray-700">
+
+                        {{ child.label }}
+
+                      </span>
+
+                    </button>
+
+                  </div>
+
+                </template>
+
+              </div>
+
             </div>
-            <div class="mx-6 border-t border-[#49454F]/30 mb-2"></div>
-          </template>
 
-          <div class="flex-1 px-4 space-y-1">
-            <RouterLink v-for="(link, index) in navLinks" :key="link.name" :to="{ name: link.pathName }"
-              @click="isMobileMenuOpen = false" :style="{ transitionDelay: `${index * 60}ms` }" :class="[
-                { 'hidden': !useUserStore().getUserId && link.requiredLogin },
-                'flex items-center gap-3 px-4 py-4 rounded-2xl transition-all duration-200 active:scale-[0.98] cursor-pointer min-h-[50px]',
-                $route.name === link.pathName
-                  ? 'text-orange-500 bg-[#2B2930] border border-orange-500/10'
-                  : 'text-[#E6E1E5] hover:bg-[#2B2930] border border-transparent'
-              ]">
-              <span class="material-symbols-outlined notranslate text-[22px]">{{ link.icon }}</span>
-              <span class="text-[13px] font-bold tracking-wider">{{ link.name }}</span>
-              <div v-if="$route.name === link.pathName" class="ml-auto w-1.5 h-1.5 rounded-full bg-orange-500"></div>
-            </RouterLink>
           </div>
 
-          <div v-if="useUserStore().getUserId" class="px-4 pt-2 pb-8">
-            <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
-              class="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] bg-[#2B2930] border border-[#49454F]/30 text-[#E6E1E5] hover:bg-orange-500 hover:text-black hover:border-orange-500 cursor-pointer">
-              <span class="material-symbols-outlined notranslate text-[18px]">dashboard</span>
-              Mis Códigos QR
-            </RouterLink>
-          </div>
-        </div>
-      </Transition>
+        </Transition>
+      </div>
     </nav>
 
     <main id="main-content">
@@ -486,88 +688,56 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-      <!-- Trust badges marquee -->
+      <!-- Logos trust marquee -->
       <div class="border-t border-zinc-800 pt-10 pb-6">
         <p class="text-center text-xs uppercase tracking-[0.3em] text-zinc-500 mb-6">
           Medios de pago y confianza
         </p>
         <div class="trust-marquee-mask overflow-hidden">
-          <div class="trust-marquee-track flex gap-16 items-center">
-            <!-- SSL -->
-            <div
-              class="flex items-center gap-2 shrink-0 px-4 py-2 rounded-lg border border-orange-500/20 bg-orange-500/5">
-              <span class="material-symbols-outlined notranslate text-orange-400" style="font-size:20px">shield</span>
-              <span class="text-xs font-semibold text-zinc-300 tracking-wider">SSL 256-bit</span>
-            </div>
-            <!-- PayPal -->
-            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
-              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
-                <rect width="36" height="36" rx="6" fill="#003087" />
-                <text x="18" y="23" text-anchor="middle" fill="white" font-size="10" font-weight="bold"
-                  font-family="Arial">Pay</text>
-              </svg>
-              <span class="text-xs font-semibold tracking-wide">
-                <span style="color:#0079C1">Pay</span><span style="color:#27346A">Pal</span>
-              </span>
-            </div>
-            <!-- Mercado Pago -->
-            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
-              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
-                <rect width="36" height="36" rx="6" fill="#00B5E2" />
-                <text x="18" y="23" text-anchor="middle" fill="white" font-size="7" font-weight="bold"
-                  font-family="Arial">M
-                  P</text>
-              </svg>
-              <span class="text-xs font-semibold text-zinc-300 tracking-tight">Mercado Pago</span>
-            </div>
-            <!-- Mercado Libre -->
-            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
-              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
-                <rect width="36" height="36" rx="6" fill="#FFE600" />
-                <text x="18" y="23" text-anchor="middle" fill="#333" font-size="6" font-weight="bold"
-                  font-family="Arial">M
-                  L</text>
-              </svg>
-              <span class="text-xs font-semibold tracking-tight">
-                <span style="color:#FFE600">Mercado</span> <span style="color:#333">Libre</span>
-              </span>
-            </div>
-            <!-- Dúplica para scroll seamless -->
-            <div
-              class="flex items-center gap-2 shrink-0 px-4 py-2 rounded-lg border border-orange-500/20 bg-orange-500/5">
-              <span class="material-symbols-outlined notranslate text-orange-400" style="font-size:20px">shield</span>
-              <span class="text-xs font-semibold text-zinc-300 tracking-wider">SSL 256-bit</span>
-            </div>
-            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
-              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
-                <rect width="36" height="36" rx="6" fill="#003087" />
-                <text x="18" y="23" text-anchor="middle" fill="white" font-size="10" font-weight="bold"
-                  font-family="Arial">Pay</text>
-              </svg>
-              <span class="text-xs font-semibold tracking-wide">
-                <span style="color:#0079C1">Pay</span><span style="color:#27346A">Pal</span>
-              </span>
-            </div>
-            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
-              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
-                <rect width="36" height="36" rx="6" fill="#00B5E2" />
-                <text x="18" y="23" text-anchor="middle" fill="white" font-size="7" font-weight="bold"
-                  font-family="Arial">M
-                  P</text>
-              </svg>
-              <span class="text-xs font-semibold text-zinc-300 tracking-tight">Mercado Pago</span>
-            </div>
-            <div class="flex items-center gap-2 shrink-0 px-4 py-2">
-              <svg viewBox="0 0 36 36" class="w-8 h-8 shrink-0">
-                <rect width="36" height="36" rx="6" fill="#FFE600" />
-                <text x="18" y="23" text-anchor="middle" fill="#333" font-size="6" font-weight="bold"
-                  font-family="Arial">M
-                  L</text>
-              </svg>
-              <span class="text-xs font-semibold tracking-tight">
-                <span style="color:#FFE600">Mercado</span> <span style="color:#333">Libre</span>
-              </span>
-            </div>
+          <div class="trust-marquee-track flex gap-12 items-center">
+            <img :src="PayPalLogo" alt="PayPal"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MercadoPagoLogo" alt="Mercado Pago"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MercadoLibreLogo" alt="Mercado Libre"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MastercardLogo" alt="Mastercard"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="VisaLogo" alt="Visa"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MetaLogo" alt="Meta"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="FacebookLogo" alt="Facebook"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="InstagramLogo" alt="Instagram"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="TikTokLogo" alt="TikTok"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="XLogo" alt="X" class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="YoutubeLogo" alt="YouTube"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <!-- Duplicate for seamless scroll -->
+            <img :src="PayPalLogo" alt="PayPal"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MercadoPagoLogo" alt="Mercado Pago"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MercadoLibreLogo" alt="Mercado Libre"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MastercardLogo" alt="Mastercard"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="VisaLogo" alt="Visa"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="MetaLogo" alt="Meta"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="FacebookLogo" alt="Facebook"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="InstagramLogo" alt="Instagram"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="TikTokLogo" alt="TikTok"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="XLogo" alt="X" class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
+            <img :src="YoutubeLogo" alt="YouTube"
+              class="h-8 w-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity" />
           </div>
         </div>
       </div>
