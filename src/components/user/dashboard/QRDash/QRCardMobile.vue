@@ -400,10 +400,10 @@ const hiddeLogsHandle = () => {
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
-            }}</h3>
+              }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
-              }}</span>
+                }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
                 <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
@@ -498,7 +498,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
-                  }}</span>
+                    }}</span>
                 </div>
               </div>
 
@@ -511,7 +511,7 @@ const hiddeLogsHandle = () => {
                 <div>
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
-                  }}</span>
+                    }}</span>
                 </div>
               </button>
             </template>
@@ -750,15 +750,15 @@ const hiddeLogsHandle = () => {
           <div
             style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;flex:1;width:100%;">
             <div
-              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
+              :style="`flex-shrink:0;width:${currentSize.qrSize + 8}px;height:${currentSize.qrSize + 8}px;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;`">
               <template v-if="propsComputed.img">
                 <img :src="propsComputed.img"
                   :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
               </template>
               <template v-else>
-                <QrcodeVue :value="qrScanUrl" :size="currentSize.qrSize" render-as="canvas" level="H"
+                <QrcodeVue :value="qrScanUrl" :size="currentSize.qrSize * 4" render-as="canvas" level="H"
                   :image-settings="imageSettings"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;display:block;`" />
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;max-width:100%;max-height:100%;display:block;`" />
               </template>
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">

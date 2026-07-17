@@ -1292,15 +1292,15 @@ const imageSettings = computed<ImageSettings>(() => {
           <div
             style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;flex:1;width:100%;">
             <div
-              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:8px;display:flex;align-items:center;justify-content:center;`">
+              :style="`flex-shrink:0;width:${currentSize.qrSize + 16}px;height:${currentSize.qrSize + 16}px;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;`">
               <template v-if="propsComputed.img">
                 <img :src="propsComputed.img"
                   :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
               </template>
               <template v-else>
-                <QrcodeVue :value="qrScanUrl" :size="currentSize.qrSize" render-as="canvas" level="H"
+                <QrcodeVue :value="qrScanUrl" :size="currentSize.qrSize * 4" render-as="canvas" level="H"
                   :image-settings="imageSettings"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;display:block;`" />
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;max-width:100%;max-height:100%;display:block;`" />
               </template>
             </div>
 
