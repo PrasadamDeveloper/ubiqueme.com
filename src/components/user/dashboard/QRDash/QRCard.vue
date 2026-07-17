@@ -477,7 +477,7 @@ const hiddeLogsHandle = () => {
 
 
 const imageSettings = computed<ImageSettings>(() => {
-  const logoSize = Math.round(currentSize.value.qrSize * 2)
+  const logoSize = Math.round(currentSize.value.qrSize * 1.6)
   return {
     src: LogoUbiqueme,
     excavate: true,
