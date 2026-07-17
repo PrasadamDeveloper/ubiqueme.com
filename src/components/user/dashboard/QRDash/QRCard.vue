@@ -485,6 +485,13 @@ const imageSettings = computed<ImageSettings>(() => {
     width: logoSize,
   }
 })
+
+const imageSettingsUIOnly: ImageSettings = {
+  src: LogoUbiqueme,
+  excavate: true,
+  height: 55,
+  width: 55,
+}
 </script>
 
 <template>
@@ -639,7 +646,7 @@ const imageSettings = computed<ImageSettings>(() => {
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
           <template v-else>
-            <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" :image-settings="imageSettings" />
+            <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" :image-settings="imageSettingsUIOnly" />
           </template>
         </div>
         <!-- Direct download button — more prominent -->
