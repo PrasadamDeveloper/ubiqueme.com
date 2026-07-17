@@ -347,6 +347,13 @@ const imageSettings = computed<ImageSettings>(() => {
   }
 })
 
+const imageSettingsUIOnly: ImageSettings = {
+  src: LogoUbiqueme,
+  excavate: true,
+  height: 55,
+  width: 55,
+}
+
 const hiddeLogsHandle = () => {
   qrLogs.value = []
   if (unsubscribeLogs) unsubscribeLogs()
@@ -389,7 +396,7 @@ const hiddeLogsHandle = () => {
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
           <template v-else>
-            <QrcodeVue :value="qrScanUrl" :size="130" render-as="svg" level="H" />
+            <QrcodeVue :value="qrScanUrl" :size="130" render-as="svg" level="H" :image-settings="imageSettingsUIOnly" />
           </template>
         </div>
       </div>
