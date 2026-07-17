@@ -338,7 +338,7 @@ const loadLogs = () => {
 onUnmounted(() => { if (unsubscribeLogs) unsubscribeLogs() })
 
 const imageSettings = computed<ImageSettings>(() => {
-  const logoSize = Math.round(currentSize.value.qrSize * 1.6)
+  const logoSize = Math.round(currentSize.value.qrSize * 1.3)
   return {
     src: LogoUbiqueme,
     excavate: true,
