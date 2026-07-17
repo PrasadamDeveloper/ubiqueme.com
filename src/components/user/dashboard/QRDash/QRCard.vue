@@ -476,12 +476,15 @@ const hiddeLogsHandle = () => {
 }
 
 
-const imageSettings: ImageSettings = {
-  src: LogoUbiqueme,
-  excavate: true,
-  height: 55,
-  width: 55,
-}
+const imageSettings = computed<ImageSettings>(() => {
+  const logoSize = Math.round(currentSize.value.qrSize * 0.28)
+  return {
+    src: LogoUbiqueme,
+    excavate: true,
+    height: logoSize,
+    width: logoSize,
+  }
+})
 </script>
 
 <template>
