@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import QrcodeVue from 'qrcode.vue'
+import QrcodeVue, { type ImageSettings } from 'qrcode.vue'
 import { collection, doc, getDoc, increment, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
@@ -13,6 +13,7 @@ import { toast } from 'vue-sonner'
 import { nanoid } from 'nanoid'
 import { useQRDownload } from '@/composables/useQRDownload'
 import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
+import LogoUbiqueme from '@/assets/Logo_Ubiqueme_Small.webp'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -473,6 +474,14 @@ const hiddeLogsHandle = () => {
   logsLoaded.value = false;
   showLogs.value = false;
 }
+
+
+const imageSettings: ImageSettings = {
+  src: LogoUbiqueme,
+  excavate: true,
+  height: 55,
+  width: 55,
+}
 </script>
 
 <template>
@@ -627,7 +636,7 @@ const hiddeLogsHandle = () => {
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
           <template v-else>
-            <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" />
+            <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" :image-settings="imageSettings" />
           </template>
         </div>
         <!-- Direct download button — more prominent -->
@@ -973,6 +982,8 @@ const hiddeLogsHandle = () => {
                         <p class="text-black/70 font-semibold text-[9px] leading-tight">Escanee este QR para contactar
                           al
                           responsable.</p>
+                        <p class="text-black font-semibold text-[7px] leading-tight text-center mt-1">QR oficial de
+                          Ubiqueme.com® — Marca 100% segura y verificada.</p>
                       </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 mt-0.5">
@@ -1170,6 +1181,9 @@ const hiddeLogsHandle = () => {
                           <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
                           <p class="text-black/70 font-semibold text-[7px] leading-tight">Escanee QR para contactar al
                             responsable.</p>
+                          <p class="text-black font-semibold text-[5px] leading-tight text-center mt-1">QR oficial
+                            de
+                            Ubiqueme.com® — Marca 100% segura y verificada.</p>
                         </div>
                       </div>
                       <div class="flex items-center justify-center gap-1.5 mt-0.5">
@@ -1281,8 +1295,9 @@ const hiddeLogsHandle = () => {
                   :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
               </template>
               <template v-else>
-                <img :src="qrHighResUrl"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+                <QrcodeVue :value="qrScanUrl" :size="currentSize.qrSize" render-as="canvas" level="H"
+                  :image-settings="imageSettings"
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;display:block;`" />
               </template>
             </div>
 
@@ -1295,6 +1310,10 @@ const hiddeLogsHandle = () => {
               <p
                 :style="`color:#303030;font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
                 Escanee este código QR para contactar al responsable.
+              </p>
+              <p
+                :style="`color:#000;font-size:${Math.round(currentSize.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;text-align:center;`">
+                QR oficial de Ubiqueme.com® — Marca 100% segura y verificada.
               </p>
             </div>
           </div>
