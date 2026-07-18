@@ -163,8 +163,8 @@ onUnmounted(() => {
     <nav :class="[
       'fixed top-0 w-full z-50 transition-all duration-500',
       isScrolled
-        ? 'bg-orange-50 border-b text-white! border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)]'
-        : 'bg-white border-b border-gray-200'
+        ? 'bg-blue-50/95 border-b text-white! border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)]'
+        : 'bg-[#f6fcff] border-b border-gray-200'
     ]">
 
       <!-- Subtle Orange Top Line -->
