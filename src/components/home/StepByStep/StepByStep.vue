@@ -31,7 +31,7 @@ const steps = [
 
 
 <template>
-  <section class="bg-slate-50 py-2 sm:py-20">
+  <section class="bg-slate-50 py-2 sm:py-5">
 
     <div class=" px-5 sm:px-8">
 

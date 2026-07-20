@@ -145,7 +145,7 @@ const plans = [
 
 <template>
 
-  <section class="bg-slate-50 py-16 sm:py-20">
+  <section class="bg-slate-50 py-4 sm:py-4">
 
     <div class="mx-auto max-w-8xl px-5 sm:px-8">
 
