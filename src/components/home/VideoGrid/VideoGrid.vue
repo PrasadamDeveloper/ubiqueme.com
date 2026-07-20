@@ -1,5 +1,5 @@
 <template>
-  <section class="relative z-10 px-4 sm:px-8 py-1 sm:py-24 mx-auto max-w-7xl">
+  <section class="relative z-10 px-4 sm:px-8 py-1 sm:py-2">
 
     <!-- Section Header -->
     <div class="text-center mb-10 sm:mb-16" data-aos="fade-up">

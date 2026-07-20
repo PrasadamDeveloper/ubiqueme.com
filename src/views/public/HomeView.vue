@@ -651,376 +651,174 @@ onUnmounted(() => {
 
         </section>
 
-        <!-- PRODUCT PREVIEW -->
-        <section class="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12 pb-24 content-visibility-auto">
 
-          <!-- Section header -->
-
-          <div class="mx-auto max-w-2xl text-center">
-
-            <span class="text-sm font-semibold tracking-widest uppercase text-orange-600">
-
-              Vista previa
-
-            </span>
-
-            <h2 class="mt-4 text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
-
-              Así funciona en segundos
-
-            </h2>
-
-            <p class="mt-5 text-lg leading-8 text-slate-600">
-
-              Escanee el código QR desde cualquier teléfono y contacte al
-              propietario sin exponer información personal.
-
-            </p>
-
-          </div>
-
-          <!-- Videos -->
-
-          <div class="mt-14 grid grid-cols-1 gap-8 lg:grid-cols-2">
-
-            <div v-for="(video, index) in heroVideos" :key="index"
-              class="overflow-hidden rounded-[28px] border border-slate-200 bg-white">
-
-              <!-- Video -->
-
-              <div class="relative bg-slate-100">
-
-                <video :id="video.id" v-lazy-video="video.src" muted loop playsinline
-                  class="aspect-[4/5] w-full object-cover">
-                </video>
-
-              </div>
-
-              <!-- Footer -->
-
-              <div class="flex items-center justify-between border-t border-slate-200 p-6">
-
-                <div>
-
-                  <p class="text-sm font-semibold text-slate-900">
-
-                    Vista previa del producto
-
-                  </p>
-
-                  <p class="mt-1 text-sm text-slate-500">
-
-                    Experiencia real del usuario
-
-                  </p>
-
-                </div>
-
-                <button @click="toggleSound(index)"
-                  class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-
-                  <span class="material-symbols-outlined text-[20px]">
-
-                    {{ mutedStates[index] ? 'volume_off' : 'volume_up' }}
-
-                  </span>
-
-                  <span class="hidden sm:block">
-
-                    {{ mutedStates[index]
-                      ? 'Activar sonido'
-                      : 'Silenciar' }}
-
-                  </span>
-
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- Bronze -->
-
-          <div v-if="!useUserStore().getUserId"
-            class="mt-20 rounded-[32px] border border-amber-200 bg-amber-50 p-8 lg:p-10">
-
-            <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-
-              <!-- Left -->
-
-              <div class="flex gap-5">
-
-                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white">
-
-                  <span class="material-symbols-outlined text-3xl">
-
-                    workspace_premium
-
-                  </span>
-
-                </div>
-
-                <div>
-
-                  <span class="text-sm font-semibold uppercase tracking-wider text-amber-700">
-
-                    Promoción de bienvenida
-
-                  </span>
-
-                  <h3 class="mt-2 text-3xl font-bold text-slate-900">
-
-                    Obtenga 1 año de Plan Bronce sin costo
-
-                  </h3>
-
-                  <p class="mt-4 max-w-2xl leading-7 text-slate-600">
-
-                    Cree su cuenta hoy mismo y active automáticamente
-                    un año completo del Plan Bronce. Sin contratos,
-                    sin pagos ocultos y sin compromiso.
-
-                  </p>
-
-                </div>
-
-              </div>
-
-              <!-- Button -->
-
-              <router-link :to="{ name: 'register' }"
-                class="inline-flex items-center justify-center rounded-2xl bg-amber-500 px-8 py-4 font-semibold text-white transition hover:bg-amber-600">
-
-                Activar beneficio
-
-              </router-link>
-
-            </div>
-
-          </div>
-
-        </section>
 
         <!-- Lightweight Features Grid (full-width, centered) -->
         <!-- FEATURES -->
-        <section class="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12 pb-24 content-visibility-auto">
+        <section class=" px-5 sm:px-8 lg:px-10 pb-20">
 
           <!-- Header -->
 
-          <div class="max-w-3xl">
-
-            <span class="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">
-
+          <header class="max-w-2xl">
+            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">
               Beneficios
-
             </span>
 
-            <h2 class="mt-4 text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
-
+            <h2 class="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-slate-950">
               Diseñado para proteger lo que más le importa
-
             </h2>
 
-            <p class="mt-5 text-lg leading-8 text-slate-600">
-
+            <p class="mt-4 text-base sm:text-lg leading-7 text-slate-600">
               Cada código QR conecta a la persona que encuentra un objeto
               con su propietario de forma inmediata, segura y privada.
-
             </p>
+          </header>
 
-          </div>
 
-          <!-- Grid -->
+          <!-- Features -->
 
-          <div class="mt-14 grid gap-6 lg:grid-cols-2">
+          <div class="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2">
 
-            <!-- Alertas -->
+            <!-- Item -->
 
-            <div class="rounded-[28px] border border-slate-200 bg-white p-8 transition hover:border-amber-300">
+            <article class="group flex gap-4">
 
-              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50">
-
-                <span class="material-symbols-outlined text-amber-600 text-3xl">
-
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                <span class="material-symbols-outlined text-2xl">
                   notifications_active
-
                 </span>
-
               </div>
 
-              <h3 class="mt-8 text-2xl font-semibold text-slate-900">
+              <div>
+                <h3 class="text-lg font-semibold text-slate-950">
+                  Alertas inmediatas
+                </h3>
 
-                Alertas inmediatas
+                <p class="mt-1.5 text-sm leading-6 text-slate-600">
+                  Reciba una notificación apenas alguien escanee el código QR.
+                  La comunicación ocurre prácticamente en tiempo real.
+                </p>
+              </div>
 
-              </h3>
+            </article>
 
-              <p class="mt-4 leading-7 text-slate-600">
 
-                Reciba una notificación apenas alguien escanee
-                el código QR. La comunicación es prácticamente
-                instantánea.
 
-              </p>
+            <article class="group flex gap-4">
 
-            </div>
-
-            <!-- Privacidad -->
-
-            <div class="rounded-[28px] border border-slate-200 bg-white p-8 transition hover:border-orange-300">
-
-              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50">
-
-                <span class="material-symbols-outlined text-orange-600 text-3xl">
-
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                <span class="material-symbols-outlined text-2xl">
                   shield_lock
-
                 </span>
-
               </div>
 
-              <h3 class="mt-8 text-2xl font-semibold text-slate-900">
+              <div>
+                <h3 class="text-lg font-semibold text-slate-950">
+                  Privacidad protegida
+                </h3>
 
-                Privacidad protegida
+                <p class="mt-1.5 text-sm leading-6 text-slate-600">
+                  Sus datos permanecen ocultos. La persona que encuentra
+                  el objeto nunca accede a su teléfono, correo o dirección.
+                </p>
+              </div>
 
-              </h3>
+            </article>
 
-              <p class="mt-4 leading-7 text-slate-600">
 
-                La persona que encuentra el objeto nunca ve
-                su teléfono, correo electrónico ni dirección.
-                Toda la información permanece protegida.
 
-              </p>
+            <article class="group flex gap-4">
 
-            </div>
-
-            <!-- Cobertura -->
-
-            <div class="rounded-[28px] border border-slate-200 bg-white p-8 transition hover:border-emerald-300">
-
-              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50">
-
-                <span class="material-symbols-outlined text-emerald-600 text-3xl">
-
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                <span class="material-symbols-outlined text-2xl">
                   public
-
                 </span>
-
               </div>
 
-              <h3 class="mt-8 text-2xl font-semibold text-slate-900">
+              <div>
+                <h3 class="text-lg font-semibold text-slate-950">
+                  Cobertura mundial
+                </h3>
 
-                Cobertura mundial
+                <p class="mt-1.5 text-sm leading-6 text-slate-600">
+                  Funciona desde cualquier país con un teléfono conectado
+                  a internet. Sin depender de aplicaciones específicas.
+                </p>
+              </div>
 
-              </h3>
+            </article>
 
-              <p class="mt-4 leading-7 text-slate-600">
 
-                Funciona desde cualquier país utilizando
-                únicamente un teléfono con acceso a internet.
-                No depende de aplicaciones específicas.
 
-              </p>
+            <article class="group flex gap-4">
 
-            </div>
-
-            <!-- Sin App -->
-
-            <div class="rounded-[28px] border border-slate-200 bg-white p-8 transition hover:border-violet-300">
-
-              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50">
-
-                <span class="material-symbols-outlined text-violet-600 text-3xl">
-
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                <span class="material-symbols-outlined text-2xl">
                   install_mobile
-
                 </span>
-
               </div>
 
-              <h3 class="mt-8 text-2xl font-semibold text-slate-900">
+              <div>
+                <h3 class="text-lg font-semibold text-slate-950">
+                  Sin aplicaciones
+                </h3>
 
-                Sin aplicaciones
+                <p class="mt-1.5 text-sm leading-6 text-slate-600">
+                  Solo escanee el código QR. El navegador realiza todo
+                  sin instalaciones ni configuraciones adicionales.
+                </p>
+              </div>
 
-              </h3>
-
-              <p class="mt-4 leading-7 text-slate-600">
-
-                Solo debe escanear el código QR.
-                El navegador hace todo el trabajo,
-                sin instalaciones ni configuraciones.
-
-              </p>
-
-            </div>
+            </article>
 
           </div>
+
+
 
           <!-- WhatsApp -->
 
-          <div class="mt-20 rounded-[32px] border border-green-200 bg-green-50">
+          <div
+            class="mt-12 flex flex-col gap-5 rounded-2xl bg-green-50/70 p-6 sm:flex-row sm:items-center sm:justify-between">
 
-            <div class="flex flex-col gap-8 p-10 lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex gap-4">
 
-              <!-- Left -->
-
-              <div class="flex gap-5">
-
-                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-500 text-white">
-
-                  <v-icon name="bi-whatsapp" class="text-3xl notranslate" />
-
-                </div>
-
-                <div>
-
-                  <span class="text-sm font-semibold uppercase tracking-[0.2em] text-green-700">
-
-                    WhatsApp
-
-                  </span>
-
-                  <h3 class="mt-2 text-3xl font-bold text-slate-900">
-
-                    Reciba notificaciones en tiempo real
-
-                  </h3>
-
-                  <p class="mt-4 max-w-2xl leading-7 text-slate-600">
-
-                    Cuando alguien encuentre su objeto,
-                    recibirá una alerta directamente en
-                    WhatsApp sin necesidad de revisar
-                    correos electrónicos o instalar
-                    aplicaciones adicionales.
-
-                  </p>
-
-                </div>
-
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-500 text-white">
+                <v-icon name="bi-whatsapp" class="text-2xl notranslate" />
               </div>
 
-              <!-- Badge -->
 
-              <div class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 border border-green-200">
+              <div>
 
-                <span class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse">
-
+                <span class="text-xs font-semibold uppercase tracking-[0.18em] text-green-700">
+                  WhatsApp
                 </span>
 
-                <span class="font-semibold text-green-700">
+                <h3 class="mt-1 text-xl font-semibold text-slate-950">
+                  Reciba notificaciones en tiempo real
+                </h3>
 
-                  Tiempo real
-
-                </span>
+                <p class="mt-2 max-w-xl text-sm leading-6 text-slate-600">
+                  Cuando alguien encuentre su objeto recibirá una alerta
+                  directamente en WhatsApp sin revisar correos ni instalar apps.
+                </p>
 
               </div>
 
             </div>
 
+
+            <div
+              class="flex items-center gap-2 self-start rounded-full bg-white px-4 py-2 text-sm font-medium text-green-700 shadow-sm sm:self-center">
+
+              <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+
+              Tiempo real
+
+            </div>
+
+
           </div>
+
 
         </section>
         <section id="how-it-works">
