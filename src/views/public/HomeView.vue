@@ -655,7 +655,7 @@ onUnmounted(() => {
 
         <!-- Lightweight Features Grid (full-width, centered) -->
         <!-- FEATURES -->
-        <section class=" px-5 sm:px-8 lg:px-10 pb-20">
+        <section id="benefits" class="px-5 sm:px-8 lg:px-10 pb-20">
 
           <!-- Header -->
 
