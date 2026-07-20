@@ -146,8 +146,14 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
   /** Strip oklch color function (html2canvas v1 unsupported) from all elements in a cloned document */
   function stripOklchFromClone(doc: Document) {
-    const all = doc.querySelectorAll('*')
-    all.forEach((el) => {
+    // Replace oklch() in all <style> tags (Tailwind generates thousands of these)
+    doc.querySelectorAll('style').forEach((el) => {
+      if (el.textContent?.includes('oklch')) {
+        el.textContent = el.textContent.replace(/oklch\([^)]+\)/g, '#000000')
+      }
+    })
+    // Also clean inline styles as fallback
+    doc.querySelectorAll('*').forEach((el) => {
       const s = (el as HTMLElement).style
       if (s.color?.includes('oklch')) s.color = ''
       if (s.backgroundColor?.includes('oklch')) s.backgroundColor = ''

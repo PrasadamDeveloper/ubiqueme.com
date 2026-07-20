@@ -290,18 +290,60 @@ const saveDesign = () => {
 // ─── Export helpers ──────────────────────────────────────────
 const getTemplateEl = () => document.getElementById(`drag-tpl-${props.qrId}`)
 
-/** Strip oklch color function (html2canvas v1 unsupported) from all elements in a cloned document */
-function stripOklchFromClone(doc: Document) {
-  const all = doc.querySelectorAll('*')
-  all.forEach((el) => {
-    const s = (el as HTMLElement).style
-    if (s.color?.includes('oklch')) s.color = ''
-    if (s.backgroundColor?.includes('oklch')) s.backgroundColor = ''
-    if (s.borderColor?.includes('oklch')) s.borderColor = ''
-    if (s.outlineColor?.includes('oklch')) s.outlineColor = ''
-    if (s.boxShadow?.includes('oklch')) s.boxShadow = ''
-    if (s.textShadow?.includes('oklch')) s.textShadow = ''
-    if (s.background?.includes('oklch')) s.background = ''
+/** Render template in a sandboxed iframe (no Tailwind CSS) to bypass oklch() unsupported color issue in html2canvas v1 */
+function renderInIframe(el: HTMLElement, bgColor: string): Promise<HTMLCanvasElement> {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement('iframe')
+    iframe.style.position = 'fixed'
+    iframe.style.top = '-99999px'
+    iframe.style.left = '-99999px'
+    iframe.style.width = `${el.offsetWidth}px`
+    iframe.style.height = `${el.offsetHeight}px`
+    iframe.style.border = 'none'
+    iframe.sandbox.add('allow-same-origin')
+    document.body.appendChild(iframe)
+
+    const doc = iframe.contentDocument!
+    // Copy only the template's outerHTML (no Tailwind CSS)
+    doc.open()
+    doc.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { background: ${bgColor}; }
+        </style>
+      </head>
+      <body>${el.outerHTML}</body>
+      </html>
+    `)
+    doc.close()
+
+    // Wait for images to load inside iframe
+    const images = doc.querySelectorAll('img')
+    const promises: Promise<void>[] = []
+    images.forEach((img) => {
+      if (!img.complete) {
+        promises.push(new Promise((r) => { img.onload = () => r(); img.onerror = () => r() }))
+      }
+    })
+
+    Promise.all(promises).then(() => {
+      // Small delay to ensure layout
+      setTimeout(() => {
+        const iframeBody = doc.body.firstElementChild as HTMLElement
+        if (!iframeBody) { reject(new Error('No template in iframe')); return }
+        html2canvas(iframeBody, {
+          scale: 4,
+          backgroundColor: bgColor,
+          useCORS: true,
+        }).then((canvas) => {
+          document.body.removeChild(iframe)
+          resolve(canvas)
+        }).catch(reject)
+      }, 100)
+    })
   })
 }
 
@@ -309,7 +351,7 @@ const captureCanvas = async () => {
   const el = getTemplateEl()
   if (!el) { toast.error('No se encontró la plantilla'); return null }
   try {
-    return await html2canvas(el, { scale: 4, backgroundColor: '#f97316', useCORS: true, onclone: stripOklchFromClone })
+    return await renderInIframe(el, '#f97316')
   } catch (e) {
     toast.error(`Error al capturar: ${e}`)
     return null
