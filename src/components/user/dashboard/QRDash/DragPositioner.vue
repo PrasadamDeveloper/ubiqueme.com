@@ -98,7 +98,24 @@ function resetoOffsets() {
 const currentImages = computed(() => store.getImages(props.qrId, activeSize.value))
 
 const fileInput = ref<HTMLInputElement | null>(null)
-let imgCounter = 0
+
+// Compute next unique image counter from all existing images in the store for this QR
+function nextImgCounter(): number {
+  let maxId = 0
+  for (const size of (['sm', 'md', 'lg'] as const)) {
+    const imgs = store.getImages(props.qrId, size)
+    for (const img of imgs) {
+      const match = img.id.match(/^userImg-(\d+)$/)
+      if (match) {
+        const num = parseInt(match[1], 10)
+        if (num > maxId) maxId = num
+      }
+    }
+  }
+  return maxId + 1
+}
+
+let imgCounter = nextImgCounter()
 
 const addImage = (e: Event) => {
   const input = e.target as HTMLInputElement
@@ -107,7 +124,8 @@ const addImage = (e: Event) => {
 
   const reader = new FileReader()
   reader.onload = async (ev) => {
-    const dataUrl = ev.target?.result as string
+    const dataUrl = ev.target?.result
+    if (!dataUrl || typeof dataUrl !== 'string') return
 
     const img = new Image()
     img.src = dataUrl
