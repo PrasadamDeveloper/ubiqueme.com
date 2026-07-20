@@ -64,8 +64,19 @@ const activeSize = ref<'sm' | 'md' | 'lg'>(props.downloadSize)
 
 const cfg = computed<SizeCfg>(() => SIZE_CONFIG[activeSize.value] ?? SIZE_CONFIG.md)
 
+type OffsetMap = {
+  logo: { left: number; top: number }
+  topDomain: { left: number; top: number }
+  qrBox: { left: number; top: number }
+  name: { left: number; top: number }
+  id: { left: number; top: number }
+  desc1: { left: number; top: number }
+  desc2: { left: number; top: number }
+  bottomDomains: { left: number; top: number }
+}
+
 // ─── Offsets — each element can be dragged from its default ────
-const offsets = ref<Record<string, { left: number; top: number }>>({
+const offsets = ref<OffsetMap>({
   logo: { left: 0, top: 0 },
   topDomain: { left: 0, top: 0 },
   qrBox: { left: 0, top: 0 },
@@ -82,26 +93,105 @@ watch(activeSize, () => {
 })
 
 const resetoOffsets = () => {
-  Object.keys(offsets.value).forEach((k) => {
+  const keys = Object.keys(offsets.value) as (keyof OffsetMap)[]
+  keys.forEach((k) => {
     offsets.value[k] = { left: 0, top: 0 }
   })
 }
 
+// ─── User images (draggable) ──────────────────────────────────
+interface UserImage {
+  id: string
+  dataUrl: string
+  offsets: { left: number; top: number }
+  width: number
+  height: number
+}
+
+const userImages = ref<UserImage[]>([])
+const fileInput = ref<HTMLInputElement | null>(null)
+
+let imgCounter = 0
+
+const addImage = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = async (ev) => {
+    const dataUrl = ev.target?.result as string
+
+    // Get natural dimensions from a temporary image
+    const img = new Image()
+    img.src = dataUrl
+    await new Promise((resolve) => { img.onload = resolve })
+
+    // Scale down if too large — max 300px on longest side
+    const maxDim = 300
+    let w = img.naturalWidth
+    let h = img.naturalHeight
+    if (w > maxDim || h > maxDim) {
+      const ratio = maxDim / Math.max(w, h)
+      w = Math.round(w * ratio)
+      h = Math.round(h * ratio)
+    }
+
+    const id = `userImg-${++imgCounter}`
+    userImages.value.push({
+      id,
+      dataUrl,
+      offsets: { left: 0, top: 0 },
+      width: w,
+      height: h,
+    })
+  }
+  reader.readAsDataURL(file)
+  // Reset input so same file can be re-selected
+  input.value = ''
+}
+
+const removeImage = (imgId: string) => {
+  userImages.value = userImages.value.filter((img) => img.id !== imgId)
+}
+
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
 // ─── Drag handling ────────────────────────────────────────────
-const dragging = ref<{ key: string; startX: number; startY: number; origLeft: number; origTop: number } | null>(null)
+const dragging = ref<{ key: string; startX: number; startY: number; origLeft: number; origTop: number; isUserImg?: boolean } | null>(null)
 
 const startDrag = (key: string, e: MouseEvent) => {
   e.preventDefault()
-  const o = offsets.value[key]
-  dragging.value = { key, startX: e.clientX, startY: e.clientY, origLeft: o.left, origTop: o.top }
+
+  // Check if it's a user image
+  const userImg = userImages.value.find((i) => i.id === key)
+  if (userImg) {
+    const o = userImg.offsets
+    dragging.value = { key, startX: e.clientX, startY: e.clientY, origLeft: o.left, origTop: o.top, isUserImg: true }
+  } else {
+    const o = (offsets.value as Record<string, { left: number; top: number } | undefined>)[key]
+    if (!o) return
+    dragging.value = { key, startX: e.clientX, startY: e.clientY, origLeft: o.left, origTop: o.top, isUserImg: false }
+  }
 
   const onMove = (ev: MouseEvent) => {
     if (!dragging.value) return
     const dx = ev.clientX - dragging.value.startX
     const dy = ev.clientY - dragging.value.startY
-    offsets.value[key] = {
-      left: dragging.value.origLeft + dx,
-      top: dragging.value.origTop + dy,
+    const key = dragging.value.key
+    if (dragging.value.isUserImg) {
+      const img = userImages.value.find((i) => i.id === key)
+      if (img) {
+        img.offsets.left = dragging.value.origLeft + dx
+        img.offsets.top = dragging.value.origTop + dy
+      }
+    } else {
+      ; (offsets.value as Record<string, { left: number; top: number }>)[key] = {
+        left: dragging.value.origLeft + dx,
+        top: dragging.value.origTop + dy,
+      }
     }
   }
 
@@ -118,6 +208,7 @@ const startDrag = (key: string, e: MouseEvent) => {
 // ─── Reset to factory defaults ────────────────────────────────
 const resetPositions = () => {
   resetoOffsets()
+  userImages.value.forEach((img) => { img.offsets = { left: 0, top: 0 } })
   toast.success('Posiciones restablecidas')
 }
 
@@ -210,6 +301,21 @@ const close = () => emit('close')
               <div :id="`drag-tpl-${props.qrId}`"
                 :style="`width:${cfg.width}px;height:${cfg.height}px;padding:${PAD(cfg.width)}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;flex-shrink:0;`">
 
+                <!-- User images (draggable) -->
+                <template v-for="img in userImages" :key="img.id">
+                  <div
+                    :style="`position:absolute;left:${PAD(cfg.width) + img.offsets.left}px;top:${PAD(cfg.width) + img.offsets.top}px;z-index:20;cursor:grab;border:2px solid transparent;border-radius:4px;overflow:hidden;transition:border-color 0.15s;`"
+                    @mouseenter="(e: any) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)' }"
+                    @mouseleave="(e: any) => { e.currentTarget.style.borderColor = 'transparent' }"
+                    @mousedown="startDrag(img.id, $event)">
+                    <img :src="img.dataUrl"
+                      :style="`width:${img.width}px;height:${img.height}px;display:block;pointer-events:none;object-fit:contain;`" />
+                    <button @mousedown.stop @click.stop="removeImage(img.id)"
+                      class="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold opacity-0 hover:opacity-100 transition-opacity cursor-pointer shadow-md"
+                      style="border:none;line-height:1;" title="Eliminar imagen">✕</button>
+                  </div>
+                </template>
+
                 <!-- Logo top-right (draggable) — default: top=W*0.015, right=W*0.015, bg=W*0.008 pad, radius=W*0.015 -->
                 <div
                   :style="`position:absolute;top:${cfg.width * 0.015 + offsets.logo.top}px;right:${cfg.width * 0.015 - offsets.logo.left}px;background:rgba(0,0,0,0.8);border-radius:${cfg.width * 0.015}px;padding:${cfg.width * 0.008}px;z-index:10;cursor:grab;`"
@@ -288,7 +394,15 @@ const close = () => emit('close')
                   class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer">
                   <span class="material-symbols-outlined notranslate text-lg align-middle">refresh</span> Restablecer
                 </button>
-                <span class="text-xs text-slate-400">Arrastra los elementos</span>
+                <button @click="triggerFileInput"
+                  class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer flex items-center gap-1.5">
+                  <span class="material-symbols-outlined notranslate text-lg">add_photo_alternate</span> Imagen
+                </button>
+                <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="addImage" />
+                <span v-if="userImages.length === 0" class="text-xs text-slate-400">Arrastra los elementos</span>
+                <span v-else class="text-xs text-slate-400">{{ userImages.length }} imagen{{ userImages.length !== 1 ?
+                  'es' : ''
+                  }}</span>
               </div>
               <div class="flex items-center gap-3">
                 <button @click="close"
