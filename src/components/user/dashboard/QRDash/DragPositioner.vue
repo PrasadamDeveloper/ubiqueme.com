@@ -293,18 +293,45 @@ const getTemplateEl = () => document.getElementById(`drag-tpl-${props.qrId}`)
 /** Render template in a sandboxed iframe (no Tailwind CSS) to bypass oklch() unsupported color issue in html2canvas v1 */
 function renderInIframe(el: HTMLElement, bgColor: string): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
+    // Use exact size config dimensions instead of offsetWidth/offsetHeight for accuracy
+    const exactW = cfg.value.width
+    const exactH = cfg.value.height
+
     const iframe = document.createElement('iframe')
     iframe.style.position = 'fixed'
     iframe.style.top = '-99999px'
     iframe.style.left = '-99999px'
-    iframe.style.width = `${el.offsetWidth}px`
-    iframe.style.height = `${el.offsetHeight}px`
+    iframe.style.width = `${exactW}px`
+    iframe.style.height = `${exactH}px`
     iframe.style.border = 'none'
     iframe.sandbox.add('allow-same-origin')
     document.body.appendChild(iframe)
 
     const doc = iframe.contentDocument!
-    // Copy only the template's outerHTML (no Tailwind CSS)
+
+    // Clone the element and strip UI-only elements before injecting into iframe
+    const clone = el.cloneNode(true) as HTMLElement
+    // Force exact dimensions on clone
+    clone.style.width = `${exactW}px`
+    clone.style.height = `${exactH}px`
+    clone.style.position = 'relative'
+    clone.style.top = '0'
+    clone.style.left = '0'
+    clone.style.margin = '0'
+    // Remove UI-only elements: resize handles, delete buttons, editor borders
+    // 1. Remove resize handle divs (cursor:nwse-resize)
+    clone.querySelectorAll('[style*="cursor:nwse-resize"]').forEach((el) => el.remove())
+    // 2. Remove delete buttons (title="Eliminar imagen")
+    clone.querySelectorAll('[title="Eliminar imagen"]').forEach((el) => el.remove())
+    // 3. Remove transparent borders from draggable containers (editor-only)
+    clone.querySelectorAll('[style*="cursor:grab"]').forEach((grabEl) => {
+      const s = (grabEl as HTMLElement).style
+      // Only remove border if it's transparent (editor indicator), not if user set a visible border
+      if (s.borderColor === 'transparent' || s.border?.includes('transparent')) {
+        s.border = 'none'
+      }
+    })
+
     doc.open()
     doc.write(`
       <!DOCTYPE html>
@@ -312,10 +339,11 @@ function renderInIframe(el: HTMLElement, bgColor: string): Promise<HTMLCanvasEle
       <head>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { background: ${bgColor}; }
+          body { background: ${bgColor}; font-family: 'Google Sans', Arial, Helvetica, sans-serif; }
+          p, span { word-spacing: 0.02em; }
         </style>
       </head>
-      <body>${el.outerHTML}</body>
+      <body>${clone.outerHTML}</body>
       </html>
     `)
     doc.close()
@@ -497,8 +525,10 @@ const close = () => emit('close')
                         @mousedown="startDrag('name', $event)">{{ qrName || 'Código QR' }}</p>
                       <p :style="`color:#444;font-size:${Math.round(cfg.width * 0.02)}px;font-weight:600;margin:0;line-height:1.2;font-family:monospace;cursor:grab;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px;`"
                         @mousedown="startDrag('id', $event)">#{{ qrId }}</p>
-                      <p :style="`color:#303030;font-size:${cfg.width * 0.048}px;font-weight:500;margin:0;line-height:1.2;cursor:grab;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px;`"
-                        @mousedown="startDrag('desc1', $event)">Escanee este QR para contactar al responsable.</p>
+                      <p :style="`color:#303030;font-size:${cfg.width * 0.048}px;font-weight:500;margin:0;line-height:1.05;cursor:grab;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px;`"
+                        @mousedown="startDrag('desc1', $event)">Escanee este QR<br />para contactar<br />al responsable
+                        .
+                      </p>
                       <p :style="`color:#000;font-size:${Math.round(cfg.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;cursor:grab;position:relative;left:${offsets.desc2.left}px;top:${offsets.desc2.top}px;`"
                         @mousedown="startDrag('desc2', $event)">QR oficial de Ubiqueme.com® — Marca 100% segura y
                         verificada.</p>
