@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import html2canvas from 'html2canvas'
 import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
+import { useDragPositionStore, type SizeKey } from '@/stores/dragPositionStore'
 
 const props = defineProps<{
   visible: boolean
@@ -17,6 +18,8 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+const store = useDragPositionStore()
+
 // ══════════════════════════════════════════════════════════════
 //  SIZE CONFIG — matching useQRDownload.ts exactly
 // ══════════════════════════════════════════════════════════════
@@ -26,44 +29,26 @@ interface SizeCfg {
   qrSize: number
 }
 
-const SIZE_CONFIG: Record<string, SizeCfg> = {
+const SIZE_CONFIG: Record<SizeKey, SizeCfg> = {
   sm: { width: 400, height: 173, qrSize: 115 },
   md: { width: 720, height: 500, qrSize: 300 },
   lg: { width: 1080, height: 749, qrSize: 460 },
 }
 
 // ══════════════════════════════════════════════════════════════
-//  DEFAULT POSITIONS —  values for each element per size
-//  These are the "factory defaults". If core styles change,
-//  update only these numbers.
+//  DEFAULT POSITIONS
 // ══════════════════════════════════════════════════════════════
 
-/** Padding = width * 0.02 — same for all sizes relative to width */
 function PAD(w: number) { return w * 0.02 }
 
-/** Logo scale: 0.1 for SM, 0.097 for MD/LG */
 function logoScale(size: string) { return size === 'sm' ? 0.1 : 0.097 }
 
-/*
- ┌─────────────────────────────────────────────────────────┐
- │ DEFAULT VALUES PER SIZE                                 │
- │                                                         │
- │ logo      → top=W*0.015, right=W*0.015, bg W*0.008     │
- │ topDomain → fontSize=W*0.035, color=#fff                │
- │ qrBox     → w/h=qrSize+16, radius=W*0.025              │
- │ name      → fontSize=W*0.082                            │
- │ id        → fontSize=Math.round(W*0.02)                 │
- │ desc1     → fontSize=W*0.048                            │
- │ desc2     → fontSize=Math.round(W*0.022)                │
- │ bottomDom → fontSize=W*0.025, gap=12px                  │
- └─────────────────────────────────────────────────────────┘
-*/
-
 // ─── Reactive size ─────────────────────────────────────────────
-const activeSize = ref<'sm' | 'md' | 'lg'>(props.downloadSize)
+const activeSize = ref<SizeKey>(props.downloadSize)
 
-const cfg = computed<SizeCfg>(() => SIZE_CONFIG[activeSize.value] ?? SIZE_CONFIG.md)
+const cfg = computed<SizeCfg>(() => SIZE_CONFIG[activeSize.value])
 
+// ─── Offsets for built-in elements ─────────────────────────────
 type OffsetMap = {
   logo: { left: number; top: number }
   topDomain: { left: number; top: number }
@@ -75,7 +60,6 @@ type OffsetMap = {
   bottomDomains: { left: number; top: number }
 }
 
-// ─── Offsets — each element can be dragged from its default ────
 const offsets = ref<OffsetMap>({
   logo: { left: 0, top: 0 },
   topDomain: { left: 0, top: 0 },
@@ -87,7 +71,6 @@ const offsets = ref<OffsetMap>({
   bottomDomains: { left: 0, top: 0 },
 })
 
-// Reset offsets when size changes (starts fresh)
 watch(activeSize, () => {
   resetoOffsets()
 })
@@ -99,18 +82,10 @@ const resetoOffsets = () => {
   })
 }
 
-// ─── User images (draggable) ──────────────────────────────────
-interface UserImage {
-  id: string
-  dataUrl: string
-  offsets: { left: number; top: number }
-  width: number
-  height: number
-}
+// ─── Images from store (size-independent) ─────────────────────
+const currentImages = computed(() => store.getImages(props.qrId, activeSize.value))
 
-const userImages = ref<UserImage[]>([])
 const fileInput = ref<HTMLInputElement | null>(null)
-
 let imgCounter = 0
 
 const addImage = (e: Event) => {
@@ -122,12 +97,10 @@ const addImage = (e: Event) => {
   reader.onload = async (ev) => {
     const dataUrl = ev.target?.result as string
 
-    // Get natural dimensions from a temporary image
     const img = new Image()
     img.src = dataUrl
     await new Promise((resolve) => { img.onload = resolve })
 
-    // Scale down if too large — max 300px on longest side
     const maxDim = 300
     let w = img.naturalWidth
     let h = img.naturalHeight
@@ -138,7 +111,7 @@ const addImage = (e: Event) => {
     }
 
     const id = `userImg-${++imgCounter}`
-    userImages.value.push({
+    store.addImage(props.qrId, activeSize.value, {
       id,
       dataUrl,
       offsets: { left: 0, top: 0 },
@@ -147,48 +120,71 @@ const addImage = (e: Event) => {
     })
   }
   reader.readAsDataURL(file)
-  // Reset input so same file can be re-selected
   input.value = ''
 }
 
 const removeImage = (imgId: string) => {
-  userImages.value = userImages.value.filter((img) => img.id !== imgId)
+  store.removeImage(props.qrId, activeSize.value, imgId)
 }
 
 const triggerFileInput = () => {
   fileInput.value?.click()
 }
 
-// ─── Drag handling ────────────────────────────────────────────
-const dragging = ref<{ key: string; startX: number; startY: number; origLeft: number; origTop: number; isUserImg?: boolean } | null>(null)
+// ─── Drag handling (supports both built-in and user images) ────
+const dragging = ref<{
+  key: string
+  startX: number
+  startY: number
+  origLeft: number
+  origTop: number
+  isUserImg?: boolean
+  isResize?: boolean
+  origW?: number
+  origH?: number
+} | null>(null)
 
 const startDrag = (key: string, e: MouseEvent) => {
   e.preventDefault()
 
-  // Check if it's a user image
-  const userImg = userImages.value.find((i) => i.id === key)
+  const userImg = currentImages.value.find((i) => i.id === key)
   if (userImg) {
-    const o = userImg.offsets
-    dragging.value = { key, startX: e.clientX, startY: e.clientY, origLeft: o.left, origTop: o.top, isUserImg: true }
+    dragging.value = {
+      key,
+      startX: e.clientX,
+      startY: e.clientY,
+      origLeft: userImg.offsets.left,
+      origTop: userImg.offsets.top,
+      isUserImg: true,
+    }
   } else {
     const o = (offsets.value as Record<string, { left: number; top: number } | undefined>)[key]
     if (!o) return
-    dragging.value = { key, startX: e.clientX, startY: e.clientY, origLeft: o.left, origTop: o.top, isUserImg: false }
+    dragging.value = {
+      key,
+      startX: e.clientX,
+      startY: e.clientY,
+      origLeft: o.left,
+      origTop: o.top,
+      isUserImg: false,
+    }
   }
 
   const onMove = (ev: MouseEvent) => {
     if (!dragging.value) return
     const dx = ev.clientX - dragging.value.startX
     const dy = ev.clientY - dragging.value.startY
-    const key = dragging.value.key
+    const k = dragging.value.key
     if (dragging.value.isUserImg) {
-      const img = userImages.value.find((i) => i.id === key)
-      if (img) {
-        img.offsets.left = dragging.value.origLeft + dx
-        img.offsets.top = dragging.value.origTop + dy
-      }
+      store.updateOffset(
+        props.qrId,
+        activeSize.value,
+        k,
+        dragging.value.origLeft + dx,
+        dragging.value.origTop + dy,
+      )
     } else {
-      ; (offsets.value as Record<string, { left: number; top: number }>)[key] = {
+      ; (offsets.value as Record<string, { left: number; top: number }>)[k] = {
         left: dragging.value.origLeft + dx,
         top: dragging.value.origTop + dy,
       }
@@ -205,10 +201,53 @@ const startDrag = (key: string, e: MouseEvent) => {
   document.addEventListener('mouseup', onUp)
 }
 
-// ─── Reset to factory defaults ────────────────────────────────
+// ─── Resize handle for user images ────────────────────────────
+const startResize = (imgId: string, e: MouseEvent) => {
+  e.preventDefault()
+  e.stopPropagation()
+
+  const img = currentImages.value.find((i) => i.id === imgId)
+  if (!img) return
+
+  dragging.value = {
+    key: imgId,
+    startX: e.clientX,
+    startY: e.clientY,
+    origLeft: 0,
+    origTop: 0,
+    isUserImg: true,
+    isResize: true,
+    origW: img.width,
+    origH: img.height,
+  }
+
+  const onMove = (ev: MouseEvent) => {
+    if (!dragging.value || !dragging.value.isResize) return
+    const dx = ev.clientX - dragging.value.startX
+    const dy = ev.clientY - dragging.value.startY
+    store.resizeImage(
+      props.qrId,
+      activeSize.value,
+      imgId,
+      (dragging.value.origW || 0) + dx,
+      (dragging.value.origH || 0) + dy,
+    )
+  }
+
+  const onUp = () => {
+    dragging.value = null
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('mouseup', onUp)
+  }
+
+  document.addEventListener('mousemove', onMove)
+  document.addEventListener('mouseup', onUp)
+}
+
+// ─── Reset ────────────────────────────────────────────────────
 const resetPositions = () => {
   resetoOffsets()
-  userImages.value.forEach((img) => { img.offsets = { left: 0, top: 0 } })
+  store.resetSize(props.qrId, activeSize.value)
   toast.success('Posiciones restablecidas')
 }
 
@@ -241,7 +280,6 @@ const exportPDF = async () => {
   if (!canvas) return
   try {
     const { jsPDF } = await import('jspdf')
-    // Physical dimensions for PDF — same ratios as useQRDownload PHYSICAL_SIZE_MM
     const mmW = activeSize.value === 'sm' ? 132 : activeSize.value === 'md' ? 170 : 210
     const mmH = activeSize.value === 'sm' ? 57 : activeSize.value === 'md' ? 118 : 146
     const pdf = new jsPDF({
@@ -301,8 +339,8 @@ const close = () => emit('close')
               <div :id="`drag-tpl-${props.qrId}`"
                 :style="`width:${cfg.width}px;height:${cfg.height}px;padding:${PAD(cfg.width)}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;flex-shrink:0;`">
 
-                <!-- User images (draggable) -->
-                <template v-for="img in userImages" :key="img.id">
+                <!-- User images (draggable + resizable) — size-independent per activeSize -->
+                <template v-for="img in currentImages" :key="img.id">
                   <div
                     :style="`position:absolute;left:${PAD(cfg.width) + img.offsets.left}px;top:${PAD(cfg.width) + img.offsets.top}px;z-index:20;cursor:grab;border:2px solid transparent;border-radius:4px;overflow:hidden;transition:border-color 0.15s;`"
                     @mouseenter="(e: any) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)' }"
@@ -310,13 +348,21 @@ const close = () => emit('close')
                     @mousedown="startDrag(img.id, $event)">
                     <img :src="img.dataUrl"
                       :style="`width:${img.width}px;height:${img.height}px;display:block;pointer-events:none;object-fit:contain;`" />
+                    <!-- Resize handle (bottom-right corner) -->
+                    <div @mousedown="startResize(img.id, $event)"
+                      style="position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;background:rgba(255,255,255,0.8);border-top-left-radius:4px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;"
+                      @mouseenter="(e: any) => { e.stopPropagation(); e.currentTarget.style.opacity = '1' }"
+                      @mouseleave="(e: any) => { e.stopPropagation(); e.currentTarget.style.opacity = '0' }">
+                      <span class="text-slate-700 text-[10px] font-bold leading-none pointer-events-none">◢</span>
+                    </div>
+                    <!-- Delete button -->
                     <button @mousedown.stop @click.stop="removeImage(img.id)"
                       class="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold opacity-0 hover:opacity-100 transition-opacity cursor-pointer shadow-md"
                       style="border:none;line-height:1;" title="Eliminar imagen">✕</button>
                   </div>
                 </template>
 
-                <!-- Logo top-right (draggable) — default: top=W*0.015, right=W*0.015, bg=W*0.008 pad, radius=W*0.015 -->
+                <!-- Logo top-right (draggable) -->
                 <div
                   :style="`position:absolute;top:${cfg.width * 0.015 + offsets.logo.top}px;right:${cfg.width * 0.015 - offsets.logo.left}px;background:rgba(0,0,0,0.8);border-radius:${cfg.width * 0.015}px;padding:${cfg.width * 0.008}px;z-index:10;cursor:grab;`"
                   @mousedown="startDrag('logo', $event)">
@@ -329,7 +375,7 @@ const close = () => emit('close')
                 <div
                   :style="`position:absolute;left:${PAD(cfg.width) + offsets.qrBox.left}px;top:${PAD(cfg.width) + offsets.qrBox.top}px;width:${cfg.width - PAD(cfg.width) * 2}px;height:${cfg.height - PAD(cfg.width) * 2}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;`">
 
-                  <!-- "ubiqueme.com" top center (draggable) — default: fontSize=W*0.035 -->
+                  <!-- "ubiqueme.com" top center -->
                   <span
                     :style="`color:#fff;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px;`"
                     @mousedown="startDrag('topDomain', $event)">ubiqueme.com</span>
@@ -338,7 +384,7 @@ const close = () => emit('close')
                   <div
                     style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;flex:1;width:100%;">
 
-                    <!-- QR box (draggable) — default: w/h=qrSize+16, radius=W*0.025 -->
+                    <!-- QR box -->
                     <div
                       :style="`flex-shrink:0;width:${cfg.qrSize + 16}px;height:${cfg.qrSize + 16}px;background:#fff;border-radius:${cfg.width * 0.025}px;padding:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;left:${offsets.qrBox.left}px;top:${offsets.qrBox.top}px;cursor:grab;`"
                       @mousedown="startDrag('qrBox', $event)">
@@ -352,25 +398,21 @@ const close = () => emit('close')
                       </template>
                     </div>
 
-                    <!-- Info texts (right side) -->
+                    <!-- Info texts -->
                     <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;text-align:center;">
-                      <!-- Name (draggable) — default: fontSize=W*0.082 -->
                       <p :style="`color:#171717;font-size:${cfg.width * 0.082}px;font-weight:900;margin:0;line-height:1.1;cursor:grab;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px;`"
                         @mousedown="startDrag('name', $event)">{{ qrName || 'Código QR' }}</p>
-                      <!-- ID (draggable) — default: fontSize=Math.round(W*0.02) -->
                       <p :style="`color:#444;font-size:${Math.round(cfg.width * 0.02)}px;font-weight:600;margin:0;line-height:1.2;font-family:monospace;cursor:grab;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px;`"
                         @mousedown="startDrag('id', $event)">#{{ qrId }}</p>
-                      <!-- Desc 1 (draggable) — default: fontSize=W*0.048 -->
                       <p :style="`color:#303030;font-size:${cfg.width * 0.048}px;font-weight:500;margin:0;line-height:1.2;cursor:grab;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px;`"
                         @mousedown="startDrag('desc1', $event)">Escanee este QR para contactar al responsable.</p>
-                      <!-- Desc 2 (draggable) — default: fontSize=Math.round(W*0.022) -->
                       <p :style="`color:#000;font-size:${Math.round(cfg.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;cursor:grab;position:relative;left:${offsets.desc2.left}px;top:${offsets.desc2.top}px;`"
                         @mousedown="startDrag('desc2', $event)">QR oficial de Ubiqueme.com® — Marca 100% segura y
                         verificada.</p>
                     </div>
                   </div>
 
-                  <!-- Bottom domains (draggable) — default: fontSize=W*0.025, gap=12px -->
+                  <!-- Bottom domains -->
                   <div
                     :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;padding-bottom:9px;cursor:grab;position:relative;left:${offsets.bottomDomains.left}px;top:${offsets.bottomDomains.top}px;`"
                     @mousedown="startDrag('bottomDomains', $event)">
@@ -399,10 +441,10 @@ const close = () => emit('close')
                   <span class="material-symbols-outlined notranslate text-lg">add_photo_alternate</span> Imagen
                 </button>
                 <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="addImage" />
-                <span v-if="userImages.length === 0" class="text-xs text-slate-400">Arrastra los elementos</span>
-                <span v-else class="text-xs text-slate-400">{{ userImages.length }} imagen{{ userImages.length !== 1 ?
-                  'es' : ''
-                  }}</span>
+                <span v-if="currentImages.length === 0" class="text-xs text-slate-400">Arrastra los elementos</span>
+                <span v-else class="text-xs text-slate-400">{{ currentImages.length }} imagen{{ currentImages.length !==
+                  1 ? 'es' :
+                  '' }}</span>
               </div>
               <div class="flex items-center gap-3">
                 <button @click="close"
