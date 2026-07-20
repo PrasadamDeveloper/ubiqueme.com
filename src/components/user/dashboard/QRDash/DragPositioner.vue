@@ -290,11 +290,26 @@ const saveDesign = () => {
 // ─── Export helpers ──────────────────────────────────────────
 const getTemplateEl = () => document.getElementById(`drag-tpl-${props.qrId}`)
 
+/** Strip oklch color function (html2canvas v1 unsupported) from all elements in a cloned document */
+function stripOklchFromClone(doc: Document) {
+  const all = doc.querySelectorAll('*')
+  all.forEach((el) => {
+    const s = (el as HTMLElement).style
+    if (s.color?.includes('oklch')) s.color = ''
+    if (s.backgroundColor?.includes('oklch')) s.backgroundColor = ''
+    if (s.borderColor?.includes('oklch')) s.borderColor = ''
+    if (s.outlineColor?.includes('oklch')) s.outlineColor = ''
+    if (s.boxShadow?.includes('oklch')) s.boxShadow = ''
+    if (s.textShadow?.includes('oklch')) s.textShadow = ''
+    if (s.background?.includes('oklch')) s.background = ''
+  })
+}
+
 const captureCanvas = async () => {
   const el = getTemplateEl()
   if (!el) { toast.error('No se encontró la plantilla'); return null }
   try {
-    return await html2canvas(el, { scale: 4, backgroundColor: '#f97316', useCORS: true })
+    return await html2canvas(el, { scale: 4, backgroundColor: '#f97316', useCORS: true, onclone: stripOklchFromClone })
   } catch (e) {
     toast.error(`Error al capturar: ${e}`)
     return null
