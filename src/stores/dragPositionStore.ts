@@ -17,13 +17,44 @@ export interface SizeConfig {
   lg: DragImageData[]
 }
 
+export interface ElementOffsets {
+  logo: { left: number; top: number }
+  topDomain: { left: number; top: number }
+  qrBox: { left: number; top: number }
+  name: { left: number; top: number }
+  id: { left: number; top: number }
+  desc1: { left: number; top: number }
+  desc2: { left: number; top: number }
+  bottomDomains: { left: number; top: number }
+}
+
+export interface ElementOffsetsBySize {
+  sm: ElementOffsets
+  md: ElementOffsets
+  lg: ElementOffsets
+}
+
+const DEFAULT_OFFSETS: ElementOffsets = {
+  logo: { left: 0, top: 0 },
+  topDomain: { left: 0, top: 0 },
+  qrBox: { left: 0, top: 0 },
+  name: { left: 0, top: 0 },
+  id: { left: 0, top: 0 },
+  desc1: { left: 0, top: 0 },
+  desc2: { left: 0, top: 0 },
+  bottomDomains: { left: 0, top: 0 },
+}
+
 export const useDragPositionStore = defineStore(
   'dragPositionStore',
   () => {
-    // Keyed by QR id → { sm: [...], md: [...], lg: [...] }
+    // Images: keyed by QR id → { sm: [...], md: [...], lg: [...] }
     const configs = ref<Record<string, SizeConfig>>({})
 
-    // ─── Getters ────────────────────────────────────────────────
+    // Element offsets: keyed by QR id → { sm: {...}, md: {...}, lg: {...} }
+    const savedElementOffsets = ref<Record<string, ElementOffsetsBySize>>({})
+
+    // ─── Getters — Images ───────────────────────────────────────
 
     function getImages(qrId: string, size: SizeKey): DragImageData[] {
       if (!configs.value[qrId]) return []
@@ -34,7 +65,19 @@ export const useDragPositionStore = defineStore(
       return !!configs.value[qrId]
     }
 
-    // ─── Actions ────────────────────────────────────────────────
+    // ─── Getters — Element Offsets ──────────────────────────────
+
+    function getSavedElementOffsets(qrId: string, size: SizeKey): ElementOffsets | null {
+      const entry = savedElementOffsets.value[qrId]
+      if (!entry) return null
+      return entry[size] ?? null
+    }
+
+    function hasSavedElementOffsets(qrId: string): boolean {
+      return !!savedElementOffsets.value[qrId]
+    }
+
+    // ─── Actions — Images ───────────────────────────────────────
 
     function ensureConfig(qrId: string) {
       if (!configs.value[qrId]) {
@@ -87,10 +130,25 @@ export const useDragPositionStore = defineStore(
 
     function clearConfig(qrId: string) {
       delete configs.value[qrId]
+      delete savedElementOffsets.value[qrId]
+    }
+
+    // ─── Actions — Element Offsets ──────────────────────────────
+
+    function saveElementOffsets(qrId: string, size: SizeKey, offsets: ElementOffsets) {
+      if (!savedElementOffsets.value[qrId]) {
+        savedElementOffsets.value[qrId] = {
+          sm: { ...DEFAULT_OFFSETS },
+          md: { ...DEFAULT_OFFSETS },
+          lg: { ...DEFAULT_OFFSETS },
+        }
+      }
+      savedElementOffsets.value[qrId]![size] = JSON.parse(JSON.stringify(offsets))
     }
 
     return {
       configs,
+      savedElementOffsets,
       getImages,
       hasConfig,
       addImage,
@@ -99,12 +157,14 @@ export const useDragPositionStore = defineStore(
       removeImage,
       resetSize,
       clearConfig,
+      getSavedElementOffsets,
+      hasSavedElementOffsets,
+      saveElementOffsets,
     }
   },
   {
     persist: {
-      // Only persist configs
-      pick: ['configs'],
+      pick: ['configs', 'savedElementOffsets'],
     },
   },
 )

@@ -60,6 +60,15 @@ type OffsetMap = {
   bottomDomains: { left: number; top: number }
 }
 
+function loadSavedOffsets(size: SizeKey) {
+  const saved = store.getSavedElementOffsets(props.qrId, size)
+  if (saved) {
+    Object.assign(offsets.value, saved)
+  } else {
+    resetoOffsets()
+  }
+}
+
 const offsets = ref<OffsetMap>({
   logo: { left: 0, top: 0 },
   topDomain: { left: 0, top: 0 },
@@ -71,11 +80,14 @@ const offsets = ref<OffsetMap>({
   bottomDomains: { left: 0, top: 0 },
 })
 
-watch(activeSize, () => {
-  resetoOffsets()
+// Load saved on mount
+loadSavedOffsets(activeSize.value)
+
+watch(activeSize, (newSize) => {
+  loadSavedOffsets(newSize)
 })
 
-const resetoOffsets = () => {
+function resetoOffsets() {
   const keys = Object.keys(offsets.value) as (keyof OffsetMap)[]
   keys.forEach((k) => {
     offsets.value[k] = { left: 0, top: 0 }
@@ -249,6 +261,12 @@ const resetPositions = () => {
   resetoOffsets()
   store.resetSize(props.qrId, activeSize.value)
   toast.success('Posiciones restablecidas')
+}
+
+// ─── Save action ──────────────────────────────────────────────
+const saveDesign = () => {
+  store.saveElementOffsets(props.qrId, activeSize.value, { ...offsets.value })
+  toast.success('Diseño guardado correctamente')
 }
 
 // ─── Export helpers ──────────────────────────────────────────
@@ -447,6 +465,10 @@ const close = () => emit('close')
                   '' }}</span>
               </div>
               <div class="flex items-center gap-3">
+                <button @click="saveDesign"
+                  class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition cursor-pointer flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+                  <span class="material-symbols-outlined notranslate text-lg">check</span> Guardar
+                </button>
                 <button @click="close"
                   class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition cursor-pointer">Cancelar</button>
                 <button @click="exportPDF"
