@@ -6,16 +6,16 @@ type SizeKey = 'sm' | 'md' | 'lg'
  */
 export const DEFAULT_ELEMENT_OFFSETS = {
   sm: {
-    logo: { left: 0, top: 0 },
+    logo: { left: -19, top: 92 },
     httpsLabel: { left: 0, top: 0 },
-    topDomain: { left: 0, top: 0 },
+    topDomain: { left: 1, top: 1 },
     qrBox: { left: 0, top: 0 },
-    name: { left: 0, top: 0 },
-    id: { left: 0, top: 0 },
-    desc1: { left: 0, top: 0 },
-    desc2: { left: 0, top: 0 },
+    name: { left: 1, top: -6 },
+    id: { left: -193, top: 100 },
+    desc1: { left: -38, top: -17 },
+    desc2: { left: -39, top: -15 },
     bottomDomains: { left: 0, top: 0 },
-    bottomEmail: { left: 0, top: 0 },
+    bottomEmail: { left: 14, top: -11 },
   },
   // md — element offsets
   md: {
