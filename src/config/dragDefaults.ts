@@ -5,16 +5,16 @@ type SizeKey = 'sm' | 'md' | 'lg'
  * These are the final hardcoded values (no Pinia, no Firebase).
  */
 export const DEFAULT_ELEMENT_OFFSETS = {
-  // sm — element offsets (centered for 400×173)
+  // sm — element offsets
   sm: {
-    logo: { left: 0, top: 0 },
+    logo: { left: -1, top: 1 },
     httpsLabel: { left: 0, top: 0 },
     topDomain: { left: 0, top: -5 },
-    qrBox: { left: -5, top: -3 },
-    name: { left: 0, top: -8 },
-    id: { left: 0, top: 0 },
-    desc1: { left: 0, top: 0 },
-    desc2: { left: 0, top: 0 },
+    qrBox: { left: -1, top: 8 },
+    name: { left: -20, top: 11 },
+    id: { left: -200, top: 93 },
+    desc1: { left: -32, top: -16 },
+    desc2: { left: -41, top: -22 },
     bottomDomains: { left: 0, top: 0 },
     bottomEmail: { left: 0, top: 0 },
   },
@@ -61,61 +61,61 @@ export interface DragImageMeta {
  * with the names listed below.
  */
 export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
-  // sm — social icons scaled down from md (~55%), centered in a row
+  // sm — user image offsets
   sm: [
     {
       id: 'userImg-4',
       asset: '@/assets/drag-images/social-4.webp',
-      offsets: { left: 120, top: 72 },
+      offsets: { left: 304, top: 138 },
       width: 21,
       height: 22,
     },
     {
       id: 'userImg-5',
       asset: '@/assets/drag-images/social-5.webp',
-      offsets: { left: 145, top: 72 },
+      offsets: { left: 331, top: 140 },
       width: 20,
       height: 21,
     },
     {
       id: 'userImg-6',
       asset: '@/assets/drag-images/social-6.webp',
-      offsets: { left: 170, top: 72 },
+      offsets: { left: 359, top: 140 },
       width: 20,
       height: 19,
     },
     {
       id: 'userImg-7',
       asset: '@/assets/drag-images/social-7.webp',
-      offsets: { left: 195, top: 72 },
+      offsets: { left: 332, top: 116 },
       width: 19,
       height: 18,
     },
     {
       id: 'userImg-8',
       asset: '@/assets/drag-images/social-8.webp',
-      offsets: { left: 220, top: 72 },
+      offsets: { left: 447, top: 179 },
       width: 18,
       height: 19,
     },
     {
       id: 'userImg-9',
       asset: '@/assets/drag-images/social-9.webp',
-      offsets: { left: 245, top: 72 },
+      offsets: { left: 361, top: 116 },
       width: 20,
       height: 20,
     },
     {
       id: 'userImg-10',
       asset: '@/assets/drag-images/social-10.webp',
-      offsets: { left: 270, top: 68 },
+      offsets: { left: -21, top: -16 },
       width: 46,
       height: 36,
     },
     {
       id: 'userImg-12',
       asset: '@/assets/drag-images/social-12.webp',
-      offsets: { left: 320, top: 68 },
+      offsets: { left: 41, top: 71 },
       width: 41,
       height: 36,
     },
