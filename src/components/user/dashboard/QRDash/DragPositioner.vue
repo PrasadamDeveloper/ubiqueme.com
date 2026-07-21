@@ -376,8 +376,7 @@ const close = () => emit('close')
                   <div v-if="activeSize === 'sm'"
                     :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px;`"
                     @mousedown="startDrag('topDomain', $event)">
-                    <img src="/src/assets/drag-images/social-10.webp"
-                      style="width:40px;height:33px;display:block;pointer-events:none;object-fit:contain;" />
+                    <span style="font-size:22px;line-height:1;pointer-events:none;">🔒</span>
                     <span
                       :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;white-space:nowrap;pointer-events:none;`">HTTPS://</span>
                     <span
@@ -419,7 +418,8 @@ const close = () => emit('close')
                     <div
                       style="display:flex;flex-direction:column;gap:4px;justify-content:center;flex:0 1 auto;text-align:center;">
                       <p :style="`color:#171717;font-size:${cfg.width * 0.082}px;font-weight:900;margin:0;line-height:1.1;cursor:grab;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px;`"
-                        @mousedown="startDrag('name', $event)">{{ qrName == 'walaco' || 'Gutemberg 128' }}</p>
+                        @mousedown="startDrag('name', $event)">{{ qrName == 'walaco' || 'Gutemberg 128 oficinal'
+                        }}</p>
                       <p :style="`color:#444;font-size:${Math.round(cfg.width * 0.02)}px;font-weight:600;margin:0;line-height:1.2;font-family:monospace;cursor:grab;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px;`"
                         @mousedown="startDrag('id', $event)">ID:#{{ qrId }}</p>
                       <p :style="`color:#303030;font-size:${cfg.width * 0.048}px;font-weight:500;margin:0;line-height:1.05;cursor:grab;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px;`"
