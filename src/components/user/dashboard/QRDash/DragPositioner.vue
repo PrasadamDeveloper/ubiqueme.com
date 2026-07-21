@@ -374,7 +374,7 @@ const close = () => emit('close')
 
                   <!-- "ubiqueme.com" top center -->
                   <span
-                    :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px; padding: 1px 51px; border-radius:20px;`"
+                    :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.055}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px; padding: 1px 51px; border-radius:20px;`"
                     @mousedown="startDrag('topDomain', $event)">ubiqueme.com</span>
 
                   <!-- Row: QR + info -->

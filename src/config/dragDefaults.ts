@@ -27,9 +27,10 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     bottomDomains: { left: -149, top: -9 },
     bottomEmail: { left: -186, top: -13 },
   },
+  // lg — element offsets
   lg: {
     logo: { left: 2, top: -5 },
-    topDomain: { left: 3, top: -2 },
+    topDomain: { left: 3, top: -24 },
     qrBox: { left: 6, top: 2 },
     name: { left: -1, top: -4 },
     id: { left: -532, top: 277 },
