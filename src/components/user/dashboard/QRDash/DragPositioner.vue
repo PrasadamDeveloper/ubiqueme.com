@@ -372,22 +372,30 @@ const close = () => emit('close')
                 <div
                   :style="`position:absolute;left:${PAD(cfg.width) + offsets.qrBox.left}px;top:${PAD(cfg.width) + offsets.qrBox.top}px;width:${cfg.width - PAD(cfg.width) * 2}px;height:${cfg.height - PAD(cfg.width) * 2}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;`">
 
-                  <!-- "HTTPS://" + padlock inline (draggable as group for sm) -->
-                  <div
-                    :style="`display:flex;flex-direction:${activeSize === 'sm' ? 'row' : 'column'};align-items:center;justify-content:center;gap:${activeSize === 'sm' ? '2px' : '0'};cursor:grab;position:relative;left:${offsets.httpsLabel.left}px;top:${offsets.httpsLabel.top}px;`"
-                    @mousedown="startDrag('httpsLabel', $event)">
-                    <template v-if="activeSize === 'sm'">
-                      <img src="/src/assets/drag-images/social-10.webp"
-                        style="width:18px;height:15px;display:block;pointer-events:none;object-fit:contain;" />
-                    </template>
+                  <!-- SM: 🔒 HTTPS:// ubiqueme.com inline (single draggable group) -->
+                  <div v-if="activeSize === 'sm'"
+                    :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px;`"
+                    @mousedown="startDrag('topDomain', $event)">
+                    <img src="/src/assets/drag-images/social-10.webp"
+                      style="width:16px;height:13px;display:block;pointer-events:none;object-fit:contain;" />
                     <span
-                      :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;text-align:center;white-space:nowrap;pointer-events:none;`">HTTPS://</span>
+                      :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;white-space:nowrap;pointer-events:none;`">HTTPS://</span>
+                    <span
+                      :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.055}px;white-space:nowrap;pointer-events:none;`">ubiqueme.com</span>
                   </div>
 
-                  <!-- "ubiqueme.com" top center -->
-                  <span
-                    :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.055}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px; padding: 1px 51px; border-radius:20px;`"
-                    @mousedown="startDrag('topDomain', $event)">ubiqueme.com</span>
+                  <!-- MD/LG: HTTPS separate + ubiqueme.com separate -->
+                  <template v-if="activeSize !== 'sm'">
+                    <div
+                      :style="`display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:grab;position:relative;left:${offsets.httpsLabel.left}px;top:${offsets.httpsLabel.top}px;`"
+                      @mousedown="startDrag('httpsLabel', $event)">
+                      <span
+                        :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;text-align:center;white-space:nowrap;pointer-events:none;`">HTTPS://</span>
+                    </div>
+                    <span
+                      :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.055}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px; padding: 1px 51px; border-radius:20px;`"
+                      @mousedown="startDrag('topDomain', $event)">ubiqueme.com</span>
+                  </template>
 
                   <!-- Row: QR + info -->
                   <div
