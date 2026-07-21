@@ -7,7 +7,7 @@ type SizeKey = 'sm' | 'md' | 'lg'
 export const DEFAULT_ELEMENT_OFFSETS = {
   sm: {
     logo: { left: -19, top: 92 },
-    httpsLabel: { left: 0, top: 0 },
+    httpsLabel: { left: -30, top: 0 },
     topDomain: { left: 1, top: 1 },
     qrBox: { left: 0, top: 0 },
     name: { left: 1, top: -6 },
@@ -64,7 +64,7 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     {
       id: 'userImg-13',
       asset: '@/assets/drag-images/social-13.webp',
-      offsets: { left: -150, top: 0 },
+      offsets: { left: 5, top: 5 },
       width: 30,
       height: 30,
     },
