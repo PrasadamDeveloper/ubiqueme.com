@@ -7,6 +7,7 @@ type SizeKey = 'sm' | 'md' | 'lg'
 export const DEFAULT_ELEMENT_OFFSETS = {
   sm: {
     logo: { left: 0, top: 0 },
+    httpsLabel: { left: 0, top: 0 },
     topDomain: { left: 0, top: 0 },
     qrBox: { left: 0, top: 0 },
     name: { left: 0, top: 0 },
@@ -18,6 +19,7 @@ export const DEFAULT_ELEMENT_OFFSETS = {
   },
   md: {
     logo: { left: 1, top: -3 },
+    httpsLabel: { left: -80, top: 0 },
     topDomain: { left: 2, top: -1 },
     qrBox: { left: 4, top: 1 },
     name: { left: -19, top: -27 },
@@ -30,6 +32,7 @@ export const DEFAULT_ELEMENT_OFFSETS = {
   // lg — element offsets
   lg: {
     logo: { left: 2, top: -5 },
+    httpsLabel: { left: -120, top: 0 },
     topDomain: { left: 3, top: -24 },
     qrBox: { left: 6, top: 2 },
     name: { left: -1, top: -4 },

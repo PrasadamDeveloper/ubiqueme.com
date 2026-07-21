@@ -372,6 +372,11 @@ const close = () => emit('close')
                 <div
                   :style="`position:absolute;left:${PAD(cfg.width) + offsets.qrBox.left}px;top:${PAD(cfg.width) + offsets.qrBox.top}px;width:${cfg.width - PAD(cfg.width) * 2}px;height:${cfg.height - PAD(cfg.width) * 2}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;`">
 
+                  <!-- "HTTPS://" top center (draggable independent) -->
+                  <span
+                    :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.055}px;text-align:center;cursor:grab;position:relative;left:${offsets.httpsLabel.left}px;top:${offsets.httpsLabel.top}px; padding: 1px 51px; border-radius:20px;`"
+                    @mousedown="startDrag('httpsLabel', $event)">HTTPS://</span>
+
                   <!-- "ubiqueme.com" top center -->
                   <span
                     :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.055}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px; padding: 1px 51px; border-radius:20px;`"
