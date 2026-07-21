@@ -60,15 +60,7 @@ export interface DragImageMeta {
  * with the names listed below.
  */
 export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
-  sm: [
-    {
-      id: 'padlock',
-      asset: '@/assets/drag-images/social-10.webp',
-      offsets: { left: 5, top: 5 },
-      width: 30,
-      height: 25,
-    },
-  ],
+  sm: [],
 
   md: [
     {
