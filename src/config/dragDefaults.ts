@@ -119,6 +119,13 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
       width: 74,
       height: 66,
     },
+    {
+      id: 'userImg-13',
+      asset: '@/assets/drag-images/social-13.webp',
+      offsets: { left: -260, top: -2 },
+      width: 55,
+      height: 55,
+    },
   ],
   lg: [
     {
@@ -176,6 +183,13 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
       offsets: { left: 145, top: 381 },
       width: 111,
       height: 99,
+    },
+    {
+      id: 'userImg-13',
+      asset: '@/assets/drag-images/social-13.webp',
+      offsets: { left: -350, top: -2 },
+      width: 80,
+      height: 80,
     },
   ],
 }
