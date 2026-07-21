@@ -49,16 +49,18 @@ const cfg = computed<SizeCfg>(() => SIZE_CONFIG[activeSize.value] ?? SIZE_CONFIG
 // ─── Offsets for built-in elements ─────────────────────────────
 type OffsetKey = keyof typeof DEFAULT_ELEMENT_OFFSETS.md
 
-const offsets = ref<Record<OffsetKey, { left: number; top: number }>>(
-  JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[activeSize.value as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
-)
+function buildOffsets(size: string) {
+  return JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[size as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
+}
+
+const offsets = ref<Record<OffsetKey, { left: number; top: number }>>(buildOffsets(activeSize.value))
 
 watch(activeSize, (newSize) => {
-  offsets.value = JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[newSize as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
+  offsets.value = buildOffsets(newSize)
 })
 
 function resetOffsets() {
-  offsets.value = JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[activeSize.value as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
+  offsets.value = buildOffsets(activeSize.value)
 }
 
 // ─── Images — hardcoded from config ────────────────────────────
@@ -157,6 +159,29 @@ const startDrag = (key: string, e: MouseEvent) => {
 const resetPositions = () => {
   resetOffsets()
   toast.success('Posiciones restablecidas')
+}
+
+// ─── Copy positions to clipboard ──────────────────────────────
+const copyPositions = () => {
+  const size = activeSize.value
+
+  // built-in element offsets
+  const offsetLines = Object.entries(offsets.value)
+    .map(([key, val]) => `    ${key}: { left: ${val.left}, top: ${val.top} }`)
+    .join(',\n')
+  const builtInBlock = `// ${size} — element offsets
+DEFAULT_ELEMENT_OFFSETS.${size} = {\n${offsetLines},\n}`
+
+  // user image offsets
+  const userImgLines = currentImages.value
+    .map((img) => `// ${img.id} → { left: ${img.offsets.left}, top: ${img.offsets.top} }`)
+    .join('\n')
+  const userImgBlock = `// ${size} — user image offsets\n${userImgLines}`
+
+  const output = `${builtInBlock}\n\n${userImgBlock}`
+
+  navigator.clipboard.writeText(output)
+  toast.success('Posiciones copiadas al portapapeles')
 }
 
 // ─── Export helpers ──────────────────────────────────────────
@@ -371,11 +396,12 @@ const close = () => emit('close')
                     </div>
 
                     <!-- Info texts -->
-                    <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;text-align:center;">
+                    <div
+                      style="display:flex;flex-direction:column;gap:4px;justify-content:center;flex:0 1 auto;text-align:center;">
                       <p :style="`color:#171717;font-size:${cfg.width * 0.082}px;font-weight:900;margin:0;line-height:1.1;cursor:grab;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px;`"
                         @mousedown="startDrag('name', $event)">{{ qrName == 'walaco' || 'Gutemberg 128' }}</p>
                       <p :style="`color:#444;font-size:${Math.round(cfg.width * 0.02)}px;font-weight:600;margin:0;line-height:1.2;font-family:monospace;cursor:grab;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px;`"
-                        @mousedown="startDrag('id', $event)">#{{ qrId }}</p>
+                        @mousedown="startDrag('id', $event)">ID:#{{ qrId }}</p>
                       <p :style="`color:#303030;font-size:${cfg.width * 0.048}px;font-weight:500;margin:0;line-height:1.05;cursor:grab;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px;`"
                         @mousedown="startDrag('desc1', $event)">Escanee este QR<br />para contactar<br />al responsable
                         .
@@ -383,7 +409,8 @@ const close = () => emit('close')
                       <p :style="`color:#000;font-size:${Math.round(cfg.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;cursor:grab;position:relative;left:${offsets.desc2.left}px;top:${offsets.desc2.top}px;`"
                         @mousedown="startDrag('desc2', $event)">QR oficial <span style="margin-left: 2px;">
                           de Ubiqueme.com®
-                        </span>— Marca 100% segura y
+                        </span><br>
+                        Marca 100% segura y
                         verificada .</p>
                     </div>
                   </div>
@@ -414,6 +441,11 @@ const close = () => emit('close')
             <!-- ─── BOTTOM TOOLBAR ─── -->
             <div class="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-white">
               <div class="flex items-center gap-2">
+                <button @click="copyPositions"
+                  class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer">
+                  <span class="material-symbols-outlined notranslate text-lg align-middle">content_copy</span> Copiar
+                  posiciones
+                </button>
                 <button @click="resetPositions"
                   class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer">
                   <span class="material-symbols-outlined notranslate text-lg align-middle">refresh</span> Restablecer
