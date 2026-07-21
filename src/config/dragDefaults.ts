@@ -27,8 +27,6 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     bottomDomains: { left: -149, top: -9 },
     bottomEmail: { left: -186, top: -13 },
   },
-  // lg — element offsets
-  // lg — element offsets
   lg: {
     logo: { left: 2, top: -5 },
     topDomain: { left: 3, top: -2 },
@@ -40,32 +38,6 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     bottomDomains: { left: -231, top: 12 },
     bottomEmail: { left: -286, top: 21 },
   },
-
-  // lg — user image offsets
-  // userImg-4 → { left: 971, top: 624 }
-  // userImg-5 → { left: 888, top: 626 }
-  // userImg-6 → { left: 807, top: 627 }
-  // userImg-7 → { left: 732, top: 632 }
-  // userImg-8 → { left: 538, top: 629 }
-  // userImg-10 → { left: -35, top: -18 }
-  // userImg-12 → { left: 185, top: 285 }
-  // lg — user image offsets
-  // userImg-4 → { left: 971, top: 624 }
-  // userImg-5 → { left: 888, top: 626 }
-  // userImg-6 → { left: 807, top: 627 }
-  // userImg-7 → { left: 732, top: 632 }
-  // userImg-8 → { left: 651, top: 630 }
-  // userImg-10 → { left: -35, top: -18 }
-  // userImg-12 → { left: 185, top: 285 }
-
-  // lg — user image offsets
-  // userImg-4 → { left: 971, top: 624 }
-  // userImg-5 → { left: 888, top: 626 }
-  // userImg-6 → { left: 807, top: 627 }
-  // userImg-7 → { left: 732, top: 632 }
-  // userImg-8 → { left: 651, top: 630 }
-  // userImg-10 → { left: -35, top: -18 }
-  // userImg-12 → { left: 185, top: 285 }
 } as const
 
 export interface DragImageMeta {
@@ -88,37 +60,44 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     {
       id: 'userImg-4',
       asset: '@/assets/drag-images/social-4.webp',
-      offsets: { left: 647, top: 416 },
-      width: 47,
-      height: 48,
+      offsets: { left: 651, top: 418 },
+      width: 39,
+      height: 40,
     },
     {
       id: 'userImg-5',
       asset: '@/assets/drag-images/social-5.webp',
-      offsets: { left: 592, top: 417 },
-      width: 43,
-      height: 45,
+      offsets: { left: 609, top: 419 },
+      width: 36,
+      height: 38,
     },
     {
       id: 'userImg-6',
       asset: '@/assets/drag-images/social-6.webp',
-      offsets: { left: 538, top: 418 },
-      width: 44,
-      height: 42,
+      offsets: { left: 565, top: 420 },
+      width: 37,
+      height: 35,
     },
     {
       id: 'userImg-7',
       asset: '@/assets/drag-images/social-7.webp',
-      offsets: { left: 488, top: 421 },
-      width: 42,
-      height: 40,
+      offsets: { left: 523, top: 421 },
+      width: 35,
+      height: 33,
     },
     {
       id: 'userImg-8',
       asset: '@/assets/drag-images/social-8.webp',
-      offsets: { left: 434, top: 420 },
-      width: 40,
-      height: 41,
+      offsets: { left: 481, top: 419 },
+      width: 33,
+      height: 34,
+    },
+    {
+      id: 'userImg-9',
+      asset: '@/assets/drag-images/social-9.webp',
+      offsets: { left: 436, top: 420 },
+      width: 36,
+      height: 36,
     },
     {
       id: 'userImg-10',
@@ -139,37 +118,44 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     {
       id: 'userImg-4',
       asset: '@/assets/drag-images/social-4.webp',
-      offsets: { left: 971, top: 624 },
-      width: 71,
-      height: 72,
+      offsets: { left: 977, top: 627 },
+      width: 59,
+      height: 60,
     },
     {
       id: 'userImg-5',
       asset: '@/assets/drag-images/social-5.webp',
-      offsets: { left: 888, top: 626 },
-      width: 65,
-      height: 68,
+      offsets: { left: 914, top: 628 },
+      width: 54,
+      height: 57,
     },
     {
       id: 'userImg-6',
       asset: '@/assets/drag-images/social-6.webp',
-      offsets: { left: 807, top: 627 },
-      width: 66,
-      height: 63,
+      offsets: { left: 849, top: 628 },
+      width: 55,
+      height: 53,
     },
     {
       id: 'userImg-7',
       asset: '@/assets/drag-images/social-7.webp',
-      offsets: { left: 732, top: 632 },
-      width: 63,
-      height: 60,
+      offsets: { left: 785, top: 630 },
+      width: 53,
+      height: 50,
     },
     {
       id: 'userImg-8',
       asset: '@/assets/drag-images/social-8.webp',
-      offsets: { left: 651, top: 630 },
-      width: 60,
-      height: 62,
+      offsets: { left: 721, top: 629 },
+      width: 50,
+      height: 52,
+    },
+    {
+      id: 'userImg-9',
+      asset: '@/assets/drag-images/social-9.webp',
+      offsets: { left: 654, top: 629 },
+      width: 54,
+      height: 54,
     },
     {
       id: 'userImg-10',
