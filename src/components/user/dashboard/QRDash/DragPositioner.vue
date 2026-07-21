@@ -3,7 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import html2canvas from 'html2canvas'
 import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
-import { useDragPositionStore, type SizeKey } from '@/stores/dragPositionStore'
+import { DEFAULT_ELEMENT_OFFSETS, DEFAULT_USER_IMAGES } from '@/config/dragDefaults'
 
 const props = defineProps<{
   visible: boolean
@@ -18,8 +18,6 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const store = useDragPositionStore()
-
 // ══════════════════════════════════════════════════════════════
 //  SIZE CONFIG — matching useQRDownload.ts exactly
 // ══════════════════════════════════════════════════════════════
@@ -29,7 +27,7 @@ interface SizeCfg {
   qrSize: number
 }
 
-const SIZE_CONFIG: Record<SizeKey, SizeCfg> = {
+const SIZE_CONFIG: Record<string, SizeCfg> = {
   sm: { width: 400, height: 173, qrSize: 115 },
   md: { width: 720, height: 500, qrSize: 300 },
   lg: { width: 1080, height: 749, qrSize: 460 },
@@ -44,122 +42,46 @@ function PAD(w: number) { return w * 0.02 }
 function logoScale(size: string) { return size === 'sm' ? 0.1 : 0.097 }
 
 // ─── Reactive size ─────────────────────────────────────────────
-const activeSize = ref<SizeKey>(props.downloadSize)
+const activeSize = ref<string>(props.downloadSize)
 
-const cfg = computed<SizeCfg>(() => SIZE_CONFIG[activeSize.value])
+const cfg = computed<SizeCfg>(() => SIZE_CONFIG[activeSize.value] ?? SIZE_CONFIG.md!)
 
 // ─── Offsets for built-in elements ─────────────────────────────
-type OffsetMap = {
-  logo: { left: number; top: number }
-  topDomain: { left: number; top: number }
-  qrBox: { left: number; top: number }
-  name: { left: number; top: number }
-  id: { left: number; top: number }
-  desc1: { left: number; top: number }
-  desc2: { left: number; top: number }
-  bottomDomains: { left: number; top: number }
-}
+type OffsetKey = keyof typeof DEFAULT_ELEMENT_OFFSETS.md
 
-function loadSavedOffsets(size: SizeKey) {
-  const saved = store.getSavedElementOffsets(props.qrId, size)
-  if (saved) {
-    Object.assign(offsets.value, saved)
-  } else {
-    resetoOffsets()
-  }
-}
-
-const offsets = ref<OffsetMap>({
-  logo: { left: 0, top: 0 },
-  topDomain: { left: 0, top: 0 },
-  qrBox: { left: 0, top: 0 },
-  name: { left: 0, top: 0 },
-  id: { left: 0, top: 0 },
-  desc1: { left: 0, top: 0 },
-  desc2: { left: 0, top: 0 },
-  bottomDomains: { left: 0, top: 0 },
-})
-
-// Load saved on mount
-loadSavedOffsets(activeSize.value)
+const offsets = ref<Record<OffsetKey, { left: number; top: number }>>(
+  JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[activeSize.value as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
+)
 
 watch(activeSize, (newSize) => {
-  loadSavedOffsets(newSize)
+  offsets.value = JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[newSize as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
 })
 
-function resetoOffsets() {
-  const keys = Object.keys(offsets.value) as (keyof OffsetMap)[]
-  keys.forEach((k) => {
-    offsets.value[k] = { left: 0, top: 0 }
-  })
+function resetOffsets() {
+  offsets.value = JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[activeSize.value as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
 }
 
-// ─── Images from store (size-independent) ─────────────────────
-const currentImages = computed(() => store.getImages(props.qrId, activeSize.value))
-
-const fileInput = ref<HTMLInputElement | null>(null)
-
-// Compute next unique image counter from all existing images in the store for this QR
-function nextImgCounter(): number {
-  let maxId = 0
-  for (const size of (['sm', 'md', 'lg'] as const)) {
-    const imgs = store.getImages(props.qrId, size)
-    for (const img of imgs) {
-      const match = img.id.match(/^userImg-(\d+)$/)
-      if (match) {
-        const num = parseInt(match[1], 10)
-        if (num > maxId) maxId = num
-      }
-    }
-  }
-  return maxId + 1
+// ─── Images — hardcoded from config ────────────────────────────
+interface DragImage {
+  id: string
+  src: string
+  offsets: { left: number; top: number }
+  width: number
+  height: number
 }
 
-let imgCounter = nextImgCounter()
+const defaultImages = DEFAULT_USER_IMAGES
 
-const addImage = (e: Event) => {
-  const input = e.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
-
-  const reader = new FileReader()
-  reader.onload = async (ev) => {
-    const dataUrl = ev.target?.result
-    if (!dataUrl || typeof dataUrl !== 'string') return
-
-    const img = new Image()
-    img.src = dataUrl
-    await new Promise((resolve) => { img.onload = resolve })
-
-    const maxDim = 300
-    let w = img.naturalWidth
-    let h = img.naturalHeight
-    if (w > maxDim || h > maxDim) {
-      const ratio = maxDim / Math.max(w, h)
-      w = Math.round(w * ratio)
-      h = Math.round(h * ratio)
-    }
-
-    const id = `userImg-${++imgCounter}`
-    store.addImage(props.qrId, activeSize.value, {
-      id,
-      dataUrl,
-      offsets: { left: 0, top: 0 },
-      width: w,
-      height: h,
-    })
-  }
-  reader.readAsDataURL(file)
-  input.value = ''
-}
-
-const removeImage = (imgId: string) => {
-  store.removeImage(props.qrId, activeSize.value, imgId)
-}
-
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
+const currentImages = computed<DragImage[]>(() => {
+  const imgs = defaultImages[activeSize.value as keyof typeof defaultImages] ?? []
+  return imgs.map((img) => ({
+    id: img.id,
+    src: img.asset.replace('@/', '/src/'),
+    offsets: { ...img.offsets },
+    width: img.width,
+    height: img.height,
+  }))
+})
 
 // ─── Drag handling (supports both built-in and user images) ────
 const dragging = ref<{
@@ -168,10 +90,6 @@ const dragging = ref<{
   startY: number
   origLeft: number
   origTop: number
-  isUserImg?: boolean
-  isResize?: boolean
-  origW?: number
-  origH?: number
 } | null>(null)
 
 const startDrag = (key: string, e: MouseEvent) => {
@@ -185,19 +103,33 @@ const startDrag = (key: string, e: MouseEvent) => {
       startY: e.clientY,
       origLeft: userImg.offsets.left,
       origTop: userImg.offsets.top,
-      isUserImg: true,
     }
-  } else {
-    const o = (offsets.value as Record<string, { left: number; top: number } | undefined>)[key]
-    if (!o) return
-    dragging.value = {
-      key,
-      startX: e.clientX,
-      startY: e.clientY,
-      origLeft: o.left,
-      origTop: o.top,
-      isUserImg: false,
+    // local mutation for drag preview
+    const onMove = (ev: MouseEvent) => {
+      if (!dragging.value) return
+      const dx = ev.clientX - dragging.value.startX
+      const dy = ev.clientY - dragging.value.startY
+      userImg.offsets.left = dragging.value.origLeft + dx
+      userImg.offsets.top = dragging.value.origTop + dy
     }
+    const onUp = () => {
+      dragging.value = null
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    return
+  }
+
+  const o = offsets.value[key as OffsetKey]
+  if (!o) return
+  dragging.value = {
+    key,
+    startX: e.clientX,
+    startY: e.clientY,
+    origLeft: o.left,
+    origTop: o.top,
   }
 
   const onMove = (ev: MouseEvent) => {
@@ -205,63 +137,10 @@ const startDrag = (key: string, e: MouseEvent) => {
     const dx = ev.clientX - dragging.value.startX
     const dy = ev.clientY - dragging.value.startY
     const k = dragging.value.key
-    if (dragging.value.isUserImg) {
-      store.updateOffset(
-        props.qrId,
-        activeSize.value,
-        k,
-        dragging.value.origLeft + dx,
-        dragging.value.origTop + dy,
-      )
-    } else {
-      ; (offsets.value as Record<string, { left: number; top: number }>)[k] = {
-        left: dragging.value.origLeft + dx,
-        top: dragging.value.origTop + dy,
-      }
+    offsets.value[k as OffsetKey] = {
+      left: dragging.value.origLeft + dx,
+      top: dragging.value.origTop + dy,
     }
-  }
-
-  const onUp = () => {
-    dragging.value = null
-    document.removeEventListener('mousemove', onMove)
-    document.removeEventListener('mouseup', onUp)
-  }
-
-  document.addEventListener('mousemove', onMove)
-  document.addEventListener('mouseup', onUp)
-}
-
-// ─── Resize handle for user images ────────────────────────────
-const startResize = (imgId: string, e: MouseEvent) => {
-  e.preventDefault()
-  e.stopPropagation()
-
-  const img = currentImages.value.find((i) => i.id === imgId)
-  if (!img) return
-
-  dragging.value = {
-    key: imgId,
-    startX: e.clientX,
-    startY: e.clientY,
-    origLeft: 0,
-    origTop: 0,
-    isUserImg: true,
-    isResize: true,
-    origW: img.width,
-    origH: img.height,
-  }
-
-  const onMove = (ev: MouseEvent) => {
-    if (!dragging.value || !dragging.value.isResize) return
-    const dx = ev.clientX - dragging.value.startX
-    const dy = ev.clientY - dragging.value.startY
-    store.resizeImage(
-      props.qrId,
-      activeSize.value,
-      imgId,
-      (dragging.value.origW || 0) + dx,
-      (dragging.value.origH || 0) + dy,
-    )
   }
 
   const onUp = () => {
@@ -276,15 +155,8 @@ const startResize = (imgId: string, e: MouseEvent) => {
 
 // ─── Reset ────────────────────────────────────────────────────
 const resetPositions = () => {
-  resetoOffsets()
-  store.resetSize(props.qrId, activeSize.value)
+  resetOffsets()
   toast.success('Posiciones restablecidas')
-}
-
-// ─── Save action ──────────────────────────────────────────────
-const saveDesign = () => {
-  store.saveElementOffsets(props.qrId, activeSize.value, { ...offsets.value })
-  toast.success('Diseño guardado correctamente')
 }
 
 // ─── Export helpers ──────────────────────────────────────────
@@ -293,7 +165,6 @@ const getTemplateEl = () => document.getElementById(`drag-tpl-${props.qrId}`)
 /** Render template in a sandboxed iframe (no Tailwind CSS) to bypass oklch() unsupported color issue in html2canvas v1 */
 function renderInIframe(el: HTMLElement, bgColor: string): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
-    // Use exact size config dimensions instead of offsetWidth/offsetHeight for accuracy
     const exactW = cfg.value.width
     const exactH = cfg.value.height
 
@@ -309,24 +180,17 @@ function renderInIframe(el: HTMLElement, bgColor: string): Promise<HTMLCanvasEle
 
     const doc = iframe.contentDocument!
 
-    // Clone the element and strip UI-only elements before injecting into iframe
     const clone = el.cloneNode(true) as HTMLElement
-    // Force exact dimensions on clone
     clone.style.width = `${exactW}px`
     clone.style.height = `${exactH}px`
     clone.style.position = 'relative'
     clone.style.top = '0'
     clone.style.left = '0'
     clone.style.margin = '0'
-    // Remove UI-only elements: resize handles, delete buttons, editor borders
-    // 1. Remove resize handle divs (cursor:nwse-resize)
     clone.querySelectorAll('[style*="cursor:nwse-resize"]').forEach((el) => el.remove())
-    // 2. Remove delete buttons (title="Eliminar imagen")
     clone.querySelectorAll('[title="Eliminar imagen"]').forEach((el) => el.remove())
-    // 3. Remove transparent borders from draggable containers (editor-only)
     clone.querySelectorAll('[style*="cursor:grab"]').forEach((grabEl) => {
       const s = (grabEl as HTMLElement).style
-      // Only remove border if it's transparent (editor indicator), not if user set a visible border
       if (s.borderColor === 'transparent' || s.border?.includes('transparent')) {
         s.border = 'none'
       }
@@ -348,7 +212,6 @@ function renderInIframe(el: HTMLElement, bgColor: string): Promise<HTMLCanvasEle
     `)
     doc.close()
 
-    // Wait for images to load inside iframe
     const images = doc.querySelectorAll('img')
     const promises: Promise<void>[] = []
     images.forEach((img) => {
@@ -358,7 +221,6 @@ function renderInIframe(el: HTMLElement, bgColor: string): Promise<HTMLCanvasEle
     })
 
     Promise.all(promises).then(() => {
-      // Small delay to ensure layout
       setTimeout(() => {
         const iframeBody = doc.body.firstElementChild as HTMLElement
         if (!iframeBody) { reject(new Error('No template in iframe')); return }
@@ -460,32 +322,21 @@ const close = () => emit('close')
               <div :id="`drag-tpl-${props.qrId}`"
                 :style="`width:${cfg.width}px;height:${cfg.height}px;padding:${PAD(cfg.width)}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;flex-shrink:0;`">
 
-                <!-- User images (draggable + resizable) — size-independent per activeSize -->
+                <!-- User images (draggable) — from hardcoded defaults -->
                 <template v-for="img in currentImages" :key="img.id">
                   <div
                     :style="`position:absolute;left:${PAD(cfg.width) + img.offsets.left}px;top:${PAD(cfg.width) + img.offsets.top}px;z-index:20;cursor:grab;border:2px solid transparent;border-radius:4px;overflow:hidden;transition:border-color 0.15s;`"
                     @mouseenter="(e: any) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)' }"
                     @mouseleave="(e: any) => { e.currentTarget.style.borderColor = 'transparent' }"
                     @mousedown="startDrag(img.id, $event)">
-                    <img :src="img.dataUrl"
+                    <img :src="img.src"
                       :style="`width:${img.width}px;height:${img.height}px;display:block;pointer-events:none;object-fit:contain;`" />
-                    <!-- Resize handle (bottom-right corner) -->
-                    <div @mousedown="startResize(img.id, $event)"
-                      style="position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;background:rgba(255,255,255,0.8);border-top-left-radius:4px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;"
-                      @mouseenter="(e: any) => { e.stopPropagation(); e.currentTarget.style.opacity = '1' }"
-                      @mouseleave="(e: any) => { e.stopPropagation(); e.currentTarget.style.opacity = '0' }">
-                      <span class="text-slate-700 text-[10px] font-bold leading-none pointer-events-none">◢</span>
-                    </div>
-                    <!-- Delete button -->
-                    <button @mousedown.stop @click.stop="removeImage(img.id)"
-                      class="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold opacity-0 hover:opacity-100 transition-opacity cursor-pointer shadow-md"
-                      style="border:none;line-height:1;" title="Eliminar imagen">✕</button>
                   </div>
                 </template>
 
                 <!-- Logo top-right (draggable) -->
                 <div
-                  :style="`position:absolute;top:${cfg.width * 0.015 + offsets.logo.top}px;right:${cfg.width * 0.015 - offsets.logo.left}px;background:rgba(0,0,0,0.8);border-radius:${cfg.width * 0.015}px;padding:${cfg.width * 0.008}px;z-index:10;cursor:grab;`"
+                  :style="`position:absolute;top:${cfg.width * 0.015 + offsets.logo.top}px;right:${cfg.width * 0.015 - offsets.logo.left}px;background:rgba(0,0,0,0.8);border-radius:${cfg.width * 0.015}px;padding:${cfg.width * 0.0001}px;z-index:10;cursor:grab;`"
                   @mousedown="startDrag('logo', $event)">
                   <img :src="LogoWhite"
                     :style="`width:${cfg.width * logoScale(activeSize)}px;height:auto;opacity:0.9;display:block;pointer-events:none;`"
@@ -498,7 +349,7 @@ const close = () => emit('close')
 
                   <!-- "ubiqueme.com" top center -->
                   <span
-                    :style="`color:#fff;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px;`"
+                    :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;text-align:center;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px; padding: 1px 51px; border-radius:20px;`"
                     @mousedown="startDrag('topDomain', $event)">ubiqueme.com</span>
 
                   <!-- Row: QR + info -->
@@ -522,7 +373,7 @@ const close = () => emit('close')
                     <!-- Info texts -->
                     <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;text-align:center;">
                       <p :style="`color:#171717;font-size:${cfg.width * 0.082}px;font-weight:900;margin:0;line-height:1.1;cursor:grab;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px;`"
-                        @mousedown="startDrag('name', $event)">{{ qrName || 'Código QR' }}</p>
+                        @mousedown="startDrag('name', $event)">{{ qrName == 'walaco' || 'Gutemberg 128' }}</p>
                       <p :style="`color:#444;font-size:${Math.round(cfg.width * 0.02)}px;font-weight:600;margin:0;line-height:1.2;font-family:monospace;cursor:grab;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px;`"
                         @mousedown="startDrag('id', $event)">#{{ qrId }}</p>
                       <p :style="`color:#303030;font-size:${cfg.width * 0.048}px;font-weight:500;margin:0;line-height:1.05;cursor:grab;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px;`"
@@ -530,9 +381,17 @@ const close = () => emit('close')
                         .
                       </p>
                       <p :style="`color:#000;font-size:${Math.round(cfg.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;cursor:grab;position:relative;left:${offsets.desc2.left}px;top:${offsets.desc2.top}px;`"
-                        @mousedown="startDrag('desc2', $event)">QR oficial de Ubiqueme.com® — Marca 100% segura y
-                        verificada.</p>
+                        @mousedown="startDrag('desc2', $event)">QR oficial <span style="margin-left: 2px;">
+                          de Ubiqueme.com®
+                        </span>— Marca 100% segura y
+                        verificada .</p>
                     </div>
+                  </div>
+                  <div
+                    :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;padding-bottom:9px;cursor:grab;position:relative;left:${offsets.bottomEmail.left}px;top:${offsets.bottomEmail.top}px;`"
+                    @mousedown="startDrag('bottomEmail', $event)">
+                    <span
+                      :style="`color:black;font-weight:700;text-transform:uppercase;font-size:${cfg.width * 0.025}px;letter-spacing:1px;pointer-events:none;`">soporte@ubiqueme.com</span>
                   </div>
 
                   <!-- Bottom domains -->
@@ -540,12 +399,12 @@ const close = () => emit('close')
                     :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;padding-bottom:9px;cursor:grab;position:relative;left:${offsets.bottomDomains.left}px;top:${offsets.bottomDomains.top}px;`"
                     @mousedown="startDrag('bottomDomains', $event)">
                     <span
-                      :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${cfg.width * 0.025}px;letter-spacing:1px;pointer-events:none;`"
+                      :style="`color:black;font-weight:700;text-transform:uppercase;font-size:${cfg.width * 0.025}px;letter-spacing:1px;pointer-events:none;`"
                       translate="no">localizarme.com</span>
                     <span
                       :style="`color:rgba(255,255,255,0.5);font-size:${cfg.width * 0.025}px;pointer-events:none;`">•</span>
                     <span
-                      :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${cfg.width * 0.025}px;letter-spacing:1px;pointer-events:none;`"
+                      :style="`color:black;font-weight:700;text-transform:uppercase;font-size:${cfg.width * 0.025}px;letter-spacing:1px;pointer-events:none;`"
                       translate="no">contactomio.com</span>
                   </div>
                 </div>
@@ -559,21 +418,9 @@ const close = () => emit('close')
                   class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer">
                   <span class="material-symbols-outlined notranslate text-lg align-middle">refresh</span> Restablecer
                 </button>
-                <button @click="triggerFileInput"
-                  class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer flex items-center gap-1.5">
-                  <span class="material-symbols-outlined notranslate text-lg">add_photo_alternate</span> Imagen
-                </button>
-                <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="addImage" />
-                <span v-if="currentImages.length === 0" class="text-xs text-slate-400">Arrastra los elementos</span>
-                <span v-else class="text-xs text-slate-400">{{ currentImages.length }} imagen{{ currentImages.length !==
-                  1 ? 'es' :
-                  '' }}</span>
+                <span class="text-xs text-slate-400">Arrastra los elementos</span>
               </div>
               <div class="flex items-center gap-3">
-                <button @click="saveDesign"
-                  class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition cursor-pointer flex items-center gap-2 shadow-lg shadow-emerald-500/20">
-                  <span class="material-symbols-outlined notranslate text-lg">check</span> Guardar
-                </button>
                 <button @click="close"
                   class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition cursor-pointer">Cancelar</button>
                 <button @click="exportPDF"
