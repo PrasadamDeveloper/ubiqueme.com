@@ -33,15 +33,15 @@ export const DEFAULT_ELEMENT_OFFSETS = {
   // lg — element offsets
   lg: {
     logo: { left: 2, top: -5 },
-    httpsLabel: { left: -120, top: 0 },
-    topDomain: { left: 3, top: -24 },
+    httpsLabel: { left: -314, top: 10 },
+    topDomain: { left: 98, top: -59 },
     qrBox: { left: 6, top: 2 },
-    name: { left: -1, top: -4 },
+    name: { left: -3, top: -20 },
     id: { left: -532, top: 277 },
-    desc1: { left: 17, top: -24 },
+    desc1: { left: 17, top: -29 },
     desc2: { left: 7, top: -2 },
     bottomDomains: { left: -231, top: 12 },
-    bottomEmail: { left: -286, top: 21 },
+    bottomEmail: { left: -287, top: 23 },
   },
 } as const
 
@@ -173,7 +173,7 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     {
       id: 'userImg-12',
       asset: '@/assets/drag-images/social-12.webp',
-      offsets: { left: 185, top: 285 },
+      offsets: { left: 145, top: 381 },
       width: 111,
       height: 99,
     },
