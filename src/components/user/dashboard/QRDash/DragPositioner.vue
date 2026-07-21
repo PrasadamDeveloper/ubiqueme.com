@@ -377,7 +377,7 @@ const close = () => emit('close')
                     :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;cursor:grab;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px;`"
                     @mousedown="startDrag('topDomain', $event)">
                     <img src="/src/assets/drag-images/social-10.webp"
-                      style="width:16px;height:13px;display:block;pointer-events:none;object-fit:contain;" />
+                      style="width:40px;height:33px;display:block;pointer-events:none;object-fit:contain;" />
                     <span
                       :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;white-space:nowrap;pointer-events:none;`">HTTPS://</span>
                     <span
@@ -443,13 +443,15 @@ const close = () => emit('close')
 
                   <!-- Bottom domains -->
                   <div
-                    :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;padding-bottom:9px;cursor:grab;position:relative;left:${offsets.bottomDomains.left}px;top:${offsets.bottomDomains.top}px;`"
+                    :style="`display:flex;flex-direction:${activeSize === 'sm' ? 'column' : 'row'};align-items:center;justify-content:center;gap:${activeSize === 'sm' ? '0' : '12px'};padding-bottom:9px;cursor:grab;position:relative;left:${offsets.bottomDomains.left}px;top:${offsets.bottomDomains.top}px;`"
                     @mousedown="startDrag('bottomDomains', $event)">
                     <span
                       :style="`color:black;font-weight:700;text-transform:uppercase;font-size:${cfg.width * 0.025}px;letter-spacing:1px;pointer-events:none;`"
                       translate="no">localizarme.com</span>
-                    <span
-                      :style="`color:rgba(255,255,255,0.5);font-size:${cfg.width * 0.025}px;pointer-events:none;`">•</span>
+                    <template v-if="activeSize !== 'sm'">
+                      <span
+                        :style="`color:rgba(255,255,255,0.5);font-size:${cfg.width * 0.025}px;pointer-events:none;`">•</span>
+                    </template>
                     <span
                       :style="`color:black;font-weight:700;text-transform:uppercase;font-size:${cfg.width * 0.025}px;letter-spacing:1px;pointer-events:none;`"
                       translate="no">contactomio.com</span>
