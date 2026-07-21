@@ -374,7 +374,7 @@ const close = () => emit('close')
 
                   <!-- "HTTPS://" top center (draggable independent) -->
                   <span
-                    :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.055}px;text-align:center;cursor:grab;position:relative;left:${offsets.httpsLabel.left}px;top:${offsets.httpsLabel.top}px; padding: 1px 51px; border-radius:20px;`"
+                    :style="`color:black;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${cfg.width * 0.035}px;text-align:center;cursor:grab;position:relative;left:${offsets.httpsLabel.left}px;top:${offsets.httpsLabel.top}px; padding: 1px 51px; border-radius:20px;`"
                     @mousedown="startDrag('httpsLabel', $event)">HTTPS://</span>
 
                   <!-- "ubiqueme.com" top center -->
@@ -413,7 +413,7 @@ const close = () => emit('close')
                       </p>
                       <p :style="`color:#000;font-size:${Math.round(cfg.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;cursor:grab;position:relative;left:${offsets.desc2.left}px;top:${offsets.desc2.top}px;`"
                         @mousedown="startDrag('desc2', $event)">QR oficial <span style="margin-left: 2px;">
-                          de Ubiqueme.com®
+                          de Ubiqueme .com®
                         </span><br>
                         Marca 100% segura y
                         verificada .</p>

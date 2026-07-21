@@ -17,17 +17,18 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     bottomDomains: { left: 0, top: 0 },
     bottomEmail: { left: 0, top: 0 },
   },
+  // md — element offsets
   md: {
     logo: { left: 1, top: -3 },
-    httpsLabel: { left: -80, top: 0 },
-    topDomain: { left: 2, top: -1 },
+    httpsLabel: { left: -238, top: 10 },
+    topDomain: { left: 43, top: -42 },
     qrBox: { left: 4, top: 1 },
-    name: { left: -19, top: -27 },
-    id: { left: -11, top: -20 },
-    desc1: { left: 16, top: 10 },
-    desc2: { left: 4, top: 14 },
-    bottomDomains: { left: -149, top: -9 },
-    bottomEmail: { left: -186, top: -13 },
+    name: { left: -11, top: -29 },
+    id: { left: -364, top: 187 },
+    desc1: { left: 0, top: -46 },
+    desc2: { left: 3, top: -11 },
+    bottomDomains: { left: -148, top: 8 },
+    bottomEmail: { left: -186, top: 23 },
   },
   // lg — element offsets
   lg: {
@@ -60,6 +61,7 @@ export interface DragImageMeta {
  */
 export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
   sm: [],
+
   md: [
     {
       id: 'userImg-4',
@@ -106,7 +108,7 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     {
       id: 'userImg-10',
       asset: '@/assets/drag-images/social-10.webp',
-      offsets: { left: -23, top: -12 },
+      offsets: { left: -19, top: -12 },
       width: 83,
       height: 65,
     },
