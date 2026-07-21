@@ -64,13 +64,6 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
 
   md: [
     {
-      id: 'padlock',
-      asset: '@/assets/drag-images/social-10.webp',
-      offsets: { left: 8, top: 8 },
-      width: 55,
-      height: 45,
-    },
-    {
       id: 'userImg-4',
       asset: '@/assets/drag-images/social-4.webp',
       offsets: { left: 651, top: 418 },
@@ -128,13 +121,6 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     },
   ],
   lg: [
-    {
-      id: 'padlock',
-      asset: '@/assets/drag-images/social-10.webp',
-      offsets: { left: 10, top: 10 },
-      width: 80,
-      height: 65,
-    },
     {
       id: 'userImg-4',
       asset: '@/assets/drag-images/social-4.webp',
