@@ -1,6 +1,6 @@
 import { ref, computed, type Ref } from 'vue'
 import QRCode from 'qrcode'
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
 import { toast } from 'vue-sonner'
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -142,43 +142,34 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     }
   }
 
-  // ── Capture helpers ──────────────────────────────────────────
+  // ── Capture helper ──────────────────────────────────────────
 
-  /** Strip oklch color function (html2canvas v1 unsupported) from all elements in a cloned document */
-  function stripOklchFromClone(doc: Document) {
-    // Replace oklch() in all <style> tags (Tailwind generates thousands of these)
-    doc.querySelectorAll('style').forEach((el) => {
-      if (el.textContent?.includes('oklch')) {
-        el.textContent = el.textContent.replace(/oklch\([^)]+\)/g, '#000000')
-      }
-    })
-    // Also clean inline styles as fallback
-    doc.querySelectorAll('*').forEach((el) => {
-      const s = (el as HTMLElement).style
-      if (s.color?.includes('oklch')) s.color = ''
-      if (s.backgroundColor?.includes('oklch')) s.backgroundColor = ''
-      if (s.borderColor?.includes('oklch')) s.borderColor = ''
-      if (s.outlineColor?.includes('oklch')) s.outlineColor = ''
-      if (s.boxShadow?.includes('oklch')) s.boxShadow = ''
-      if (s.textShadow?.includes('oklch')) s.textShadow = ''
-      if (s.background?.includes('oklch')) s.background = ''
-    })
-  }
-
-  /** Capture a template element with html2canvas and return the canvas */
+  /** Capture a template element with html-to-image and return the canvas */
   const captureTemplate = async (
     elementId: string,
     bgColor: string,
-    scale = 4,
+    pixelRatio = 4,
   ): Promise<HTMLCanvasElement | null> => {
     const el = document.getElementById(elementId)
     if (!el) return null
-    return html2canvas(el, {
-      scale,
+    // toPng works with the live DOM — no cloning, no oklch hacks needed
+    const dataUrl = await toPng(el, {
+      pixelRatio,
       backgroundColor: bgColor,
-      useCORS: true,
-      onclone: stripOklchFromClone,
     })
+    // Convert data URL back to canvas for PDF export compatibility
+    const img = new Image()
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve()
+      img.onerror = () => reject(new Error('Failed to load captured image'))
+      img.src = dataUrl
+    })
+    const canvas = document.createElement('canvas')
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(img, 0, 0)
+    return canvas
   }
 
   // ── Download: PNG (normal style) ─────────────────────────────
@@ -193,16 +184,14 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#0a0401',
-        useCORS: true,
-        onclone: stripOklchFromClone,
       })
 
       const link = document.createElement('a')
       link.download = `qr-${p.value.id}.png`
-      link.href = canvas.toDataURL('image/png')
+      link.href = dataUrl
       link.click()
       toast.success('QR descargado como PNG')
       onClose?.()
@@ -225,16 +214,14 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#ffffff',
-        useCORS: true,
-        onclone: stripOklchFromClone,
       })
 
       const link = document.createElement('a')
       link.download = `qr-compact-${p.value.id}.png`
-      link.href = canvas.toDataURL('image/png')
+      link.href = dataUrl
       link.click()
       toast.success('QR compacto descargado como PNG')
       onClose?.()
@@ -257,11 +244,9 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#ffffff',
-        useCORS: true,
-        onclone: stripOklchFromClone,
       })
 
       const { sizeMm } = PHYSICAL_SIZE_MM_COMPACT[downloadSize.value]
@@ -274,8 +259,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
         format: [sizeMm, sizeMm],
       })
 
-      const imgData = canvas.toDataURL('image/png')
-      pdf.addImage(imgData, 'PNG', 0, 0, sizeMm, sizeMm)
+      pdf.addImage(dataUrl, 'PNG', 0, 0, sizeMm, sizeMm)
 
       pdf.save(`qr-compact-${p.value.id}.pdf`)
 
@@ -300,12 +284,9 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      // 1. Capture the same template with html2canvas
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#0a0401',
-        useCORS: true,
-        onclone: stripOklchFromClone,
       })
 
       // 2. Get physical dimensions for the selected size
@@ -322,8 +303,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
       })
 
       // 5. Insert the full canvas image scaled to fill the page
-      const imgData = canvas.toDataURL('image/png')
-      pdf.addImage(imgData, 'PNG', 0, 0, widthMm, heightMm)
+      pdf.addImage(dataUrl, 'PNG', 0, 0, widthMm, heightMm)
 
       // 6. Save (triggers download)
       pdf.save(`qr-${p.value.id}.pdf`)
