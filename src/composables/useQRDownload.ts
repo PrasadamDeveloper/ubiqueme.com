@@ -1,6 +1,7 @@
 import { ref, computed, type Ref } from 'vue'
 import QRCode from 'qrcode'
 import { toPng } from 'html-to-image'
+import { jsPDF } from 'jspdf'
 import { toast } from 'vue-sonner'
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -156,6 +157,8 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     const dataUrl = await toPng(el, {
       pixelRatio,
       backgroundColor: bgColor,
+      skipFonts: true,
+      cacheBust: true,
     })
     // Convert data URL back to canvas for PDF export compatibility
     const img = new Image()
@@ -187,6 +190,8 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
       const dataUrl = await toPng(el, {
         pixelRatio: 4,
         backgroundColor: '#0a0401',
+        skipFonts: true,
+        cacheBust: true,
       })
 
       const link = document.createElement('a')
@@ -217,6 +222,8 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
       const dataUrl = await toPng(el, {
         pixelRatio: 4,
         backgroundColor: '#ffffff',
+        skipFonts: true,
+        cacheBust: true,
       })
 
       const link = document.createElement('a')
@@ -247,11 +254,11 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
       const dataUrl = await toPng(el, {
         pixelRatio: 4,
         backgroundColor: '#ffffff',
+        skipFonts: true,
+        cacheBust: true,
       })
 
       const { sizeMm } = PHYSICAL_SIZE_MM_COMPACT[downloadSize.value]
-
-      const { jsPDF } = await import('jspdf')
 
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -287,15 +294,14 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
       const dataUrl = await toPng(el, {
         pixelRatio: 4,
         backgroundColor: '#0a0401',
+        skipFonts: true,
+        cacheBust: true,
       })
 
       // 2. Get physical dimensions for the selected size
       const { widthMm, heightMm } = PHYSICAL_SIZE_MM[downloadSize.value]
 
-      // 3. Dynamically import jsPDF (code-split, not in main bundle)
-      const { jsPDF } = await import('jspdf')
-
-      // 4. Create PDF with exact physical dimensions
+      // 3. Create PDF with exact physical dimensions
       const pdf = new jsPDF({
         orientation: widthMm >= heightMm ? 'landscape' : 'portrait',
         unit: 'mm',

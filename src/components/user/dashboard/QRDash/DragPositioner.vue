@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import { toCanvas } from 'html-to-image'
+import { jsPDF } from 'jspdf'
 import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
 import { DEFAULT_ELEMENT_OFFSETS, DEFAULT_USER_IMAGES } from '@/config/dragDefaults'
 
@@ -194,6 +195,8 @@ const captureCanvas = async () => {
     return await toCanvas(el, {
       pixelRatio: 4,
       backgroundColor: '#f97316',
+      skipFonts: true,
+      cacheBust: true,
     })
   } catch (e) {
     toast.error(`Error al capturar: ${e}`)
@@ -215,7 +218,6 @@ const exportPDF = async () => {
   const canvas = await captureCanvas()
   if (!canvas) return
   try {
-    const { jsPDF } = await import('jspdf')
     const mmW = activeSize.value === 'sm' ? 132 : activeSize.value === 'md' ? 170 : 210
     const mmH = activeSize.value === 'sm' ? 57 : activeSize.value === 'md' ? 118 : 146
     const pdf = new jsPDF({
