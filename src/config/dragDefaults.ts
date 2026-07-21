@@ -20,7 +20,7 @@ export const DEFAULT_ELEMENT_OFFSETS = {
   // md — element offsets
   md: {
     logo: { left: 1, top: -3 },
-    httpsLabel: { left: -238, top: 10 },
+    httpsLabel: { left: -226, top: 6 },
     topDomain: { left: 43, top: -42 },
     qrBox: { left: 4, top: 1 },
     name: { left: -11, top: -29 },
@@ -115,7 +115,7 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     {
       id: 'userImg-12',
       asset: '@/assets/drag-images/social-12.webp',
-      offsets: { left: 123, top: 190 },
+      offsets: { left: 127, top: 216 },
       width: 74,
       height: 66,
     },
