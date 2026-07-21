@@ -13,7 +13,7 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     qrBox: { left: -1, top: 8 },
     name: { left: -20, top: 11 },
     id: { left: -200, top: 93 },
-    desc1: { left: -32, top: -16 },
+    desc1: { left: -32, top: -15 },
     desc2: { left: -41, top: -22 },
     bottomDomains: { left: 0, top: 0 },
     bottomEmail: { left: 0, top: 0 },
@@ -94,7 +94,7 @@ export const DEFAULT_USER_IMAGES: Record<SizeKey, DragImageMeta[]> = {
     {
       id: 'userImg-8',
       asset: '@/assets/drag-images/social-8.webp',
-      offsets: { left: 447, top: 179 },
+      offsets: { left: 305, top: 116 },
       width: 18,
       height: 19,
     },
