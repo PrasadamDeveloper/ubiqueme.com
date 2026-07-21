@@ -8,8 +8,8 @@ export const DEFAULT_ELEMENT_OFFSETS = {
   // sm — element offsets
   sm: {
     logo: { left: 2, top: -3 },
-    httpsLabel: { left: 0, top: 0 },
-    topDomain: { left: 0, top: -5 },
+    httpsLabel: { left: 60, top: -15 },
+    topDomain: { left: 60, top: -10 },
     qrBox: { left: -1, top: 8 },
     name: { left: -20, top: 16 },
     id: { left: -200, top: 93 },
