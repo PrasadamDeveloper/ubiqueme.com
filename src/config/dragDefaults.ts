@@ -38,11 +38,11 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     topDomain: { left: 95, top: -33 },
     qrBox: { left: 6, top: 2 },
     name: { left: -3, top: -20 },
-    id: { left: -532, top: 277 },
+    id: { left: -535, top: 303 },
     desc1: { left: 17, top: -29 },
     desc2: { left: 8, top: -24 },
-    bottomDomains: { left: -231, top: -4 },
-    bottomEmail: { left: -286, top: 11 },
+    bottomDomains: { left: -231, top: 13 },
+    bottomEmail: { left: -284, top: 32 },
   },
 } as const
 
