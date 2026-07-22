@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import QrcodeVue from 'qrcode.vue'
+import QrcodeVue, { type ImageSettings } from 'qrcode.vue'
 import { collection, doc, getDoc, increment, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
@@ -9,10 +9,12 @@ import type { IQRCard, TQRStatus } from '@/interfaces/IQRCard'
 import type { IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
+import DragPositioner from './DragPositioner.vue'
 import { toast } from 'vue-sonner'
 import { nanoid } from 'nanoid'
 import { useQRDownload } from '@/composables/useQRDownload'
 import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
+import LogoUbiqueme from '@/assets/Logo_Ubiqueme_Small.webp'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -94,6 +96,8 @@ const isMexicanPhone = computed(() => {
   const phone = userStore.getUserPhone;
   return !!phone && phone.startsWith('52');
 });
+
+const isEditor = computed(() => userStore.getRole === 'admin' || userStore.getEmail === 'ubiqueme.services@gmail.com')
 
 const isLoading = ref(false);
 
@@ -352,25 +356,56 @@ const canMakePublic = computed(() => propsComputed.value.planType && propsComput
 // BUG #4: Allow "Hacer Privado" if QR was previously made public, regardless of plan
 const canMakePrivate = computed(() => qrStatusLoaded.value || canMakePublic.value)
 
-const menuOptions = [
-  { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
-  { divider: true },
-  { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
-  { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
-  { divider: true },
-  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
-  { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
-  { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
-  { divider: true },
-  {
-    label: 'Eliminar QR',
-    icon: 'block',
-    description: 'Desactivar el código permanentemente, NO podrá ser escaneado, tendrá que adquirir uno nuevo y este se inutilizara permanentemente.',
-    action: () => openPrompt('cancel'),
-    color: 'text-rose-400',
-    hoverBg: 'hover:bg-rose-500/10'
-  },
-]
+const showDrag = ref(false)
+
+const openDrag = () => {
+  showMenu.value = false
+  showDrag.value = true
+}
+
+const menuOptions = computed(() => {
+  if (isEditor.value) {
+    return [
+      { label: 'Personalizar posición', icon: 'open_with', description: 'Arrastre cada elemento del QR para reposicionarlo a su gusto.', action: openDrag },
+      { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
+      { divider: true },
+      { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
+      { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
+      { divider: true },
+      { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
+      { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+      { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+      { divider: true },
+      {
+        label: 'Eliminar QR',
+        icon: 'block',
+        description: 'Desactivar el código permanentemente, NO podrá ser escaneado, tendrá que adquirir uno nuevo y este se inutilizara permanentemente.',
+        action: () => openPrompt('cancel'),
+        color: 'text-rose-400',
+        hoverBg: 'hover:bg-rose-500/10'
+      },
+    ]
+  }
+  return [
+    { label: 'Descargar QR', icon: 'download', description: 'Selecciona tamaño y formato para descargar', action: openDrag },
+    { divider: true },
+    { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
+    { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
+    { divider: true },
+    { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
+    { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+    { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+    { divider: true },
+    {
+      label: 'Eliminar QR',
+      icon: 'block',
+      description: 'Desactivar el código permanentemente, NO podrá ser escaneado, tendrá que adquirir uno nuevo y este se inutilizara permanentemente.',
+      action: () => openPrompt('cancel'),
+      color: 'text-rose-400',
+      hoverBg: 'hover:bg-rose-500/10'
+    },
+  ]
+})
 
 // ─── Download composable ──────────────────────────────────────
 const downloadComposable = useQRDownload(computed(() => ({
@@ -473,10 +508,27 @@ const hiddeLogsHandle = () => {
   logsLoaded.value = false;
   showLogs.value = false;
 }
+
+
+const imageSettings = computed<ImageSettings>(() => {
+  const logoSize = Math.round(currentSize.value.qrSize * 1.3)
+  return {
+    src: LogoUbiqueme,
+    excavate: true,
+    height: logoSize,
+    width: logoSize,
+  }
+})
+
+const imageSettingsUIOnly: ImageSettings = {
+  src: LogoUbiqueme,
+  excavate: true,
+  height: 55,
+  width: 55,
+}
 </script>
 
 <template>
-
   <div
     class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] transition-all duration-500 font-google-sans group"
     :class="{
@@ -491,7 +543,6 @@ const hiddeLogsHandle = () => {
       <div v-if="!isDisabled" class="absolute inset-0 opacity-[0.04]"
         style="background-image: linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px); background-size: 24px 24px;">
       </div>
-
       <!-- Resplandor Naranja General Sutil -->
       <div v-if="!isDisabled"
         class="absolute top-0 left-0 w-full h-full opacity-20 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent">
@@ -570,9 +621,7 @@ const hiddeLogsHandle = () => {
         <!-- Description -->
         <p class="text-white/40 text-sm leading-relaxed mb-5 max-w-[480px]">
           Este es el código QR de <strong class="text-white/70">{{ propsComputed.name || 'este QR' }}</strong>.
-
           Cuando alguien lo escanee, Ubiqueme le enviará una notificación por WhatsApp.
-
           <strong class="text-slate-400">La persona que escanee el QR no podrá ver su número de teléfono.</strong>
           Su número permanecerá privado hasta que usted decida responderle con un mensaje.
         </p>
@@ -582,8 +631,7 @@ const hiddeLogsHandle = () => {
 
         <!-- Logs Section -->
         <small class="text-slate-400 font-poppins text-center text-xs my-1.5">Aquí podrá ver los números que han
-          escaneado su
-          QR</small>
+          escaneado su QR</small>
         <div class="min-h-0 w-full">
           <button v-if="!logsLoaded && !showLogs" @click="loadLogs"
             class="text-sm w-full text-center justify-center text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-2 cursor-pointer group border border-orange-500/20 rounded-xl px-3 py-2 mb-3 hover:bg-orange-500/10">
@@ -601,12 +649,10 @@ const hiddeLogsHandle = () => {
             <span v-if="isLogsLoading"
               class="material-symbols-outlined notranslate text-sm animate-spin ml-1">progress_activity</span>
           </button>
-
           <div v-if="logsLoaded && isLogsLoading" class="flex items-center gap-2 text-sm text-white/30 py-3">
             <span class="w-4 h-4 border border-orange-400/40 border-t-transparent rounded-full animate-spin"></span>
             Cargando registros...
           </div>
-
           <div v-if="logsLoaded && !isLogsLoading"
             class="space-y-2 lg:max-h-72 max-h-96 overflow-y-auto pr-1 scrollbar-thin">
             <div v-if="qrLogs.length === 0" class="text-white/20 text-sm py-4 text-center">
@@ -627,43 +673,35 @@ const hiddeLogsHandle = () => {
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
           <template v-else>
-            <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" />
+            <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" :image-settings="imageSettingsUIOnly" />
           </template>
         </div>
-        <!-- Direct download button — more prominent -->
-        <button @click="openPrompt('download')"
+        <button @click="isEditor ? openPrompt('download') : openDrag()"
           class="mt-4 w-full max-w-[180px] flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white rounded-xl text-sm font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-[0.97] shadow-lg shadow-orange-500/20 border border-orange-400/30">
           <span class="material-symbols-outlined notranslate text-lg">download</span>
           Descargar QR
         </button>
-        <!-- Menu button (desktop only) -->
         <button data-name="hamMenu" @click="toggleMenu($event)"
           class="hidden sm:flex text-orange-400 hover:text-white transition-colors cursor-pointer px-4 py-2 items-center justify-center gap-2 rounded-xl bg-white/[0.04] hover:bg-orange-500/15 active:scale-95 absolute top-5 right-5 border border-white/10 hover:border-orange-500/30 text-xs font-bold uppercase tracking-wider">
           <span data-name="hamMenu" class="material-symbols-outlined notranslate text-lg">more_horiz</span>
           Opciones
         </button>
       </div>
-      <!-- Desktop Full-Card Menu Overlay — redesigned -->
+      <!-- Desktop Full-Card Menu Overlay -->
       <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
         enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
         leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
         <div v-if="showMenu"
           class="hidden sm:flex absolute inset-0 z-40 bg-[#0a0401]/95 rounded-[2rem] p-6 md:p-8 flex-col">
-          <!-- Back button -->
           <button @click="showMenu = false"
             class="flex items-center gap-2 text-white/50 hover:text-orange-400 transition-colors cursor-pointer w-fit mb-6 group">
             <span
               class="material-symbols-outlined notranslate text-2xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
             <span class="text-sm font-bold uppercase tracking-wider">Volver</span>
           </button>
-
-          <!-- Title -->
           <h3 class="text-xl font-black text-white/90 mb-6">Opciones del QR</h3>
-
-          <!-- Options grid — 2 columns, more spacious -->
           <div class="grid grid-cols-2 gap-3 flex-1 content-start overflow-y-auto pr-2">
             <template v-for="(option, index) in menuOptions.filter(o => !o.divider)" :key="index">
-              <!-- Locked option -->
               <div v-if="option.locked" v-tooltip="{ content: option.lockTooltip, placement: 'top' }"
                 class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-left cursor-not-allowed opacity-40">
                 <span class="material-symbols-outlined notranslate text-xl text-white/30 mt-0.5">lock</span>
@@ -672,17 +710,13 @@ const hiddeLogsHandle = () => {
                   <p class="text-[11px] text-white/20 leading-relaxed mt-1">{{ option.lockTooltip }}</p>
                 </div>
               </div>
-
-              <!-- Action option -->
               <button v-else @click="option.action" :class="[
                 'flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.98]',
-                option.color
-                  ? `${option.color} border-white/5 hover:border-rose-500/30 hover:bg-rose-500/5`
-                  : 'text-white/90 border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5'
+                option.color ? `${option.color} border-white/5 hover:border-rose-500/30 hover:bg-rose-500/5` : 'text-white/90 border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5'
               ]">
                 <span
                   :class="[option.color ? 'text-rose-400' : 'text-orange-400', 'material-symbols-outlined notranslate text-xl mt-0.5']">{{
-                    option.icon }}</span>
+                  option.icon }}</span>
                 <div class="flex flex-col min-w-0">
                   <p class="text-sm font-semibold leading-tight">{{ option.label }}</p>
                   <p class="text-[11px] text-white/50 leading-relaxed mt-1">{{ option.description }}</p>
@@ -708,9 +742,7 @@ const hiddeLogsHandle = () => {
         leave-to-class="opacity-0 translate-y-full">
         <div v-if="showMenu"
           class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0b0808] border-t border-orange-500/20 rounded-t-2xl p-1 pb-2 max-h-[85vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
-          <!-- Handle bar -->
           <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
-          <!-- Header with back button -->
           <div class="flex items-center justify-center mb-2 relative ml-2">
             <button @click="showMenu = false"
               class="absolute left-0 w-8 h-8 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-white/5">
@@ -733,12 +765,11 @@ const hiddeLogsHandle = () => {
               </div>
               <button v-else @click="option.action" :class="[
                 'w-full flex items-center gap-4 cursor-pointer px-4 py-3 rounded-xl bg-transparent text-sm transition-colors text-left font-medium active:scale-[0.98]',
-                option.color || 'text-white/80',
-                option.hoverBg || 'hover:bg-white/5 active:bg-white/10'
+                option.color || 'text-white/80', option.hoverBg || 'hover:bg-white/5 active:bg-white/10'
               ]">
                 <span
                   :class="[option.color || 'text-orange-400', 'material-symbols-outlined notranslate text-[22px]']">{{
-                    option.icon }}</span>
+                  option.icon }}</span>
                 <div class="flex flex-col">
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-white/30 font-normal leading-tight">{{ option.description }}</span>
@@ -746,7 +777,6 @@ const hiddeLogsHandle = () => {
               </button>
             </template>
           </div>
-          <!-- Close button -->
           <button @click="showMenu = false"
             class="w-full mt-3 py-3 bg-white/5 text-white/60 rounded-xl text-sm font-medium hover:bg-white/10 hover:text-white/80 transition-colors cursor-pointer active:scale-[0.98]">
             Cerrar
@@ -761,7 +791,6 @@ const hiddeLogsHandle = () => {
       leave-from-class="opacity-100" leave-to-class="opacity-0">
       <div v-if="activePrompt"
         class="fixed inset-0 bg-[#0a0a0a]/95 z-[100] p-6 flex flex-col justify-center items-center">
-
         <button @click="closeAll"
           class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all cursor-pointer">
           <span class="material-symbols-outlined notranslate text-[18px]">close</span>
@@ -776,8 +805,7 @@ const hiddeLogsHandle = () => {
               <span class="material-symbols-outlined notranslate text-rose-500 text-[24px]">warning</span>
             </div>
             <h3 class="text-white/90 text-lg font-medium mb-1.5">¿Desactivar código?</h3>
-            <p class="text-white/50 text-sm leading-relaxed mb-6 px-4">
-              Esta acción desactivará el código inmediatamente.
+            <p class="text-white/50 text-sm leading-relaxed mb-6 px-4">Esta acción desactivará el código inmediatamente.
             </p>
             <div class="flex gap-3 w-full">
               <button @click="closeAll"
@@ -798,9 +826,9 @@ const hiddeLogsHandle = () => {
             </div>
             <h3 class="text-white/90 text-lg font-medium mb-1.5">¿Reemplazar código QR?</h3>
             <div class="space-y-2 text-left px-4 mb-6">
-              <p class="text-white/50 text-sm leading-relaxed">
-                Al reemplazar este QR <strong class="text-white/70">se creará uno nuevo con un ID diferente</strong>.
-              </p>
+              <p class="text-white/50 text-sm leading-relaxed">Al reemplazar este QR <strong class="text-white/70">se
+                  creará
+                  uno nuevo con un ID diferente</strong>.</p>
               <ul class="text-white/50 text-xs space-y-1.5 list-disc pl-4">
                 <li>El <strong class="text-rose-400">código anterior dejará de funcionar permanentemente</strong></li>
                 <li>Los <strong class="text-rose-400">QR físicos (stickers) actuales quedarán inservibles</strong></li>
@@ -814,8 +842,7 @@ const hiddeLogsHandle = () => {
                 class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
               <button @click="handleRenewQR"
                 class="flex-1 py-2.5 bg-rose-500 text-white rounded-lg font-medium text-sm hover:bg-rose-600 transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
-                <span class="material-symbols-outlined notranslate text-[16px]">autorenew</span>
-                Reemplazar
+                <span class="material-symbols-outlined notranslate text-[16px]">autorenew</span> Reemplazar
               </button>
             </div>
           </div>
@@ -840,12 +867,11 @@ const hiddeLogsHandle = () => {
           </div>
         </Transition>
 
-        <!-- Download Prompt - Desktop version (redesign: format cards → style/size → preview → CTA) -->
+        <!-- Download Prompt - Desktop version -->
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-lg flex-col items-center ">
-            <!-- Header -->
+          <div v-if="activePrompt === 'download'" class="hidden sm:flex w-full max-w-lg flex-col items-center">
             <div class="flex items-center justify-between w-full mb-5">
               <h3 class="text-white font-black text-lg tracking-tight">Descargar QR</h3>
               <button @click="closeAll"
@@ -853,35 +879,25 @@ const hiddeLogsHandle = () => {
                 <span class="material-symbols-outlined notranslate text-[18px]">close</span>
               </button>
             </div>
-
-            <!-- ─── Step 1: Format Selection (cards) ─── -->
             <div class="w-full mb-4">
               <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2 block">Formato de
                 descarga</label>
               <div class="grid grid-cols-2 gap-3">
-                <!-- PNG Card -->
                 <button @click="downloadFormat = 'png'"
                   class="flex flex-col items-start gap-1.5 p-3 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
-                  :class="downloadFormat === 'png'
-                    ? 'bg-orange-500/10 border-orange-500/50 shadow-[0_0_12px_rgba(249,115,22,0.15)]'
-                    : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'">
+                  :class="downloadFormat === 'png' ? 'bg-orange-500/10 border-orange-500/50 shadow-[0_0_12px_rgba(249,115,22,0.15)]' : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'">
                   <div class="flex items-center gap-2 w-full">
                     <span :class="downloadFormat === 'png' ? 'text-orange-400' : 'text-white/40'"
                       class="material-symbols-outlined notranslate text-[20px]">image</span>
                     <span :class="downloadFormat === 'png' ? 'text-orange-300' : 'text-white/70'"
                       class="text-sm font-bold">PNG</span>
-
                   </div>
                   <p :class="downloadFormat === 'png' ? 'text-white/50' : 'text-white/30'"
                     class="text-[10px] leading-tight">Imagen digital</p>
                 </button>
-
-                <!-- PDF Card -->
                 <button @click="downloadFormat = 'pdf'"
                   class="flex flex-col items-start gap-1.5 p-3 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
-                  :class="downloadFormat === 'pdf'
-                    ? 'bg-orange-500/10 border-orange-500/50 shadow-[0_0_12px_rgba(249,115,22,0.15)]'
-                    : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'">
+                  :class="downloadFormat === 'pdf' ? 'bg-orange-500/10 border-orange-500/50 shadow-[0_0_12px_rgba(249,115,22,0.15)]' : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'">
                   <div class="flex items-center gap-2 w-full">
                     <span :class="downloadFormat === 'pdf' ? 'text-orange-400' : 'text-white/40'"
                       class="material-symbols-outlined notranslate text-[20px]">picture_as_pdf</span>
@@ -893,75 +909,55 @@ const hiddeLogsHandle = () => {
                 </button>
               </div>
             </div>
-
-            <!-- ─── Step 2: Style & Size ─── -->
             <div class="w-full mb-4">
               <label
                 class="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2 block">Personalizar</label>
               <div class="flex flex-col gap-2">
-                <!-- Style row -->
                 <div class="flex items-center gap-3">
                   <span class="text-[9px] font-bold uppercase tracking-wider text-white/25 w-12 shrink-0">Estilo</span>
                   <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
                     <button @click="downloadStyle = 'normal'"
                       class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                      :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                      Normal
-                    </button>
+                      :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">Normal</button>
                     <button @click="downloadStyle = 'compact'"
                       class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                      :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                      Compacto
-                    </button>
+                      :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">Compacto</button>
                   </div>
                 </div>
-                <!-- Size row -->
                 <div class="flex items-center gap-3">
                   <span class="text-[9px] font-bold uppercase tracking-wider text-white/25 w-12 shrink-0">Tamaño</span>
                   <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl">
                     <button @click="downloadSize = 'sm'"
                       class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                      :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                      SM
-                    </button>
+                      :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">SM</button>
                     <button @click="downloadSize = 'md'"
                       class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                      :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                      MD
-                    </button>
+                      :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">MD</button>
                     <button @click="downloadSize = 'lg'"
                       class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                      :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                      LG
-                    </button>
+                      :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">LG</button>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- ─── Step 3: Preview (static — no depende de estilo/tamaño) ─── -->
-            <div class="mb-4 " :class="[downloadStyle === 'normal' ? 'w-full' : 'w-65']">
+            <div class="mb-4" :class="[downloadStyle === 'normal' ? 'w-full' : 'w-65']">
               <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2 block">Vista
                 previa</label>
               <div
                 class="w-full rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 relative overflow-hidden">
-                <!-- Subtle grid -->
                 <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                   style="background-image: linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
                 </div>
-                <!-- Logo top-right -->
                 <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-0.5 z-10 pointer-events-none">
                   <img :src="LogoWhite" class="w-[38px] h-auto opacity-90" alt="Ubiqueme" />
                 </div>
-                <!-- Static layouts for each style (no dynamic variables) -->
                 <template v-if="downloadStyle === 'normal'">
                   <div class="relative z-10 flex flex-col items-center gap-2">
                     <span class="text-white/90 font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
                     <div class="flex items-center justify-center w-full gap-2">
                       <div class="shrink-0 bg-white rounded-xl p-1.5">
-                        <template v-if="propsComputed.img">
-                          <img :src="propsComputed.img" class="w-[68px] h-[68px] object-contain" />
-                        </template>
+                        <template v-if="propsComputed.img"><img :src="propsComputed.img"
+                            class="w-[68px] h-[68px] object-contain" /></template>
                         <template v-else>
                           <QrcodeVue :value="qrScanUrl" :size="68" render-as="canvas" level="H" />
                         </template>
@@ -973,6 +969,9 @@ const hiddeLogsHandle = () => {
                         <p class="text-black/70 font-semibold text-[9px] leading-tight">Escanee este QR para contactar
                           al
                           responsable.</p>
+                        <p class="text-black font-semibold text-[7px] leading-tight text-center mt-1">QR oficial de
+                          Ubiqueme.com® —
+                          Marca 100% segura y verificada.</p>
                       </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 mt-0.5">
@@ -985,7 +984,6 @@ const hiddeLogsHandle = () => {
                   </div>
                 </template>
                 <template v-else>
-                  <!-- Compact static preview (square 200×200) -->
                   <div class="relative z-10 flex flex-col items-center justify-center gap-0.5 mx-auto"
                     style="width:200px;height:200px;">
                     <span
@@ -995,9 +993,8 @@ const hiddeLogsHandle = () => {
                         class="absolute left-0 text-white font-bold uppercase tracking-[0.15em] text-[5px] whitespace-nowrap origin-center -rotate-90 scale-200"
                         translate="no">contactomio.com</span>
                       <div class="bg-white rounded-lg p-1.5">
-                        <template v-if="propsComputed.img">
-                          <img :src="propsComputed.img" class="w-full h-full object-contain" />
-                        </template>
+                        <template v-if="propsComputed.img"><img :src="propsComputed.img"
+                            class="w-full h-full object-contain" /></template>
                         <template v-else>
                           <QrcodeVue :value="qrScanUrl" :size="90" render-as="canvas" level="H" />
                         </template>
@@ -1012,18 +1009,12 @@ const hiddeLogsHandle = () => {
                 </template>
               </div>
             </div>
-
-            <!-- Info text -->
             <p class="text-white/25 text-[9px] text-center leading-relaxed mb-4">
-              <template v-if="downloadFormat === 'pdf'">
-                El PDF respeta el tamaño físico exacto al imprimir. No requiere ajuste de escala.
-              </template>
-              <template v-else>
-                Al imprimir, ajuste la <strong class="text-white/50">escala al 100%</strong> en opciones de impresión.
-              </template>
+              <template v-if="downloadFormat === 'pdf'">El PDF respeta el tamaño físico exacto al imprimir. No requiere
+                ajuste de escala.</template>
+              <template v-else>Al imprimir, ajuste la <strong class="text-white/50">escala al 100%</strong> en opciones
+                de impresión.</template>
             </p>
-
-            <!-- ─── Step 4: CTA ─── -->
             <button @click="handleDownload(closeAll)" :disabled="isDownloading"
               class="w-full py-3 bg-gradient-to-r from-[#f38020] to-[#e07010] text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
               <span class="material-symbols-outlined notranslate text-[18px]">download</span>
@@ -1035,7 +1026,7 @@ const hiddeLogsHandle = () => {
           </div>
         </Transition>
 
-        <!-- Mobile Download Bottom Sheet (Teleported to body) — redesigned with same hierarchy -->
+        <!-- Mobile Download Bottom Sheet -->
         <Teleport to="body">
           <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0"
             enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
@@ -1049,27 +1040,20 @@ const hiddeLogsHandle = () => {
             leave-to-class="opacity-0 translate-y-full">
             <div v-if="activePrompt === 'download'"
               class="sm:hidden fixed bottom-0 left-0 right-0 z-[120] bg-[#0b0808] border-t border-orange-500/20 rounded-t-2xl p-4 pb-8 max-h-[85vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
-              <!-- Handle bar -->
               <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3"></div>
-              <!-- Header -->
               <div class="flex items-center justify-center mb-4 relative">
                 <button @click="closeAll"
                   class="absolute left-0 w-8 h-8 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-white/5">
-                  <span class="material-symbols-outlined notranslate text-[22px]">arrow_back</span>
-                  Atrás
+                  <span class="material-symbols-outlined notranslate text-[22px]">arrow_back</span>Atrás
                 </button>
                 <span class="text-white/60 text-[10px] font-bold uppercase tracking-widest text-center">Descargar
                   QR</span>
               </div>
-
-              <!-- ─── Step 1: Format ─── -->
               <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-white/25 mb-2 block">Formato</label>
               <div class="grid grid-cols-2 gap-2 mb-4">
                 <button @click="downloadFormat = 'png'"
                   class="flex flex-col items-start gap-1 p-2.5 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
-                  :class="downloadFormat === 'png'
-                    ? 'bg-orange-500/10 border-orange-500/50'
-                    : 'bg-white/[0.02] border-white/10'">
+                  :class="downloadFormat === 'png' ? 'bg-orange-500/10 border-orange-500/50' : 'bg-white/[0.02] border-white/10'">
                   <div class="flex items-center gap-1.5 w-full">
                     <span :class="downloadFormat === 'png' ? 'text-orange-400' : 'text-white/40'"
                       class="material-symbols-outlined notranslate text-[18px]">image</span>
@@ -1085,9 +1069,7 @@ const hiddeLogsHandle = () => {
                 </button>
                 <button @click="downloadFormat = 'pdf'"
                   class="flex flex-col items-start gap-1 p-2.5 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97]"
-                  :class="downloadFormat === 'pdf'
-                    ? 'bg-orange-500/10 border-orange-500/50'
-                    : 'bg-white/[0.02] border-white/10'">
+                  :class="downloadFormat === 'pdf' ? 'bg-orange-500/10 border-orange-500/50' : 'bg-white/[0.02] border-white/10'">
                   <div class="flex items-center gap-1.5 w-full">
                     <span :class="downloadFormat === 'pdf' ? 'text-orange-400' : 'text-white/40'"
                       class="material-symbols-outlined notranslate text-[18px]">picture_as_pdf</span>
@@ -1100,8 +1082,6 @@ const hiddeLogsHandle = () => {
                   <p class="text-[8px] text-white/20 font-mono">132×57mm</p>
                 </button>
               </div>
-
-              <!-- ─── Step 2: Style & Size ─── -->
               <label
                 class="text-[9px] font-bold uppercase tracking-[0.15em] text-white/25 mb-2 block">Personalizar</label>
               <div class="flex items-center gap-3 mb-1">
@@ -1109,14 +1089,10 @@ const hiddeLogsHandle = () => {
                 <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl flex-1">
                   <button @click="downloadStyle = 'normal'"
                     class="flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                    Normal
-                  </button>
+                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">Normal</button>
                   <button @click="downloadStyle = 'compact'"
                     class="flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">
-                    Compacto
-                  </button>
+                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white shadow-sm' : 'text-white/50 hover:text-white/80'">Compacto</button>
                 </div>
               </div>
               <div class="flex items-center gap-3 mb-4">
@@ -1124,42 +1100,31 @@ const hiddeLogsHandle = () => {
                 <div class="flex gap-1 p-0.5 bg-white/5 rounded-xl">
                   <button @click="downloadSize = 'sm'"
                     class="px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                    SM
-                  </button>
+                    :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">SM</button>
                   <button @click="downloadSize = 'md'"
                     class="px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                    MD
-                  </button>
+                    :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">MD</button>
                   <button @click="downloadSize = 'lg'"
                     class="px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">
-                    LG
-                  </button>
+                    :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-white/50 hover:text-white/80'">LG</button>
                 </div>
               </div>
-
-              <!-- ─── Step 3: Preview (static — no depende de estilo/tamaño) ─── -->
               <div class="flex justify-center mb-4">
                 <div
                   class="rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 p-4 relative overflow-hidden w-full max-w-[260px]">
                   <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style="background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
                   </div>
-                  <!-- Logo top-right -->
                   <div class="absolute top-2 right-2 bg-black/80 rounded-lg p-1 z-10 pointer-events-none">
                     <img :src="LogoWhite" class="w-[30px] h-auto opacity-90" alt="Ubiqueme" />
                   </div>
-                  <!-- Static layouts for each style (mobile) -->
                   <template v-if="downloadStyle === 'normal'">
                     <div class="relative z-10 flex flex-col items-center gap-2">
                       <span class="text-white/90 font-black tracking-[0.15em] uppercase text-[9px]">ubiqueme.com</span>
                       <div class="flex items-center justify-center w-full gap-1.5">
                         <div class="shrink-0 bg-white rounded-xl p-1">
-                          <template v-if="propsComputed.img">
-                            <img :src="propsComputed.img" class="w-[56px] h-[56px] object-contain" />
-                          </template>
+                          <template v-if="propsComputed.img"><img :src="propsComputed.img"
+                              class="w-[56px] h-[56px] object-contain" /></template>
                           <template v-else>
                             <QrcodeVue :value="qrScanUrl" :size="56" render-as="canvas" level="H" />
                           </template>
@@ -1170,6 +1135,9 @@ const hiddeLogsHandle = () => {
                           <div class="w-3/4 h-px bg-black/10 my-0.5"></div>
                           <p class="text-black/70 font-semibold text-[7px] leading-tight">Escanee QR para contactar al
                             responsable.</p>
+                          <p class="text-black font-semibold text-[5px] leading-tight text-center mt-1">QR oficial de
+                            Ubiqueme.com® —
+                            Marca 100% segura y verificada.</p>
                         </div>
                       </div>
                       <div class="flex items-center justify-center gap-1.5 mt-0.5">
@@ -1182,7 +1150,6 @@ const hiddeLogsHandle = () => {
                     </div>
                   </template>
                   <template v-else>
-                    <!-- Compact static preview (mobile, square 150×150) -->
                     <div class="relative z-10 flex flex-col items-center justify-center gap-0.5 mx-auto"
                       style="width:150px;height:150px;">
                       <span class="text-white font-black tracking-[0.15em] uppercase text-[6px]">ubiqueme.com</span>
@@ -1193,9 +1160,8 @@ const hiddeLogsHandle = () => {
                           translate="no">contactomio.com</span>
                         <div class="bg-white rounded-lg p-1"
                           style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
-                          <template v-if="propsComputed.img">
-                            <img :src="propsComputed.img" class="w-full h-full object-contain" />
-                          </template>
+                          <template v-if="propsComputed.img"><img :src="propsComputed.img"
+                              class="w-full h-full object-contain" /></template>
                           <template v-else>
                             <QrcodeVue :value="qrScanUrl" :size="36" render-as="canvas" level="H" />
                           </template>
@@ -1209,8 +1175,6 @@ const hiddeLogsHandle = () => {
                   </template>
                 </div>
               </div>
-
-              <!-- ─── Step 4: CTA ─── -->
               <button @click="handleDownload(closeAll)" :disabled="isDownloading"
                 class="w-full py-3 bg-gradient-to-r from-[#f38020] to-[#e07010] text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
                 <span class="material-symbols-outlined notranslate text-[18px]">download</span>
@@ -1219,154 +1183,78 @@ const hiddeLogsHandle = () => {
                   === 'md'
                   ? 'Mediano' : 'Grande' }})</span>
               </button>
-
-              <!-- Close button -->
               <button @click="closeAll"
-                class="w-full mt-3 py-3 bg-white/5 text-white/60 rounded-xl text-sm font-medium hover:bg-white/10 hover:text-white/80 transition-colors cursor-pointer active:scale-[0.98]">
-                Cerrar
-              </button>
+                class="w-full mt-3 py-3 bg-white/5 text-white/60 rounded-xl text-sm font-medium hover:bg-white/10 hover:text-white/80 transition-colors cursor-pointer active:scale-[0.98]">Cerrar</button>
             </div>
           </Transition>
         </Teleport>
       </div>
     </Transition>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸ -->
-    <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-    <!-- === PLANTILLAS DE DESCARGA (CAPTURA html2canvas) === -->
-    <!-- Estas plantillas se renderizan VISIBLEMENTE aquí abajo con el diseño exacto que se usa para generar PNG/PDF. -->
-    <!-- Se ocultan visualmente dentro del card mediante overflow:hidden y position:relative en el contenedor padre. -->
-    <!-- Para editarlas manualmente, busca "CAPTURE TEMPLATE START" para cada estilo. -->
+    <!-- Template de captura (oculto) -->
     <div style="position:absolute;left:-9999px;top:0;">
-
-      <!--
-            <div style="position:absolute;left:-0;top:0; z-index: 999999999999;">
-
-      -->
-
-      <!-- === NORMAL CAPTURE TEMPLATE START === -->
       <div :id="`qr-capture-normal-${props.id}`"
         :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;margin-bottom:24px;`">
-        <!-- Logo top-right -->
         <div
           :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
           <img :src="LogoWhite"
             :style="`width:${currentSize.width * logoScale}px;height:auto;opacity:0.9;display:block;`" alt="Ubiqueme" />
         </div>
-        <!-- Inner layout: column -->
         <div
           style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:4px;">
-          <!-- ubiqueme.com top center -->
           <span
             :style="`color:#fff;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.top}px;text-align:center;`">ubiqueme.com</span>
-          <!-- Row: QR + info -->
           <div
             style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;flex:1;width:100%;">
             <div
-              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:8px;display:flex;align-items:center;justify-content:center;`">
-              <template v-if="propsComputed.img">
-                <img :src="propsComputed.img"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
-              </template>
+              :style="`flex-shrink:0;width:${currentSize.qrSize + 16}px;height:${currentSize.qrSize + 16}px;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;`">
+              <template v-if="propsComputed.img"><img :src="propsComputed.img"
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" /></template>
               <template v-else>
-                <img :src="qrHighResUrl"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+                <QrcodeVue :value="qrScanUrl" :size="currentSize.qrSize * 4" render-as="canvas" level="H"
+                  :image-settings="imageSettings"
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;max-width:100%;max-height:100%;display:block;`" />
               </template>
             </div>
-
             <div
-              style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center; text-align: center;">
+              style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;text-align:center;">
               <p
-                :style="`color:#171717;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;  `">
-                {{ propsComputed.name || 'Código QR' }}
-              </p>
+                :style="`color:#171717;font-size:${currentSize.width * textScale.name}px;font-weight:900;margin:0;line-height:1.1;`">
+                {{ propsComputed.name || 'Código QR' }}</p>
               <p
                 :style="`color:#303030;font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
-                Escanee este código QR para contactar al responsable.
-              </p>
+                Escanee este código QR para contactar al responsable.</p>
+              <p
+                :style="`color:#000;font-size:${Math.round(currentSize.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;text-align:center;`">
+                QR oficial de Ubiqueme.com® — Marca 100% segura y verificada.</p>
             </div>
           </div>
-          <!-- Domains bottom center -->
           <div
-            style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px; padding-bottom: 9px;">
-            <!--Domain SM-->
-            <span v-if="downloadSize === 'sm'" translate="no"
-              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px; translate: 0px -10px;`">localizarme.com</span>
-
-            <!-- NOT Domain SM-->
-            <span v-if="downloadSize !== 'sm'" translate="no"
-              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">localizarme.com</span>
-
-            <!--Dot SM-->
-            <span v-if="downloadSize === 'sm'" style="margin: 0px 10px 0px 10px;"
-              :style="`color:rgba(255,255,255,0.5);font-size:${currentSize.width * domainTextScale.bottom}px;  translate: 0px -10px;`">•</span>
-
-            <!--NOT Dot SM-->
-            <span v-if="downloadSize !== 'sm'" style="margin: 0px 25px 0px 20px;"
+            style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;padding-bottom:9px;">
+            <span
+              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`"
+              translate="no">localizarme.com</span>
+            <span
               :style="`color:rgba(255,255,255,0.5);font-size:${currentSize.width * domainTextScale.bottom}px;`">•</span>
-
-            <!--Domain SM-->
-            <span v-if="downloadSize === 'sm'" translate="no"
-              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px; translate: 0px -10px;`">contactomio.com</span>
-
-            <!--NOT Domain SM-->
-            <span v-if="downloadSize !== 'sm'" translate="no"
-              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`">contactomio.com</span>
+            <span
+              :style="`color:#fff;font-weight:700;text-transform:uppercase;font-size:${currentSize.width * domainTextScale.bottom}px;letter-spacing:1px;`"
+              translate="no">contactomio.com</span>
           </div>
         </div>
       </div>
-      <!-- === NORMAL CAPTURE TEMPLATE END === -->
-
-      <!-- === COMPACT CAPTURE TEMPLATE START === -->
-      <div :id="`qr-capture-compact-${props.id}`" class="compact-wrap">
-        <span class="compact-top">ubiqueme.com</span>
-        <div class="compact-row">
-          <div class="compact-side-wrap" :style="compactSideWrapStyle">
-            <span class="compact-side-text" translate="no" :style="compactSideTextStyle">contactomio.com</span>
-          </div>
-          <div class="compact-qr-holder">
-            <template v-if="propsComputed.img">
-              <img :src="propsComputed.img" class="compact-qr" />
-            </template>
-            <template v-else>
-              <div class="compact-qr-bg">
-                <img :src="qrHighResUrl" class="compact-qr" />
-              </div>
-            </template>
-          </div>
-          <div class="compact-side-wrap" :style="compactSideWrapStyle">
-            <span class="compact-side-text" translate="no" :style="compactSideTextStyle">localizarme.com</span>
-          </div>
-        </div>
-        <span class="compact-bottom">Escanee este QR para contactar al responsable</span>
-      </div>
-      <!-- === COMPACT CAPTURE TEMPLATE END === -->
     </div>
+
+    <!-- Drag Positioner Modal -->
+    <DragPositioner :visible="showDrag" :qr-id="props.id" :qr-name="props.name" :qr-img="props.img"
+      :qr-data-url="qrHighResUrl" :download-size="downloadSize" :readonly="!isEditor" @close="showDrag = false" />
   </div>
 </template>
 
 <style scoped>
 .material-symbols-outlined {
-  font-variation-settings:
-    'FILL' 1,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Scrollbar delgado para logs */
 .scrollbar-thin::-webkit-scrollbar {
   width: 4px;
 }
@@ -1382,122 +1270,5 @@ const hiddeLogsHandle = () => {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(249, 115, 22, 0.4);
-}
-
-/* Compact template */
-.compact-wrap {
-  padding: 2px;
-  background: linear-gradient(125deg, #f97316, #fcbd74);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  font-family: 'Google Sans', sans-serif;
-  margin-bottom: 24px;
-  box-sizing: border-box;
-  width: v-bind('currentCompactSize.size + "px"');
-  height: v-bind('currentCompactSize.size + "px"');
-}
-
-.compact-top {
-  color: #fff;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-align: center;
-  padding-bottom: 2px;
-  font-size: v-bind('Math.round(currentCompactSize.size * compactDomainTextScale.top) + "px"');
-}
-
-.compact-row {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  gap: 4px;
-}
-
-.compact-side-wrap {
-  position: relative;
-  flex-shrink: 0;
-  overflow: visible;
-}
-
-.compact-side-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(90deg);
-  transform-origin: center;
-  white-space: nowrap;
-  color: #fff;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-}
-
-.compact-qr-holder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-}
-
-.compact-qr {
-  object-fit: contain;
-  display: block;
-  width: v-bind('currentCompactSize.qrSize + "px"');
-  height: v-bind('currentCompactSize.qrSize + "px"');
-}
-
-.compact-qr-bg {
-  padding: 4px;
-  background: #fff;
-  border-radius: 10px;
-}
-
-.compact-bottom {
-  color: #fff;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-align: center;
-  padding-bottom: 6px;
-  font-size: v-bind('Math.round(currentCompactSize.size * compactDomainTextScale.bottom) + "px"');
-}
-
-@media print {
-  body * {
-    visibility: hidden !important;
-  }
-
-  #qr-print-area,
-  #qr-print-area * {
-    visibility: visible !important;
-  }
-
-  #qr-print-area {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: auto !important;
-    height: auto !important;
-    max-width: 95vw !important;
-    max-height: 95vh !important;
-    margin: 0 !important;
-    padding: 16px !important;
-    background: #0a0401 !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 24px !important;
-  }
-
-  @page {
-    margin: 0;
-  }
 }
 </style>

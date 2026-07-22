@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import QrcodeVue from 'qrcode.vue'
+import QrcodeVue, { type ImageSettings } from 'qrcode.vue'
 import { collection, doc, getDoc, increment, onSnapshot, orderBy, query, Timestamp, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
@@ -12,7 +12,9 @@ import QRCardLog from './QRCardLog.vue'
 import { toast } from 'vue-sonner'
 import { nanoid } from 'nanoid'
 import { useQRDownload } from '@/composables/useQRDownload'
+import DragPositioner from './DragPositioner.vue'
 import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
+import LogoUbiqueme from '@/assets/Logo_Ubiqueme_Small.webp'
 
 const emit = defineEmits<{
   (e: 'request-physical', subscriptionId: string): void
@@ -74,7 +76,16 @@ const isMexicanPhone = computed(() => {
   return !!phone && phone.startsWith('52')
 })
 
+const isEditor = computed(() => userStore.getRole === 'admin' || userStore.getEmail === 'ubiqueme.services@gmail.com')
+
 const isLoading = ref(false)
+
+const showDrag = ref(false)
+
+const openDrag = () => {
+  showMenu.value = false
+  showDrag.value = true
+}
 
 const handleEdit = async () => {
   try {
@@ -240,18 +251,35 @@ const handleRenewQR = async () => {
 const canMakePublic = computed(() => propsComputed.value.planType && propsComputed.value.planType !== 'bronce')
 const canMakePrivate = computed(() => qrStatusLoaded.value || canMakePublic.value)
 
-const menuOptions = [
-  { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible', action: () => openPrompt('download') },
-  { divider: true },
-  { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR', action: () => openPrompt('edit') },
-  { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo', action: () => openPrompt('renew') },
-  { divider: true },
-  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico', action: () => { closeAll(); emit('request-physical', props.subscriptionId) }, locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para México (+52)' },
-  { label: 'Activar QR', icon: 'public', description: 'Activa el QR para escaneo público', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Plan Plata u Oro requerido' },
-  { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR temporalmente', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Plan Plata u Oro requerido' },
-  { divider: true },
-  { label: 'Eliminar QR', icon: 'block', description: 'Desactivar permanentemente', action: () => openPrompt('cancel'), color: 'text-rose-400', hoverBg: 'hover:bg-rose-500/10' },
-]
+const menuOptions = computed(() => {
+  if (isEditor.value) {
+    return [
+      { label: 'Personalizar posición', icon: 'open_with', description: 'Arrastre cada elemento del QR para reposicionarlo a su gusto.', action: openDrag },
+      { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible', action: () => openPrompt('download') },
+      { divider: true },
+      { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR', action: () => openPrompt('edit') },
+      { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo', action: () => openPrompt('renew') },
+      { divider: true },
+      { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico', action: () => { closeAll(); emit('request-physical', props.subscriptionId) }, locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para México (+52)' },
+      { label: 'Activar QR', icon: 'public', description: 'Activa el QR para escaneo público', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Plan Plata u Oro requerido' },
+      { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR temporalmente', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Plan Plata u Oro requerido' },
+      { divider: true },
+      { label: 'Eliminar QR', icon: 'block', description: 'Desactivar permanentemente', action: () => openPrompt('cancel'), color: 'text-rose-400', hoverBg: 'hover:bg-rose-500/10' },
+    ]
+  }
+  return [
+    { label: 'Descargar QR', icon: 'download', description: 'Selecciona tamaño y formato para descargar', action: openDrag },
+    { divider: true },
+    { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR', action: () => openPrompt('edit') },
+    { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo', action: () => openPrompt('renew') },
+    { divider: true },
+    { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico', action: () => { closeAll(); emit('request-physical', props.subscriptionId) }, locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para México (+52)' },
+    { label: 'Activar QR', icon: 'public', description: 'Activa el QR para escaneo público', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Plan Plata u Oro requerido' },
+    { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR temporalmente', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Plan Plata u Oro requerido' },
+    { divider: true },
+    { label: 'Eliminar QR', icon: 'block', description: 'Desactivar permanentemente', action: () => openPrompt('cancel'), color: 'text-rose-400', hoverBg: 'hover:bg-rose-500/10' },
+  ]
+})
 
 // ─── Download composable ──────────────────────────────────────
 const downloadComposable = useQRDownload(computed(() => ({
@@ -336,6 +364,23 @@ const loadLogs = () => {
 
 onUnmounted(() => { if (unsubscribeLogs) unsubscribeLogs() })
 
+const imageSettings = computed<ImageSettings>(() => {
+  const logoSize = Math.round(currentSize.value.qrSize * 1.3)
+  return {
+    src: LogoUbiqueme,
+    excavate: true,
+    height: logoSize,
+    width: logoSize,
+  }
+})
+
+const imageSettingsUIOnly: ImageSettings = {
+  src: LogoUbiqueme,
+  excavate: true,
+  height: 55,
+  width: 55,
+}
+
 const hiddeLogsHandle = () => {
   qrLogs.value = []
   if (unsubscribeLogs) unsubscribeLogs()
@@ -359,7 +404,8 @@ const hiddeLogsHandle = () => {
     <div v-if="isDisabled"
       class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-[#1C1B1F]/80 backdrop-blur-[2px] rounded-2xl cursor-default select-none">
       <span class="material-symbols-outlined notranslate text-4xl text-white/15">block</span>
-      <span class="text-white/30 text-xs font-medium">QR {{ isCanceled ? 'cancelado' : 'inactivo' }} — no disponible</span>
+      <span class="text-white/30 text-xs font-medium">QR {{ isCanceled ? 'cancelado' : 'inactivo' }} — no
+        disponible</span>
     </div>
 
     <!-- Main layout: vertical stack (QR top, info bottom) -->
@@ -377,7 +423,7 @@ const hiddeLogsHandle = () => {
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
           <template v-else>
-            <QrcodeVue :value="qrScanUrl" :size="130" render-as="svg" level="H" />
+            <QrcodeVue :value="qrScanUrl" :size="130" render-as="svg" level="H" :image-settings="imageSettingsUIOnly" />
           </template>
         </div>
       </div>
@@ -413,7 +459,7 @@ const hiddeLogsHandle = () => {
             <span class="text-[#CAC4D0]/50 text-[9px] uppercase tracking-[0.1em] font-bold">Escaneos</span>
             <span class="text-orange-400 font-mono text-sm font-bold">{{ qrStatus.totalScans }}</span>
           </div>
-          <button @click="openPrompt('download')"
+          <button @click="isEditor ? openPrompt('download') : openDrag()"
             class="ml-auto flex items-center gap-1 px-3 py-1.5 bg-orange-500/10 text-orange-400 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 border border-orange-500/20 cursor-pointer">
             <span class="material-symbols-outlined notranslate text-[14px]">download</span>
             Descargar
@@ -605,6 +651,8 @@ const hiddeLogsHandle = () => {
                         <p class="text-black/60 font-mono font-bold text-[8px]">#{{ propsComputed.id }}</p>
                         <p class="text-black/70 font-semibold text-[8px] leading-tight">Escanee QR para contactar al
                           responsable.</p>
+                        <p class="text-black font-semibold text-[5px] leading-tight text-center mt-1">QR oficial de
+                          Ubiqueme.com® — Marca 100% segura y verificada.</p>
                       </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 mt-1.5">
@@ -736,14 +784,15 @@ const hiddeLogsHandle = () => {
           <div
             style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;flex:1;width:100%;">
             <div
-              :style="`flex-shrink:0;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;`">
+              :style="`flex-shrink:0;width:${currentSize.qrSize + 8}px;height:${currentSize.qrSize + 8}px;background:#fff;border-radius:${currentSize.width * 0.025}px;padding:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;`">
               <template v-if="propsComputed.img">
                 <img :src="propsComputed.img"
                   :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
               </template>
               <template v-else>
-                <img :src="qrHighResUrl"
-                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;object-fit:contain;display:block;`" />
+                <QrcodeVue :value="qrScanUrl" :size="currentSize.qrSize * 4" render-as="canvas" level="H"
+                  :image-settings="imageSettings"
+                  :style="`width:${currentSize.qrSize}px;height:${currentSize.qrSize}px;max-width:100%;max-height:100%;display:block;`" />
               </template>
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;align-self:center;">
@@ -754,6 +803,10 @@ const hiddeLogsHandle = () => {
               <p
                 :style="`color:rgba(0,0,0,0.7);font-size:${currentSize.width * textScale.desc}px;font-weight:500;margin:0;line-height:1.2;`">
                 Escanee este código QR para contactar al responsable por whatsapp.
+              </p>
+              <p
+                :style="`color:#000;font-size:${Math.round(currentSize.width * 0.022)}px;font-weight:500;margin:3px 0 0;line-height:1.2;text-align:center;`">
+                QR oficial de Ubiqueme.com® — Marca 100% segura y verificada.
               </p>
             </div>
           </div>
@@ -793,6 +846,10 @@ const hiddeLogsHandle = () => {
       </div>
       <!-- === COMPACT CAPTURE TEMPLATE END === -->
     </div>
+
+    <!-- Drag Positioner Modal -->
+    <DragPositioner :visible="showDrag" :qr-id="props.id" :qr-name="props.name" :qr-img="props.img"
+      :qr-data-url="qrHighResUrl" :download-size="downloadSize" :readonly="!isEditor" @close="showDrag = false" />
   </div>
 </template>
 
