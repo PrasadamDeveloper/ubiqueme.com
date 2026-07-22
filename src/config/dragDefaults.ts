@@ -20,7 +20,7 @@ export const DEFAULT_ELEMENT_OFFSETS = {
   },
   // md — element offsets
   md: {
-    logo: { left: -4, top: -4 },
+    logo: { left: -23, top: 11 },
     httpsLabel: { left: -216, top: 39 },
     topDomain: { left: 45, top: -15 },
     qrBox: { left: 4, top: 1 },
@@ -28,7 +28,7 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     id: { left: -358, top: 202 },
     desc1: { left: 2, top: -44 },
     desc2: { left: 3, top: -37 },
-    bottomDomains: { left: -148, top: 2 },
+    bottomDomains: { left: -137, top: 6 },
     bottomEmail: { left: -182, top: 19 },
   },
   // lg — element offsets
