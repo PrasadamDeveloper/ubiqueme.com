@@ -691,7 +691,7 @@ const imageSettingsUIOnly: ImageSettings = {
               ]">
                 <span
                   :class="[option.color ? 'text-rose-400' : 'text-orange-400', 'material-symbols-outlined notranslate text-xl mt-0.5']">{{
-                  option.icon }}</span>
+                    option.icon }}</span>
                 <div class="flex flex-col min-w-0">
                   <p class="text-sm font-semibold leading-tight">{{ option.label }}</p>
                   <p class="text-[11px] text-white/50 leading-relaxed mt-1">{{ option.description }}</p>
@@ -744,7 +744,7 @@ const imageSettingsUIOnly: ImageSettings = {
               ]">
                 <span
                   :class="[option.color || 'text-orange-400', 'material-symbols-outlined notranslate text-[22px]']">{{
-                  option.icon }}</span>
+                    option.icon }}</span>
                 <div class="flex flex-col">
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-white/30 font-normal leading-tight">{{ option.description }}</span>
@@ -1169,7 +1169,7 @@ const imageSettingsUIOnly: ImageSettings = {
     <!-- Template de captura (oculto) -->
     <div style="position:absolute;left:-9999px;top:0;">
       <div :id="`qr-capture-normal-${props.id}`"
-        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.02}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;margin-bottom:24px;`">
+        :style="`width:${currentSize.width}px;height:${currentSize.height}px;padding:${currentSize.width * 0.06}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;position:relative;overflow:hidden;box-sizing:border-box;margin-bottom:24px;`">
         <div
           :style="`position:absolute;top:${currentSize.width * 0.015}px;right:${currentSize.width * 0.015}px;background:rgba(0,0,0,0.8);border-radius:${currentSize.width * 0.015}px;padding:${currentSize.width * 0.008}px;z-index:5;pointer-events:none;`">
           <img :src="LogoWhite"
