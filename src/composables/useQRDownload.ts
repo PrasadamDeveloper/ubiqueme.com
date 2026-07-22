@@ -4,9 +4,6 @@ import { toPng } from 'html-to-image'
 import { jsPDF } from 'jspdf'
 import { toast } from 'vue-sonner'
 
-// ─── PDF print margin (mm) to avoid content being cut by printer's non-printable area ──
-const PDF_PRINT_PADDING_MM = 3
-
 // ─── Types ─────────────────────────────────────────────────────
 export type DownloadStyle = 'normal' | 'compact'
 export type DownloadSize = 'sm' | 'md' | 'lg'
@@ -269,8 +266,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
         format: [sizeMm, sizeMm],
       })
 
-      const pad = PDF_PRINT_PADDING_MM
-      pdf.addImage(dataUrl, 'PNG', pad, pad, sizeMm - pad * 2, sizeMm - pad * 2)
+      pdf.addImage(dataUrl, 'PNG', 0, 0, sizeMm, sizeMm)
 
       pdf.save(`qr-compact-${p.value.id}.pdf`)
 
@@ -313,8 +309,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
       })
 
       // 5. Insert the full canvas image scaled to fill the page
-      const pad = PDF_PRINT_PADDING_MM
-      pdf.addImage(dataUrl, 'PNG', pad, pad, widthMm - pad * 2, heightMm - pad * 2)
+      pdf.addImage(dataUrl, 'PNG', 0, 0, widthMm, heightMm)
 
       // 6. Save (triggers download)
       pdf.save(`qr-${p.value.id}.pdf`)
