@@ -25,11 +25,11 @@ export const DEFAULT_ELEMENT_OFFSETS = {
     topDomain: { left: 45, top: -15 },
     qrBox: { left: 4, top: 1 },
     name: { left: -8, top: -20 },
-    id: { left: -364, top: 187 },
+    id: { left: -358, top: 202 },
     desc1: { left: 2, top: -44 },
     desc2: { left: 3, top: -37 },
-    bottomDomains: { left: -146, top: -9 },
-    bottomEmail: { left: -183, top: 4 },
+    bottomDomains: { left: -148, top: 2 },
+    bottomEmail: { left: -182, top: 19 },
   },
   // lg — element offsets
   lg: {
