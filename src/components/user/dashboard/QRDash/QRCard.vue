@@ -97,6 +97,8 @@ const isMexicanPhone = computed(() => {
   return !!phone && phone.startsWith('52');
 });
 
+const isEditor = computed(() => userStore.getRole === 'admin' || userStore.getEmail === 'ubiqueme.services@gmail.com')
+
 const isLoading = ref(false);
 
 const handleEdit = async () => {
@@ -361,26 +363,49 @@ const openDrag = () => {
   showDrag.value = true
 }
 
-const menuOptions = [
-  { label: 'Personalizar posición', icon: 'open_with', description: 'Arrastre cada elemento del QR para reposicionarlo a su gusto.', action: openDrag },
-  { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
-  { divider: true },
-  { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
-  { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
-  { divider: true },
-  { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
-  { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
-  { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
-  { divider: true },
-  {
-    label: 'Eliminar QR',
-    icon: 'block',
-    description: 'Desactivar el código permanentemente, NO podrá ser escaneado, tendrá que adquirir uno nuevo y este se inutilizara permanentemente.',
-    action: () => openPrompt('cancel'),
-    color: 'text-rose-400',
-    hoverBg: 'hover:bg-rose-500/10'
-  },
-]
+const menuOptions = computed(() => {
+  if (isEditor.value) {
+    return [
+      { label: 'Personalizar posición', icon: 'open_with', description: 'Arrastre cada elemento del QR para reposicionarlo a su gusto.', action: openDrag },
+      { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
+      { divider: true },
+      { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
+      { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
+      { divider: true },
+      { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
+      { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+      { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+      { divider: true },
+      {
+        label: 'Eliminar QR',
+        icon: 'block',
+        description: 'Desactivar el código permanentemente, NO podrá ser escaneado, tendrá que adquirir uno nuevo y este se inutilizara permanentemente.',
+        action: () => openPrompt('cancel'),
+        color: 'text-rose-400',
+        hoverBg: 'hover:bg-rose-500/10'
+      },
+    ]
+  }
+  return [
+    { label: 'Descargar QR', icon: 'download', description: 'Selecciona tamaño y formato para descargar', action: openDrag },
+    { divider: true },
+    { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
+    { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
+    { divider: true },
+    { label: 'Pedir QR físico', icon: 'local_shipping', description: 'Solicitar su código QR físico con pegamento para colocarlo en sus pertenencias', action: () => emit('request-physical', props.subscriptionId), locked: !isMexicanPhone.value, lockTooltip: 'Solo disponible para números de México (+52)' },
+    { label: 'Activar QR', icon: 'public', description: 'Activa el QR para que cualquiera pueda escanearlo.', action: canMakePublic.value ? _setQrPublic : undefined, locked: !canMakePublic.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+    { label: 'Desactivar QR', icon: 'visibility_off', description: 'Pausa el QR. Nadie podrá escanearlo', action: canMakePrivate.value ? _setQrPrivate : undefined, locked: !canMakePrivate.value, lockTooltip: 'Se requiere plan Plata u Oro para activar esta función' },
+    { divider: true },
+    {
+      label: 'Eliminar QR',
+      icon: 'block',
+      description: 'Desactivar el código permanentemente, NO podrá ser escaneado, tendrá que adquirir uno nuevo y este se inutilizara permanentemente.',
+      action: () => openPrompt('cancel'),
+      color: 'text-rose-400',
+      hoverBg: 'hover:bg-rose-500/10'
+    },
+  ]
+})
 
 // ─── Download composable ──────────────────────────────────────
 const downloadComposable = useQRDownload(computed(() => ({
@@ -651,7 +676,7 @@ const imageSettingsUIOnly: ImageSettings = {
             <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" :image-settings="imageSettingsUIOnly" />
           </template>
         </div>
-        <button @click="openPrompt('download')"
+        <button @click="isEditor ? openPrompt('download') : openDrag()"
           class="mt-4 w-full max-w-[180px] flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white rounded-xl text-sm font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-[0.97] shadow-lg shadow-orange-500/20 border border-orange-400/30">
           <span class="material-symbols-outlined notranslate text-lg">download</span>
           Descargar QR
@@ -1221,7 +1246,7 @@ const imageSettingsUIOnly: ImageSettings = {
 
     <!-- Drag Positioner Modal -->
     <DragPositioner :visible="showDrag" :qr-id="props.id" :qr-name="props.name" :qr-img="props.img"
-      :qr-data-url="qrHighResUrl" :download-size="downloadSize" @close="showDrag = false" />
+      :qr-data-url="qrHighResUrl" :download-size="downloadSize" :readonly="!isEditor" @close="showDrag = false" />
   </div>
 </template>
 
