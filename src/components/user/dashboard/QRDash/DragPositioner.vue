@@ -299,15 +299,11 @@ const close = () => emit('close')
                     class="h-auto opacity-90 block pointer-events-none" alt="Ubiqueme" />
                 </div>
 
-                <!-- Inner column -->
-                <div
-                  :style="`position:absolute;left:${PAD(cfg.width) + offsets.qrBox.left}px;top:${PAD(cfg.width) + offsets.qrBox.top}px;width:${cfg.width - PAD(cfg.width) * 2}px;height:${cfg.height - PAD(cfg.width) * 2}px`"
-                  class="flex flex-col items-center justify-center gap-1">
-
-                  <!-- SM: 🔒 HTTPS:// ubiqueme.com inline (single draggable group) -->
-                  <div v-if="activeSize === 'sm'"
-                    :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px`"
-                    class="cursor-grab" @mousedown="startDrag('topDomain', $event)">
+                <!-- SM: HTTPS:// ubiqueme.com — position:absolute fuera del flex column para que capture igual que preview -->
+                <div v-if="activeSize === 'sm'"
+                  :style="`position:absolute;left:${PAD(cfg.width) + offsets.topDomain.left}px;top:${PAD(cfg.width) + cfg.height * 0.12 + offsets.topDomain.top}px;z-index:15`"
+                  class="cursor-grab" @mousedown="startDrag('topDomain', $event)">
+                  <div class="flex flex-row items-center justify-center gap-0.5">
                     <img src="/src/assets/drag-images/social-10.webp"
                       class="w-4 h-3 block pointer-events-none object-contain" />
                     <span :style="`font-size:${cfg.width * 0.035}px`"
@@ -315,6 +311,12 @@ const close = () => emit('close')
                     <span :style="`font-size:${cfg.width * 0.055}px`"
                       class="text-black font-black tracking-widest uppercase whitespace-nowrap pointer-events-none">ubiqueme.com</span>
                   </div>
+                </div>
+
+                <!-- Inner column -->
+                <div
+                  :style="`position:absolute;left:${PAD(cfg.width) + offsets.qrBox.left}px;top:${PAD(cfg.width) + offsets.qrBox.top}px;width:${cfg.width - PAD(cfg.width) * 2}px;height:${cfg.height - PAD(cfg.width) * 2}px`"
+                  class="flex flex-col items-center justify-center gap-1">
 
                   <!-- MD/LG: HTTPS separate + ubiqueme.com separate -->
                   <template v-if="activeSize !== 'sm'">
@@ -350,28 +352,29 @@ const close = () => emit('close')
 
                     <!-- Info texts -->
                     <div class="flex flex-col gap-1 justify-center flex-[0_1_auto] text-center">
-                      <p :style="`font-size:${cfg.width * 0.082}px;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px`"
-                        class="text-neutral-900 font-black leading-tight m-0 cursor-grab"
-                        @mousedown="startDrag('name', $event)">{{
-                          qrName == 'walaco' || 'Gutemberg 128' }}</p>
+                      <p :style="`font-size:${cfg.width * 0.082}px;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px${activeSize === 'sm' ? ';max-width:195px' : ''}`"
+                        class="text-neutral-900 font-black leading-none m-0 cursor-grab line"
+                        :class="activeSize === 'sm' ? 'break-words' : ''" @mousedown="startDrag('name', $event)">{{
+                          qrName || 'Gutemberg 128' }}</p>
                       <p :style="`font-size:${Math.round(cfg.width * 0.02)}px;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px`"
                         class="text-[#444] font-semibold leading-tight m-0 font-mono cursor-grab"
                         @mousedown="startDrag('id', $event)">
                         ID:#{{ qrId }}</p>
                       <p :style="`font-size:${cfg.width * 0.048}px;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px`"
-                        class="text-[#303030] font-medium leading-tight m-0 cursor-grab"
-                        @mousedown="startDrag('desc1', $event)">Escanee
-                        este QR<br />para contactar<br />al responsable
-                        .
+                        class="text-[#303030] font-medium  m-0 cursor-grab"
+                        :class="activeSize == 'sm' ? 'leading-none' : 'leading-tight'"
+                        @mousedown="startDrag('desc1', $event)">
+                        Escanee
+                        este QR<br />para contactar<br />al responsable.
                       </p>
                       <p :style="`font-size:${Math.round(cfg.width * 0.022)}px;position:relative;left:${offsets.desc2.left}px;top:${offsets.desc2.top}px`"
                         class="text-black font-medium leading-tight mt-1 m-0 cursor-grab"
                         @mousedown="startDrag('desc2', $event)">QR
                         oficial <span class="ml-0.5">
-                          de Ubiqueme .com®
+                          de Ubiqueme.com®
                         </span><br>
                         Marca 100% segura y
-                        verificada .</p>
+                        verificada.</p>
                     </div>
                   </div>
                   <div
