@@ -355,7 +355,7 @@ const close = () => emit('close')
                       <p :style="`font-size:${cfg.width * 0.082}px;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px${activeSize === 'sm' ? ';max-width:195px' : ''}`"
                         class="text-neutral-900 font-black leading-none m-0 cursor-grab line"
                         :class="activeSize === 'sm' ? 'break-words' : ''" @mousedown="startDrag('name', $event)">{{
-                          qrName || 'Gutemberg 128' }}</p>
+                          qrName || 'QR Name' }}</p>
                       <p :style="`font-size:${Math.round(cfg.width * 0.02)}px;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px`"
                         class="text-[#444] font-semibold leading-tight m-0 font-mono cursor-grab"
                         @mousedown="startDrag('id', $event)">
