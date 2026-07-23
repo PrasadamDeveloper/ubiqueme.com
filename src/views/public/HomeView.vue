@@ -507,7 +507,7 @@ onUnmounted(() => {
 
                 <!-- QR -->
                 <div
-                  class="relative -rotate-2 hover:rotate-0 transition-all duration-300 bg-white rounded-3xl border border-neutral-200 p-4 shadow-[0_18px_40px_rgba(0,0,0,.12)] w-fit">
+                  class="relative  bg-white rounded-3xl border border-neutral-200 p-4 shadow-[0_18px_40px_rgba(0,0,0,.12)] w-fit">
 
                   <!-- Header -->
                   <div class="flex items-center justify-between mb-3">
@@ -517,7 +517,7 @@ onUnmounted(() => {
 
                     <div class="flex-1 h-px bg-neutral-200 mx-3"></div>
 
-                    <span class="text-xs font-semibold text-orange-500">
+                    <span class="text-xs font-semibold text-green-500">
                       WhatsApp
                     </span>
                   </div>
@@ -535,7 +535,7 @@ onUnmounted(() => {
 
                   <!-- Detalle inferior -->
                   <div
-                    class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-orange-500 ring-4 ring-white">
+                    class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-green-500 ring-4 ring-white animate-pulse">
                   </div>
 
                 </div>
