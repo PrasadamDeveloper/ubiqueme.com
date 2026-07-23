@@ -47,7 +47,7 @@ const navLinks: NavLink[] = [
       { label: 'Paso a paso', href: '#steps', icon: 'format_list_numbered' },
       { label: 'Planes y precios', href: '#pricing', icon: 'payments' },
       { label: 'Videos de su Uso', href: '#videos', icon: 'play_circle' },
-      { label: 'Ver página completa', pathName: 'home', icon: 'open_in_new' },
+      { label: 'Volver a la página principal', pathName: 'home', icon: 'open_in_new' },
     ],
   },
   { name: 'Dashboard', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
