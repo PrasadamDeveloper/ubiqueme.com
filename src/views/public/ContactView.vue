@@ -74,11 +74,11 @@ const autoComplete = () => {
 <template>
   <HomeLayout>
     <template #main>
-      <div class="min-h-screen bg-[#09090b] font-google-sans pt-20">
+      <div class="min-h-screen bg-gradient-to-b from-white to-slate-50 font-google-sans pt-20">
         <!-- Hero -->
         <div class="relative overflow-hidden">
           <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-            style="background-image:linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px);background-size:40px 40px;">
+            style="background-image:linear-gradient(rgba(0,0,0,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.06) 1px,transparent 1px);background-size:40px 40px;">
           </div>
           <div
             class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-[120px] pointer-events-none">
@@ -86,14 +86,14 @@ const autoComplete = () => {
 
           <div class="relative max-w-4xl mx-auto px-6 pt-24 pb-16 text-center">
             <div
-              class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/10 text-orange-400 text-[10px] font-black uppercase tracking-[0.2em] mb-5">
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-200 bg-orange-50 text-orange-500 text-[10px] font-black uppercase tracking-[0.2em] mb-5">
               <span class="material-symbols-outlined notranslate text-[14px]">contact_mail</span>
               Contacto
             </div>
-            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
               Estamos aquí para ayudarle
             </h1>
-            <p class="text-white/40 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+            <p class="text-slate-500 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
               ¿Tiene dudas, comentarios o necesita asistencia? Envíenos un mensaje y le responderemos a la brevedad.
             </p>
           </div>
@@ -103,18 +103,18 @@ const autoComplete = () => {
         <div class="max-w-3xl mx-auto px-6 pb-32">
           <!-- Success Message -->
           <div v-if="sent"
-            class="p-8 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 text-center max-w-md mx-auto">
+            class="p-8 rounded-3xl border border-emerald-200 bg-emerald-50 text-center max-w-md mx-auto">
             <div
-              class="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-4">
+              class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
               <span class="material-symbols-outlined notranslate text-[32px]">check</span>
             </div>
-            <h2 class="text-xl font-black text-white mb-2">Mensaje enviado</h2>
-            <p class="text-white/50 text-sm leading-relaxed">
+            <h2 class="text-xl font-black text-slate-900 mb-2">Mensaje enviado</h2>
+            <p class="text-slate-600 text-sm leading-relaxed">
               Hemos recibido su mensaje y lo estamos revisando. Le responderemos a la brevedad posible a
-              <strong class="text-white/80">{{ email }}</strong>.
+              <strong class="text-slate-800">{{ email }}</strong>.
             </p>
             <button @click="sent = false; name = ''; email = ''; phone = ''; message = ''"
-              class="mt-6 px-6 py-2.5 rounded-xl border border-white/10 text-white/70 text-sm font-medium hover:bg-white/5 hover:text-white transition-all cursor-pointer">
+              class="mt-6 px-6 py-2.5 rounded-xl border border-slate-200 text-slate-500 text-sm font-medium hover:bg-slate-50 hover:text-slate-700 transition-all cursor-pointer">
               Enviar otro mensaje
             </button>
           </div>
@@ -123,29 +123,29 @@ const autoComplete = () => {
           <form v-else @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Info cards row -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <div class="p-4 rounded-2xl border border-white/10 bg-white/[0.02] text-center">
+              <div class="p-4 rounded-2xl border border-slate-200 bg-white text-center">
                 <div
-                  class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto mb-3">
+                  class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mx-auto mb-3">
                   <span class="material-symbols-outlined notranslate text-[20px]">mail</span>
                 </div>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Correo</p>
-                <p class="text-sm text-white font-medium">soporte@ubiqueme.com</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Correo</p>
+                <p class="text-sm text-slate-900 font-medium">soporte@ubiqueme.com</p>
               </div>
-              <div class="p-4 rounded-2xl border border-white/10 bg-white/[0.02] text-center">
+              <div class="p-4 rounded-2xl border border-slate-200 bg-white text-center">
                 <div
-                  class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto mb-3">
+                  class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mx-auto mb-3">
                   <span class="material-symbols-outlined notranslate text-[20px]">schedule</span>
                 </div>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Horario</p>
-                <p class="text-sm text-white font-medium">Lun - Vie, 9:00 - 18:00</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Horario</p>
+                <p class="text-sm text-slate-900 font-medium">Lun - Vie, 9:00 - 18:00</p>
               </div>
-              <div class="p-4 rounded-2xl border border-white/10 bg-white/[0.02] text-center">
+              <div class="p-4 rounded-2xl border border-slate-200 bg-white text-center">
                 <div
-                  class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto mb-3">
+                  class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mx-auto mb-3">
                   <span class="material-symbols-outlined notranslate text-[20px]">bolt</span>
                 </div>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Respuesta</p>
-                <p class="text-sm text-white font-medium">24 - 48 hrs hábiles</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Respuesta</p>
+                <p class="text-sm text-slate-900 font-medium">24 - 48 hrs hábiles</p>
               </div>
             </div>
 
@@ -154,7 +154,7 @@ const autoComplete = () => {
               <button v-if="userStore.getFullName"
                 v-tooltip:="{ content: 'Como ya inicio sesión, puede autocompletar los campos', placement: 'right' }"
                 type="button"
-                class="  top-0 h-12 px-4 rounded-2xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all"
+                class="h-12 px-4 rounded-2xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50/50 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all shadow-sm"
                 @click="autoComplete">
                 Autocompletar Nombre y Correo
               </button>
@@ -164,39 +164,39 @@ const autoComplete = () => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
 
               <div>
-                <label class="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-1 mb-1.5 block">Nombre
+                <label class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 mb-1.5 block">Nombre
                   *</label>
                 <input v-model="name" type="text" placeholder="Ej. Juan Pérez"
-                  class="w-full h-12 px-4 rounded-2xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all" />
+                  class="w-full h-12 px-4 rounded-2xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50/50 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all shadow-sm" />
               </div>
               <div>
-                <label class="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-1 mb-1.5 block">Correo
+                <label class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 mb-1.5 block">Correo
                   electrónico *</label>
                 <input v-model="email" type="email" placeholder="ejemplo@correo.com"
-                  class="w-full h-12 px-4 rounded-2xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all" />
+                  class="w-full h-12 px-4 rounded-2xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50/50 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all shadow-sm" />
               </div>
             </div>
 
             <!-- Phone -->
             <div>
-              <label class="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-1 mb-1.5 block">Teléfono
-                <span class="text-white/20 normal-case tracking-normal">(opcional)</span></label>
+              <label class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 mb-1.5 block">Teléfono
+                <span class="text-slate-400 normal-case tracking-normal">(opcional)</span></label>
               <input v-model="phone" type="tel" placeholder="Ej. 5512345678"
-                class="w-full h-12 px-4 rounded-2xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all" />
+                class="w-full h-12 px-4 rounded-2xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50/50 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all shadow-sm" />
             </div>
 
             <!-- Message -->
             <div>
-              <label class="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-1 mb-1.5 block">Mensaje
+              <label class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 mb-1.5 block">Mensaje
                 *</label>
               <textarea v-model="message" rows="5" placeholder="Escriba su mensaje aquí..."
-                class="w-full px-4 py-3 rounded-2xl border border-white/10 bg-black/30 text-white text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40 focus:bg-orange-500/5 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all resize-none"></textarea>
+                class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50/50 focus:shadow-[0_0_20px_rgba(249,115,22,0.06)] transition-all resize-none shadow-sm"></textarea>
             </div>
 
             <!-- Submit -->
             <div class="flex items-center justify-between pt-2">
-              <p class="text-[10px] text-white/30">
-                Los campos marcados con <span class="text-white/50">*</span> son obligatorios.
+              <p class="text-[10px] text-slate-400">
+                Los campos marcados con <span class="text-slate-600">*</span> son obligatorios.
               </p>
               <button type="submit" :disabled="isSubmitting"
                 class="px-8 py-3 rounded-2xl bg-orange-500 text-black font-black text-sm uppercase tracking-[0.1em] hover:bg-orange-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(249,115,22,0.25)] cursor-pointer">
