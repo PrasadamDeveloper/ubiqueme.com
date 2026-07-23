@@ -125,11 +125,11 @@ const handleSubmit = async () => {
 <template>
   <HomeLayout>
     <template #main>
-      <div class="relative min-h-screen bg-[#0a0a0b] font-google-sans overflow-hidden">
+      <div class="relative min-h-screen bg-gradient-to-b from-white to-slate-50 font-google-sans overflow-hidden">
 
         <!-- Grid overlay -->
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style="background-image: linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px); background-size: 48px 48px;">
+          style="background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px); background-size: 48px 48px;">
         </div>
 
         <!-- Radial glow -->
@@ -144,20 +144,20 @@ const handleSubmit = async () => {
             <!-- Back + Header -->
             <div class="mb-14 space-y-6">
               <button @click="router.back()"
-                class="inline-flex items-center gap-1.5 text-white/30 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.25em] cursor-pointer">
+                class="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-900 transition-colors text-[10px] font-black uppercase tracking-[0.25em] cursor-pointer">
                 <span class="material-symbols-outlined notranslate text-[14px]">arrow_back</span>
                 Volver
               </button>
               <div>
                 <div
-                  class="inline-flex items-center gap-2 px-3 py-1 bg-[#ff7900]/10 rounded-full border border-[#ff7900]/20 mb-4">
+                  class="inline-flex items-center gap-2 px-3 py-1 bg-orange-50 rounded-full border border-orange-200 mb-4">
                   <span class="w-1.5 h-1.5 rounded-full bg-[#ff7900]"></span>
-                  <span class="text-[9px] font-black uppercase tracking-[0.3em] text-[#ff7900]">Contratación</span>
+                  <span class="text-[9px] font-black uppercase tracking-[0.3em] text-orange-500">Contratación</span>
                 </div>
-                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.1]">
-                  Complete su <span class="text-[#ff7900]">suscripción</span>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                  Complete su <span class="text-orange-500">suscripción</span>
                 </h1>
-                <p class="text-white/40 text-sm md:text-base mt-3 max-w-xl">
+                <p class="text-slate-500 text-sm md:text-base mt-3 max-w-xl">
                   Revise los detalles del plan elegido y proporcione sus datos para continuar con el proceso.
                 </p>
               </div>
@@ -167,7 +167,7 @@ const handleSubmit = async () => {
 
               <!-- Selected plan summary card -->
               <div v-if="currentPlan"
-                class="relative p-6 rounded-2xl border border-[#ff7900]/30 bg-[#ff7900]/[0.04] shadow-[0_0_30px_rgba(255,121,0,0.04)]">
+                class="relative p-6 rounded-2xl border border-orange-200 bg-orange-50/50 shadow-sm">
 
                 <div v-if="currentPlan.featured"
                   class="absolute -top-2.5 right-4 px-3 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.25em] bg-[#ff7900] text-black">
@@ -176,36 +176,36 @@ const handleSubmit = async () => {
 
                 <div class="flex items-start justify-between mb-4">
                   <div>
-                    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30 mb-0.5">Plan seleccionado
+                    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-400 mb-0.5">Plan seleccionado
                     </p>
-                    <h3 class="text-2xl font-black text-white">{{ currentPlan.name }}</h3>
+                    <h3 class="text-2xl font-black text-slate-900">{{ currentPlan.name }}</h3>
                   </div>
-                  <span class="material-symbols-outlined notranslate text-2xl text-[#ff7900]">{{ currentPlan.icon }}</span>
+                  <span class="material-symbols-outlined notranslate text-2xl text-orange-500">{{ currentPlan.icon }}</span>
                 </div>
 
                 <div class="flex items-baseline gap-1 mb-3">
-                  <span class="text-3xl font-black text-white">{{ currentPlan.price }}</span>
-                  <span class="text-white/20 text-[10px] font-black uppercase">{{ currentPlan.period }}</span>
+                  <span class="text-3xl font-black text-slate-900">{{ currentPlan.price }}</span>
+                  <span class="text-slate-400 text-[10px] font-black uppercase">{{ currentPlan.period }}</span>
                 </div>
-                <p class="text-white/40 text-sm mb-6">{{ currentPlan.description }}</p>
+                <p class="text-slate-500 text-sm mb-6">{{ currentPlan.description }}</p>
 
                 <div class="flex items-center gap-4 mb-5">
-                  <span class="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] whitespace-nowrap">Lo que
+                  <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] whitespace-nowrap">Lo que
                     incluye</span>
-                  <div class="h-px w-full bg-white/[0.04]"></div>
+                  <div class="h-px w-full bg-slate-200"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div v-for="feature in currentPlan.features" :key="feature.label"
                     class="flex items-center gap-3 p-4 rounded-xl border"
-                    :class="feature.included ? 'border-white/[0.06] bg-white/[0.02]' : 'border-white/[0.03] bg-white/[0.01] opacity-40'">
+                    :class="feature.included ? 'border-slate-200 bg-white shadow-sm' : 'border-slate-100 bg-slate-50 opacity-50'">
                     <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                      :class="feature.included ? 'bg-[#ff7900]/10 text-[#ff7900]' : 'bg-white/[0.03] text-white/20'">
+                      :class="feature.included ? 'bg-orange-50 text-orange-500' : 'bg-slate-100 text-slate-300'">
                       <span class="material-symbols-outlined notranslate text-[14px] font-black">{{ feature.included ? 'check' :
                         'close' }}</span>
                     </div>
                     <span class="text-sm font-medium"
-                      :class="feature.included ? 'text-white/80' : 'text-white/20 line-through'">
+                      :class="feature.included ? 'text-slate-700' : 'text-slate-300 line-through'">
                       {{ feature.label }}
                     </span>
                   </div>
@@ -216,55 +216,55 @@ const handleSubmit = async () => {
                   <div
                     v-for="(f, i) in (selectedPlan === 'plata' ? (plans[0]?.features ?? []) : [...(plans[0]?.features ?? []), ...(plans[1]?.features ?? [])])"
                     :key="(f?.label ?? '') + i"
-                    class="px-3 py-1.5 rounded-lg border border-white/[0.04] bg-white/[0.01] flex items-center gap-1.5">
-                    <span class="material-symbols-outlined notranslate text-[10px] text-white/20">add</span>
-                    <span class="text-[10px] text-white/30 font-medium">{{ f?.label }}</span>
+                    class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white shadow-sm flex items-center gap-1.5">
+                    <span class="material-symbols-outlined notranslate text-[10px] text-slate-400">add</span>
+                    <span class="text-[10px] text-slate-500 font-medium">{{ f?.label }}</span>
                   </div>
                 </div>
               </div>
 
               <!-- Shipping info -->
-              <div class="relative p-5 rounded-2xl border border-[#ff7900]/10 bg-[#ff7900]/[0.02] overflow-hidden">
+              <div class="relative p-5 rounded-2xl border border-orange-200 bg-orange-50 overflow-hidden">
                 <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-                  style="background-image: linear-gradient(rgba(255,121,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,121,0,.3) 1px, transparent 1px); background-size: 20px 20px;">
+                  style="background-image: linear-gradient(rgba(234,88,12,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(234,88,12,.12) 1px, transparent 1px); background-size: 20px 20px;">
                 </div>
                 <div class="relative z-10 flex items-start gap-3">
-                  <span class="material-symbols-outlined notranslate text-[#ff7900] text-xl shrink-0 mt-0.5">local_shipping</span>
+                  <span class="material-symbols-outlined notranslate text-orange-500 text-xl shrink-0 mt-0.5">local_shipping</span>
                   <div class="space-y-1">
-                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Envío físico — Solo México</h4>
-                    <p class="text-[12px] text-white/50 leading-relaxed">
-                      Cada suscripción incluye <strong class="text-[#ff7900]">1 envío gratis</strong>. Le recomendamos
+                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Envío físico — Solo México</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                      Cada suscripción incluye <strong class="text-orange-500">1 envío gratis</strong>. Le recomendamos
                       solicitar todos los códigos QR de su plan en el primer envío. Solicitudes posteriores tienen un
-                      costo de <strong class="text-white">$199 MXN</strong> por paquete.
+                      costo de <strong class="text-slate-900">$199 MXN</strong> por paquete.
                     </p>
                   </div>
                 </div>
               </div>
 
               <!-- Form -->
-              <div class="border-t border-white/[0.04] pt-10">
+              <div class="border-t border-slate-200 pt-10">
                 <form @submit.prevent="handleSubmit" class="space-y-8 max-w-3xl mx-auto">
 
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div class="space-y-1.5">
-                      <label class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30">Nombre
+                      <label class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">Nombre
                         completo</label>
                       <input v-model="formData.fullName" readonly
-                        class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white/60 text-sm outline-none cursor-not-allowed" />
+                        class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-sm outline-none cursor-not-allowed" />
                     </div>
                     <div class="space-y-1.5">
-                      <label class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30">Correo
+                      <label class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">Correo
                         electrónico</label>
                       <input v-model="formData.email" readonly
-                        class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-white/[0.02] text-white/60 text-sm outline-none cursor-not-allowed" />
+                        class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-sm outline-none cursor-not-allowed" />
                     </div>
                   </div>
 
                   <div class="space-y-1.5">
-                    <label class="text-[9px] font-black uppercase tracking-[0.25em] text-white/30">Teléfono WhatsApp
-                      <span class="text-[#ff7900]">*</span></label>
+                    <label class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">Teléfono WhatsApp
+                      <span class="text-orange-500">*</span></label>
                     <input v-model="formData.phone" required type="tel" placeholder="+52 555 555 5555"
-                      class="w-full h-12 px-4 rounded-xl border border-white/[0.06] bg-[#0d0d0e] text-white text-sm outline-none focus:border-[#ff7900]/40 focus:ring-1 focus:ring-[#ff7900]/20 transition-all placeholder:text-white/15" />
+                      class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 transition-all placeholder:text-slate-400 shadow-sm" />
                   </div>
 
                   <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
@@ -284,18 +284,18 @@ const handleSubmit = async () => {
             <!-- Success -->
             <div v-else class="max-w-lg mx-auto py-24 text-center space-y-8">
               <div
-                class="w-20 h-20 rounded-2xl bg-[#ff7900]/10 border border-[#ff7900]/20 flex items-center justify-center mx-auto">
-                <span class="material-symbols-outlined notranslate text-4xl text-[#ff7900]">check_circle</span>
+                class="w-20 h-20 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center mx-auto shadow-sm">
+                <span class="material-symbols-outlined notranslate text-4xl text-orange-500">check_circle</span>
               </div>
               <div class="space-y-3">
-                <h2 class="text-3xl font-black text-white tracking-tight">Suscripción en proceso</h2>
-                <p class="text-white/40 text-sm leading-relaxed max-w-xs mx-auto">
-                  Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-white">{{ formData.email
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight">Suscripción en proceso</h2>
+                <p class="text-slate-500 text-sm leading-relaxed max-w-xs mx-auto">
+                  Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-slate-900">{{ formData.email
                   }}</strong>.
                 </p>
               </div>
               <button @click="router.push('/')"
-                class="h-11 px-8 rounded-xl border border-white/[0.06] bg-[#0d0d0e] text-white/70 text-[10px] font-black uppercase tracking-[0.25em] hover:bg-white/[0.04] transition cursor-pointer">
+                class="h-11 px-8 rounded-xl border border-slate-200 bg-white text-slate-600 text-[10px] font-black uppercase tracking-[0.25em] hover:bg-slate-50 hover:text-slate-800 shadow-sm transition cursor-pointer">
                 Ir al inicio
               </button>
             </div>

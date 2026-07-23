@@ -89,11 +89,11 @@ const handleSelect = (id: string) => {
 <template>
   <HomeLayout>
     <template #main>
-      <div class="relative min-h-screen bg-[#0a0a0b] font-google-sans overflow-hidden">
+      <div class="relative min-h-screen bg-gradient-to-b from-white to-slate-50 font-google-sans overflow-hidden">
 
         <!-- Cloudflare-style grid overlay -->
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style="background-image: linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px); background-size: 48px 48px;">
+          style="background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px); background-size: 48px 48px;">
         </div>
 
         <!-- Radial glow top -->
@@ -107,16 +107,16 @@ const handleSelect = (id: string) => {
             <!-- Header -->
             <header class="text-center mb-16 space-y-5">
               <div
-                class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ff7900]/10 rounded-full border border-[#ff7900]/20">
+                class="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-50 rounded-full border border-orange-200">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#ff7900]"></span>
-                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff7900] font-mono">Planes de
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-orange-500 font-mono">Planes de
                   Protección</span>
               </div>
-              <h1 class="text-5xl md:text-7xl font-black text-white tracking-tight">
+              <h1 class="text-5xl md:text-7xl font-black text-slate-900 tracking-tight">
                 Elija su <br>
-                <span class="text-[#ff7900]">Plan</span>
+                <span class="text-orange-500">Plan</span>
               </h1>
-              <p class="max-w-xl mx-auto text-white/35 text-sm md:text-base leading-relaxed mt-4">
+              <p class="max-w-xl mx-auto text-slate-500 text-sm md:text-base leading-relaxed mt-4">
                 Sin complicaciones. Sin contratos forzosos. Solo la protección que usted necesita.
               </p>
             </header>
@@ -132,10 +132,10 @@ const handleSelect = (id: string) => {
               </div>
               <div class="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
                 <div class="flex-1">
-                  <h3 class="text-lg sm:text-xl font-black text-white tracking-tight">
+                  <h3 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
                     1 año plan Bronce gratis — únase hoy
                   </h3>
-                  <p class="text-white/60 text-sm font-medium mt-1">
+                  <p class="text-slate-500 text-sm font-medium mt-1">
                     Sin compromisos. Actívelo hoy.
                   </p>
                 </div>
@@ -149,12 +149,12 @@ const handleSelect = (id: string) => {
 
             <!-- Currency Selector -->
             <div class="flex justify-center mb-10">
-              <div class="inline-flex bg-[#121212] rounded-xl border border-white/[0.06] p-1 gap-0.5">
+              <div class="inline-flex bg-white rounded-xl border border-slate-200 p-1 gap-0.5 shadow-sm">
                 <button v-for="c in currencies" :key="c.key" @click="selectedCurrency = c.key"
                   class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer"
                   :class="selectedCurrency === c.key
                     ? 'bg-[#ff7900] text-black shadow-lg shadow-[#ff7900]/20'
-                    : 'text-white/40 hover:text-white/70'">
+                    : 'text-slate-400 hover:text-orange-500'">
                   <span class="text-sm">{{ c.flag }}</span>
                   {{ c.label }}
                 </button>
@@ -167,8 +167,8 @@ const handleSelect = (id: string) => {
               <div v-for="plan in plans" :key="plan.id" :class="[
                 'relative flex flex-col rounded-2xl border transition-all duration-300',
                 plan.featured
-                  ? 'bg-[#121212] border-[#ff7900]/30 shadow-[0_0_60px_rgba(255,121,0,0.06)] md:-translate-y-3'
-                  : 'bg-[#0d0d0e] border-white/[0.06] hover:border-white/[0.12]'
+                  ? 'bg-gradient-to-b from-orange-50/60 to-white border-orange-200 shadow-lg shadow-orange-500/5 md:-translate-y-3'
+                  : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'
               ]">
 
                 <!-- Featured ray -->
@@ -189,35 +189,35 @@ const handleSelect = (id: string) => {
                   <!-- Plan Identity -->
                   <div class="flex items-center justify-between mb-6">
                     <div>
-                      <p class="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 font-mono mb-1">Plan</p>
-                      <h3 class="text-2xl font-black text-white tracking-tight uppercase">{{ plan.name }}</h3>
+                      <p class="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 font-mono mb-1">Plan</p>
+                      <h3 class="text-2xl font-black text-slate-900 tracking-tight uppercase">{{ plan.name }}</h3>
                     </div>
                     <div class="w-10 h-10 rounded-xl border flex items-center justify-center shrink-0"
-                      :class="plan.featured ? 'border-[#ff7900]/30 bg-[#ff7900]/10' : 'border-white/10 bg-white/[0.04]'">
+                      :class="plan.featured ? 'border-orange-200 bg-orange-50' : 'border-slate-200 bg-slate-50'">
                       <span class="material-symbols-outlined notranslate text-lg"
-                        :class="plan.featured ? 'text-[#ff7900]' : 'text-white/50'">
+                        :class="plan.featured ? 'text-orange-500' : 'text-slate-400'">
                         {{ plan.id === 'bronce' ? 'shield' : plan.id === 'plata' ? 'verified_user' : 'military_tech' }}
                       </span>
                     </div>
                   </div>
 
                   <!-- Description -->
-                  <p class="text-sm text-white/50 font-mono mb-6">{{ plan.description }}</p>
+                  <p class="text-sm text-slate-500 font-mono mb-6">{{ plan.description }}</p>
 
                   <!-- Price -->
-                  <div class="mb-5 pb-5 border-b border-white/[0.04]">
+                  <div class="mb-5 pb-5 border-b border-slate-100">
                     <div class="flex items-baseline gap-2">
-                      <span class="text-4xl font-black text-white tracking-tight font-mono">{{
+                      <span class="text-4xl font-black text-slate-900 tracking-tight font-mono">{{
                         plan.prices[selectedCurrency].symbol }}{{ plan.prices[selectedCurrency].price }} </span>
-                      <span class="text-[10px] text-white">{{ plan.prices[selectedCurrency].label }}</span>
+                      <span class="text-[10px] text-slate-500">{{ plan.prices[selectedCurrency].label }}</span>
                       <span
                         class="text-orange-700 rounded-3xl p-1 text-[10px] bg-orange-100 font-google-sans font-black uppercase tracking-widest">{{
                           plan.prices[selectedCurrency].period }}</span>
-                      <span class="text-[10px] text-white/50 font-mono">(~&thinsp;${{
+                      <span class="text-[10px] text-slate-400 font-mono">(~&thinsp;${{
                         plan.prices[selectedCurrency].monthly }}
                         /mes)</span>
                     </div>
-                    <p class="text-[#ff7900]/60 text-[10px] font-mono font-bold mt-1 uppercase tracking-wider">{{
+                    <p class="text-orange-600/80 text-[10px] font-mono font-bold mt-1 uppercase tracking-wider">{{
                       plan.prices[selectedCurrency].note }}</p>
                   </div>
 
@@ -225,18 +225,18 @@ const handleSelect = (id: string) => {
                   <ul class="flex-1 space-y-3 mb-8">
                     <li v-for="(feature, idx) in plan.features" :key="idx" class="flex items-start gap-3">
                       <div class="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5" :class="feature.included
-                        ? (plan.featured ? 'bg-[#ff7900]/15 text-[#ff7900]' : 'bg-white/[0.06] text-white/60')
-                        : 'bg-white/[0.02] text-white/15'" :style="feature.included && plan.featured
+                        ? (plan.featured ? 'bg-orange-100 text-orange-600' : 'bg-orange-50 text-orange-500')
+                        : 'bg-slate-100 text-slate-300'" :style="feature.included && plan.featured
                           ? { borderColor: 'rgba(255,121,0,0.3)' }
                           : !feature.included
-                            ? { border: '1px solid rgba(255,255,255,0.04)' }
+                            ? { border: '1px solid rgba(0,0,0,0.06)' }
                             : {}">
                         <span class="material-symbols-outlined notranslate text-[10px]! font-black">{{ feature.included
                           ? 'check' :
                           'remove' }}</span>
                       </div>
                       <span class="text-[13px] font-medium leading-snug font-mono"
-                        :class="feature.included ? (plan.featured ? 'text-white/80' : 'text-white/60') : 'text-white/15 line-through decoration-white/5'">
+                        :class="feature.included ? (plan.featured ? 'text-slate-800' : 'text-slate-600') : 'text-slate-300 line-through decoration-slate-200'">
                         {{ feature.label }}
                       </span>
                     </li>
@@ -247,7 +247,7 @@ const handleSelect = (id: string) => {
                     class="w-full h-11 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 font-mono cursor-pointer"
                     :class="plan.featured
                       ? 'bg-[#ff7900] text-black hover:bg-[#ff7900]/90 shadow-lg shadow-[#ff7900]/15'
-                      : 'bg-white/[0.04] text-white/70 hover:bg-white/[0.08] border border-white/[0.06]'">
+                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 border border-slate-200'">
                     {{ plan.cta }}
                     <span v-if="plan.featured"
                       class="material-symbols-outlined notranslate text-[14px] font-black">arrow_forward</span>
@@ -266,24 +266,24 @@ const handleSelect = (id: string) => {
 
             <!-- Shipping Info -->
             <div class="mt-16 max-w-3xl mx-auto">
-              <div class="relative p-6 rounded-2xl border border-[#ff7900]/10 bg-[#ff7900]/[0.02] overflow-hidden">
+              <div class="relative p-6 rounded-2xl border border-orange-200 bg-orange-50 overflow-hidden">
                 <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-                  style="background-image: linear-gradient(rgba(255,121,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,121,0,.3) 1px, transparent 1px); background-size: 20px 20px;">
+                  style="background-image: linear-gradient(rgba(234,88,12,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(234,88,12,.12) 1px, transparent 1px); background-size: 20px 20px;">
                 </div>
                 <div class="relative z-10 text-center space-y-3">
                   <div
-                    class="inline-flex items-center gap-2 text-[#ff7900] font-bold text-[10px] uppercase tracking-wider font-mono">
+                    class="inline-flex items-center gap-2 text-orange-500 font-bold text-[10px] uppercase tracking-wider font-mono">
                     <span class="material-symbols-outlined notranslate text-[14px]">local_shipping</span>
                     Envío Físico — Solo México
                   </div>
-                  <p class="text-sm text-white/70 leading-relaxed font-mono">
-                    Cada plan incluye <strong class="text-[#ff7900]">1 envío físico gratuito</strong> a cualquier parte
+                  <p class="text-sm text-slate-600 leading-relaxed">
+                    Cada plan incluye <strong class="text-orange-500">1 envío físico gratuito</strong> a cualquier parte
                     de la República Mexicana.
                   </p>
-                  <p class="text-[12px] text-white/50 leading-relaxed font-mono">
-                    💡 <strong class="text-white">Recomendación:</strong> Solicita todos tus QRs permitidos en el primer
+                  <p class="text-xs text-slate-500 leading-relaxed">
+                    💡 <strong class="text-slate-900">Recomendación:</strong> Solicita todos tus QRs permitidos en el primer
                     envío gratuito. QRs adicionales son gratuitos, con tarifa de envío de <strong
-                      class="text-white">$199 MXN</strong> por paquete.
+                      class="text-slate-900">$199 MXN</strong> por paquete.
                   </p>
                 </div>
               </div>
@@ -291,13 +291,13 @@ const handleSelect = (id: string) => {
 
             <!-- Disclaimer (solo no logueados) -->
             <div v-if="!useUserStore().getUserId" class="text-center mb-6">
-              <p class="text-[10px] text-white/30 font-medium">
+              <p class="text-[10px] text-slate-500/30 font-medium">
                 Solo cree su cuenta gratis y obtendrá el beneficio
               </p>
             </div>
 
             <!-- Footer note -->
-            <p class="text-center text-white/15 text-[9px] font-black uppercase tracking-[0.35em] mt-8 font-mono">
+            <p class="text-center text-slate-300 text-[9px] font-black uppercase tracking-[0.35em] mt-8 font-mono">
               Encriptación de extremo a extremo · Sin contratos forzosos · Cancela cuando quieras
             </p>
 
