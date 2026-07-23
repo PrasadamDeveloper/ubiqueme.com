@@ -17,6 +17,7 @@ import TikTokLogo from '@/assets/logos/tiktok-com-logo.png';
 import VisaLogo from '@/assets/logos/visa-com-logo.png';
 import XLogo from '@/assets/logos/x-com-logo.png';
 import YoutubeLogo from '@/assets/logos/youtube-com-logo.png';
+import TrustCarousel from '@/components/ui/TrustCarousel.vue';
 
 const router = useRouter();
 const openAziechrie = () => window.open('https://www.aziechriepharma.com', '_blank');
@@ -28,6 +29,7 @@ interface NavChild {
   pathName?: string
   params?: Record<string, string>
   icon?: string
+  description?: string
 }
 
 interface NavLink {
@@ -36,36 +38,53 @@ interface NavLink {
   icon: string
   requiredLogin: boolean
   children?: NavChild[]
+  description?: string
 }
 
 const navLinks: NavLink[] = [
   {
     name: 'Inicio', pathName: 'home', icon: 'home', requiredLogin: false,
+    description: 'Protege a tus seres queridos y pertenencias con tecnología QR inteligente',
     children: [
-      { label: 'Beneficios', href: '#benefits', icon: 'verified' },
-      { label: 'Cómo funciona', href: '#how-it-works', icon: 'settings' },
-      { label: 'Paso a paso', href: '#steps', icon: 'format_list_numbered' },
-      { label: 'Planes y precios', href: '#pricing', icon: 'payments' },
-      { label: 'Videos de su Uso', href: '#videos', icon: 'play_circle' },
-      { label: 'Volver a la página principal', pathName: 'home', icon: 'open_in_new' },
+      { label: 'Beneficios', href: '#benefits', icon: 'verified',
+        description: 'Conoce las características que hacen de Ubiqueme tu mejor aliado' },
+      { label: 'Cómo funciona', href: '#how-it-works', icon: 'settings',
+        description: 'Activa, vincula y recibe alertas en solo 3 pasos' },
+      { label: 'Paso a paso', href: '#steps', icon: 'format_list_numbered',
+        description: 'Guía visual con videos para configurar tu primer QR' },
+      { label: 'Planes y precios', href: '#pricing', icon: 'payments',
+        description: 'Compara planes desde $499 MXN/año con envío gratis' },
+      { label: 'Videos de su Uso', href: '#videos', icon: 'play_circle',
+        description: 'Mira cómo otros usuarios protegen sus objetos en la vida real' },
+      { label: 'Volver a la página principal', pathName: 'home', icon: 'open_in_new',
+        description: 'Regresar al inicio del sitio' },
     ],
   },
   { name: 'Dashboard', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
   {
     name: 'Ayuda', pathName: 'help', icon: 'help', requiredLogin: false,
+    description: 'Resuelve tus dudas y obtén soporte personalizado',
     children: [
-      { label: 'Preguntas frecuentes', pathName: 'help', icon: 'quiz' },
-      { label: 'Contacto', pathName: 'contact', icon: 'contact_mail' },
-      { label: 'Guía de uso', pathName: 'help', icon: 'menu_book' },
+      { label: 'Preguntas frecuentes', pathName: 'help', icon: 'quiz',
+        description: 'Respuestas a las preguntas más comunes sobre Ubiqueme' },
+      { label: 'Contacto', pathName: 'contact', icon: 'contact_mail',
+        description: 'Escríbenos y nuestro equipo te atenderá rápidamente' },
+      { label: 'Guía de uso', pathName: 'help', icon: 'menu_book',
+        description: 'Manual completo con todas las funciones disponibles' },
     ],
   },
   {
     name: 'Precios', pathName: 'pricing', icon: 'payments', requiredLogin: false,
+    description: 'Planes flexibles desde $499 MXN/año — elige el tuyo',
     children: [
-      { label: 'Plan Bronce', pathName: 'checkout', params: { planId: 'bronce' }, icon: 'workspace_premium' },
-      { label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium' },
-      { label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium' },
-      { label: 'Ver todos los planes', pathName: 'pricing', icon: 'apps' },
+      { label: 'Plan Bronce', pathName: 'checkout', params: { planId: 'bronce' }, icon: 'workspace_premium',
+        description: 'Protección básica — 1 QR activo, contador de escaneos' },
+      { label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium',
+        description: 'La opción más equilibrada — 3 QRs, historial 30 días' },
+      { label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium',
+        description: 'Control total — 5 QRs, mapa dinámico, ilimitado' },
+      { label: 'Ver todos los planes', pathName: 'pricing', icon: 'apps',
+        description: 'Compara todos los planes y elige el que más te convenga' },
     ],
   },
 ]
@@ -163,7 +182,7 @@ onUnmounted(() => {
     <nav :class="[
       'fixed top-0 w-full z-50 transition-all duration-500',
       isScrolled
-        ? 'bg-blue-50/95 border-b text-white! border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)]'
+        ? 'bg-white border-b text-white! border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)]'
         : 'bg-[#f6fcff] border-b border-gray-200'
     ]">
 
@@ -182,37 +201,7 @@ onUnmounted(() => {
         <!-- LEFT -->
         <div class="flex items-center gap-5">
 
-          <!-- SSL -->
-          <div class="group relative hidden md:flex">
-
-            <div
-              class="flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-2 transition-all duration-300 hover:bg-orange-100">
-
-              <span class="material-symbols-outlined notranslate text-[16px] text-orange-600">
-                lock
-              </span>
-
-              <span class="text-[11px] font-semibold tracking-wide text-orange-700 whitespace-nowrap">
-                SSL 256-bit
-              </span>
-
-            </div>
-
-            <!-- Tooltip -->
-            <div
-              class="pointer-events-none absolute left-1/2 top-full mt-3 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:translate-y-1 group-hover:opacity-100">
-
-              <div class="rounded-xl border border-gray-200 bg-white px-4 py-2 shadow-xl">
-
-                <p class="text-[11px] text-gray-500 whitespace-nowrap">
-                  🔒 Conexión cifrada y protegida
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
+          <TrustCarousel />
 
           <!-- LOGO -->
           <RouterLink :to="{ name: 'home' }"
@@ -368,26 +357,38 @@ onUnmounted(() => {
 
                       </h4>
 
+                      <p v-if="link.description" class="mt-1 text-[11px] leading-snug text-gray-500">
+
+                        {{ link.description }}
+
+                      </p>
+
                     </div>
 
                     <!-- ITEMS -->
                     <div class="p-2">
 
                       <button v-for="child in link.children" :key="child.label" @click="handleChildClick(child)"
-                        class="group flex w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 hover:bg-orange-50">
+                        class="group flex w-full cursor-pointer items-start gap-3 rounded-xl px-4 py-3 transition-all duration-200 hover:bg-orange-50">
 
                         <span v-if="child.icon"
-                          class="material-symbols-outlined notranslate text-[20px] text-gray-400 transition-colors duration-300 group-hover:text-orange-500">
+                          class="material-symbols-outlined notranslate mt-0.5 text-[20px] text-gray-400 transition-colors duration-300 group-hover:text-orange-500">
 
                           {{ child.icon }}
 
                         </span>
 
-                        <div class="flex flex-col items-start">
+                        <div class="flex min-w-0 flex-col items-start">
 
                           <span class="text-sm font-medium text-gray-700 transition-colors group-hover:text-orange-600">
 
                             {{ child.label }}
+
+                          </span>
+
+                          <span v-if="child.description" class="mt-0.5 text-[11px] leading-snug text-gray-400 text-left">
+
+                            {{ child.description }}
 
                           </span>
 
@@ -618,9 +619,15 @@ onUnmounted(() => {
         <div class="grid gap-10 lg:grid-cols-3">
           <!-- Marca -->
           <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
-            <div class="mb-5 flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-2">
-              <span class="material-symbols-outlined notranslate text-orange-500">shield</span>
-              <span class="text-xs uppercase tracking-[0.25em] text-slate-500">SSL</span>
+            <div class="mb-5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+              <div class="flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5">
+                <span class="material-symbols-outlined notranslate text-orange-600 text-[14px]">lock</span>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-orange-700">SSL 256-bit</span>
+              </div>
+              <div class="flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5">
+                <span class="material-symbols-outlined notranslate text-orange-600 text-[14px]">verified</span>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-orange-700">SAT · Formal</span>
+              </div>
             </div>
             <Transition name="slide-up">
               <div :key="currentDomainIndex" class="mb-3 text-3xl font-black lowercase tracking-tight">
@@ -836,21 +843,21 @@ onUnmounted(() => {
 }
 
 .dropdown-enter-active {
-  transition: all 0.15s ease-out;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dropdown-leave-active {
-  transition: all 0.1s ease-in;
+  transition: all 0.15s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .dropdown-enter-from {
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(-8px) scale(0.97);
 }
 
 .dropdown-leave-to {
   opacity: 0;
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(0.97);
 }
 
 /* Trust marquee horizontal infinite scroll */
