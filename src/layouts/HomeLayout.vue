@@ -46,18 +46,30 @@ const navLinks: NavLink[] = [
     name: 'Inicio', pathName: 'home', icon: 'home', requiredLogin: false,
     description: 'Protege a tus seres queridos y pertenencias con tecnología QR inteligente',
     children: [
-      { label: 'Beneficios', href: '#benefits', icon: 'verified',
-        description: 'Conoce las características que hacen de Ubiqueme tu mejor aliado' },
-      { label: 'Cómo funciona', href: '#how-it-works', icon: 'settings',
-        description: 'Activa, vincula y recibe alertas en solo 3 pasos' },
-      { label: 'Paso a paso', href: '#steps', icon: 'format_list_numbered',
-        description: 'Guía visual con videos para configurar tu primer QR' },
-      { label: 'Planes y precios', href: '#pricing', icon: 'payments',
-        description: 'Compara planes desde $499 MXN/año con envío gratis' },
-      { label: 'Videos de su Uso', href: '#videos', icon: 'play_circle',
-        description: 'Mira cómo otros usuarios protegen sus objetos en la vida real' },
-      { label: 'Volver a la página principal', pathName: 'home', icon: 'open_in_new',
-        description: 'Regresar al inicio del sitio' },
+      {
+        label: 'Beneficios', href: '#benefits', icon: 'verified',
+        description: 'Conoce las características que hacen de Ubiqueme tu mejor aliado'
+      },
+      {
+        label: 'Cómo funciona', href: '#how-it-works', icon: 'settings',
+        description: 'Activa, vincula y recibe alertas en solo 3 pasos'
+      },
+      {
+        label: 'Paso a paso', href: '#steps', icon: 'format_list_numbered',
+        description: 'Guía visual con videos para configurar tu primer QR'
+      },
+      {
+        label: 'Planes y precios', href: '#pricing', icon: 'payments',
+        description: 'Compara planes desde $499 MXN/año con envío gratis'
+      },
+      {
+        label: 'Videos de su Uso', href: '#videos', icon: 'play_circle',
+        description: 'Mira cómo otros usuarios protegen sus objetos en la vida real'
+      },
+      {
+        label: 'Volver a la página principal', pathName: 'home', icon: 'open_in_new',
+        description: 'Regresar al inicio del sitio'
+      },
     ],
   },
   { name: 'Dashboard', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
@@ -65,26 +77,40 @@ const navLinks: NavLink[] = [
     name: 'Ayuda', pathName: 'help', icon: 'help', requiredLogin: false,
     description: 'Resuelve tus dudas y obtén soporte personalizado',
     children: [
-      { label: 'Preguntas frecuentes', pathName: 'help', icon: 'quiz',
-        description: 'Respuestas a las preguntas más comunes sobre Ubiqueme' },
-      { label: 'Contacto', pathName: 'contact', icon: 'contact_mail',
-        description: 'Escríbenos y nuestro equipo te atenderá rápidamente' },
-      { label: 'Guía de uso', pathName: 'help', icon: 'menu_book',
-        description: 'Manual completo con todas las funciones disponibles' },
+      {
+        label: 'Preguntas frecuentes', pathName: 'help', icon: 'quiz',
+        description: 'Respuestas a las preguntas más comunes sobre Ubiqueme'
+      },
+      {
+        label: 'Contacto', pathName: 'contact', icon: 'contact_mail',
+        description: 'Escríbenos y nuestro equipo te atenderá rápidamente'
+      },
+      {
+        label: 'Guía de uso', pathName: 'help', icon: 'menu_book',
+        description: 'Manual completo con todas las funciones disponibles'
+      },
     ],
   },
   {
     name: 'Precios', pathName: 'pricing', icon: 'payments', requiredLogin: false,
     description: 'Planes flexibles desde $499 MXN/año — elige el tuyo',
     children: [
-      { label: 'Plan Bronce', pathName: 'checkout', params: { planId: 'bronce' }, icon: 'workspace_premium',
-        description: 'Protección básica — 1 QR activo, contador de escaneos' },
-      { label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium',
-        description: 'La opción más equilibrada — 3 QRs, historial 30 días' },
-      { label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium',
-        description: 'Control total — 5 QRs, mapa dinámico, ilimitado' },
-      { label: 'Ver todos los planes', pathName: 'pricing', icon: 'apps',
-        description: 'Compara todos los planes y elige el que más te convenga' },
+      {
+        label: 'Plan Bronce', pathName: 'checkout', params: { planId: 'bronce' }, icon: 'workspace_premium',
+        description: 'Protección básica — 1 QR activo, contador de escaneos'
+      },
+      {
+        label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium',
+        description: 'La opción más equilibrada — 3 QRs, historial 30 días'
+      },
+      {
+        label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium',
+        description: 'Control total — 5 QRs, mapa dinámico, ilimitado'
+      },
+      {
+        label: 'Ver todos los planes', pathName: 'pricing', icon: 'apps',
+        description: 'Compara todos los planes y elige el que más te convenga'
+      },
     ],
   },
 ]
@@ -208,9 +234,9 @@ onUnmounted(() => {
             class="group flex items-center gap-3 rounded-xl transition-all duration-300">
 
             <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
-              class="hidden h-11 w-11 rounded-xl bg-black object-contain transition-transform duration-300 group-hover:rotate-3 group-hover:scale-105 sm:block" />
+              class="hidden h-11 w-11 rounded-xl bg-black object-contain transition-transform duration-300 group-hover:scale-105 sm:block" />
 
-            <div class="hidden min-w-[200px] flex-col justify-center lg:flex">
+            <div class="hidden min-w-[240px] flex-col justify-center lg:flex">
 
               <!-- Dominio -->
               <div class="relative h-8 overflow-hidden">
@@ -386,7 +412,8 @@ onUnmounted(() => {
 
                           </span>
 
-                          <span v-if="child.description" class="mt-0.5 text-[11px] leading-snug text-gray-400 text-left">
+                          <span v-if="child.description"
+                            class="mt-0.5 text-[11px] leading-snug text-gray-400 text-left">
 
                             {{ child.description }}
 

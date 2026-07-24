@@ -10,9 +10,9 @@ const features = [
   },
   {
     icon: 'notifications_active',
-    title: 'Alertas multi-canal',
+    title: 'Alertas en tiempo real',
     description:
-      'Reciba avisos mediante WhatsApp, correo o SMS cuando alguien interactúe con su QR.',
+      'Reciba una notificación al instante cuando alguien encuentre su objeto, directamente a su WhatsApp sin necesidad de revisar otras aplicaciones.',
   },
   {
     icon: 'grid_view',
@@ -41,44 +41,25 @@ const features = [
 ]
 </script>
 
-
 <template>
-
-  <section class="bg-slate-50 py-16 sm:py-20">
-
-    <div class="px-5 sm:px-8">
-
-
-      <header class="max-w-2xl mb-10 sm:mb-14">
-
-        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">
+  <section data-od-id="features-section" class="bg-white py-20 sm:py-28">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8">
+      <header data-od-id="features-header" class="mx-auto mb-16 max-w-2xl text-center sm:mb-20">
+        <span
+          class="inline-block rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">
           Características
         </span>
-
-
-        <h2 class="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-slate-950">
-          Diseñado para proteger, creado para confiar
+        <h2 data-od-id="features-heading"
+          class="mt-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+          Diseñado para proteger,<br>creado para confiar
         </h2>
-
-
-        <p class="mt-4 text-base leading-7 text-slate-600">
-          Cada función mantiene sus objetos localizables sin comprometer
-          su privacidad.
+        <p class="mx-auto mt-4 max-w-lg text-base leading-7 text-gray-500">
+          Cada función mantiene sus objetos localizables sin comprometer su privacidad.
         </p>
-
       </header>
-
-
-
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <FeatureCard v-for="feature in features" :key="feature.title" :feature="feature" />
-
       </div>
-
-
     </div>
-
   </section>
-
 </template>
