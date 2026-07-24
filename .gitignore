@@ -53,4 +53,7 @@ nul
 # WhatsApp guide (personal docs)
 docs/whatsapp-worker-guide.md
 
+# Kilo worktrees and config (Agent Manager)
+.kilo/
+
 .git_disabled/

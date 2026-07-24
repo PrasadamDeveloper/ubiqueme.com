@@ -14,6 +14,16 @@ export default defineConfig({
   plugins: [vue(), vueDevTools(), tailwindcss()],
   server: {
     allowedHosts: true,
+    watch: {
+      ignored: [
+        '**/.git/**',
+        '**/node_modules/**',
+        '**/.kilo/**',
+        '**/dist/**',
+        '**/coverage/**',
+        '**/.wrangler/**',
+      ],
+    },
   },
   base: '/',
   resolve: {
