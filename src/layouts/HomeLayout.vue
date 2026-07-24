@@ -18,6 +18,10 @@ import VisaLogo from '@/assets/logos/visa-com-logo.png';
 import XLogo from '@/assets/logos/x-com-logo.png';
 import YoutubeLogo from '@/assets/logos/youtube-com-logo.png';
 import TrustCarousel from '@/components/ui/TrustCarousel.vue';
+import SatIcon from '@/assets/images/formal/sat.webp'
+import YearsIcon from '@/assets/images/formal/15YearsExp.webp'
+import SafeIcon from '@/assets/images/formal/safeSite.webp'
+const trustIcons = [SatIcon, YearsIcon, SafeIcon];
 
 const router = useRouter();
 const openAziechrie = () => window.open('https://www.aziechriepharma.com', '_blank');
@@ -170,15 +174,23 @@ const taglines = [
   { text: 'Soluciones tecnológicas', clickable: false },
 ];
 const currentTaglineIndex = ref(0);
+const trustItems = ['Registrados SAT', '15 Años Exp.', 'Sitio Seguro'];
+const currentTrustIndex = ref(0);
 const isMobileMenuOpen = ref(false);
 const showCompactBadge = ref(false);
 let intervalId: ReturnType<typeof setInterval> | undefined;
+
+let trustIntervalId: ReturnType<typeof setInterval> | undefined;
 
 onMounted(() => {
   intervalId = setInterval(() => {
     currentDomainIndex.value = (currentDomainIndex.value + 1) % domains.length;
     currentTaglineIndex.value = (currentTaglineIndex.value + 1) % taglines.length;
   }, 5000);
+
+  trustIntervalId = setInterval(() => {
+    currentTrustIndex.value = (currentTrustIndex.value + 1) % trustItems.length;
+  }, 4000);
 
   setTimeout(() => {
     showCompactBadge.value = true;
@@ -193,6 +205,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId);
+  if (trustIntervalId) clearInterval(trustIntervalId);
 });
 </script>
 
@@ -229,78 +242,76 @@ onUnmounted(() => {
 
           <TrustCarousel />
 
-          <!-- LOGO -->
+          <!-- LOGO + Mobile domain -->
           <RouterLink :to="{ name: 'home' }"
             class="group flex items-center gap-3 rounded-xl transition-all duration-300">
 
             <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
-              class="hidden h-11 w-11 rounded-xl bg-black object-contain transition-transform duration-300 group-hover:scale-105 sm:block" />
+              class="hidden sm:block h-11 w-11 rounded-xl bg-black object-contain transition-transform duration-300 group-hover:scale-105" />
+
+            <!-- MOBILE: Logo + rotating trust badge + animated domain -->
+            <div class="flex items-center gap-1.5 lg:hidden">
+
+              <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
+                class="h-7 w-7 rounded-lg bg-black object-contain shrink-0" />
+
+              <div class="flex items-center gap-1.5 rounded-md border border-slate-200 bg-white/90 px-2 py-1 shadow-xs min-w-0">
+                <img :src="trustIcons[currentTrustIndex]" alt="" class="h-5 w-5 object-contain shrink-0" />
+                <Transition name="slide-up" mode="out-in">
+                  <span :key="currentTrustIndex" class="text-[10px] font-medium text-slate-600 whitespace-nowrap">
+                    {{ trustItems[currentTrustIndex] }}
+                  </span>
+                </Transition>
+              </div>
+
+              <div class="relative h-6 min-w-[130px] shrink-0 overflow-hidden">
+                <Transition name="slide-up" mode="out-in">
+                  <div :key="currentDomainIndex"
+                    class="absolute inset-0 flex items-center font-black tracking-tight text-sm leading-none">
+                    <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                    <span class="text-orange-500!">.com</span>
+                  </div>
+                </Transition>
+              </div>
+
+            </div>
 
             <div class="hidden min-w-[240px] flex-col justify-center lg:flex">
 
-              <!-- Dominio -->
+              <!-- Dominio (desktop) -->
               <div class="relative h-8 overflow-hidden">
-
                 <Transition name="slide-up">
-
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none">
-
-                    <span translate="no" class="text-gray-900">
-                      {{ domains[currentDomainIndex]?.split('.com')[0] }}
-                    </span>
-
-                    <span class="text-orange-500">
-                      .com
-                    </span>
-
+                    <span translate="no" class="text-gray-900">{{ domains[currentDomainIndex]?.split('.com')[0]
+                    }}</span>
+                    <span class="text-orange-500">.com</span>
                   </div>
-
                 </Transition>
-
               </div>
 
               <!-- Tagline -->
               <div class="relative mt-1 h-5 overflow-hidden">
-
                 <Transition name="slide-up">
-
                   <div :key="currentTaglineIndex"
                     class="absolute inset-0 flex items-center text-[11px] tracking-wide text-gray-400">
-
                     <template v-if="taglines[currentTaglineIndex]!.clickable">
-
-                      <span class="mr-1">
-                        por
-                      </span>
-
+                      <span class="mr-1">por</span>
                       <span @click.stop="openAziechrie"
-                        class="cursor-pointer font-semibold text-orange-400 transition-colors hover:text-orange-500">
-
-                        AZIECHRIE PHARMA
-
-                      </span>
-
+                        class="cursor-pointer font-semibold text-orange-400 transition-colors hover:text-orange-500">AZIECHRIE
+                        PHARMA</span>
                     </template>
-
-                    <template v-else>
-
-                      {{ taglines[currentTaglineIndex]!.text }}
-
-                    </template>
-
+                    <template v-else>{{ taglines[currentTaglineIndex]!.text }}</template>
                   </div>
-
                 </Transition>
-
               </div>
 
             </div>
 
           </RouterLink>
-
         </div>
-        <!-- CENTER | Desktop Navigation -->
+
+<!-- CENTER | Desktop Navigation -->
         <div class="hidden flex-1 items-center justify-center lg:flex">
 
           <nav
