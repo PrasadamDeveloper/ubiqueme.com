@@ -1,0 +1,39 @@
+# Cline Rules
+
+## Cache Optimization
+
+- Stable content first, dynamic last — keeps the cache prefix intact and maximizes DeepSeek cache hits.
+- Never add timestamps, task IDs, or session metadata to prompts.
+- Prefer replace_in_file over full file reads — fewer input tokens, stable prefix unchanged.
+- Read each file once per task. Re-read only if it changed or new evidence requires it.
+- Skip environment_details, directory trees, and broad scans unless the task explicitly needs them.
+- Avoid /compact mid-task — only use it when switching to a completely separate task.
+
+## Editing
+
+- replace_in_file for all edits. Full rewrites only if explicitly asked.
+- Files over 100 lines: edit only the affected block.
+- Change only what is required. Reuse existing patterns and architecture.
+- Never expose API keys in frontend code.
+
+## Git
+
+- Never push unless explicitly told to do so by the user.
+- Stage and commit locally, but wait for user confirmation before pushing.
+
+## Communication
+
+- Concise. No restating requests or summarizing actions.
+- Max one clarifying question per reply.
+- Text-only if no changes requested.
+
+## Vue / Ionic / Firebase
+
+- Composition API only. Incremental UI edits — no full redesigns.
+
+## Mobile-First & Responsive (New Development)
+
+- All new UI work must be mobile-first: design and implement for the smallest screen first, then extend with responsive breakpoints.
+- Do NOT create separate mobile/desktop components. Build responsive components using CSS media queries, flexbox, grid, and utility classes. Keeping a single component avoids duplicating work when changes are needed.
+- Existing components with mobile/desktop splits (e.g., QRCard vs QRCardMobile) are left as-is. Only new work must follow this rule.
+- Prefer incremental responsive enhancements over modularization. Only extract a new component if the same UI block is reused in at least 3+ unrelated places.
