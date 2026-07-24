@@ -255,7 +255,8 @@ onUnmounted(() => {
               <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
                 class="h-7 w-7 rounded-lg bg-black object-contain shrink-0" />
 
-              <div class="flex items-center gap-1.5 rounded-md border border-slate-200 bg-white/90 px-2 py-1 shadow-xs min-w-0">
+              <div
+                class="flex items-center gap-1.5 rounded-md border border-slate-200 bg-white/90 px-2 py-1 shadow-xs min-w-0">
                 <img :src="trustIcons[currentTrustIndex]" alt="" class="h-5 w-5 object-contain shrink-0" />
                 <Transition name="slide-up" mode="out-in">
                   <span :key="currentTrustIndex" class="text-[10px] font-medium text-slate-600 whitespace-nowrap">
@@ -268,7 +269,8 @@ onUnmounted(() => {
                 <Transition name="slide-up" mode="out-in">
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-center font-black tracking-tight text-sm leading-none">
-                    <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                    <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0]
+                      }}</span>
                     <span class="text-orange-500!">.com</span>
                   </div>
                 </Transition>
@@ -282,10 +284,10 @@ onUnmounted(() => {
               <div class="relative h-8 overflow-hidden">
                 <Transition name="slide-up">
                   <div :key="currentDomainIndex"
-                    class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none">
-                    <span translate="no" class="text-gray-900">{{ domains[currentDomainIndex]?.split('.com')[0]
-                    }}</span>
-                    <span class="text-orange-500">.com</span>
+                    class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none font-inter-tight">
+                    <span translate="no" class="text-orange-500">{{ domains[currentDomainIndex]?.split('.com')[0]
+                      }}</span>
+                    <span class="text-slate-900">.com</span>
                   </div>
                 </Transition>
               </div>
@@ -311,7 +313,7 @@ onUnmounted(() => {
           </RouterLink>
         </div>
 
-<!-- CENTER | Desktop Navigation -->
+        <!-- CENTER | Desktop Navigation -->
         <div class="hidden flex-1 items-center justify-center lg:flex">
 
           <nav
@@ -658,13 +660,14 @@ onUnmounted(() => {
           <!-- Marca -->
           <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
             <div class="mb-5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
-              <div class="flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5">
-                <span class="material-symbols-outlined notranslate text-orange-600 text-[14px]">lock</span>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-orange-700">SSL 256-bit</span>
+              <div class="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">
+                <span class="material-symbols-outlined notranslate text-slate-600 text-[14px]">lock</span>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-slate-700">SSL</span>
               </div>
-              <div class="flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5">
-                <span class="material-symbols-outlined notranslate text-orange-600 text-[14px]">verified</span>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-orange-700">SAT · Formal</span>
+              <div class="flex items-center gap-1.5 rounded-full border border-slate-200/30 bg-slate-50/70 px-3 py-1.5">
+                <span class="material-symbols-outlined notranslate text-slate-600 text-[14px]">verified</span>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-slate-700">Empresa Formalmente
+                  Registrada</span>
               </div>
             </div>
             <Transition name="slide-up">

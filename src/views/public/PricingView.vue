@@ -95,9 +95,11 @@ const handleSelect = (id: string) => {
 
             <!-- Hero -->
             <header class="text-center mb-14 md:mb-16">
-              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-orange-200 bg-orange-50/70 mb-6">
+              <div
+                class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-orange-200 bg-orange-50/70 mb-6">
                 <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-orange-500">Planes de Protección</span>
+                <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-orange-500">Planes de
+                  Protección</span>
               </div>
               <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight leading-[0.92]">
                 Elija su<br><span class="text-orange-500">Plan</span>
@@ -109,8 +111,11 @@ const handleSelect = (id: string) => {
 
             <!-- Promo Banner -->
             <div v-if="!useUserStore().getUserId" class="mb-10">
-              <div class="relative rounded-xl border border-orange-200/60 bg-gradient-to-r from-orange-50/80 via-white to-orange-50/80 p-5 sm:p-6">
-                <div class="absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_top_right,rgba(255,121,0,0.06)_0%,transparent_60%)] pointer-events-none"></div>
+              <div
+                class="relative rounded-xl border border-orange-200/60 bg-gradient-to-r from-orange-50/80 via-white to-orange-50/80 p-5 sm:p-6">
+                <div
+                  class="absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_top_right,rgba(255,121,0,0.06)_0%,transparent_60%)] pointer-events-none">
+                </div>
                 <div class="relative flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                   <div class="flex-1 text-center sm:text-left">
                     <p class="text-sm sm:text-base font-bold text-slate-900">1 año plan Bronce gratis — únase hoy</p>
@@ -143,19 +148,18 @@ const handleSelect = (id: string) => {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
 
               <div v-for="plan in plans" :key="plan.id"
-                class="relative flex flex-col rounded-xl border bg-white transition-all duration-300"
-                :class="plan.featured
+                class="relative flex flex-col rounded-xl border bg-white transition-all duration-300" :class="plan.featured
                   ? 'border-orange-200 shadow-lg shadow-orange-500/5 md:scale-105 md:-translate-y-2'
                   : 'border-slate-200 hover:border-slate-300 shadow-sm'">
 
                 <!-- Featured indicator -->
-                <div v-if="plan.featured"
-                  class="absolute -top-[1px] left-6 right-6 h-[3px] bg-orange-500 rounded-full">
+                <div v-if="plan.featured" class="absolute -top-[1px] left-6 right-6 h-[3px] bg-orange-500 rounded-full">
                 </div>
 
                 <!-- Badge -->
                 <div v-if="plan.featured" class="absolute -top-3 right-5 z-10">
-                  <div class="px-3 py-0.5 rounded-md bg-orange-500 text-white text-[8px] font-bold uppercase tracking-[0.2em] shadow-sm">
+                  <div
+                    class="px-3 py-0.5 rounded-md bg-orange-500 text-white text-[8px] font-bold uppercase tracking-[0.2em] shadow-sm">
                     Más Popular
                   </div>
                 </div>
@@ -182,12 +186,17 @@ const handleSelect = (id: string) => {
                       <span class="text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
                         {{ plan.prices[selectedCurrency].symbol }}{{ plan.prices[selectedCurrency].price }}
                       </span>
-                      <span class="text-[9px] font-semibold text-slate-400 uppercase">{{ plan.prices[selectedCurrency].label }}</span>
-                      <span class="px-2 py-0.5 rounded-md bg-orange-50 text-orange-600 text-[9px] font-bold uppercase tracking-wider">{{ plan.prices[selectedCurrency].period }}</span>
+                      <span class="text-[9px] font-semibold text-slate-400 uppercase">{{
+                        plan.prices[selectedCurrency].label }}</span>
+                      <span
+                        class="px-3 py-1 rounded-md bg-orange-500 text-white text-[14px] font-black uppercase tracking-[0.15em] shadow-sm shadow-orange-500/20">{{
+                          plan.prices[selectedCurrency].period }}</span>
                     </div>
                     <div class="flex items-center justify-between mt-1.5">
-                      <p class="text-[11px] text-slate-400">~{{ plan.prices[selectedCurrency].symbol }}{{ plan.prices[selectedCurrency].monthly }}/mes</p>
-                      <p class="text-[10px] text-orange-600/70 font-semibold">{{ plan.prices[selectedCurrency].note }}</p>
+                      <p class="text-[11px] text-slate-400">~{{ plan.prices[selectedCurrency].symbol }}{{
+                        plan.prices[selectedCurrency].monthly }}/mes</p>
+                      <p class="text-[10px] text-orange-600/70 font-semibold">{{ plan.prices[selectedCurrency].note }}
+                      </p>
                     </div>
                   </div>
 
@@ -196,7 +205,8 @@ const handleSelect = (id: string) => {
                     <li v-for="(feature, idx) in plan.features" :key="idx" class="flex items-start gap-2.5">
                       <div class="w-4 h-4 rounded flex items-center justify-center shrink-0 mt-0.5"
                         :class="feature.included ? 'bg-orange-50 text-orange-500' : 'bg-slate-100 text-slate-300'">
-                        <span class="material-symbols-outlined notranslate text-[10px] font-bold">{{ feature.included ? 'check' : 'remove' }}</span>
+                        <span class="material-symbols-outlined notranslate text-[10px] font-bold">{{ feature.included ?
+                          'check' : 'remove' }}</span>
                       </div>
                       <span class="text-[12px] leading-snug"
                         :class="feature.included ? 'text-slate-700 font-medium' : 'text-slate-300 line-through'">
@@ -212,7 +222,8 @@ const handleSelect = (id: string) => {
                       ? 'bg-orange-500 text-white hover:bg-orange-400 shadow-sm shadow-orange-500/20'
                       : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 border border-slate-200'">
                     {{ plan.cta }}
-                    <span v-if="plan.featured" class="material-symbols-outlined notranslate text-[13px]">arrow_forward</span>
+                    <span v-if="plan.featured"
+                      class="material-symbols-outlined notranslate text-[13px]">arrow_forward</span>
                   </button>
 
                 </div>
@@ -224,7 +235,8 @@ const handleSelect = (id: string) => {
             <div class="mt-14 max-w-2xl mx-auto">
               <div class="relative p-5 sm:p-6 rounded-xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex items-start gap-4">
-                  <div class="w-9 h-9 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
+                  <div
+                    class="w-9 h-9 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
                     <span class="material-symbols-outlined notranslate text-lg">local_shipping</span>
                   </div>
                   <div class="space-y-1.5">

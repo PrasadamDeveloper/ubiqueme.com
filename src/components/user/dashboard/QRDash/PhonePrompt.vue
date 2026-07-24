@@ -27,6 +27,23 @@
           </div>
         </div>
 
+        <!-- Security transparency message -->
+        <div class="mb-6 p-4 rounded-2xl bg-orange-500/5 border border-orange-500/15">
+          <div class="flex items-start gap-3">
+            <div
+              class="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0 mt-0.5">
+              <span class="material-symbols-outlined notranslate text-orange-500 text-lg">verified_user</span>
+            </div>
+            <div class="space-y-1">
+              <p class="text-[11px] font-bold text-orange-400 uppercase tracking-wider">Verificación de seguridad</p>
+              <p class="text-[12px] text-white/60 leading-relaxed">
+                Le enviaremos un código por WhatsApp para confirmar que es el dueño de este número.
+                Así protegemos su cuenta y aseguramos que solo usted reciba las notificaciones de escaneo.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Form -->
         <div class="space-y-5">
           <!-- Country Code + Phone -->
@@ -107,7 +124,8 @@
             <p class="mt-1 text-sm font-medium leading-relaxed text-white/50">
               Hemos enviado un código de verificación de 6 dígitos al número
               <span class="font-bold text-white/70">{{ selectedCountry.prefix }} {{ phoneNumber }}</span>
-              por WhatsApp. Introduzcalo abajo para confirmar.
+              por WhatsApp. Este paso confirma que usted es el dueño del número, protege su cuenta
+              contra accesos no autorizados y garantiza que solo usted reciba las notificaciones de escaneo.
             </p>
           </div>
         </div>

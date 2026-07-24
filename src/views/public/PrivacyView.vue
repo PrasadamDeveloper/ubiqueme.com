@@ -102,7 +102,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 
 <style scoped>
 .legal-page {
-  background-color: #09090b;
+  background: linear-gradient(to bottom, #ffffff, #fff7ed, #ffffff);
   min-height: 100vh;
   padding: 120px 20px 80px;
 }
@@ -119,7 +119,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 h1 {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #0f172a;
   letter-spacing: -0.04em;
   margin-bottom: 8px;
 }
@@ -134,12 +134,12 @@ h1 {
 }
 
 .meta-info {
-  color: #52525b;
+  color: #94a3b8;
   font-size: 0.8rem;
 }
 
 .legal-content {
-  color: #a1a1aa;
+  color: #64748b;
   font-size: 1rem;
   line-height: 1.7;
 }
@@ -149,7 +149,7 @@ section {
 }
 
 h3 {
-  color: #fafafa;
+  color: #0f172a;
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 16px;

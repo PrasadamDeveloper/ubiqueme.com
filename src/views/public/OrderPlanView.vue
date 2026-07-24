@@ -137,7 +137,8 @@ const handleSubmit = async () => {
                 Volver
               </button>
               <div>
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-200 bg-orange-50/70 mb-4">
+                <div
+                  class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-200 bg-orange-50/70 mb-4">
                   <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
                   <span class="text-[8px] font-bold uppercase tracking-[0.25em] text-orange-500">Contratación</span>
                 </div>
@@ -152,13 +153,15 @@ const handleSubmit = async () => {
 
             <!-- Success State -->
             <div v-if="isSuccess" class="max-w-md mx-auto py-16 text-center">
-              <div class="w-20 h-20 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center mx-auto shadow-sm">
+              <div
+                class="w-20 h-20 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center mx-auto shadow-sm">
                 <span class="material-symbols-outlined notranslate text-4xl text-orange-500">check_circle</span>
               </div>
               <div class="mt-6 space-y-3">
                 <h2 class="text-2xl font-black text-slate-900 tracking-tight">Suscripción en proceso</h2>
                 <p class="text-sm text-slate-500 leading-relaxed">
-                  Hemos recibido su solicitud. Recibirá una confirmación en <strong class="text-slate-700 font-semibold">{{ formData.email }}</strong>.
+                  Hemos recibido su solicitud. Recibirá una confirmación en <strong
+                    class="text-slate-700 font-semibold">{{ formData.email }}</strong>.
                 </p>
               </div>
               <button @click="router.push('/')"
@@ -174,8 +177,7 @@ const handleSubmit = async () => {
               <div class="lg:sticky lg:top-28 space-y-6">
 
                 <!-- Plan card -->
-                <div v-if="currentPlan"
-                  class="relative rounded-xl border bg-white p-6"
+                <div v-if="currentPlan" class="relative rounded-xl border bg-white p-6"
                   :class="currentPlan.featured ? 'border-orange-200 shadow-lg shadow-orange-500/5' : 'border-slate-200 shadow-sm'">
 
                   <!-- Featured badge -->
@@ -185,15 +187,19 @@ const handleSubmit = async () => {
 
                   <div class="flex items-start justify-between mb-4">
                     <div>
-                      <p class="text-[8px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-0.5">Plan seleccionado</p>
+                      <p class="text-[8px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-0.5">Plan
+                        seleccionado</p>
                       <h3 class="text-xl font-black text-slate-900">{{ currentPlan.name }}</h3>
                     </div>
-                    <span class="material-symbols-outlined notranslate text-xl text-orange-500">{{ currentPlan.icon }}</span>
+                    <span class="material-symbols-outlined notranslate text-xl text-orange-500">{{ currentPlan.icon
+                      }}</span>
                   </div>
 
                   <div class="flex items-baseline gap-1.5 mb-2">
                     <span class="text-2xl font-black text-slate-900">{{ currentPlan.price }}</span>
-                    <span class="text-[9px] font-semibold text-slate-400 uppercase">{{ currentPlan.period }}</span>
+                    <span
+                      class="px-2.5 py-0.5 rounded-md bg-orange-500 text-white text-[10px] font-black uppercase tracking-[0.15em] shadow-sm shadow-orange-500/20">{{
+                      currentPlan.period }}</span>
                   </div>
                   <p class="text-[12px] text-slate-500 mb-5">{{ currentPlan.description }}</p>
 
@@ -202,11 +208,11 @@ const handleSubmit = async () => {
                     <p class="text-[8px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-3">Lo que incluye</p>
                     <div class="space-y-2">
                       <div v-for="feature in currentPlan.features" :key="feature.label"
-                        class="flex items-center gap-2.5"
-                        :class="feature.included ? '' : 'opacity-40'">
+                        class="flex items-center gap-2.5" :class="feature.included ? '' : 'opacity-40'">
                         <div class="w-3.5 h-3.5 rounded flex items-center justify-center shrink-0"
                           :class="feature.included ? 'bg-orange-50 text-orange-500' : 'bg-slate-100 text-slate-300'">
-                          <span class="material-symbols-outlined notranslate text-[8px] font-bold">{{ feature.included ? 'check' : 'remove' }}</span>
+                          <span class="material-symbols-outlined notranslate text-[8px] font-bold">{{ feature.included ?
+                            'check' : 'remove' }}</span>
                         </div>
                         <span class="text-[11px]"
                           :class="feature.included ? 'text-slate-700 font-medium' : 'text-slate-400 line-through'">
@@ -217,10 +223,13 @@ const handleSubmit = async () => {
                   </div>
 
                   <!-- Inherited benefits -->
-                  <div v-if="selectedPlan === 'plata' || selectedPlan === 'oro'" class="mt-4 pt-4 border-t border-slate-100">
-                    <p class="text-[8px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-2">Beneficios heredados</p>
+                  <div v-if="selectedPlan === 'plata' || selectedPlan === 'oro'"
+                    class="mt-4 pt-4 border-t border-slate-100">
+                    <p class="text-[8px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-2">Beneficios heredados
+                    </p>
                     <div class="flex flex-wrap gap-1.5">
-                      <div v-for="(f, i) in (selectedPlan === 'plata' ? (plans[0]?.features ?? []) : [...(plans[0]?.features ?? []), ...(plans[1]?.features ?? [])])"
+                      <div
+                        v-for="(f, i) in (selectedPlan === 'plata' ? (plans[0]?.features ?? []) : [...(plans[0]?.features ?? []), ...(plans[1]?.features ?? [])])"
                         :key="(f?.label ?? '') + i"
                         class="px-2 py-1 rounded-md bg-slate-50 border border-slate-200 flex items-center gap-1">
                         <span class="material-symbols-outlined notranslate text-[8px] text-slate-400">add</span>
@@ -233,14 +242,16 @@ const handleSubmit = async () => {
                 <!-- Shipping Info -->
                 <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
+                    <div
+                      class="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
                       <span class="material-symbols-outlined notranslate text-[16px]">local_shipping</span>
                     </div>
                     <div>
                       <h4 class="text-[11px] font-bold text-slate-900">Envío físico — Solo México</h4>
                       <p class="text-[10px] text-slate-500 leading-relaxed mt-0.5">
                         Incluye <strong class="text-orange-600 font-semibold">1 envío gratis</strong>.
-                        Solicitudes posteriores: <strong class="text-slate-700 font-semibold">$199 MXN</strong> por paquete.
+                        Solicitudes posteriores: <strong class="text-slate-700 font-semibold">$199 MXN</strong> por
+                        paquete.
                       </p>
                     </div>
                   </div>
@@ -253,42 +264,50 @@ const handleSubmit = async () => {
                 <div class="rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
                   <div class="mb-6">
                     <h2 class="text-base font-bold text-slate-900">Datos de contacto</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Completa la información para continuar con la suscripción</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Completa la información para continuar con la suscripción
+                    </p>
                   </div>
 
                   <form @submit.prevent="handleSubmit" class="space-y-5">
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div class="space-y-1.5">
-                        <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Nombre completo</label>
+                        <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Nombre
+                          completo</label>
                         <input v-model="formData.fullName" readonly
                           class="w-full h-11 px-3.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 text-sm outline-none cursor-not-allowed" />
                       </div>
                       <div class="space-y-1.5">
-                        <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Correo electrónico</label>
+                        <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Correo
+                          electrónico</label>
                         <input v-model="formData.email" readonly
                           class="w-full h-11 px-3.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 text-sm outline-none cursor-not-allowed" />
                       </div>
                     </div>
 
                     <div class="space-y-1.5">
-                      <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Teléfono WhatsApp <span class="text-orange-500">*</span></label>
+                      <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Teléfono WhatsApp
+                        <span class="text-orange-500">*</span></label>
                       <input v-model="formData.phone" required type="tel" placeholder="+52 555 555 5555"
                         class="w-full h-11 px-3.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 shadow-sm" />
                     </div>
 
                     <div class="space-y-1.5">
-                      <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Notas adicionales <span class="text-slate-400 font-normal normal-case tracking-normal">(opcional)</span></label>
-                      <textarea v-model="formData.specialNotes" rows="3" placeholder="Alguna nota o instrucción especial..."
+                      <label class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Notas adicionales
+                        <span class="text-slate-400 font-normal normal-case tracking-normal">(opcional)</span></label>
+                      <textarea v-model="formData.specialNotes" rows="3"
+                        placeholder="Alguna nota o instrucción especial..."
                         class="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 shadow-sm resize-none"></textarea>
                     </div>
 
                     <div class="flex items-center justify-between pt-2">
-                      <p class="text-[9px] text-slate-400">Los campos marcados con <span class="text-orange-500 font-bold">*</span> son obligatorios</p>
+                      <p class="text-[9px] text-slate-400">Los campos marcados con <span
+                          class="text-orange-500 font-bold">*</span> son obligatorios</p>
                       <button type="submit" :disabled="isSubmitting"
                         class="inline-flex items-center gap-2 h-11 px-6 rounded-lg bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-orange-400 active:scale-[0.97] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-orange-500/20 cursor-pointer">
                         <span v-if="isSubmitting" class="flex items-center gap-2">
-                          <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                          <span
+                            class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                           Procesando...
                         </span>
                         <span v-else class="flex items-center gap-1.5">
