@@ -149,23 +149,23 @@ const handleClose = () => {
     <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 translate-y-full"
       leave-active-class="transition-all duration-200 ease-in" leave-to-class="opacity-0 translate-y-full">
       <div v-if="visible" v-auto-height
-        class="fixed bottom-15 left-0 right-0 z-50 bg-[#2B2930] rounded-t-2xl pb-[env(safe-area-inset-bottom,24px)] max-h-[92vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)] font-google-sans">
+        class="fixed bottom-15 left-0 right-0 z-50 bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom,24px)] max-h-[92vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.15)] font-google-sans">
 
         <!-- Handle bar -->
-        <div class="w-10 h-1 bg-[#CAC4D0]/20 rounded-full mx-auto my-3"></div>
+        <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto my-3"></div>
 
         <div class="px-4 pb-4">
           <!-- Header -->
           <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined notranslate text-orange-400 text-[20px]">local_shipping</span>
+            <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined notranslate text-orange-500 text-[20px]">local_shipping</span>
             </div>
             <div>
-              <h2 class="text-[#E6E1E5] text-base font-bold">Pedir QR físico</h2>
-              <p class="text-[#CAC4D0]/50 text-[10px] leading-tight">Personalice y solicite sus códigos QR</p>
+              <h2 class="text-slate-900 text-base font-bold">Pedir QR físico</h2>
+              <p class="text-slate-500 text-[10px] leading-tight">Personalice y solicite sus códigos QR</p>
             </div>
             <button @click="handleClose"
-              class="ml-auto w-8 h-8 flex items-center justify-center rounded-lg text-[#CAC4D0]/60 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+              class="ml-auto w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer">
               <span class="material-symbols-outlined notranslate text-[18px]">close</span>
             </button>
           </div>
@@ -191,64 +191,64 @@ const handleClose = () => {
           </div>
 
           <!-- Address Section (accordion style) -->
-          <details class="mb-4 rounded-xl border border-[#49454F]/30 overflow-hidden" open>
-            <summary class="flex items-center gap-2 p-3 bg-[#1C1B1F]/50 cursor-pointer list-none">
-              <span class="material-symbols-outlined notranslate text-[#CAC4D0]/40 text-[16px]">location_on</span>
-              <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#CAC4D0]/60">Dirección de
+          <details class="mb-4 rounded-xl border border-slate-200 overflow-hidden" open>
+            <summary class="flex items-center gap-2 p-3 bg-slate-50 cursor-pointer list-none">
+              <span class="material-symbols-outlined notranslate text-slate-400 text-[16px]">location_on</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Dirección de
                 entrega</span>
               <span
-                class="ml-auto material-symbols-outlined notranslate text-[#CAC4D0]/30 text-[16px]">expand_more</span>
+                class="ml-auto material-symbols-outlined notranslate text-slate-400 text-[16px]">expand_more</span>
             </summary>
-            <div class="p-3 space-y-2.5 border-t border-[#49454F]/20">
+            <div class="p-3 space-y-2.5 border-t border-slate-200">
               <div>
-                <label class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-1 block">Ciudad
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1 mb-1 block">Ciudad
                   *</label>
                 <input v-model="city" type="text" placeholder="Ej. Ciudad de México"
-                  class="w-full h-10 px-3 rounded-xl border border-[#49454F]/50 bg-[#1C1B1F] text-[#E6E1E5] text-sm placeholder:text-[#CAC4D0]/30 outline-none focus:border-orange-500/50 focus:bg-orange-500/5 transition-all" />
+                  class="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50 transition-all" />
               </div>
               <div>
-                <label class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-1 block">Código
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1 mb-1 block">Código
                   Postal *</label>
                 <input v-model="postalCode" type="text" placeholder="Ej. 06600" maxlength="5"
-                  class="w-full h-10 px-3 rounded-xl border border-[#49454F]/50 bg-[#1C1B1F] text-[#E6E1E5] text-sm placeholder:text-[#CAC4D0]/30 outline-none focus:border-orange-500/50 focus:bg-orange-500/5 transition-all" />
+                  class="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50 transition-all" />
               </div>
               <div>
-                <label class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-1 block">Teléfono
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1 mb-1 block">Teléfono
                   *</label>
                 <input v-model="phone" type="tel" placeholder="5512345678"
-                  class="w-full h-10 px-3 rounded-xl border border-[#49454F]/50 bg-[#1C1B1F] text-[#E6E1E5] text-sm placeholder:text-[#CAC4D0]/30 outline-none focus:border-orange-500/50 focus:bg-orange-500/5 transition-all" />
+                  class="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50 transition-all" />
               </div>
               <div>
-                <label class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-1 block">Notas
-                  <span class="normal-case text-[#CAC4D0]/30">(opcional)</span></label>
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1 mb-1 block">Notas
+                  <span class="normal-case text-slate-300">(opcional)</span></label>
                 <textarea v-model="shippingNotes" rows="2" placeholder="Referencias, etc."
-                  class="w-full px-3 py-2.5 rounded-xl border border-[#49454F]/50 bg-[#1C1B1F] text-[#E6E1E5] text-sm placeholder:text-[#CAC4D0]/30 outline-none focus:border-orange-500/50 focus:bg-orange-500/5 transition-all resize-none"></textarea>
+                  class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-orange-500 focus:bg-orange-50 transition-all resize-none"></textarea>
               </div>
             </div>
           </details>
 
           <!-- QR Selection -->
-          <details class="mb-4 rounded-xl border border-[#49454F]/30 overflow-hidden" open>
-            <summary class="flex items-center gap-2 p-3 bg-[#1C1B1F]/50 cursor-pointer list-none">
-              <span class="material-symbols-outlined notranslate text-[#CAC4D0]/40 text-[16px]">qr_code</span>
-              <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#CAC4D0]/60">QRs para enviar <span
-                  class="text-[#CAC4D0]/30">({{ selectedQRIds.size }} sel.)</span></span>
+          <details class="mb-4 rounded-xl border border-slate-200 overflow-hidden" open>
+            <summary class="flex items-center gap-2 p-3 bg-slate-50 cursor-pointer list-none">
+              <span class="material-symbols-outlined notranslate text-slate-400 text-[16px]">qr_code</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">QRs para enviar <span
+                  class="text-slate-400">({{ selectedQRIds.size }} sel.)</span></span>
               <span
-                class="ml-auto material-symbols-outlined notranslate text-[#CAC4D0]/30 text-[16px]">expand_more</span>
+                class="ml-auto material-symbols-outlined notranslate text-slate-400 text-[16px]">expand_more</span>
             </summary>
-            <div class="p-3 border-t border-[#49454F]/20">
+            <div class="p-3 border-t border-slate-200">
               <!-- Quick select buttons -->
               <div class="flex gap-2 mb-3">
                 <button @click="selectAll"
-                  class="flex-1 py-1.5 rounded-lg border border-[#49454F]/30 text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/60 hover:text-white hover:border-white/20 transition-all cursor-pointer">Todos</button>
+                  class="flex-1 py-1.5 rounded-lg border border-slate-200 text-[9px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all cursor-pointer">Todos</button>
                 <button @click="deselectAll"
-                  class="flex-1 py-1.5 rounded-lg border border-[#49454F]/30 text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/60 hover:text-white hover:border-white/20 transition-all cursor-pointer">Limpiar</button>
+                  class="flex-1 py-1.5 rounded-lg border border-slate-200 text-[9px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all cursor-pointer">Limpiar</button>
               </div>
 
               <div class="space-y-2">
                 <div v-for="qr in qrs" :key="qr.id"
                   class="rounded-xl border transition-all duration-200 overflow-hidden"
-                  :class="[isSelected(qr.id) ? 'border-orange-500/30 bg-orange-500/5' : 'border-[#49454F]/30 bg-[#1C1B1F]/50']">
+                  :class="[isSelected(qr.id) ? 'border-orange-500/30 bg-orange-50' : 'border-slate-200 bg-white']">
                   <div class="flex items-center gap-2.5 p-2.5 cursor-pointer"
                     :class="qr.status !== 'Active' ? 'opacity-50' : ''"
                     @click="qr.status === 'Active' && toggleExpanded(qr.id, qr.status)">
@@ -259,70 +259,70 @@ const handleClose = () => {
                         class="material-symbols-outlined notranslate text-black text-[14px]">check</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <p class="text-xs font-bold text-[#E6E1E5] truncate leading-tight">{{ qr.name }}</p>
+                      <p class="text-xs font-bold text-slate-900 truncate leading-tight">{{ qr.name }}</p>
                       <div class="flex items-center gap-2 mt-0.5">
-                        <span class="text-[9px] text-[#CAC4D0]/40 font-mono">#{{ qr.id.slice(0, 6) }}..</span>
+                        <span class="text-[9px] text-slate-400 font-mono">#{{ qr.id.slice(0, 6) }}..</span>
                         <span v-if="qr.status !== 'Active'"
                           class="px-1 py-0.5 rounded bg-red-500/10 text-red-400 text-[7px] font-bold uppercase">{{
                             qr.status }}</span>
                       </div>
                     </div>
                     <span
-                      class="material-symbols-outlined notranslate text-[#CAC4D0]/30 text-[16px] transition-transform"
+                      class="material-symbols-outlined notranslate text-slate-400 text-[16px] transition-transform"
                       :class="expandedQR === qr.id ? 'rotate-180' : ''">expand_more</span>
                   </div>
 
                   <!-- Customization panel -->
-                  <div v-if="expandedQR === qr.id" class="border-t border-[#49454F]/20 px-3 py-3 space-y-3">
+                  <div v-if="expandedQR === qr.id" class="border-t border-slate-200 px-3 py-3 space-y-3">
                     <div class="space-y-1.5">
                       <label
-                        class="text-[8px] font-black uppercase tracking-[0.15em] text-[#CAC4D0]/30 ml-1">Formato</label>
+                        class="text-[8px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1">Formato</label>
                       <div class="grid grid-cols-2 gap-2">
                         <button @click="setLayout(qr.id, 'compact')"
                           class="rounded-xl border p-2.5 text-left transition-all cursor-pointer"
-                          :class="getQrCust(qr.id).layout === 'compact' ? 'border-orange-500/40 bg-orange-500/10' : 'border-[#49454F]/30 bg-[#1C1B1F]/80 hover:border-white/20'">
-                          <p class="text-xs font-bold text-white">Compacto</p>
-                          <p class="text-[8px] text-[#CAC4D0]/40 mt-0.5">Solo QR</p>
+                          :class="getQrCust(qr.id).layout === 'compact' ? 'border-orange-500/40 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'">
+                          <p class="text-xs font-bold text-slate-900">Compacto</p>
+                          <p class="text-[8px] text-slate-500 mt-0.5">Solo QR</p>
                         </button>
                         <button @click="setLayout(qr.id, 'detail')"
                           class="rounded-xl border p-2.5 text-left transition-all cursor-pointer"
-                          :class="getQrCust(qr.id).layout === 'detail' ? 'border-orange-500/40 bg-orange-500/10' : 'border-[#49454F]/30 bg-[#1C1B1F]/80 hover:border-white/20'">
-                          <p class="text-xs font-bold text-white">Detallado</p>
-                          <p class="text-[8px] text-[#CAC4D0]/40 mt-0.5">Nombre + QR</p>
+                          :class="getQrCust(qr.id).layout === 'detail' ? 'border-orange-500/40 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'">
+                          <p class="text-xs font-bold text-slate-900">Detallado</p>
+                          <p class="text-[8px] text-slate-500 mt-0.5">Nombre + QR</p>
                         </button>
                       </div>
                     </div>
                     <div class="space-y-1.5">
                       <label
-                        class="text-[8px] font-black uppercase tracking-[0.15em] text-[#CAC4D0]/30 ml-1">Tamaño</label>
+                        class="text-[8px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1">Tamaño</label>
                       <div class="grid grid-cols-4 gap-1.5">
                         <button v-for="size in sizeOptions" :key="size" @click="setSize(qr.id, size)"
                           class="h-8 rounded-lg border text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                          :class="getQrCust(qr.id).size === size ? 'border-orange-500/40 bg-orange-500/10 text-orange-400' : 'border-[#49454F]/30 bg-[#1C1B1F]/80 text-[#CAC4D0]/50 hover:border-white/30'">{{
+                          :class="getQrCust(qr.id).size === size ? 'border-orange-500/40 bg-orange-50 text-orange-600' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'">{{
                             size }}</button>
                       </div>
                     </div>
                     <div class="space-y-1.5">
                       <label
-                        class="text-[8px] font-black uppercase tracking-[0.15em] text-[#CAC4D0]/30 ml-1">Pegamento</label>
+                        class="text-[8px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1">Pegamento</label>
                       <div class="grid grid-cols-2 gap-2">
                         <button @click="setGluePosition(qr.id, 'frontal')"
                           class="rounded-xl border p-2.5 text-left transition-all cursor-pointer"
-                          :class="getQrCust(qr.id).gluePosition === 'frontal' ? 'border-blue-500/40 bg-blue-500/10' : 'border-[#49454F]/30 bg-[#1C1B1F]/80 hover:border-white/20'">
-                          <p class="text-xs font-bold text-white">Frontal</p>
-                          <p class="text-[8px] text-[#CAC4D0]/40">Para cristales</p>
+                          :class="getQrCust(qr.id).gluePosition === 'frontal' ? 'border-blue-500/40 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'">
+                          <p class="text-xs font-bold text-slate-900">Frontal</p>
+                          <p class="text-[8px] text-slate-500">Para cristales</p>
                         </button>
                         <button @click="setGluePosition(qr.id, 'trasero')"
                           class="rounded-xl border p-2.5 text-left transition-all cursor-pointer"
-                          :class="getQrCust(qr.id).gluePosition === 'trasero' ? 'border-blue-500/40 bg-blue-500/10' : 'border-[#49454F]/30 bg-[#1C1B1F]/80 hover:border-white/20'">
-                          <p class="text-xs font-bold text-white">Trasero</p>
-                          <p class="text-[8px] text-[#CAC4D0]/40">Tradicional</p>
+                          :class="getQrCust(qr.id).gluePosition === 'trasero' ? 'border-blue-500/40 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'">
+                          <p class="text-xs font-bold text-slate-900">Trasero</p>
+                          <p class="text-[8px] text-slate-500">Tradicional</p>
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div v-if="qrs.length === 0" class="text-center py-6 text-[#CAC4D0]/30 text-xs">No hay QRs en este plan.
+                <div v-if="qrs.length === 0" class="text-center py-6 text-slate-400 text-xs">No hay QRs en este plan.
                 </div>
               </div>
             </div>

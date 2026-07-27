@@ -133,58 +133,58 @@ const openDisclaimer = (phone: string) => {
 
       <!-- Avatar column -->
       <div class="shrink-0 pt-1">
-        <div class="w-8 h-8 rounded-xl p-1 bg-green-500/20 border border-green-500/20 flex items-center justify-center">
-          <v-icon name="bi-whatsapp" class="text-green-500" />
+        <div class="w-8 h-8 rounded-xl p-1 bg-green-100 border border-green-200 flex items-center justify-center">
+          <v-icon name="bi-whatsapp" class="text-green-600" />
         </div>
       </div>
 
       <!-- Bubble -->
       <div class="flex-1 min-w-0 max-w-[85%] sm:max-w-[75%] ">
 
-        <div class="log-card border border-white/5 rounded-2xl rounded-tl-sm p-2.5 space-y-2.5 shadow-sm">
+        <div class="log-card border border-slate-200 rounded-2xl rounded-tl-sm p-2.5 space-y-2.5 shadow-sm">
 
           <div class="flex gap-2 items-center">
-            <span class="material-symbols-outlined notranslate text-green-400">contact_page</span>
+            <span class="material-symbols-outlined notranslate text-green-600">contact_page</span>
             <div class="flex items-center gap-1">
               <small
-                class="text-xs font-google-sans font-bold text-green-100 bg-emerald-900 border border-emerald-700 p-1 rounded-2xl flex items-center gap-0.5">
+                class="text-xs font-google-sans font-bold text-green-800 bg-green-100 border border-green-200 p-1 rounded-2xl flex items-center gap-0.5">
                 <span v-if="countryFlag" class="text-sm leading-none">{{ countryFlag }}</span>
                 <span class="leading-none">{{ showPhone && fullPhone ? fullPhone : scannerPhoneFormated(scannerPhone)
                   }}</span>
               </small>
               <button v-if="scannerPhone" @click="showPhone = !showPhone"
-                class="p-1 rounded-lg hover:bg-emerald-900/50 transition-colors cursor-pointer border border-emerald-800/50 flex items-center justify-center"
+                class="p-1 rounded-lg hover:bg-green-100 transition-colors cursor-pointer border border-green-200 flex items-center justify-center"
                 :title="showPhone ? 'Ocultar número' : 'Mostrar número completo'">
-                <span class="material-symbols-outlined notranslate text-[12px] text-green-400/70">{{ showPhone ? 'visibility_off' :
+                <span class="material-symbols-outlined notranslate text-[12px] text-green-600/70">{{ showPhone ? 'visibility_off' :
                   'visibility' }}</span>
               </button>
             </div>
           </div>
 
           <!-- Message text (like a WhatsApp quote bubble) -->
-          <div v-if="interaction?.message" class="bg-[#242625] rounded-xl px-3 py-2.5 relative">
-            <p class="text-white/80 text-[11px] leading-relaxed italic  font-poppins tracking-wide mb-3">
+          <div v-if="interaction?.message" class="bg-slate-100 rounded-xl px-3 py-2.5 relative">
+            <p class="text-slate-700 text-[11px] leading-relaxed italic  font-poppins tracking-wide mb-3">
               {{ interaction.message }}
             </p>
-            <span class="text-[9px] font-poppins font-bold text-white/40 tracking-tight absolute bottom-1 right-2 ">
+            <span class="text-[9px] font-poppins font-bold text-slate-400 tracking-tight absolute bottom-1 right-2 ">
               {{ dateStr }}
             </span>
           </div>
 
           <!-- Evidence image -->
           <div v-if="img"
-            class="relative rounded-xl overflow-hidden border border-white/5 bg-black/30 group/image cursor-pointer"
+            class="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group/image cursor-pointer"
             @click="openImage(img)">
             <img :src="img" alt="Log evidence"
               class="w-full h-36 object-cover opacity-80 group-hover/image:opacity-100 group-hover/image:scale-[1.02] transition-all duration-500" />
             <div
-              class="absolute top-2 right-2 bg-black/70 px-2 py-0.5 rounded-lg border border-white/10 text-[7px] text-white/40 font-black tracking-widest uppercase">
+              class="absolute top-2 right-2 bg-white/90 px-2 py-0.5 rounded-lg border border-slate-200 text-[7px] text-slate-500 font-black tracking-widest uppercase">
               Evidencia
             </div>
             <div
               class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
-              <div class="w-8 h-8 rounded-full bg-black/60 border border-white/10 flex items-center justify-center">
-                <span class="material-symbols-outlined notranslate text-white/70 text-[16px]">zoom_in</span>
+              <div class="w-8 h-8 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center">
+                <span class="material-symbols-outlined notranslate text-slate-600 text-[16px]">zoom_in</span>
               </div>
             </div>
           </div>
@@ -192,35 +192,35 @@ const openDisclaimer = (phone: string) => {
           <!-- Map section -->
           <div v-if="scanMetrics.lat && scanMetrics.lon" class="space-y-1.5">
             <div class="flex items-center justify-between">
-              <p class="text-white/25 text-[7px] font-black uppercase tracking-[0.15em] flex items-center gap-1">
-                <span class="material-symbols-outlined notranslate text-[12px] text-amber-500/50">location_on</span>
+              <p class="text-slate-400 text-[7px] font-black uppercase tracking-[0.15em] flex items-center gap-1">
+                <span class="material-symbols-outlined notranslate text-[12px] text-amber-600/70">location_on</span>
                 Ubicación aproximada
               </p>
               <button v-if="!isMapActive" @click="activateMap"
-                class="text-[7px] font-black text-amber-500/60 uppercase tracking-[0.15em] hover:text-amber-500 transition-colors cursor-pointer">
+                class="text-[7px] font-black text-amber-600/70 uppercase tracking-[0.15em] hover:text-amber-600 transition-colors cursor-pointer">
                 Cargar mapa
               </button>
             </div>
 
-            <div class="relative w-full h-[180px] rounded-xl overflow-hidden border border-white/5 bg-black/30">
+            <div class="relative w-full h-[180px] rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
               <div v-if="!isMapActive" @click="activateMap"
-                class="absolute inset-0 flex flex-col items-center justify-center gap-1.5 cursor-pointer group/map hover:bg-white/[0.02] transition-colors">
+                class="absolute inset-0 flex flex-col items-center justify-center gap-1.5 cursor-pointer group/map hover:bg-slate-50 transition-colors">
                 <div
-                  class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover/map:scale-110 group-hover/map:bg-amber-500/20 transition-all duration-300">
-                  <span class="material-symbols-outlined notranslate text-amber-500 text-[16px]">map</span>
+                  class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200 group-hover/map:scale-110 group-hover/map:bg-amber-200 transition-all duration-300">
+                  <span class="material-symbols-outlined notranslate text-amber-600 text-[16px]">map</span>
                 </div>
-                <span class="text-[8px] text-white/25 font-black uppercase tracking-[0.1em]">Ver mapa interactivo</span>
+                <span class="text-[8px] text-slate-400 font-black uppercase tracking-[0.1em]">Ver mapa interactivo</span>
               </div>
               <div :id="`map-${id}`" v-show="isMapActive" class="w-full h-full"></div>
             </div>
           </div>
           <div class="flex items-center justify-end gap-2">
             <button v-if="scannerPhone" @click="openDisclaimer(scannerPhone)"
-              class="bg-transparent border border-green-400/80 text-green-400/90 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center cursor-pointer">
+              class="bg-transparent border border-green-600/60 text-green-700 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-50 transition-colors inline-flex items-center cursor-pointer">
               Contactar a {{ scannerPhoneFormated(scannerPhone) }}
             </button>
             <span v-else
-              class="bg-transparent border border-green-500/50 text-gray-200/80 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-500/10 transition-colors inline-flex items-center">
+              class="bg-transparent border border-green-400/50 text-slate-500 text-[9px] font-bold rounded-lg px-3 py-1 hover:bg-green-50 transition-colors inline-flex items-center">
               Contacto no disponible
             </span>
           </div>
@@ -250,7 +250,7 @@ const openDisclaimer = (phone: string) => {
 
 .log-card {
 
-  background-color: #0e0e0e;
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='12' viewBox='0 0 20 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 12c0-.622-.095-1.221-.27-1.785A5.982 5.982 0 0 0 10 12c1.67 0 3.182-.683 4.27-1.785A5.998 5.998 0 0 0 14 12h2a4 4 0 0 1 4-4V6c-1.67 0-3.182.683-4.27 1.785C15.905 7.22 16 6.622 16 6c0-.622-.095-1.221-.27-1.785A5.982 5.982 0 0 0 20 6V4a4 4 0 0 1-4-4h-2c0 .622.095 1.221.27 1.785A5.982 5.982 0 0 0 10 0C8.33 0 6.818.683 5.73 1.785 5.905 1.22 6 .622 6 0H4a4 4 0 0 1-4 4v2c1.67 0 3.182.683 4.27 1.785A5.998 5.998 0 0 1 4 6c0-.622.095-1.221.27-1.785A5.982 5.982 0 0 1 0 6v2a4 4 0 0 1 4 4h2zm-4 0a2 2 0 0 0-2-2v2h2zm16 0a2 2 0 0 1 2-2v2h-2zM0 2a2 2 0 0 0 2-2H0v2zm20 0a2 2 0 0 1-2-2h2v2zm-10 8a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' fill='%23222222' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='12' viewBox='0 0 20 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 12c0-.622-.095-1.221-.27-1.785A5.982 5.982 0 0 0 10 12c1.67 0 3.182-.683 4.27-1.785A5.998 5.998 0 0 0 14 12h2a4 4 0 0 1 4-4V6c-1.67 0-3.182.683-4.27 1.785C15.905 7.22 16 6.622 16 6c0-.622-.095-1.221-.27-1.785A5.982 5.982 0 0 0 20 6V4a4 4 0 0 1-4-4h-2c0 .622.095 1.221.27 1.785A5.982 5.982 0 0 0 10 0C8.33 0 6.818.683 5.73 1.785 5.905 1.22 6 .622 6 0H4a4 4 0 0 1-4 4v2c1.67 0 3.182.683 4.27 1.785A5.998 5.998 0 0 1 4 6c0-.622.095-1.221.27-1.785A5.982 5.982 0 0 1 0 6v2a4 4 0 0 1 4 4h2zm-4 0a2 2 0 0 0-2-2v2h2zm16 0a2 2 0 0 1 2-2v2h-2zM0 2a2 2 0 0 0 2-2H0v2zm20 0a2 2 0 0 1-2-2h2v2zm-10 8a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' fill='%23e2e8f0' fill-opacity='0.6' fill-rule='evenodd'/%3E%3C/svg%3E");
 }
 </style>

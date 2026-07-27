@@ -365,19 +365,19 @@ const hiddeLogsHandle = () => {
 <template>
   <!-- Android M3 Card -->
   <div
-    class="relative w-full bg-[#18171a] rounded-2xl overflow-hidden font-google-sans shadow-sm border border-double  border-[#491e0a]"
-    :class="{ 'opacity-50 grayscale': isDisabled, 'grayscale-[50%] brightness-75': isCanceled }">
+    class="relative w-full bg-white rounded-2xl overflow-hidden font-google-sans shadow-sm border border-slate-200"
+    :class="{ 'opacity-50 grayscale': isDisabled, 'grayscale-[50%] brightness-95': isCanceled }">
 
     <!-- Loading overlay -->
-    <section v-if="isLoading" class="absolute inset-0 bg-[#1C1B1F]/95 flex items-center justify-center z-50">
+    <section v-if="isLoading" class="absolute inset-0 bg-white/95 flex items-center justify-center z-50">
       <CloudLoader />
     </section>
 
     <!-- ─── Overlay bloqueador para QR cancelado/inactivo ─── -->
     <div v-if="isDisabled"
-      class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-[#1C1B1F]/80 backdrop-blur-[2px] rounded-2xl cursor-default select-none">
-      <span class="material-symbols-outlined notranslate text-4xl text-white/15">block</span>
-      <span class="text-white/30 text-xs font-medium">QR {{ isCanceled ? 'cancelado' : 'inactivo' }} — no
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/80 backdrop-blur-[2px] rounded-2xl cursor-default select-none">
+      <span class="material-symbols-outlined notranslate text-4xl text-slate-300">block</span>
+      <span class="text-slate-500 text-xs font-medium">QR {{ isCanceled ? 'cancelado' : 'inactivo' }} — no
         disponible</span>
     </div>
 
@@ -406,10 +406,10 @@ const hiddeLogsHandle = () => {
         <!-- Header row: name + menu + status -->
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
-            <h3 class="text-base font-bold text-[#E6E1E5] leading-tight truncate">{{ propsComputed.name || 'Código QR'
+            <h3 class="text-base font-bold text-slate-900 leading-tight truncate">{{ propsComputed.name || 'Código QR'
             }}</h3>
             <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-[#CAC4D0]/40 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
+              <span class="text-slate-400 text-[8px] tracking-[0.15em] font-mono font-bold">#{{ propsComputed.id
               }}</span>
               <span
                 :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider', currentStatus.bg]">
@@ -420,20 +420,20 @@ const hiddeLogsHandle = () => {
           </div>
           <!-- Menu trigger button -->
           <button @click="toggleMenu($event)"
-            class="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-[#CAC4D0]/60 hover:text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer">
+            class="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition-all cursor-pointer">
             <span class="material-symbols-outlined notranslate text-[22px]">more_vert</span>
           </button>
         </div>
 
         <!-- Stats row -->
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined notranslate text-[#CAC4D0]/40 text-[14px]">qr_code_scanner</span>
-            <span class="text-[#CAC4D0]/50 text-[9px] uppercase tracking-[0.1em] font-bold">Escaneos</span>
-            <span class="text-orange-400 font-mono text-sm font-bold">{{ qrStatus.totalScans }}</span>
-          </div>
-          <button @click="openPrompt('download')"
-            class="ml-auto flex items-center gap-1 px-3 py-1.5 bg-orange-500/10 text-orange-400 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 border border-orange-500/20 cursor-pointer">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined notranslate text-slate-400 text-[14px]">qr_code_scanner</span>
+              <span class="text-slate-500 text-[9px] uppercase tracking-[0.1em] font-bold">Escaneos</span>
+              <span class="text-orange-500 font-mono text-sm font-bold">{{ qrStatus.totalScans }}</span>
+            </div>
+            <button @click="openPrompt('download')"
+              class="ml-auto flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 border border-orange-200 cursor-pointer">
             <span class="material-symbols-outlined notranslate text-[14px]">download</span>
             Descargar
           </button>
@@ -442,25 +442,25 @@ const hiddeLogsHandle = () => {
         <!-- Logs toggle -->
         <div class="pt-1">
           <button v-if="!logsLoaded && !showLogs" @click="loadLogs"
-            class="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-dashed border-[#49454F]/50 text-[#CAC4D0]/60 text-[10px] font-medium hover:border-orange-500/30 hover:text-orange-400 transition-all cursor-pointer">
+            class="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-dashed border-slate-300 text-slate-500 text-[10px] font-medium hover:border-orange-300 hover:text-orange-600 transition-all cursor-pointer">
             <span class="material-symbols-outlined notranslate text-[14px]">history</span>
             Ver registros de escaneo
             <span v-if="isLogsLoading"
               class="material-symbols-outlined notranslate text-sm animate-spin">progress_activity</span>
           </button>
           <button v-if="logsLoaded && showLogs" @click="hiddeLogsHandle"
-            class="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-dashed border-[#49454F]/50 text-[#CAC4D0]/40 text-[10px] font-medium hover:text-orange-400 transition-all cursor-pointer">
+            class="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-dashed border-slate-300 text-slate-400 text-[10px] font-medium hover:text-orange-600 transition-all cursor-pointer">
             <span class="material-symbols-outlined notranslate text-[14px]">hide</span>
             Ocultar registros
           </button>
 
-          <div v-if="logsLoaded && isLogsLoading" class="flex items-center gap-2 text-xs text-white/30 py-2">
+          <div v-if="logsLoaded && isLogsLoading" class="flex items-center gap-2 text-xs text-slate-400 py-2">
             <span class="w-3 h-3 border border-orange-400/40 border-t-transparent rounded-full animate-spin"></span>
             Cargando registros...
           </div>
 
           <div v-if="logsLoaded && !isLogsLoading" class="space-y-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin mt-2">
-            <div v-if="qrLogs.length === 0" class="text-[#CAC4D0]/30 text-[10px] py-2 text-center">
+            <div v-if="qrLogs.length === 0" class="text-slate-400 text-[10px] py-2 text-center">
               Sin registros de escaneo aún
             </div>
             <QRCardLog v-for="log in qrLogs" :key="log.id" v-bind="log" />
@@ -481,43 +481,43 @@ const hiddeLogsHandle = () => {
         leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
         leave-to-class="opacity-0 translate-y-full">
         <div v-if="showMenu"
-          class="fixed bottom-0 left-0 right-0 z-50 bg-[#2B2930] rounded-t-2xl pb-[env(safe-area-inset-bottom,16px)] max-h-[80vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
+          class="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom,16px)] max-h-[80vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.15)]">
           <!-- Handle bar -->
-          <div class="w-10 h-1 bg-[#CAC4D0]/20 rounded-full mx-auto my-3"></div>
+          <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto my-3"></div>
 
           <!-- Title + Close button -->
           <div class="flex items-center justify-between px-4 mb-2">
-            <span class="text-[#CAC4D0]/50 text-[10px] font-bold uppercase tracking-widest">Opciones del QR</span>
+            <span class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Opciones del QR</span>
             <button @click="showMenu = false"
-              class="w-8 h-8 flex items-center justify-center rounded-lg text-[#CAC4D0]/60 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer">
               <span class="material-symbols-outlined notranslate text-[18px]">close</span>
             </button>
           </div>
 
           <div class="px-2 pb-2 space-y-0.5">
             <template v-for="(option, index) in menuOptions" :key="index">
-              <div v-if="option.divider" class="h-px bg-[#49454F]/30 my-1 mx-4"></div>
+              <div v-if="option.divider" class="h-px bg-slate-200 my-1 mx-4"></div>
 
               <!-- Locked option -->
               <div v-else-if="option.locked"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-[#CAC4D0]/30 cursor-not-allowed opacity-60">
-                <span class="material-symbols-outlined notranslate text-[20px] text-[#CAC4D0]/20">lock</span>
+                class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-slate-400 cursor-not-allowed opacity-60">
+                <span class="material-symbols-outlined notranslate text-[20px] text-slate-300">lock</span>
                 <div>
-                  <span class="text-sm font-medium text-[#CAC4D0]/50">{{ option.label }}</span>
-                  <span class="text-[10px] text-[#CAC4D0]/20 font-normal block leading-tight">{{ option.lockTooltip
+                  <span class="text-sm font-medium text-slate-500">{{ option.label }}</span>
+                  <span class="text-[10px] text-slate-400 font-normal block leading-tight">{{ option.lockTooltip
                   }}</span>
                 </div>
               </div>
 
               <!-- Action option -->
               <button v-else @click="option.action" :class="['w-full flex items-center gap-3 cursor-pointer px-4 py-3 rounded-xl bg-transparent text-sm transition-colors text-left font-medium active:scale-[0.98]',
-                option.color || 'text-[#E6E1E5]', option.hoverBg || 'hover:bg-white/5 active:bg-white/10']">
+                option.color || 'text-slate-700', option.hoverBg || 'hover:bg-slate-50 active:bg-slate-100']">
                 <span
-                  :class="[option.color || 'text-orange-400', 'material-symbols-outlined notranslate text-[20px]']">{{
+                  :class="[option.color || 'text-orange-500', 'material-symbols-outlined notranslate text-[20px]']">{{
                     option.icon }}</span>
                 <div>
                   <span>{{ option.label }}</span>
-                  <span class="text-[10px] text-[#CAC4D0]/30 font-normal block leading-tight">{{ option.description
+                  <span class="text-[10px] text-slate-400 font-normal block leading-tight">{{ option.description
                   }}</span>
                 </div>
               </button>
@@ -535,18 +535,18 @@ const hiddeLogsHandle = () => {
       leave-from-class="opacity-100" leave-to-class="opacity-0">
       <div v-if="activePrompt" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-6">
         <div v-if="activePrompt === 'cancel'"
-          class="w-full max-w-xs bg-[#2B2930] rounded-2xl p-6 shadow-2xl border border-[#49454F]/30 space-y-4">
-          <div class="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto">
+          class="w-full max-w-xs bg-white rounded-2xl p-6 shadow-2xl border border-slate-200 space-y-4">
+          <div class="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mx-auto">
             <span class="material-symbols-outlined notranslate text-rose-500 text-[24px]">warning</span>
           </div>
           <div class="text-center">
-            <h3 class="text-[#E6E1E5] text-base font-medium">¿Desactivar código?</h3>
-            <p class="text-[#CAC4D0]/60 text-sm mt-1 leading-relaxed">Esta acción desactivará el código inmediatamente.
+            <h3 class="text-slate-900 text-base font-medium">¿Desactivar código?</h3>
+            <p class="text-slate-500 text-sm mt-1 leading-relaxed">Esta acción desactivará el código inmediatamente.
             </p>
           </div>
           <div class="flex gap-3">
             <button @click="closeAll"
-              class="flex-1 py-2.5 bg-[#49454F]/30 text-[#E6E1E5] rounded-xl text-sm font-medium hover:bg-[#49454F]/50 transition-colors cursor-pointer">Cancelar</button>
+              class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors cursor-pointer">Cancelar</button>
             <button @click="handleCancelQR"
               class="flex-1 py-2.5 bg-rose-500 text-white rounded-xl text-sm font-medium hover:bg-rose-600 transition-colors active:scale-[0.98] cursor-pointer">Desactivar</button>
           </div>
@@ -554,19 +554,19 @@ const hiddeLogsHandle = () => {
 
         <!-- Renew Prompt -->
         <div v-else-if="activePrompt === 'renew'"
-          class="w-full max-w-xs bg-[#2B2930] rounded-2xl p-6 shadow-2xl border border-[#49454F]/30 space-y-4">
-          <div class="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto">
+          class="w-full max-w-xs bg-white rounded-2xl p-6 shadow-2xl border border-slate-200 space-y-4">
+          <div class="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mx-auto">
             <span class="material-symbols-outlined notranslate text-rose-500 text-[24px]">warning</span>
           </div>
           <div class="text-center">
-            <h3 class="text-[#E6E1E5] text-base font-medium">¿Reemplazar QR?</h3>
-            <p class="text-[#CAC4D0]/60 text-xs mt-1 leading-relaxed">El código anterior dejará de funcionar. Se creará
+            <h3 class="text-slate-900 text-base font-medium">¿Reemplazar QR?</h3>
+            <p class="text-slate-500 text-xs mt-1 leading-relaxed">El código anterior dejará de funcionar. Se creará
               uno
               nuevo con ID diferente. Los stickers físicos quedarán inservibles.</p>
           </div>
           <div class="flex gap-3">
             <button @click="closeAll"
-              class="flex-1 py-2.5 bg-[#49454F]/30 text-[#E6E1E5] rounded-xl text-sm font-medium hover:bg-[#49454F]/50 transition-colors cursor-pointer">Cancelar</button>
+              class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors cursor-pointer">Cancelar</button>
             <button @click="handleRenewQR"
               class="flex-1 py-2.5 bg-rose-500 text-white rounded-xl text-sm font-medium hover:bg-rose-600 transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
               <span class="material-symbols-outlined notranslate text-[16px]">autorenew</span>
@@ -577,15 +577,15 @@ const hiddeLogsHandle = () => {
 
         <!-- Edit Prompt -->
         <div v-else-if="activePrompt === 'edit'"
-          class="w-full max-w-xs bg-[#2B2930] rounded-2xl p-6 shadow-2xl border border-[#49454F]/30 space-y-4">
-          <h3 class="text-[#E6E1E5] text-base font-medium text-center">Editar nombre</h3>
+          class="w-full max-w-xs bg-white rounded-2xl p-6 shadow-2xl border border-slate-200 space-y-4">
+          <h3 class="text-slate-900 text-base font-medium text-center">Editar nombre</h3>
           <input @keyup.enter="handleEdit" type="text" v-model="qrName" placeholder="Nuevo nombre"
-            class="w-full bg-[#1C1B1F] border border-[#49454F]/50 rounded-xl px-4 py-3 text-[#E6E1E5] text-sm transition-all focus:outline-none focus:border-orange-500/50 placeholder:text-[#CAC4D0]/30" />
+            class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm transition-all focus:outline-none focus:border-orange-500 placeholder:text-slate-400" />
           <div class="flex gap-3">
             <button @click="closeAll"
-              class="flex-1 py-2.5 bg-[#49454F]/30 text-[#E6E1E5] rounded-xl text-sm font-medium hover:bg-[#49454F]/50 transition-colors cursor-pointer">Cancelar</button>
+              class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors cursor-pointer">Cancelar</button>
             <button @click="handleEdit"
-              class="flex-1 py-2.5 bg-orange-500 text-black rounded-xl text-sm font-bold hover:bg-orange-400 transition-colors active:scale-[0.98] cursor-pointer">Guardar</button>
+              class="flex-1 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors active:scale-[0.98] cursor-pointer">Guardar</button>
           </div>
         </div>
 
@@ -593,14 +593,14 @@ const hiddeLogsHandle = () => {
         <div v-else-if="activePrompt === 'download'" class="fixed inset-0 flex items-end z-[120] bottom-16">
           <div @click="closeAll" class="absolute inset-0 bg-black/60 cursor-default"></div>
           <div
-            class="relative w-full bg-[#2B2930] rounded-t-2xl pb-[env(safe-area-inset-bottom,16px)] max-h-[85vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
+            class="relative w-full bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom,16px)] max-h-[85vh] overflow-y-auto shadow-[0_-8px_30px_rgba(0,0,0,0.15)]">
             <!-- Handle bar -->
-            <div class="w-10 h-1 bg-[#CAC4D0]/20 rounded-full mx-auto my-3"></div>
+            <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto my-3"></div>
             <div class="px-5 pb-6">
               <div class="flex items-center justify-between mb-4 px-1">
-                <h3 class="text-[#E6E1E5] font-bold text-base">Descargar QR</h3>
+                <h3 class="text-slate-900 font-bold text-base">Descargar QR</h3>
                 <button @click="closeAll"
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-[#CAC4D0]/60 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer">
                   <span class="material-symbols-outlined notranslate text-[18px]">close</span>
                 </button>
               </div>
@@ -672,55 +672,36 @@ const hiddeLogsHandle = () => {
 
               <!-- Style + Size toggles -->
               <div class="flex gap-2 mb-4 ">
-                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1">
+                <div class="flex gap-1 p-0.5 bg-slate-100 rounded-xl flex-1">
                   <button @click="downloadStyle = 'normal'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">Normal</button>
+                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:text-slate-700'">Normal</button>
                   <button @click="downloadStyle = 'compact'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">Compacto</button>
+                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:text-slate-700'">Compacto</button>
                 </div>
-                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl">
+                <div class="flex gap-1 p-0.5 bg-slate-100 rounded-xl">
                   <button @click="downloadSize = 'sm'"
                     class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">SM</button>
+                    :class="downloadSize === 'sm' ? 'bg-orange-100 border border-orange-300 text-orange-600' : 'text-slate-500 hover:text-slate-700'">SM</button>
                   <button @click="downloadSize = 'md'"
                     class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">MD</button>
+                    :class="downloadSize === 'md' ? 'bg-orange-100 border border-orange-300 text-orange-600' : 'text-slate-500 hover:text-slate-700'">MD</button>
                   <button @click="downloadSize = 'lg'"
                     class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">LG</button>
+                    :class="downloadSize === 'lg' ? 'bg-orange-100 border border-orange-300 text-orange-600' : 'text-slate-500 hover:text-slate-700'">LG</button>
                 </div>
               </div>
 
               <!-- Format toggle: PNG | PDF -->
               <div class="flex gap-2 mb-4">
-                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1">
+                <div class="flex gap-1 p-0.5 bg-slate-100 rounded-xl flex-1">
                   <button @click="downloadFormat = 'png'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadFormat === 'png' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">PNG</button>
+                    :class="downloadFormat === 'png' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:text-slate-700'">PNG</button>
                   <button @click="downloadFormat = 'pdf'"
                     class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">PDF</button>
-                </div>
-                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl flex-1 hidden">
-                  <button @click="downloadStyle = 'normal'"
-                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'normal' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">Normal</button>
-                  <button @click="downloadStyle = 'compact'"
-                    class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadStyle === 'compact' ? 'bg-orange-500 text-white' : 'text-[#CAC4D0]/50 hover:text-white'">Compacto</button>
-                </div>
-                <div class="flex gap-1 p-0.5 bg-[#1C1B1F] rounded-xl">
-                  <button @click="downloadSize = 'sm'"
-                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'sm' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">SM</button>
-                  <button @click="downloadSize = 'md'"
-                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'md' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">MD</button>
-                  <button @click="downloadSize = 'lg'"
-                    class="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer"
-                    :class="downloadSize === 'lg' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400' : 'text-[#CAC4D0]/50 hover:text-white'">LG</button>
+                    :class="downloadFormat === 'pdf' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:text-slate-700'">PDF</button>
                 </div>
               </div>
 
