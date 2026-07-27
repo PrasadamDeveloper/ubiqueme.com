@@ -77,16 +77,6 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 max-w-sm">
-              <div class="p-4 bg-white border border-gray-200 rounded-2xl">
-                <span class="material-symbols-outlined notranslate text-orange-500 mb-2">shield_check</span>
-                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Protección Total</p>
-              </div>
-              <div class="p-4 bg-white border border-gray-200 rounded-2xl">
-                <span class="material-symbols-outlined notranslate text-orange-500 mb-2">bolt</span>
-                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Aviso al Instante</p>
-              </div>
-            </div>
 
             <!-- Decorative Floating Icons -->
             <div class="absolute inset-0 pointer-events-none opacity-[0.04] select-none">

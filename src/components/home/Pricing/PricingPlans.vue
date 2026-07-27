@@ -292,7 +292,7 @@ text-white
 
 
               <span class="text-sm text-slate-500">
-                {{ selectedCurrency }} / año
+                {{ selectedCurrency }} <span class="uppercase bg-orange-500 text-white px-2 py-1 rounded-2xl">AÑO</span>
               </span>
 
 

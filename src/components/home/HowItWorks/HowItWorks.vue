@@ -1,5 +1,5 @@
 <template>
-  <section class=" px-5 sm:px-8 lg:px-10 py-2 sm:py-4">
+  <section class=" px-5 sm:px-8 lg:px-10 py-2 sm:py-4 bg-linear from-neutral-100 via-neutral-50 from-neutral-200">
 
     <!-- Header + Ads -->
     <div class="flex flex-row items-start justify-between gap-8 mb-10 sm:mb-14">
