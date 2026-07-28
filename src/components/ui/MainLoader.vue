@@ -231,7 +231,7 @@
 </style>
 
 <template>
-  <div class="flex items-center justify-center fixed inset-0 z-20 bg-slate-900/60">
+  <div class="flex items-center justify-center fixed inset-0 z-20 bg-white/70">
     <div class="loader">
       <div class="box1"></div>
       <div class="box2"></div>
