@@ -165,13 +165,13 @@ const panelWidth = computed(() => {
           <div v-if="hoveredItemIndex !== null">
             <div class="flex items-center gap-2 mb-3">
               <span class="w-[7px] h-[7px] rounded-xl bg-blue-400 shrink-0"></span>
-              <span class="text-[11px] font-medium tracking-wide text-slate-500">{{ items[hoveredItemIndex].text
+              <span class="text-[11px] font-medium tracking-wide text-slate-500">{{ items[hoveredItemIndex!]!.text
               }}</span>
             </div>
             <p class="text-[11px] leading-relaxed text-slate-500">
-              <img :src="items[hoveredItemIndex].icon" :alt="items[hoveredItemIndex].alt"
+              <img :src="items[hoveredItemIndex!]!.icon" :alt="items[hoveredItemIndex!]!.alt"
                 class="w-14 object-contain float-right ml-2 mb-1" />
-              {{ items[hoveredItemIndex].detail }}
+              {{ items[hoveredItemIndex!]!.detail }}
             </p>
           </div>
         </div>

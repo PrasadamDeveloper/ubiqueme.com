@@ -64,7 +64,25 @@ const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
 const currentDomainIndex = ref(0);
 const isMobileMenuOpen = ref(false);
 const isScrolled = ref(false);
+const showLangMenu = ref(false);
+const currentLang = ref('ES');
 let intervalId: ReturnType<typeof setInterval> | undefined;
+
+const changeLang = (code: string) => {
+  document.cookie = `googtrans=/es/${code}; path=/; max-age=31536000`;
+  showLangMenu.value = false;
+  location.reload();
+}
+
+const getCookieLang = (): string => {
+  const m = document.cookie.match(/googtrans=.*\/([a-z]{2})/);
+  return m?.[1]?.toUpperCase() ?? 'ES';
+}
+
+const handleClickOutside = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (!target.closest('.lang-selector')) showLangMenu.value = false;
+}
 
 const activeMenu = ref<string | null>(null)
 let menuTimeout: ReturnType<typeof setTimeout> | null = null
@@ -118,6 +136,8 @@ watch(isMobileMenuOpen, (open) => {
 })
 
 onMounted(() => {
+  currentLang.value = getCookieLang();
+
   intervalId = setInterval(() => {
     currentDomainIndex.value = (currentDomainIndex.value + 1) % domains.length;
   }, 5000);
@@ -127,11 +147,14 @@ onMounted(() => {
   };
   window.addEventListener('scroll', handleScroll, { passive: true });
   handleScroll();
+
+  document.addEventListener('click', handleClickOutside);
 });
 
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId);
-  document.body.style.overflow = ''
+  document.body.style.overflow = '';
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
@@ -298,10 +321,38 @@ onUnmounted(() => {
         </div>
 
         <!-- MOBILE | Hamburger -->
-        <div class="flex items-center lg:hidden">
+        <div class="flex items-center gap-2 lg:hidden">
+
+          <!-- Language selector (iOS outline style) -->
+          <div class="lang-selector relative">
+            <button @click="showLangMenu = !showLangMenu"
+              class="flex items-center gap-1 h-9 px-2.5 rounded-full border border-slate-300 bg-white/80 text-slate-600 text-[10px] font-medium tracking-tight active:scale-95 transition-all duration-150 cursor-pointer select-none">
+              <span class="material-symbols-outlined notranslate text-[13px]">language</span>
+              <span class="font-semibold">{{ currentLang }}</span>
+              <span class="material-symbols-outlined notranslate text-[10px] text-slate-400">expand_more</span>
+            </button>
+            <div v-if="showLangMenu"
+              class="absolute right-0 top-full mt-1.5 w-28 rounded-xl border border-slate-200 bg-white shadow-lg overflow-hidden z-50">
+              <button @click="changeLang('es')"
+                class="flex w-full items-center gap-2 px-3 py-2 text-[11px] font-medium text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition-colors cursor-pointer"
+                :class="currentLang === 'ES' ? 'bg-orange-50 text-orange-600' : ''">
+                <span class="text-base">🇲🇽</span> Español
+              </button>
+              <button @click="changeLang('en')"
+                class="flex w-full items-center gap-2 px-3 py-2 text-[11px] font-medium text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition-colors cursor-pointer"
+                :class="currentLang === 'EN' ? 'bg-orange-50 text-orange-600' : ''">
+                <span class="text-base">🇺🇸</span> English
+              </button>
+              <button @click="changeLang('pt')"
+                class="flex w-full items-center gap-2 px-3 py-2 text-[11px] font-medium text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition-colors cursor-pointer"
+                :class="currentLang === 'PT' ? 'bg-orange-50 text-orange-600' : ''">
+                <span class="text-base">🇧🇷</span> Português
+              </button>
+            </div>
+          </div>
 
           <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-            class="group flex items-center gap-2 rounded-2xl border border-orange-100 bg-white px-4 py-2.5 text-gray-700  transition-all duration-300 hover:border-orange-200 hover:bg-orange-50 active:scale-95">
+            class="group flex items-center gap-2 rounded-2xl border border-orange-100 bg-white px-4 py-2.5 text-gray-700 transition-all duration-300 hover:border-orange-200 hover:bg-orange-50 active:scale-95">
             <span
               class="material-symbols-outlined notranslate text-[24px] text-orange-500 transition-transform duration-300 group-hover:scale-110">
               {{ isMobileMenuOpen ? 'close' : 'menu' }}
