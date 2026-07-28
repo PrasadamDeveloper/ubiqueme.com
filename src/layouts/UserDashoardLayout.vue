@@ -118,7 +118,7 @@ watch(isMobileMenuOpen, (open) => {
 })
 
 onMounted(() => {
-    intervalId = setInterval(() => {
+  intervalId = setInterval(() => {
     currentDomainIndex.value = (currentDomainIndex.value + 1) % domains.length;
   }, 5000);
 
@@ -146,14 +146,16 @@ onUnmounted(() => {
     ]">
 
       <!-- Subtle Orange Top Line -->
-      <div class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-600 to-transparent">
+      <div
+        class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-600 to-transparent">
       </div>
 
       <!-- Grain texture overlay -->
       <div class="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay grain-overlay">
       </div>
 
-      <div class="relative mx-auto flex h-22 w-full max-w-screen-2xl items-center justify-between px-5 md:px-10 xl:px-14">
+      <div
+        class="relative mx-auto flex h-22 w-full max-w-screen-2xl items-center justify-between px-5 md:px-10 xl:px-14">
 
         <!-- LEFT -->
         <div class="flex items-center gap-5">
@@ -164,8 +166,7 @@ onUnmounted(() => {
           <RouterLink :to="{ name: 'home' }"
             class="group flex items-center gap-3 rounded-xl transition-all duration-300">
 
-            <span
-              class="hidden sm:flex material-symbols-outlined notranslate text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform">location_on</span>
+
 
             <!-- MOBILE: compact animated domain -->
             <div class="flex items-center gap-1.5 lg:hidden">
@@ -173,7 +174,8 @@ onUnmounted(() => {
                 <Transition name="slide-up" mode="out-in">
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-center font-black tracking-tight text-sm leading-none">
-                    <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                    <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0]
+                    }}</span>
                     <span class="text-orange-500!">.com</span>
                   </div>
                 </Transition>
@@ -186,7 +188,8 @@ onUnmounted(() => {
                 <Transition name="slide-up">
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none font-inter-tight">
-                    <span translate="no" class="text-orange-500">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                    <span translate="no" class="text-orange-500">{{ domains[currentDomainIndex]?.split('.com')[0]
+                    }}</span>
                     <span class="text-slate-900">.com</span>
                   </div>
                 </Transition>
@@ -199,7 +202,8 @@ onUnmounted(() => {
         <!-- CENTER | Desktop Navigation -->
         <div class="hidden flex-1 items-center justify-center lg:flex">
 
-          <nav class="flex items-center gap-1 rounded-full border border-gray-200 bg-white/70 p-1 shadow-sm backdrop-blur-md">
+          <nav
+            class="flex items-center gap-1 rounded-full border border-gray-200 bg-white/70 p-1 shadow-sm backdrop-blur-md">
 
             <template v-for="link in navLinks" :key="link.name">
 
@@ -212,7 +216,8 @@ onUnmounted(() => {
                       ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
                       : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
                   ]">
-                  <span class="material-symbols-outlined notranslate text-[20px] transition-transform duration-300 group-hover:-translate-y-0.5">
+                  <span
+                    class="material-symbols-outlined notranslate text-[20px] transition-transform duration-300 group-hover:-translate-y-0.5">
                     {{ link.icon }}
                   </span>
                   <span class="font-google-sans text-sm font-medium">{{ link.name }}</span>
@@ -226,7 +231,8 @@ onUnmounted(() => {
                       ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
                       : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
                   ]">
-                  <span class="material-symbols-outlined notranslate text-[20px] transition-transform duration-300 group-hover:-translate-y-0.5">
+                  <span
+                    class="material-symbols-outlined notranslate text-[20px] transition-transform duration-300 group-hover:-translate-y-0.5">
                     {{ link.icon }}
                   </span>
                   <span class="font-google-sans text-sm font-medium">{{ link.name }}</span>
@@ -242,7 +248,8 @@ onUnmounted(() => {
 
                     <div class="border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white px-5 py-4">
                       <h4 class="font-google-sans text-sm font-semibold text-gray-700">{{ link.name }}</h4>
-                      <p v-if="link.description" class="mt-1 text-[11px] leading-snug text-gray-500">{{ link.description }}</p>
+                      <p v-if="link.description" class="mt-1 text-[11px] leading-snug text-gray-500">{{ link.description
+                      }}</p>
                     </div>
 
                     <div class="p-2">
@@ -253,8 +260,12 @@ onUnmounted(() => {
                           {{ child.icon }}
                         </span>
                         <div class="flex min-w-0 flex-col items-start">
-                          <span class="text-sm font-medium text-gray-700 transition-colors group-hover:text-orange-600">{{ child.label }}</span>
-                          <span v-if="child.description" class="mt-0.5 text-[11px] leading-snug text-gray-400 text-left">{{ child.description }}</span>
+                          <span
+                            class="text-sm font-medium text-gray-700 transition-colors group-hover:text-orange-600">{{
+                              child.label }}</span>
+                          <span v-if="child.description"
+                            class="mt-0.5 text-[11px] leading-snug text-gray-400 text-left">{{ child.description
+                            }}</span>
                         </div>
                       </button>
                     </div>
@@ -308,12 +319,14 @@ onUnmounted(() => {
 
           <div v-if="isMobileMenuOpen" class="absolute left-0 right-0 top-full z-[90] mt-3 px-4 lg:hidden">
 
-            <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl max-h-[calc(100vh-120px)] overflow-y-auto">
+            <div
+              class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl max-h-[calc(100vh-120px)] overflow-y-auto">
 
               <!-- USER ACTIONS -->
               <div class="border-b border-gray-100 p-4">
 
-                <RouterLink v-if="$route.name !== 'dashboard'" :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
+                <RouterLink v-if="$route.name !== 'dashboard'" :to="{ name: 'dashboard' }"
+                  @click="isMobileMenuOpen = false"
                   class="mb-3 flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 font-medium text-gray-700 transition hover:bg-orange-50 hover:text-orange-600">
                   <span class="material-symbols-outlined notranslate">dashboard</span>
                   Panel
@@ -335,7 +348,8 @@ onUnmounted(() => {
                   <!-- LINK -->
                   <RouterLink v-if="!link.children" :to="{ name: link.pathName }" @click="isMobileMenuOpen = false"
                     class="group mb-1 flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200 hover:bg-orange-50">
-                    <span class="material-symbols-outlined notranslate text-gray-400 group-hover:text-orange-500">{{ link.icon }}</span>
+                    <span class="material-symbols-outlined notranslate text-gray-400 group-hover:text-orange-500">{{
+                      link.icon }}</span>
                     <span class="font-medium text-gray-700 group-hover:text-orange-600">{{ link.name }}</span>
                   </RouterLink>
 
@@ -345,9 +359,11 @@ onUnmounted(() => {
                       <span class="material-symbols-outlined notranslate text-gray-400">{{ link.icon }}</span>
                       <span class="font-semibold text-gray-700">{{ link.name }}</span>
                     </div>
-                    <button v-for="child in link.children" :key="child.label" @click="handleChildClick(child); isMobileMenuOpen = false"
+                    <button v-for="child in link.children" :key="child.label"
+                      @click="handleChildClick(child); isMobileMenuOpen = false"
                       class="flex w-full items-center gap-3 px-5 py-3 text-left transition hover:bg-orange-50">
-                      <span v-if="child.icon" class="material-symbols-outlined notranslate text-gray-400">{{ child.icon }}</span>
+                      <span v-if="child.icon" class="material-symbols-outlined notranslate text-gray-400">{{ child.icon
+                      }}</span>
                       <span class="text-sm text-gray-700">{{ child.label }}</span>
                     </button>
                   </div>
@@ -432,6 +448,7 @@ onUnmounted(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .slide-up-enter-active,
   .slide-up-leave-active {
     transition: none;

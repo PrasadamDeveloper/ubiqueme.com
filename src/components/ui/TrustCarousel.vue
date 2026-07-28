@@ -15,7 +15,7 @@ interface TrustItem {
 
 const items: TrustItem[] = [
   {
-    text: 'Registrados SAT',
+    text: 'Registro SAT',
     icon: SatIcon,
     alt: 'Registro SAT',
     description: 'Registrado ante el SAT · RFC activo',
@@ -166,7 +166,7 @@ const panelWidth = computed(() => {
             <div class="flex items-center gap-2 mb-3">
               <span class="w-[7px] h-[7px] rounded-xl bg-blue-400 shrink-0"></span>
               <span class="text-[11px] font-medium tracking-wide text-slate-500">{{ items[hoveredItemIndex].text
-                }}</span>
+              }}</span>
             </div>
             <p class="text-[11px] leading-relaxed text-slate-500">
               <img :src="items[hoveredItemIndex].icon" :alt="items[hoveredItemIndex].alt"
@@ -195,7 +195,8 @@ const panelWidth = computed(() => {
       <div v-if="showMobileOverlay" @click.self="closeMobileOverlay"
         class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/40">
 
-        <div class="w-full max-h-[85vh] sm:max-h-[75vh] sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl"
+        <div
+          class="w-full max-h-[85vh] sm:max-h-[75vh] sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl"
           @click.stop>
 
           <!-- Handle bar + close -->
@@ -223,7 +224,8 @@ const panelWidth = computed(() => {
                   <span class="text-sm font-medium text-slate-900 block">{{ item.text }}</span>
                   <span class="text-[11px] text-slate-500 block mt-0.5">{{ item.description }}</span>
                 </div>
-                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400 transition-transform duration-200"
+                <span
+                  class="material-symbols-outlined notranslate text-[18px] text-slate-400 transition-transform duration-200"
                   :class="mobileSelectedIndex === index ? 'rotate-180' : ''">expand_more</span>
               </button>
               <Transition name="slide-down">
@@ -249,32 +251,40 @@ const panelWidth = computed(() => {
 .fade-scale-enter-active {
   transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .fade-scale-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .fade-scale-enter-from,
 .fade-scale-leave-to {
   opacity: 0;
 }
-.fade-scale-enter-active > div:last-child {
+
+.fade-scale-enter-active>div:last-child {
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.fade-scale-leave-active > div:last-child {
+
+.fade-scale-leave-active>div:last-child {
   transition: transform 0.2s ease;
 }
-.fade-scale-enter-from > div:last-child {
+
+.fade-scale-enter-from>div:last-child {
   transform: translateY(20px) scale(0.97);
 }
-.fade-scale-leave-to > div:last-child {
+
+.fade-scale-leave-to>div:last-child {
   transform: translateY(20px) scale(0.97);
 }
 
 .slide-down-enter-active {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .slide-down-leave-active {
   transition: all 0.15s ease;
 }
+
 .slide-down-enter-from,
 .slide-down-leave-to {
   opacity: 0;
