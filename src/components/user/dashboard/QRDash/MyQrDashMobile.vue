@@ -4,10 +4,10 @@
 
       <!-- Header: Compact greeting -->
       <div class="space-y-1">
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 pt-2 md:pt-0">
           <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">Hola de nuevo,</h1>
           <span class="text-orange-500 text-lg font-bold tracking-tight leading-none">{{ useUserStore().getFirstName
-          }}</span>
+            }}</span>
           <span class="text-lg font-black tracking-tighter leading-none text-slate-900">!</span>
         </div>
         <p class="text-slate-500 text-[11px] font-medium">Mis Códigos QR</p>
@@ -51,14 +51,17 @@
               <!-- Row 1: Title + badge + usage -->
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
-                  <h3 class="text-sm font-bold text-slate-900 capitalize truncate">Plan {{ group.subscription.planType === 'trial' ? 'Bronce de prueba' : group.subscription.planType }}</h3>
+                  <h3 class="text-sm font-bold text-slate-900 capitalize truncate">Plan {{ group.subscription.planType
+                    === 'trial' ? 'Bronce de prueba' : group.subscription.planType }}</h3>
                   <span :class="group.subscription.planType === 'trial' && group.subscription.status === 'inactive'
                     ? 'bg-amber-50 text-amber-600 border-amber-200'
                     : group.subscription.status === 'active'
-                    ? 'bg-orange-50 text-orange-600 border-orange-200'
-                    : 'bg-slate-100 text-slate-500 border-slate-200'"
+                      ? 'bg-orange-50 text-orange-600 border-orange-200'
+                      : 'bg-slate-100 text-slate-500 border-slate-200'"
                     class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest">
-                    {{ group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'Acabado' : group.subscription.status === 'active' ? 'Activo' : group.subscription.status === 'canceled' ? 'Cancelado' : 'Inactivo' }}
+                    {{ group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'Acabado' :
+                      group.subscription.status === 'active' ? 'Activo' : group.subscription.status === 'canceled' ?
+                    'Cancelado' : 'Inactivo' }}
                   </span>
                 </div>
                 <div class="text-right shrink-0">
@@ -79,17 +82,23 @@
               <!-- Row 3: Info banner compacto -->
               <template v-if="group.subscription.planType === 'trial' && group.subscription.status === 'active'">
                 <div class="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
-                  <span class="material-symbols-outlined notranslate text-[12px] mt-0.5 shrink-0 text-amber-500">info</span>
+                  <span
+                    class="material-symbols-outlined notranslate text-[12px] mt-0.5 shrink-0 text-amber-500">info</span>
                   <span class="text-[10px] text-amber-700 leading-tight">
-                    Este es un <strong class="text-amber-200 font-semibold">plan gratuito de prueba</strong> con duración de 1 año incluido en su cuenta. Termina el <strong class="text-amber-200 font-semibold">{{ formatEndDate(group.subscription.endDate) }}</strong>. Después de esa fecha si decide continuar con el plan podrá renovarlo.
+                    Este es un <strong class="text-amber-200 font-semibold">plan gratuito de prueba</strong> con
+                    duración de 1 año incluido en su cuenta. Termina el <strong class="text-amber-200 font-semibold">{{
+                      formatEndDate(group.subscription.endDate) }}</strong>. Después de esa fecha si decide continuar
+                    con el plan podrá renovarlo.
                   </span>
                 </div>
               </template>
-              <template v-else-if="(group.subscription.planType === 'trial' && group.subscription.status === 'canceled') || group.subscription.status === 'canceled'">
+              <template
+                v-else-if="(group.subscription.planType === 'trial' && group.subscription.status === 'canceled') || group.subscription.status === 'canceled'">
                 <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
                   <span class="text-[11px]">✕</span>
                   <span class="text-[10px] text-red-600 leading-tight">
-                    Plan <strong class="text-red-200 font-semibold capitalize">{{ group.subscription.planType === 'trial' ? 'de prueba' : group.subscription.planType }}</strong> cancelado — QRs no disponibles
+                    Plan <strong class="text-red-200 font-semibold capitalize">{{ group.subscription.planType ===
+                      'trial' ? 'de prueba' : group.subscription.planType }}</strong> cancelado — QRs no disponibles
                   </span>
                 </div>
               </template>
@@ -105,10 +114,13 @@
                 <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200">
                   <span class="text-[11px]">✓</span>
                   <span class="text-[10px] text-emerald-600 leading-tight">
-                    Plan <strong class="text-emerald-200 font-semibold capitalize">{{ group.subscription.planType }}</strong> activo
-                    <span v-if="group.subscription.endDate"> — termina {{ formatEndDate(group.subscription.endDate) }}</span>
+                    Plan <strong class="text-emerald-200 font-semibold capitalize">{{ group.subscription.planType
+                      }}</strong> activo
+                    <span v-if="group.subscription.endDate"> — termina {{ formatEndDate(group.subscription.endDate)
+                      }}</span>
                     <span v-else> — sin vencimiento</span>
-                    · {{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}/{{ group.subscription.totalQRsAllowed }} QRs
+                    · {{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}/{{
+                      group.subscription.totalQRsAllowed }} QRs
                   </span>
                 </div>
               </template>
@@ -116,7 +128,8 @@
                 <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 border border-gray-200">
                   <span class="text-[11px]">⚬</span>
                   <span class="text-[10px] text-gray-500 leading-tight">
-                    Plan <strong class="text-gray-300 font-semibold capitalize">{{ group.subscription.planType }}</strong> inactivo
+                    Plan <strong class="text-gray-300 font-semibold capitalize">{{ group.subscription.planType
+                      }}</strong> inactivo
                   </span>
                 </div>
               </template>
@@ -132,11 +145,10 @@
             <div v-if="group.qrs.length > 0" class="space-y-2">
               <QRCardMobile v-for="qr in group.qrs" :key="qr.id" :id="qr.id" :name="qr.name" :category="qr.category"
                 :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link"
-                :subscriptionStatus="group.subscription.status"
-                :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason" :createdAt="qr.createdAt"
-                :subscriptionId="qr.subscriptionId" :physicalShipped="qr.physicalShipped"
-                :physicalShippedAt="qr.physicalShippedAt" :planType="group.subscription.planType"
-                @request-physical="handleRequestPhysical(group.subscription)" />
+                :subscriptionStatus="group.subscription.status" :isActive="qr.isActive" :isBanned="qr.isBanned"
+                :banReason="qr.banReason" :createdAt="qr.createdAt" :subscriptionId="qr.subscriptionId"
+                :physicalShipped="qr.physicalShipped" :physicalShippedAt="qr.physicalShippedAt"
+                :planType="group.subscription.planType" @request-physical="handleRequestPhysical(group.subscription)" />
             </div>
 
             <div v-else class="py-4 flex flex-col items-center gap-1">
@@ -148,8 +160,7 @@
 
         <!-- Empty: no subscriptions -->
         <div v-else-if="groupedQRs.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
-          <span
-            class="material-symbols-outlined notranslate text-5xl text-slate-300 mb-3">account_balance_wallet</span>
+          <span class="material-symbols-outlined notranslate text-5xl text-slate-300 mb-3">account_balance_wallet</span>
           <h3 class="text-base font-semibold text-slate-900 mb-1">No tiene suscripciones activas</h3>
           <p class="text-slate-500 text-xs mb-4">Adquiera un plan para registrar códigos QR.</p>
           <RouterLink to="/pricing"
