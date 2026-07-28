@@ -2,7 +2,7 @@
 import { useUserStore } from '@/stores/user';
 import { RouterLink } from 'vue-router'
 
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import UbiquemeLogo from '@/assets/Ubiqueme_Logo_white.webp';
@@ -180,6 +180,10 @@ const isMobileMenuOpen = ref(false);
 const showCompactBadge = ref(false);
 let intervalId: ReturnType<typeof setInterval> | undefined;
 
+watch(isMobileMenuOpen, (open) => {
+  document.body.style.overflow = open ? 'hidden' : ''
+})
+
 let trustIntervalId: ReturnType<typeof setInterval> | undefined;
 
 onMounted(() => {
@@ -206,6 +210,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId);
   if (trustIntervalId) clearInterval(trustIntervalId);
+  document.body.style.overflow = ''
 });
 </script>
 
@@ -524,7 +529,7 @@ onUnmounted(() => {
 
           <div v-if="isMobileMenuOpen" class="absolute left-0 right-0 top-full z-[90] mt-3 px-4 lg:hidden">
 
-            <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl">
+            <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl max-h-[calc(100vh-120px)] overflow-y-auto">
 
               <!-- USER ACTIONS -->
               <div class="border-b border-gray-100 p-4">
