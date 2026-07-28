@@ -23,7 +23,7 @@ const submitForm = () => {
 </script>
 
 <template>
-  <div class="relative min-h-dvh bg-[#1C1B1F] w-full font-google-sans">
+  <div class="relative min-h-dvh bg-gray-50 w-full font-google-sans">
     <div class="px-4 pt-3 pb-32 space-y-4">
 
       <!-- Header -->
@@ -33,54 +33,54 @@ const submitForm = () => {
           <span class="material-symbols-outlined notranslate text-orange-400 text-[18px]">support_agent</span>
         </div>
         <div>
-          <h2 class="text-lg font-bold text-[#E6E1E5]">Soporte técnico</h2>
-          <p class="text-[#CAC4D0]/50 text-[10px]">Estamos para ayudarle</p>
+          <h2 class="text-lg font-bold text-gray-900">Soporte técnico</h2>
+          <p class="text-gray-500 text-[10px]">Estamos para ayudarle</p>
         </div>
       </div>
 
       <!-- Hero message -->
-      <div class="bg-[#2B2930] rounded-xl p-4 border border-[#49454F]/30 space-y-2">
+      <div class="bg-white rounded-xl p-4 border border-gray-200 space-y-2">
         <div class="flex items-start gap-3">
           <div
-            class="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined notranslate text-orange-400 text-[16px]">handshake</span>
+            class="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-[16px]">handshake</span>
           </div>
           <div>
-            <p class="text-sm text-[#E6E1E5] font-medium leading-relaxed">
+            <p class="text-sm text-gray-700 font-medium leading-relaxed">
               Estamos para ayudarle. Si tiene un problema o alguna duda respecto a su cuenta, siéntase libre de
               contactarnos.
             </p>
-            <p class="text-xs text-[#CAC4D0]/50 mt-1">Nuestro equipo le responderá a la brevedad.</p>
+            <p class="text-xs text-gray-500 mt-1">Nuestro equipo le responderá a la brevedad.</p>
           </div>
         </div>
       </div>
 
       <!-- Contact form -->
-      <div class="bg-[#2B2930] rounded-xl p-4 border border-[#49454F]/30 relative overflow-hidden">
+      <div class="bg-white rounded-xl p-4 border border-gray-200 relative overflow-hidden">
         <!-- Success overlay -->
-        <div v-if="showSuccess" class="absolute inset-0 bg-[#2B2930] flex flex-col items-center justify-center z-10">
+        <div v-if="showSuccess" class="absolute inset-0 bg-white flex flex-col items-center justify-center z-10">
           <div
-            class="w-14 h-14 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-3">
-            <span class="material-symbols-outlined notranslate text-orange-400 text-[28px]">check</span>
+            class="w-14 h-14 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center mb-3">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-[28px]">check</span>
           </div>
-          <h3 class="text-[#E6E1E5] text-base font-bold mb-1">¡Mensaje enviado!</h3>
-          <p class="text-[#CAC4D0]/50 text-xs">Le responderemos a la brevedad.</p>
+          <h3 class="text-gray-900 text-base font-bold mb-1">¡Mensaje enviado!</h3>
+          <p class="text-gray-500 text-xs">Le responderemos a la brevedad.</p>
         </div>
 
         <form @submit.prevent="submitForm" class="space-y-3 relative">
           <div>
             <label
-              class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-1 block">Asunto</label>
+              class="text-[9px] font-bold uppercase tracking-wider text-gray-500 ml-1 mb-1 block">Asunto</label>
             <div class="relative">
               <select v-model="form.subject" required
-                class="w-full h-10 px-3 rounded-xl border border-[#49454F]/50 bg-[#1C1B1F] text-[#E6E1E5] text-sm outline-none focus:border-orange-500/50 transition-all appearance-none pr-10 cursor-pointer">
+                class="w-full h-10 px-3 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm outline-none focus:border-orange-500/50 transition-all appearance-none pr-10 cursor-pointer">
                 <option value="" disabled selected>Selecciona un tema...</option>
                 <option value="billing">Problemas de facturación / Pagos</option>
                 <option value="qr_issues">Mi código QR no funciona</option>
                 <option value="account">Problemas con mi configuración de cuenta</option>
                 <option value="other">Otro asunto</option>
               </select>
-              <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-[#CAC4D0]/30">
+              <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
                 <span class="material-symbols-outlined notranslate text-[18px]">expand_more</span>
               </div>
             </div>
@@ -88,9 +88,9 @@ const submitForm = () => {
 
           <div>
             <label
-              class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-1 block">Mensaje</label>
+              class="text-[9px] font-bold uppercase tracking-wider text-gray-500 ml-1 mb-1 block">Mensaje</label>
             <textarea v-model="form.message" required rows="4"
-              class="w-full px-3 py-2.5 rounded-xl border border-[#49454F]/50 bg-[#1C1B1F] text-[#E6E1E5] text-sm placeholder:text-[#CAC4D0]/30 outline-none focus:border-orange-500/50 transition-all resize-none"
+              class="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm placeholder:text-gray-400 outline-none focus:border-orange-500/50 transition-all resize-none"
               placeholder="Describa su problema con detalle..."></textarea>
           </div>
 
@@ -105,7 +105,7 @@ const submitForm = () => {
       </div>
 
       <!-- Direct email -->
-      <div class="flex items-center justify-center gap-1.5 text-[11px] text-[#CAC4D0]/40">
+      <div class="flex items-center justify-center gap-1.5 text-[11px] text-gray-500">
         <span class="material-symbols-outlined notranslate text-[14px]">mail</span>
         También puede escribirnos a
         <a href="mailto:soporte@ubiqueme.com"

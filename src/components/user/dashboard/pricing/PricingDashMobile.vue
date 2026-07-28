@@ -85,24 +85,24 @@ const handleSelect = (id: string) => {
 </script>
 
 <template>
-  <div class="relative min-h-dvh bg-[#1C1B1F] w-full font-google-sans">
+  <div class="relative min-h-dvh bg-gray-50 w-full font-google-sans">
     <div class="px-4 pt-3 pb-32 space-y-4">
 
       <!-- Header -->
       <div class="text-center space-y-1">
-        <h1 class="text-xl font-black text-[#E6E1E5] tracking-tight">
+        <h1 class="text-xl font-black text-gray-900 tracking-tight">
           Elija su <span class="text-orange-500">Plan</span>
         </h1>
-        <p class="text-xs text-[#CAC4D0]/50">Sin complicaciones. Sin contratos forzosos.</p>
+        <p class="text-xs text-gray-500">Sin complicaciones. Sin contratos forzosos.</p>
       </div>
 
       <!-- Currency Selector (M3 Segmented Control) -->
-      <div class="flex bg-[#2B2930] rounded-xl p-0.5">
+      <div class="flex bg-white rounded-xl p-0.5 border border-gray-200">
         <button v-for="c in currencies" :key="c.key" @click="selectedCurrency = c.key"
           class="flex-1 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all duration-150 cursor-pointer active:scale-[0.98] select-none flex items-center justify-center gap-1"
           :class="selectedCurrency === c.key
             ? 'bg-orange-500 text-black shadow-sm'
-            : 'text-[#CAC4D0]/50 hover:text-[#E6E1E5]'">
+            : 'text-gray-400 hover:text-gray-700'">
           <span class="text-sm">{{ c.flag }}</span>
           {{ c.label }}
         </button>
@@ -111,8 +111,8 @@ const handleSelect = (id: string) => {
       <!-- Pricing List -->
       <div class="space-y-4">
         <div v-for="plan in plans" :key="plan.id"
-          class="bg-[#2B2930] rounded-xl border overflow-hidden transition-all duration-300"
-          :class="plan.featured ? 'border-orange-500/30' : 'border-[#49454F]/30'">
+          class="bg-white rounded-xl border overflow-hidden transition-all duration-300 shadow-sm"
+          :class="plan.featured ? 'border-orange-500/30' : 'border-gray-200'">
 
           <!-- Featured badge -->
           <div v-if="plan.featured"
@@ -124,31 +124,31 @@ const handleSelect = (id: string) => {
             <!-- Plan header -->
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-[8px] font-bold uppercase tracking-[0.2em] text-[#CAC4D0]/40 font-mono">Plan</p>
-                <h3 class="text-xl font-black text-[#E6E1E5] tracking-tight uppercase">{{ plan.name }}</h3>
+                <p class="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-400 font-mono">Plan</p>
+                <h3 class="text-xl font-black text-gray-900 tracking-tight uppercase">{{ plan.name }}</h3>
               </div>
               <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                :class="plan.featured ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-[#1C1B1F] border border-[#49454F]/30'">
+                :class="plan.featured ? 'bg-orange-50 border border-orange-200' : 'bg-gray-100 border border-gray-200'">
                 <span class="material-symbols-outlined notranslate text-lg"
-                  :class="plan.featured ? 'text-orange-400' : 'text-[#CAC4D0]/40'">
+                  :class="plan.featured ? 'text-orange-400' : 'text-gray-400'">
                   {{ plan.id === 'bronce' ? 'shield' : plan.id === 'plata' ? 'verified_user' : 'military_tech' }}
                 </span>
               </div>
             </div>
 
-            <p class="text-xs text-[#CAC4D0]/50 font-mono">{{ plan.description }}</p>
+            <p class="text-xs text-gray-500 font-mono">{{ plan.description }}</p>
 
             <!-- Price -->
-            <div class="pb-3 border-b border-[#49454F]/30">
+            <div class="pb-3 border-b border-gray-200">
               <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-[#E6E1E5] tracking-tight font-mono">{{
+                <span class="text-3xl font-black text-gray-900 tracking-tight font-mono">{{
                   plan.prices[selectedCurrency].symbol }}{{ plan.prices[selectedCurrency].price }}</span>
-                <span class="text-[9px] text-[#CAC4D0]/60">{{ plan.prices[selectedCurrency].label }}</span>
+                <span class="text-[9px] text-gray-500">{{ plan.prices[selectedCurrency].label }}</span>
                 <span
-                  class="text-[8px] font-black uppercase tracking-widest text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded">{{
+                  class="text-[8px] font-black uppercase tracking-widest text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded">{{
                     plan.prices[selectedCurrency].period }}</span>
               </div>
-              <p class="text-[9px] text-[#CAC4D0]/40 font-mono mt-0.5">~${{ plan.prices[selectedCurrency].monthly }}/mes
+              <p class="text-[9px] text-gray-400 font-mono mt-0.5">~${{ plan.prices[selectedCurrency].monthly }}/mes
               </p>
             </div>
 
@@ -156,13 +156,13 @@ const handleSelect = (id: string) => {
             <ul class="space-y-2">
               <li v-for="(feature, idx) in plan.features" :key="idx" class="flex items-start gap-2">
                 <div class="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5" :class="feature.included
-                  ? (plan.featured ? 'bg-orange-500/15 text-orange-400' : 'bg-[#1C1B1F] text-[#CAC4D0]/40')
-                  : 'bg-[#1C1B1F] text-[#CAC4D0]/15'">
+                  ? (plan.featured ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600')
+                  : 'bg-gray-50 text-gray-300'">
                   <span class="material-symbols-outlined notranslate text-[9px] font-bold">{{ feature.included ? 'check'
                     : 'remove' }}</span>
                 </div>
                 <span class="text-[11px] font-medium leading-snug"
-                  :class="feature.included ? 'text-[#E6E1E5]' : 'text-[#CAC4D0]/30 line-through'">
+                  :class="feature.included ? 'text-gray-700' : 'text-gray-300 line-through'">
                   {{ feature.label }}
                 </span>
               </li>
@@ -173,7 +173,7 @@ const handleSelect = (id: string) => {
               class="w-full h-11 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 cursor-pointer mt-1"
               :class="plan.featured
                 ? 'bg-orange-500 text-black hover:bg-orange-400 shadow-lg shadow-orange-500/15'
-                : 'bg-[#1C1B1F] text-[#E6E1E5] border border-[#49454F]/30 hover:border-orange-500/30'">
+                : 'bg-gray-100 text-gray-700 border border-gray-200 hover:border-orange-300'">
               {{ plan.cta }}
               <span v-if="plan.featured"
                 class="material-symbols-outlined notranslate text-[14px] font-bold">arrow_forward</span>
@@ -183,16 +183,16 @@ const handleSelect = (id: string) => {
       </div>
 
       <!-- Shipping info -->
-      <div class="bg-[#2B2930] rounded-xl p-4 border border-orange-500/10 space-y-2">
-        <div class="flex items-center gap-2 text-orange-400 text-[9px] font-bold uppercase tracking-wider">
+      <div class="bg-orange-50 rounded-xl p-4 border border-orange-200 space-y-2">
+        <div class="flex items-center gap-2 text-orange-600 text-[9px] font-bold uppercase tracking-wider">
           <span class="material-symbols-outlined notranslate text-[14px]">local_shipping</span>
           Envío Físico — Solo México
         </div>
-        <p class="text-xs text-[#CAC4D0]/60 leading-relaxed">
-          Cada plan incluye <strong class="text-orange-400">1 envío físico gratuito</strong> a cualquier parte de la
+        <p class="text-xs text-gray-600 leading-relaxed">
+          Cada plan incluye <strong class="text-orange-600">1 envío físico gratuito</strong> a cualquier parte de la
           República Mexicana.
         </p>
-        <p class="text-[10px] text-[#CAC4D0]/40 leading-relaxed">
+        <p class="text-[10px] text-gray-500 leading-relaxed">
           💡 Solicita todos tus QRs permitidos en el primer envío gratuito.
         </p>
       </div>

@@ -195,9 +195,9 @@ const formatDate = (timestamp: any) => {
 }
 
 const qrStatusColor = (status: string) => {
-  if (status === 'Active') return 'bg-orange-500/10 text-orange-400 border-orange-500/20'
-  if (status === 'Paused') return 'bg-white/10 text-white/50 border-white/10'
-  return 'bg-white/5 text-white/30 border-white/10'
+  if (status === 'Active') return 'bg-orange-100 text-orange-600 border-orange-200'
+  if (status === 'Paused') return 'bg-gray-100 text-gray-500 border-gray-200'
+  return 'bg-gray-50 text-gray-400 border-gray-200'
 }
 
 const componentsStore = useComponentsStore();
@@ -235,11 +235,11 @@ const showUpdateModal = (mode: boolean) => {
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-2">
         <div
-          class="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/20 flex items-center justify-center">
-          <span class="material-symbols-outlined notranslate text-orange-400 text-lg">settings</span>
+          class="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center">
+          <span class="material-symbols-outlined notranslate text-orange-500 text-lg">settings</span>
         </div>
         <div>
-          <h2 class="text-3xl font-bold text-white">Cuenta y Configuración</h2>
+          <h2 class="text-3xl font-bold text-gray-900">Cuenta y Configuración</h2>
           <p class="text-gray-500 text-sm">Administra tu perfil, códigos QR y suscripción</p>
         </div>
       </div>
@@ -259,14 +259,14 @@ const showUpdateModal = (mode: boolean) => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Identity Card -->
-        <div class="lg:col-span-1 bg-[#0f0f11] rounded-2xl border border-white/5 p-6">
-          <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+        <div class="lg:col-span-1 bg-white rounded-2xl border border-gray-200 p-6">
+          <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
             <div
-              class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined notranslate text-orange-400 text-lg">badge</span>
+              class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+              <span class="material-symbols-outlined notranslate text-orange-500 text-lg">badge</span>
             </div>
             <div>
-              <h3 class="text-white text-sm font-semibold">Identidad</h3>
+              <h3 class="text-gray-900 text-sm font-semibold">Identidad</h3>
               <p class="text-[10px] text-gray-500 font-mono">Información de la cuenta</p>
             </div>
           </div>
@@ -277,8 +277,8 @@ const showUpdateModal = (mode: boolean) => {
               <label class="block text-[10px] font-medium text-gray-500 mb-1 uppercase tracking-wider">Nombre
                 completo</label>
               <div
-                class="w-full bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white/60 opacity-60 cursor-not-allowed flex items-center gap-2">
-                <span class="material-symbols-outlined notranslate text-[16px] text-white/30">person</span>
+                class="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 opacity-60 cursor-not-allowed flex items-center gap-2">
+                <span class="material-symbols-outlined notranslate text-[16px] text-gray-400">person</span>
                 {{ userData?.name || '---' }}
               </div>
             </div>
@@ -288,8 +288,8 @@ const showUpdateModal = (mode: boolean) => {
               <label class="block text-[10px] font-medium text-gray-500 mb-1 uppercase tracking-wider">Correo
                 electrónico</label>
               <div
-                class="w-full bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white/60 opacity-60 cursor-not-allowed flex items-center gap-2">
-                <span class="material-symbols-outlined notranslate text-[16px] text-white/30">mail</span>
+                class="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 opacity-60 cursor-not-allowed flex items-center gap-2">
+                <span class="material-symbols-outlined notranslate text-[16px] text-gray-400">mail</span>
                 {{ userData?.email || '---' }}
               </div>
             </div>
@@ -299,11 +299,11 @@ const showUpdateModal = (mode: boolean) => {
               <label class="block text-[10px] font-medium text-gray-500 mb-1 uppercase tracking-wider">Teléfono</label>
               <div class="flex gap-2">
                 <input type="tel" v-model="userStore.getUserPhone"
-                  class="flex-1 bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white/30 focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-white/20"
+                  class="flex-1 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-gray-400"
                   placeholder="+52 555 123 4567" disabled />
 
                 <button @click="showUpdateModal(true)" :disabled="isSavingPhone"
-                  class="px-2 rounded-xl text-sm font-medium bg-orange-700 hover:bg-orange-500 text-white transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1">
+                  class="px-2 rounded-xl text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1">
                   <span v-if="isSavingPhone"
                     class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   <span v-else class="material-symbols-outlined notranslate text-[18px]">autorenew</span>
@@ -315,19 +315,19 @@ const showUpdateModal = (mode: boolean) => {
         </div>
 
         <!-- QR Codes Grid -->
-        <div class="lg:col-span-2 bg-[#0f0f11] rounded-2xl border border-white/5 p-6">
-          <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
             <div class="flex items-center gap-3">
               <div
-                class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-                <span class="material-symbols-outlined notranslate text-orange-400 text-lg">qr_code_2</span>
+                class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+                <span class="material-symbols-outlined notranslate text-orange-500 text-lg">qr_code_2</span>
               </div>
               <div>
-                <h3 class="text-white text-sm font-semibold">Mis Códigos QR</h3>
+                <h3 class="text-gray-900 text-sm font-semibold">Mis Códigos QR</h3>
                 <p class="text-[10px] text-gray-500 font-mono">{{ userQrs.length }} registrados</p>
               </div>
             </div>
-            <span class="text-[10px] font-mono text-white/20">ASSETS</span>
+            <span class="text-[10px] font-mono text-gray-400">ASSETS</span>
           </div>
 
           <!-- QR Grid -->
@@ -335,21 +335,21 @@ const showUpdateModal = (mode: boolean) => {
             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             <button @click="goToMYQR" v-for="qr in userQrs.filter(q => q.status === 'Active')" :key="qr.id"
               :to="{ name: 'dashboard' }"
-              class="bg-[#161618] border border-white/5 rounded-xl p-3 hover:border-orange-500/20 transition-all group cursor-pointer block">
+              class="bg-white border border-gray-200 rounded-xl p-3 hover:border-orange-300 transition-all group cursor-pointer block shadow-sm">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-mono text-white/20 truncate max-w-[80px]">{{ qr.id?.slice(0, 8)
+                <span class="text-[10px] font-mono text-gray-400 truncate max-w-[80px]">{{ qr.id?.slice(0, 8)
                 }}...</span>
                 <span :class="qrStatusColor(qr.status)"
                   class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border">
                   {{ qr.status }}
                 </span>
               </div>
-              <p class="text-sm font-medium text-white/80 truncate group-hover:text-white transition-colors">{{ qr.name
+              <p class="text-sm font-medium text-gray-700 truncate group-hover:text-gray-900 transition-colors">{{ qr.name
               }}</p>
               <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined notranslate text-[12px] text-white/20">visibility</span>
-                  <span class="text-[10px] text-white/30 font-mono">{{ qr.scans ?? 0 }} escaneos</span>
+                  <span class="material-symbols-outlined notranslate text-[12px] text-gray-400">visibility</span>
+                  <span class="text-[10px] text-gray-500 font-mono">{{ qr.scans ?? 0 }} escaneos</span>
                 </div>
 
               </div>
@@ -357,39 +357,39 @@ const showUpdateModal = (mode: boolean) => {
           </div>
 
           <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-            <span class="material-symbols-outlined notranslate text-4xl text-white/10 mb-3">qr_code_scanner</span>
-            <p class="text-sm text-white/30">No tiene códigos QR registrados</p>
-            <p class="text-[10px] text-white/20 mt-1">Adquiera un plan para comenzar</p>
+            <span class="material-symbols-outlined notranslate text-4xl text-gray-200 mb-3">qr_code_scanner</span>
+            <p class="text-sm text-gray-500">No tiene códigos QR registrados</p>
+            <p class="text-[10px] text-gray-400 mt-1">Adquiera un plan para comenzar</p>
           </div>
         </div>
       </div>
 
       <!-- ─── ROW 2: Planes y Suscripción ─── -->
-      <div class="bg-[#0f0f11] rounded-2xl border border-white/5 p-6">
-        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+      <div class="bg-white rounded-2xl border border-gray-200 p-6">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
           <div
-            class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-            <span class="material-symbols-outlined notranslate text-orange-400 text-lg">workspace_premium</span>
+            class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-lg">workspace_premium</span>
           </div>
           <div>
-            <h3 class="text-white text-sm font-semibold">Planes y Suscripción</h3>
+            <h3 class="text-gray-900 text-sm font-semibold">Planes y Suscripción</h3>
             <p class="text-[10px] text-gray-500 font-mono">{{ subscriptions.length }} suscripción(es)</p>
           </div>
         </div>
 
         <div v-if="subscriptions.length > 0" class="space-y-4">
           <div v-for="sub in subscriptions" :key="sub.id"
-            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-[#161618] rounded-xl border border-white/5">
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-gray-100 rounded-xl border border-gray-200">
             <div class="flex items-center gap-4">
               <div
-                class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-                <span class="material-symbols-outlined notranslate text-orange-400 text-2xl">star</span>
+                class="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+                <span class="material-symbols-outlined notranslate text-orange-500 text-2xl">star</span>
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="text-white font-semibold capitalize">{{ sub.planType }}</p>
+                  <p class="text-gray-900 font-semibold capitalize">{{ sub.planType }}</p>
                   <span
-                    :class="sub.status === 'active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-white/10 text-white/50 border-white/10'"
+                    :class="sub.status === 'active' ? 'bg-orange-100 text-orange-600 border-orange-200' : 'bg-gray-50 text-gray-500 border-gray-200'"
                     class="px-2 py-0.5 rounded-full border text-[9px] font-black uppercase tracking-widest">
                     {{ sub.status }}
                   </span>
@@ -400,13 +400,13 @@ const showUpdateModal = (mode: boolean) => {
             <div class="flex flex-wrap items-center gap-4 text-sm">
               <div class="text-right">
                 <p class="text-[10px] text-gray-500 uppercase tracking-wider">QRs</p>
-                <p class="text-white font-mono">{{ sub.totalQRsCreated ?? 0 }} / {{ sub.totalQRsAllowed ?? 0 }}</p>
+                <p class="text-gray-900 font-mono">{{ sub.totalQRsCreated ?? 0 }} / {{ sub.totalQRsAllowed ?? 0 }}</p>
               </div>
               <div class="text-right">
                 <p class="text-[10px] text-gray-500 uppercase tracking-wider">Finaliza</p>
-                <p class="text-white font-mono text-xs">{{ sub.endDate ? formatDate(sub.endDate) : 'Ilimitado' }}</p>
+                <p class="text-gray-900 font-mono text-xs">{{ sub.endDate ? formatDate(sub.endDate) : 'Ilimitado' }}</p>
               </div>
-              <div class="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div class="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                 <div class="h-full bg-orange-500 rounded-full transition-all duration-500"
                   :style="{ width: `${Math.min((sub.totalQRsCreated / sub.totalQRsAllowed) * 100, 100)}%` }"></div>
               </div>
@@ -415,34 +415,34 @@ const showUpdateModal = (mode: boolean) => {
         </div>
 
         <div v-else class="flex flex-col items-center justify-center py-10 text-center">
-          <span class="material-symbols-outlined notranslate text-4xl text-white/10 mb-3">credit_card_off</span>
-          <p class="text-sm text-white/30">No tienes suscripciones activas</p>
-          <p class="text-[10px] text-white/20 mt-1">Adquiere un plan para activar tu cuenta</p>
+          <span class="material-symbols-outlined notranslate text-4xl text-gray-200 mb-3">credit_card_off</span>
+          <p class="text-sm text-gray-500">No tienes suscripciones activas</p>
+          <p class="text-[10px] text-gray-400 mt-1">Adquiere un plan para activar tu cuenta</p>
         </div>
       </div>
 
       <!-- ─── ROW 3: Seguridad (solo restablecer contraseña) ─── -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Security / Password Reset -->
-        <div class="lg:col-span-2 bg-[#0f0f11] rounded-2xl border border-white/5 p-6">
-          <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6">
+          <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
             <div
-              class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined notranslate text-orange-400 text-lg">lock</span>
+              class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+              <span class="material-symbols-outlined notranslate text-orange-500 text-lg">lock</span>
             </div>
             <div>
-              <h3 class="text-white text-sm font-semibold">Seguridad</h3>
+              <h3 class="text-gray-900 text-sm font-semibold">Seguridad</h3>
               <p class="text-[10px] text-gray-500 font-mono">Gestión de acceso a la cuenta</p>
             </div>
           </div>
 
-          <div class="p-4 bg-[#161618] rounded-xl border border-white/5 flex items-center justify-between">
+          <div class="p-4 bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-white">Restablecer Contraseña</p>
+              <p class="text-sm font-medium text-gray-900">Restablecer Contraseña</p>
               <p class="text-[11px] text-gray-500 mt-0.5">Se enviará un enlace a tu correo electrónico</p>
             </div>
             <button @click="handleResetPassword" :disabled="isResettingPassword"
-              class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-orange-600/10 border border-orange-500/20 text-orange-400 hover:bg-orange-600/20 hover:border-orange-500/40 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2">
+              class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-100 hover:border-orange-300 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2">
               <span v-if="isResettingPassword"
                 class="w-4 h-4 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin"></span>
               <span v-else class="material-symbols-outlined notranslate text-[16px]">send</span>
@@ -452,8 +452,8 @@ const showUpdateModal = (mode: boolean) => {
         </div>
 
         <!-- Danger Zone with Delete Prompt -->
-        <div class="bg-[#0f0f11] rounded-2xl p-6 border border-red-500/10">
-          <h3 class="text-red-500 text-sm font-semibold mb-4 pb-3 border-b border-red-500/5 flex items-center gap-2">
+        <div class="bg-white rounded-2xl p-6 border border-red-200">
+          <h3 class="text-red-600 text-sm font-semibold mb-4 pb-3 border-b border-red-100 flex items-center gap-2">
             <span class="material-symbols-outlined notranslate text-[18px]">warning</span>
             Zona de Peligro
           </h3>
@@ -469,32 +469,32 @@ const showUpdateModal = (mode: boolean) => {
               <div v-if="showDeletePrompt"
                 class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                 <div @click.stop
-                  class="w-full max-w-md bg-[#0f0f11] border border-red-500/20 rounded-3xl p-6 shadow-2xl space-y-5">
+                  class="w-full max-w-md bg-white border border-red-200 rounded-3xl p-6 shadow-2xl space-y-5">
                   <div class="flex items-center justify-between">
-                    <h4 class="text-white font-bold text-sm flex items-center gap-2">
+                    <h4 class="text-gray-900 font-bold text-sm flex items-center gap-2">
                       <span class="material-symbols-outlined notranslate text-red-500 text-[18px]">delete_forever</span>
                       Cancelar cuenta
                     </h4>
                     <button @click="showDeletePrompt = false"
-                      class="text-white/30 hover:text-white transition-colors cursor-pointer">
+                      class="text-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
                       <span class="material-symbols-outlined notranslate text-[20px]">close</span>
                     </button>
                   </div>
 
-                  <p class="text-xs text-gray-500 leading-relaxed">
+                  <p class="text-xs text-gray-600 leading-relaxed">
                     Esta acción solicitará la eliminación de tu cuenta y todos tus datos. Cuéntanos el motivo para
                     ayudarnos a mejorar.
                   </p>
 
                   <!-- Reason options -->
                   <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Motivo</label>
+                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1">Motivo</label>
                     <div class="space-y-1.5">
                       <button v-for="r in deleteReasons" :key="r" @click="deleteReason = r"
                         class="w-full text-left px-4 py-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer"
                         :class="deleteReason === r
-                          ? 'border-red-500/40 bg-red-500/10 text-red-400'
-                          : 'border-white/10 bg-black/40 text-white/60 hover:border-white/20'">
+                          ? 'border-red-400 bg-red-50 text-red-600'
+                          : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'">
                         {{ r }}
                       </button>
                     </div>
@@ -503,16 +503,16 @@ const showUpdateModal = (mode: boolean) => {
                   <!-- Custom reason textarea -->
                   <div v-if="deleteReason === 'Otro (especificar)'">
                     <label
-                      class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1 mb-1.5 block">Especifica
+                      class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 mb-1.5 block">Especifica
                       el motivo</label>
                     <textarea v-model="deleteCustomReason" rows="3" placeholder="Describe el motivo..."
-                      class="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/40 text-white text-sm placeholder:text-white/20 outline-none focus:border-red-500/40 transition-all resize-none"></textarea>
+                      class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm placeholder:text-gray-400 outline-none focus:border-red-400 transition-all resize-none"></textarea>
                   </div>
 
                   <!-- Actions -->
                   <div class="flex gap-3 pt-2">
                     <button @click="showDeletePrompt = false"
-                      class="flex-1 py-3 rounded-xl border border-white/10 text-white/60 text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">
+                      class="flex-1 py-3 rounded-xl border border-gray-200 text-gray-700 text-xs font-bold uppercase tracking-wider hover:bg-gray-50 transition-all cursor-pointer">
                       Cancelar
                     </button>
                     <button @click="handleCancelAccount" :disabled="isDeleting || !deleteReason"
@@ -529,7 +529,7 @@ const showUpdateModal = (mode: boolean) => {
           </Teleport>
 
           <button @click="showDeletePrompt = true" :disabled="isCancelling"
-            class="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer">
+            class="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider border border-red-200 text-red-600 hover:bg-red-50 transition-all flex items-center justify-center gap-2 cursor-pointer">
             <span v-if="isCancelling"
               class="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin"></span>
             <span v-else class="material-symbols-outlined notranslate text-[16px]">delete_forever</span>

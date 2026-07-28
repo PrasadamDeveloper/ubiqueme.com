@@ -161,9 +161,9 @@ const formatDate = (timestamp: any) => {
 }
 
 const qrStatusColor = (status: string) => {
-  if (status === 'Active') return 'bg-orange-500/10 text-orange-400 border-orange-500/20'
-  if (status === 'Paused') return 'bg-white/10 text-white/50 border-white/10'
-  return 'bg-white/5 text-white/30 border-white/10'
+  if (status === 'Active') return 'bg-orange-100 text-orange-600 border-orange-200'
+  if (status === 'Paused') return 'bg-gray-100 text-gray-500 border-gray-200'
+  return 'bg-gray-50 text-gray-400 border-gray-200'
 }
 
 const componentsStore = useComponentsStore()
@@ -189,7 +189,7 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
 </script>
 
 <template>
-  <div class="relative min-h-dvh bg-[#1C1B1F] w-full font-google-sans">
+  <div class="relative min-h-dvh bg-gray-50 w-full font-google-sans">
     <div class="px-4 pt-3 pb-32 space-y-4">
 
       <!-- Header -->
@@ -199,8 +199,8 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
           <span class="material-symbols-outlined notranslate text-orange-400 text-[18px]">settings</span>
         </div>
         <div>
-          <h2 class="text-lg font-bold text-[#E6E1E5]">Cuenta y Configuración</h2>
-          <p class="text-[#CAC4D0]/50 text-[10px]">Administra tu perfil y suscripción</p>
+          <h2 class="text-lg font-bold text-gray-900">Cuenta y Configuración</h2>
+          <p class="text-gray-500 text-[10px]">Administra tu perfil y suscripción</p>
         </div>
       </div>
 
@@ -208,46 +208,46 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
       <div v-if="loading" class="flex items-center justify-center py-20">
         <div class="flex flex-col items-center gap-2">
           <div class="w-7 h-7 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin"></div>
-          <p class="text-xs text-[#CAC4D0]/40 font-mono">Cargando datos...</p>
+          <p class="text-xs text-gray-500 font-mono">Cargando datos...</p>
         </div>
       </div>
 
       <div v-else class="space-y-3">
 
         <!-- Identity Card (M3 surface container) -->
-        <div class="bg-[#2B2930] rounded-xl p-4 border border-[#49454F]/30 space-y-3">
-          <div class="flex items-center gap-2 pb-2 border-b border-[#49454F]/30">
-            <span class="material-symbols-outlined notranslate text-[#CAC4D0]/40 text-[16px]">badge</span>
-            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#CAC4D0]/60">Identidad</span>
+        <div class="bg-white rounded-xl p-4 border border-gray-200 space-y-3">
+          <div class="flex items-center gap-2 pb-2 border-b border-gray-200">
+            <span class="material-symbols-outlined notranslate text-gray-400 text-[16px]">badge</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500">Identidad</span>
           </div>
           <div class="space-y-2.5">
             <div>
-              <label class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-0.5 block">Nombre
+              <label class="text-[9px] font-bold uppercase tracking-wider text-gray-500 ml-1 mb-0.5 block">Nombre
                 completo</label>
               <div
-                class="w-full h-10 px-3 rounded-xl bg-[#1C1B1F] border border-[#49454F]/50 text-[#E6E1E5] text-sm flex items-center gap-2 opacity-60">
-                <span class="material-symbols-outlined notranslate text-[16px] text-[#CAC4D0]/30">person</span>
+                class="w-full h-10 px-3 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 text-sm flex items-center gap-2 opacity-60">
+                <span class="material-symbols-outlined notranslate text-[16px] text-gray-400">person</span>
                 {{ userData?.name || '---' }}
               </div>
             </div>
             <div>
-              <label class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-0.5 block">Correo
+              <label class="text-[9px] font-bold uppercase tracking-wider text-gray-500 ml-1 mb-0.5 block">Correo
                 electrónico</label>
               <div
-                class="w-full h-10 px-3 rounded-xl bg-[#1C1B1F] border border-[#49454F]/50 text-[#E6E1E5] text-sm flex items-center gap-2 opacity-60">
-                <span class="material-symbols-outlined notranslate text-[16px] text-[#CAC4D0]/30">mail</span>
+                class="w-full h-10 px-3 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 text-sm flex items-center gap-2 opacity-60">
+                <span class="material-symbols-outlined notranslate text-[16px] text-gray-400">mail</span>
                 {{ userData?.email || '---' }}
               </div>
             </div>
             <div>
               <label
-                class="text-[9px] font-bold uppercase tracking-wider text-[#CAC4D0]/40 ml-1 mb-0.5 block">Teléfono</label>
+                class="text-[9px] font-bold uppercase tracking-wider text-gray-500 ml-1 mb-0.5 block">Teléfono</label>
               <div class="flex gap-2">
                 <input type="tel" :value="userStore.getUserPhone"
-                  class="flex-1 h-10 px-3 rounded-xl bg-[#1C1B1F] border border-[#49454F]/50 text-[#E6E1E5] text-sm placeholder:text-[#CAC4D0]/30 outline-none focus:border-orange-500/50 transition-all"
+                  class="flex-1 h-10 px-3 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 text-sm placeholder:text-gray-400 outline-none focus:border-orange-500/50 transition-all"
                   disabled />
                 <button @click="showUpdateModal(true)"
-                  class="h-10 px-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 flex items-center gap-1 cursor-pointer">
+                  class="h-10 px-3 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 flex items-center gap-1 cursor-pointer">
                   <span class="material-symbols-outlined notranslate text-[16px]">autorenew</span>
                 </button>
               </div>
@@ -256,62 +256,62 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
         </div>
 
         <!-- QR Codes (M3 surface container) -->
-        <div class="bg-[#2B2930] rounded-xl p-4 border border-[#49454F]/30 space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-[#49454F]/30">
+        <div class="bg-white rounded-xl p-4 border border-gray-200 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-gray-200">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined notranslate text-[#CAC4D0]/40 text-[16px]">qr_code_2</span>
-              <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#CAC4D0]/60">Mis QRs</span>
+              <span class="material-symbols-outlined notranslate text-gray-400 text-[16px]">qr_code_2</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500">Mis QRs</span>
             </div>
-            <span class="text-[9px] text-[#CAC4D0]/30 font-mono">{{ userQrs.length }} registrados</span>
+            <span class="text-[9px] text-gray-400 font-mono">{{ userQrs.length }} registrados</span>
           </div>
 
           <div v-if="userQrs.filter(q => q.status === 'Active').length > 0" class="grid grid-cols-2 gap-2">
             <button @click="goToMYQR" v-for="qr in userQrs.filter(q => q.status === 'Active')" :key="qr.id"
-              class="bg-[#1C1B1F] border border-[#49454F]/30 rounded-xl p-3 hover:border-orange-500/30 transition-all text-left cursor-pointer active:scale-[0.98]">
+              class="bg-white border border-gray-200 rounded-xl p-3 hover:border-orange-300 transition-all text-left cursor-pointer active:scale-[0.98] shadow-sm">
               <div class="flex items-center justify-between mb-1">
-                <span class="text-[8px] font-mono text-[#CAC4D0]/30 truncate max-w-[70px]">{{ qr.id?.slice(0, 8)
+                <span class="text-[8px] font-mono text-gray-400 truncate max-w-[70px]">{{ qr.id?.slice(0, 8)
                   }}..</span>
                 <span :class="qrStatusColor(qr.status)"
                   class="px-1 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-widest border">{{ qr.status
                   }}</span>
               </div>
-              <p class="text-sm font-bold text-[#E6E1E5] truncate">{{ qr.name }}</p>
+              <p class="text-sm font-bold text-gray-900 truncate">{{ qr.name }}</p>
               <div class="flex items-center gap-1 mt-1">
-                <span class="material-symbols-outlined notranslate text-[10px] text-[#CAC4D0]/30">visibility</span>
-                <span class="text-[9px] text-[#CAC4D0]/40 font-mono">{{ qr.scans ?? 0 }}</span>
+                <span class="material-symbols-outlined notranslate text-[10px] text-gray-400">visibility</span>
+                <span class="text-[9px] text-gray-500 font-mono">{{ qr.scans ?? 0 }}</span>
               </div>
             </button>
           </div>
 
           <div v-else class="flex flex-col items-center justify-center py-8 text-center">
-            <span class="material-symbols-outlined notranslate text-3xl text-[#CAC4D0]/10 mb-2">qr_code_scanner</span>
-            <p class="text-xs text-[#CAC4D0]/40">No tiene códigos QR registrados</p>
+            <span class="material-symbols-outlined notranslate text-3xl text-gray-200 mb-2">qr_code_scanner</span>
+            <p class="text-xs text-gray-500">No tiene códigos QR registrados</p>
           </div>
         </div>
 
         <!-- Subscriptions -->
-        <div class="bg-[#2B2930] rounded-xl p-4 border border-[#49454F]/30 space-y-3">
-          <div class="flex items-center gap-2 pb-2 border-b border-[#49454F]/30">
-            <span class="material-symbols-outlined notranslate text-[#CAC4D0]/40 text-[16px]">workspace_premium</span>
-            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#CAC4D0]/60">Suscripciones</span>
+        <div class="bg-white rounded-xl p-4 border border-gray-200 space-y-3">
+          <div class="flex items-center gap-2 pb-2 border-b border-gray-200">
+            <span class="material-symbols-outlined notranslate text-gray-400 text-[16px]">workspace_premium</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500">Suscripciones</span>
           </div>
 
           <div v-if="subscriptions.length > 0" class="space-y-2">
             <div v-for="sub in subscriptions" :key="sub.id"
-              class="bg-[#1C1B1F] rounded-xl p-3 border border-[#49454F]/30">
+              class="bg-gray-100 rounded-xl p-3 border border-gray-200">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined notranslate text-orange-400 text-[16px]">star</span>
-                  <span class="text-sm font-bold text-[#E6E1E5] capitalize">{{ sub.planType }}</span>
+                  <span class="material-symbols-outlined notranslate text-orange-500 text-[16px]">star</span>
+                  <span class="text-sm font-bold text-gray-900 capitalize">{{ sub.planType }}</span>
                   <span
-                    :class="sub.status === 'active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-white/10 text-[#CAC4D0]/50 border-white/10'"
+                    :class="sub.status === 'active' ? 'bg-orange-100 text-orange-600 border-orange-200' : 'bg-gray-50 text-gray-500 border-gray-200'"
                     class="px-1.5 py-0.5 rounded-full border text-[7px] font-bold uppercase tracking-widest">{{
                     sub.status }}</span>
                 </div>
                 <div class="text-right">
-                  <p class="text-[10px] font-medium text-[#E6E1E5]">{{ sub.totalQRsCreated ?? 0 }}/{{
+                  <p class="text-[10px] font-medium text-gray-900">{{ sub.totalQRsCreated ?? 0 }}/{{
                     sub.totalQRsAllowed ?? 0 }}</p>
-                  <div class="w-20 h-1 bg-[#49454F]/30 rounded-full mt-1 overflow-hidden ml-auto">
+                  <div class="w-20 h-1 bg-gray-200 rounded-full mt-1 overflow-hidden ml-auto">
                     <div class="h-full bg-orange-500 rounded-full transition-all"
                       :style="{ width: `${Math.min((sub.totalQRsCreated / sub.totalQRsAllowed) * 100, 100)}%` }"></div>
                   </div>
@@ -321,24 +321,24 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
           </div>
 
           <div v-else class="flex flex-col items-center justify-center py-6 text-center">
-            <span class="material-symbols-outlined notranslate text-3xl text-[#CAC4D0]/10 mb-2">credit_card_off</span>
-            <p class="text-xs text-[#CAC4D0]/40">No tienes suscripciones activas</p>
+            <span class="material-symbols-outlined notranslate text-3xl text-gray-200 mb-2">credit_card_off</span>
+            <p class="text-xs text-gray-500">No tienes suscripciones activas</p>
           </div>
         </div>
 
         <!-- Security -->
-        <div class="bg-[#2B2930] rounded-xl p-4 border border-[#49454F]/30 space-y-3">
-          <div class="flex items-center gap-2 pb-2 border-b border-[#49454F]/30">
-            <span class="material-symbols-outlined notranslate text-[#CAC4D0]/40 text-[16px]">lock</span>
-            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#CAC4D0]/60">Seguridad</span>
+        <div class="bg-white rounded-xl p-4 border border-gray-200 space-y-3">
+          <div class="flex items-center gap-2 pb-2 border-b border-gray-200">
+            <span class="material-symbols-outlined notranslate text-gray-400 text-[16px]">lock</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500">Seguridad</span>
           </div>
-          <div class="flex items-center justify-between bg-[#1C1B1F] rounded-xl p-3 border border-[#49454F]/30">
+          <div class="flex items-center justify-between bg-gray-100 rounded-xl p-3 border border-gray-200">
             <div>
-              <p class="text-xs font-bold text-[#E6E1E5]">Restablecer Contraseña</p>
-              <p class="text-[9px] text-[#CAC4D0]/40 mt-0.5">Recibirás un enlace por correo</p>
+              <p class="text-xs font-bold text-gray-900">Restablecer Contraseña</p>
+              <p class="text-[9px] text-gray-500 mt-0.5">Recibirás un enlace por correo</p>
             </div>
             <button @click="handleResetPassword" :disabled="isResettingPassword"
-              class="shrink-0 h-9 px-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1 cursor-pointer">
+              class="shrink-0 h-9 px-3 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1 cursor-pointer">
               <span v-if="isResettingPassword"
                 class="w-3 h-3 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin"></span>
               <span v-else class="material-symbols-outlined notranslate text-[14px]">send</span>
@@ -348,13 +348,13 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
         </div>
 
         <!-- Danger Zone -->
-        <div class="bg-[#2B2930] rounded-xl p-4 border border-rose-500/20 space-y-3">
-          <div class="flex items-center gap-2 pb-2 border-b border-rose-500/10">
-            <span class="material-symbols-outlined notranslate text-rose-400 text-[16px]">warning</span>
-            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-rose-400">Zona de Peligro</span>
+        <div class="bg-white rounded-xl p-4 border border-red-200 space-y-3">
+          <div class="flex items-center gap-2 pb-2 border-b border-red-100">
+            <span class="material-symbols-outlined notranslate text-red-500 text-[16px]">warning</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-red-600">Zona de Peligro</span>
           </div>
           <button @click="showDeletePrompt = true"
-            class="w-full h-10 rounded-xl border border-rose-500/20 text-rose-400 text-[9px] font-bold uppercase tracking-wider hover:bg-rose-500/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]">
+            class="w-full h-10 rounded-xl border border-red-200 text-red-600 text-[9px] font-bold uppercase tracking-wider hover:bg-red-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]">
             <span class="material-symbols-outlined notranslate text-[14px]">delete_forever</span>
             Cancelar mi cuenta
           </button>
@@ -369,28 +369,28 @@ const showUpdateModal = (mode: boolean) => { isUpdateModal.value = mode }
         leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="showDeletePrompt" @click.self="showDeletePrompt = false"
           class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-6">
-          <div class="w-full max-w-xs bg-[#2B2930] rounded-2xl p-6 border border-[#49454F]/30 space-y-4 shadow-2xl">
-            <div class="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto">
-              <span class="material-symbols-outlined notranslate text-rose-500 text-[24px]">delete_forever</span>
+          <div class="w-full max-w-xs bg-white rounded-2xl p-6 border border-gray-200 space-y-4 shadow-2xl">
+            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto">
+              <span class="material-symbols-outlined notranslate text-red-500 text-[24px]">delete_forever</span>
             </div>
             <div class="text-center">
-              <h3 class="text-[#E6E1E5] text-base font-medium">Cancelar cuenta</h3>
-              <p class="text-[#CAC4D0]/60 text-[11px] mt-1 leading-relaxed">Esta acción solicitará la eliminación de tu
+              <h3 class="text-gray-900 text-base font-medium">Cancelar cuenta</h3>
+              <p class="text-gray-500 text-[11px] mt-1 leading-relaxed">Esta acción solicitará la eliminación de tu
                 cuenta. Cuéntanos el motivo.</p>
             </div>
             <div class="space-y-1.5">
               <button v-for="r in deleteReasons" :key="r" @click="deleteReason = r"
                 class="w-full text-left px-3 py-2 rounded-xl border text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]"
-                :class="deleteReason === r ? 'border-rose-500/40 bg-rose-500/10 text-rose-400' : 'border-[#49454F]/30 bg-[#1C1B1F] text-[#CAC4D0]/60 hover:border-white/20'">{{
+                :class="deleteReason === r ? 'border-red-400 bg-red-50 text-red-600' : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'">{{
                 r }}</button>
             </div>
             <div v-if="deleteReason === 'Otro (especificar)'">
               <textarea v-model="deleteCustomReason" rows="2" placeholder="Describe el motivo..."
-                class="w-full px-3 py-2 rounded-xl border border-[#49454F]/50 bg-[#1C1B1F] text-[#E6E1E5] text-sm placeholder:text-[#CAC4D0]/30 outline-none focus:border-orange-500/50 transition-all resize-none"></textarea>
+                class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm placeholder:text-gray-400 outline-none focus:border-orange-500/50 transition-all resize-none"></textarea>
             </div>
             <div class="flex gap-3">
               <button @click="showDeletePrompt = false"
-                class="flex-1 py-2.5 bg-[#49454F]/30 text-[#E6E1E5] rounded-xl text-sm font-medium hover:bg-[#49454F]/50 transition-colors cursor-pointer">Cancelar</button>
+                class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors cursor-pointer">Cancelar</button>
               <button @click="handleCancelAccount" :disabled="isDeleting || !deleteReason"
                 class="flex-1 py-2.5 bg-rose-500 text-white rounded-xl text-sm font-medium hover:bg-rose-600 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer">
                 <span v-if="isDeleting"

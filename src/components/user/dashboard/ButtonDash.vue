@@ -32,7 +32,7 @@ const props = defineProps({
     'min-h-[42px] px-3 cursor-pointer',
     active
       ? 'bg-orange-500/10 text-orange-400'
-      : 'text-white/50 hover:bg-orange-500/70 hover:text-white'
+      : 'text-slate-500 hover:bg-orange-50 hover:text-orange-500'
   ]" :style="{ width: isHover ? '195px' : '47px' }">
     <!-- indicador activo -->
     <span v-if="active" class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-orange-500"></span>

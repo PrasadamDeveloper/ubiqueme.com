@@ -36,7 +36,7 @@ onUnmounted(() => {
 <template>
   <div class="font-google-sans">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-[#09090b] border-b border-white/5 transition-all duration-300">
+    <nav class="fixed top-0 w-full z-50 bg-white border-b border-gray-200 shadow-[0_4px_40px_rgba(0,0,0,0.08)] transition-all duration-300">
 
       <!-- Subtle Orange Top Line -->
       <div
@@ -90,7 +90,7 @@ onUnmounted(() => {
             <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
               <Transition name="slide-up">
                 <div :key="currentDomainIndex"
-                  class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
+                  class="absolute left-0 flex items-baseline text-slate-900 font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
                   <span translate="no">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                   <span class="text-orange-500">.com</span>
                 </div>
@@ -102,7 +102,7 @@ onUnmounted(() => {
         <!-- Menu -->
         <div class="hidden lg:flex items-center space-x-2 tracking-tight">
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
-            class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
+            class="flex items-center gap-2 text-gray-600 hover:bg-orange-50 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
             <span
               class="material-symbols-outlined notranslate text-[20px] group-hover:scale-110 transition-transform">{{
                 link.icon
@@ -119,12 +119,12 @@ onUnmounted(() => {
         <!-- Opciones de Usuario Autenticado (Desktop Only) -->
         <div class="hidden lg:flex items-center space-x-4 z-50">
           <RouterLink v-if="$route.name !== 'dashboard'" :to="{ name: 'dashboard' }"
-            class="bg-blue/5 border border-blue/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
+            class="border border-gray-200 bg-white text-gray-700 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 transition-all duration-300 cursor-pointer flex items-center gap-2">
             <span class="material-symbols-outlined notranslate text-sm">dashboard</span>
             Ir al Dashboard del usuario
           </RouterLink>
           <button @click="handleLogout"
-            class="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
+            class="border border-gray-200 bg-white text-gray-700 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 transition-all duration-300 cursor-pointer flex items-center gap-2">
             <span class="material-symbols-outlined notranslate text-sm">logout</span>
             Cerrar sesión
           </button>
@@ -132,7 +132,7 @@ onUnmounted(() => {
 
         <!-- Hamburger Button (Mobile Only) -->
         <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-          class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
+          class="lg:hidden flex items-center justify-center p-2 text-gray-600 hover:text-orange-500 transition-colors z-50 cursor-pointer">
           <span class="material-symbols-outlined notranslate text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu'
           }}</span>
         </button>
@@ -142,12 +142,12 @@ onUnmounted(() => {
       <!-- Mobile Menu Overlay -->
       <Transition name="fade-slide">
         <div v-if="isMobileMenuOpen"
-          class="fixed top-20 left-0 w-full h-[calc(100vh-80px)] bg-[#09090b]/95 backdrop-blur-xl z-40 border-t border-white/5 flex flex-col justify-between p-8 lg:hidden">
+          class="fixed top-20 left-0 w-full h-[calc(100vh-80px)] bg-white border-t border-gray-200 z-40 flex flex-col justify-between p-8 lg:hidden">
           <!-- Links -->
           <div class="flex flex-col space-y-4">
             <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
               @click="isMobileMenuOpen = false"
-              class="flex items-center gap-3 text-white/60 hover:text-orange-500 py-3.5 border-b border-white/[0.03] transition-all duration-300">
+              class="flex items-center gap-3 text-gray-600 hover:text-orange-500 py-3.5 border-b border-gray-100 transition-all duration-300">
               <span class="material-symbols-outlined notranslate text-[22px]">{{ link.icon }}</span>
               <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
             </RouterLink>
@@ -156,7 +156,7 @@ onUnmounted(() => {
           <!-- Actions -->
           <div class="flex flex-col gap-4 mt-auto">
             <button @click="handleLogout; isMobileMenuOpen = false"
-              class="w-full flex items-center justify-center bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 hover:text-[#09090b] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
+              class="w-full flex items-center justify-center border border-gray-200 bg-gray-50 text-gray-700 hover:border-orange-300 hover:bg-orange-50 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
               <span class="material-symbols-outlined notranslate text-sm">logout</span>
               Salir del Panel
             </button>

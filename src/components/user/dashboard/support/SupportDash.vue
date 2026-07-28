@@ -38,21 +38,21 @@ const submitForm = () => {
           <span class="material-symbols-outlined notranslate text-orange-400 text-lg">support_agent</span>
         </div>
         <div>
-          <h2 class="text-3xl font-bold text-white">Soporte técnico</h2>
+          <h2 class="text-3xl font-bold text-gray-900">Soporte técnico</h2>
           <p class="text-gray-500 text-sm">Estamos para ayudarle</p>
         </div>
       </div>
     </div>
 
     <!-- Hero message -->
-    <div class="bg-[#0f0f11] rounded-2xl border border-white/5 p-6 mb-6">
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
       <div class="flex items-start gap-4">
         <div
-          class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined notranslate text-orange-400 text-lg">handshake</span>
+          class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined notranslate text-orange-500 text-lg">handshake</span>
         </div>
         <div>
-          <p class="text-white text-sm font-medium leading-relaxed">
+          <p class="text-gray-700 text-sm font-medium leading-relaxed">
             Estamos para ayudarle. Si tiene un problema o alguna duda respecto a su cuenta, siéntase libre de
             contactarnos.
           </p>
@@ -64,23 +64,23 @@ const submitForm = () => {
     </div>
 
     <!-- Contact Form -->
-    <div class="bg-[#0f0f11] rounded-2xl p-6 border border-white/5 relative overflow-hidden">
+    <div class="bg-white rounded-2xl p-6 border border-gray-200 relative overflow-hidden">
       <!-- Overlay de éxito -->
-      <div v-if="showSuccess" class="absolute inset-0 bg-[#161618] flex flex-col items-center justify-center z-10">
+      <div v-if="showSuccess" class="absolute inset-0 bg-white flex flex-col items-center justify-center z-10">
         <div
-          class="w-16 h-16 bg-orange-500/20 text-orange-400 border border-orange-500/20 rounded-full flex items-center justify-center mb-4">
+          class="w-16 h-16 bg-orange-50 text-orange-500 border border-orange-200 rounded-full flex items-center justify-center mb-4">
           <span class="material-symbols-outlined notranslate text-3xl">check</span>
         </div>
-        <h3 class="text-white text-lg font-semibold mb-1">¡Mensaje enviado exitosamente!</h3>
+        <h3 class="text-gray-900 text-lg font-semibold mb-1">¡Mensaje enviado exitosamente!</h3>
         <p class="text-gray-500 text-sm">Nuestro equipo le responderá a su correo en breve.</p>
       </div>
 
       <form @submit.prevent="submitForm" class="space-y-5 relative">
         <div>
-          <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Asunto</label>
+          <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2">Asunto</label>
           <div class="relative">
             <select v-model="form.subject" required
-              class="w-full bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500/50 transition-all appearance-none pr-10">
+              class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-orange-500/50 transition-all appearance-none pr-10">
               <option value="" disabled selected>Selecciona un tema...</option>
               <option value="billing">Problemas de facturación / Pagos</option>
               <option value="qr_issues">Mi código QR no funciona</option>
@@ -88,16 +88,16 @@ const submitForm = () => {
               <option value="other">Otro asunto</option>
             </select>
             <!-- Dropdown Icon -->
-            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-white/30">
+            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400">
               <span class="material-symbols-outlined notranslate text-[18px]">expand_more</span>
             </div>
           </div>
         </div>
 
         <div>
-          <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Mensaje</label>
+          <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2">Mensaje</label>
           <textarea v-model="form.message" required rows="5"
-            class="w-full bg-[#161618] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500/50 transition-all resize-none placeholder:text-white/20"
+            class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-orange-500/50 transition-all resize-none placeholder:text-gray-400"
             placeholder="Describa su problema con detalle para que podamos ayudarle de la mejor manera..."></textarea>
         </div>
 

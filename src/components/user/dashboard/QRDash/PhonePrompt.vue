@@ -1,7 +1,7 @@
 <template>
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-gray-900/50"
     @click.self="$emit('dismiss')">
-    <div class="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 animate-fade-in">
+    <div class="relative w-full max-w-lg bg-white border border-slate-200 rounded-xl p-6 sm:p-10 animate-fade-in">
 
       <!-- ═══════════════════════════════════════════════════════
            STEP 1 — Phone input
@@ -18,7 +18,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <h2 class="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
-              ¡Bienvenido a Ubiqueme!
+              ¡Bienvenido a <span class="text-orange-500">Ubiqueme</span>!
             </h2>
             <p class="mt-1 text-sm font-medium leading-relaxed text-slate-500">
               Introduzca el número de WhatsApp donde podrá recibir notificaciones cuando alguien
