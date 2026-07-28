@@ -97,22 +97,22 @@ const changeComponent = (component: ComponentName) => {
 <template>
   <UserDashoardLayout>
     <template #main>
-      <div class="flex relative min-h-screen bg-[#09090b] overflow-hidden font-google-sans">
+      <div class="flex relative min-h-screen bg-white overflow-hidden font-google-sans">
 
 
         <!-- 🚀 SIDEBAR (OVERLAY MODE) - Desktop Only -->
         <aside @mouseenter="handleSideBarHover" @mouseleave="handleSideBarLeave"
-          :class="{ 'w-65  bg-[#0D0D0F]': hoverOnSideBar, 'w-24  bg-[#0D0D0F]': !hoverOnSideBar }"
-          class="hidden lg:flex absolute left-0 top-0 z-30 pt-24 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 will-change-[width]">
+          :class="{ 'w-65  bg-white': hoverOnSideBar, 'w-24  bg-slate-50': !hoverOnSideBar }"
+          class="hidden lg:flex absolute left-0 top-0 z-30 pt-24 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-slate-200 will-change-[width] shadow-sm">
 
           <div class="mb-12 hidden">
             <div
               class="w-18 h-12 bg-[#090300] rounded-xl flex items-center justify-center shadow-2xl overflow-hidden absolute left-0">
               <span v-if="!hoverOnSideBar" class="text-orange-100 text-xs font-google-sans font-medium">{{
                 'Hola'
-              }}</span>
+                }}</span>
               <span v-else class="text-white text-xs font-google-sans animate-fade-right">{{ useUserStore().getFirstName
-              }}</span>
+                }}</span>
             </div>
           </div>
 
@@ -123,7 +123,8 @@ const changeComponent = (component: ComponentName) => {
           </div>
 
 
-          <div class="mt-auto opacity-20 text-[8px] font-black uppercase tracking-[0.3em] font-mono whitespace-nowrap"
+          <div
+            class="mt-auto text-slate-400 text-[8px] font-black uppercase tracking-[0.3em] font-mono whitespace-nowrap"
             v-if="hoverOnSideBar">
             System Terminal v2.4
           </div>
@@ -139,12 +140,12 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 📱 FLOATING BOTTOM NAVIGATION BAR - Mobile Only -->
         <nav
-          class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#1C1B1F] border-t border-[#49454F]/30 shadow-[0_-4px_20px_rgba(0,0,0,0.4)]"
+          class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
           style="padding-bottom:env(safe-area-inset-bottom,0px)">
           <div class="flex items-center justify-around h-16">
             <button v-for="btn in mobileButtons" :key="btn.name" @click="changeComponent(btn.name as ComponentName)"
               class="flex flex-col items-center justify-center text-center gap-0.5 cursor-pointer transition-all duration-150 w-16 h-full rounded-xl active:scale-95 relative"
-              :class="componentsStore.getCurrentComponent === btn.name ? 'text-orange-400' : 'text-[#CAC4D0]/50 hover:text-[#E6E1E5]'">
+              :class="componentsStore.getCurrentComponent === btn.name ? 'text-orange-500' : 'text-slate-500 hover:text-slate-700'">
               <!-- Active indicator line -->
               <div v-if="componentsStore.getCurrentComponent === btn.name"
                 class="absolute top-0 w-8 h-0.5 rounded-full bg-orange-500"></div>

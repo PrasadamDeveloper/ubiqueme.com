@@ -31,8 +31,8 @@ const props = defineProps({
     'relative flex items-center gap-3 rounded-[10px] transition-all ease-out duration-200 overflow-hidden  w-full',
     'min-h-[42px] px-3 cursor-pointer',
     active
-      ? 'bg-orange-500/10 text-orange-400'
-      : 'text-slate-500 hover:bg-orange-50 hover:text-orange-500'
+      ? 'bg-orange-500/10 text-orange-600'
+      : 'text-slate-500 hover:bg-orange-50 hover:text-orange-500 hover:shadow-sm'
   ]" :style="{ width: isHover ? '195px' : '47px' }">
     <!-- indicador activo -->
     <span v-if="active" class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-orange-500"></span>
