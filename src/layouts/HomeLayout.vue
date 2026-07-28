@@ -258,24 +258,16 @@ onUnmounted(() => {
             <div class="flex items-center gap-1.5 lg:hidden">
 
               <img :src="UbiquemeLogo" alt="Ubiqueme Logo"
-                class="h-7 w-7 rounded-lg bg-black object-contain shrink-0" />
+                class="h-7 w-7 rounded-lg bg-black object-contain shrink-0 hidden sm:flex" />
 
-              <div
-                class="flex items-center gap-1.5 rounded-md border border-slate-200 bg-white/90 px-2 py-1 shadow-xs min-w-0">
-                <img :src="trustIcons[currentTrustIndex]" alt="" class="h-5 w-5 object-contain shrink-0" />
-                <Transition name="slide-up" mode="out-in">
-                  <span :key="currentTrustIndex" class="text-[10px] font-medium text-slate-600 whitespace-nowrap">
-                    {{ trustItems[currentTrustIndex] }}
-                  </span>
-                </Transition>
-              </div>
+
 
               <div class="relative h-6 min-w-[130px] shrink-0 overflow-hidden">
                 <Transition name="slide-up" mode="out-in">
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-center font-black tracking-tight text-sm leading-none">
                     <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0]
-                      }}</span>
+                    }}</span>
                     <span class="text-orange-500!">.com</span>
                   </div>
                 </Transition>
@@ -291,7 +283,7 @@ onUnmounted(() => {
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none font-inter-tight">
                     <span translate="no" class="text-orange-500">{{ domains[currentDomainIndex]?.split('.com')[0]
-                      }}</span>
+                    }}</span>
                     <span class="text-slate-900">.com</span>
                   </div>
                 </Transition>
@@ -504,21 +496,17 @@ onUnmounted(() => {
         <div class="flex items-center lg:hidden">
 
           <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-            class="flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-2.5 text-white shadow-lg shadow-orange-200 transition-all duration-300 hover:bg-orange-600 active:scale-95">
-
-            <span class="material-symbols-outlined notranslate text-[24px]">
-
+            class="group flex items-center gap-2 rounded-full border border-orange-100 bg-white px-4 py-2.5 text-gray-700 shadow-[0_4px_14px_rgba(249,115,22,0.12)] transition-all duration-300 hover:border-orange-200 hover:bg-orange-50 active:scale-95">
+            <span
+              class="material-symbols-outlined notranslate text-[22px] text-orange-500 transition-transform duration-300 group-hover:scale-110">
               {{ isMobileMenuOpen ? 'close' : 'menu' }}
-
             </span>
 
-            <span class="text-sm font-medium">
-
+            <span class="text-sm font-semibold tracking-tight text-gray-800">
               {{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}
-
             </span>
-
           </button>
+
 
         </div>
 
@@ -529,7 +517,8 @@ onUnmounted(() => {
 
           <div v-if="isMobileMenuOpen" class="absolute left-0 right-0 top-full z-[90] mt-3 px-4 lg:hidden">
 
-            <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl max-h-[calc(100vh-120px)] overflow-y-auto">
+            <div
+              class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl max-h-[calc(100vh-120px)] overflow-y-auto">
 
               <!-- USER ACTIONS -->
               <div class="border-b border-gray-100 p-4">

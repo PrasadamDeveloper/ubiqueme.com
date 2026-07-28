@@ -175,7 +175,7 @@ onUnmounted(() => {
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-center font-black tracking-tight text-sm leading-none">
                     <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0]
-                    }}</span>
+                      }}</span>
                     <span class="text-orange-500!">.com</span>
                   </div>
                 </Transition>
@@ -189,7 +189,7 @@ onUnmounted(() => {
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none font-inter-tight">
                     <span translate="no" class="text-orange-500">{{ domains[currentDomainIndex]?.split('.com')[0]
-                    }}</span>
+                      }}</span>
                     <span class="text-slate-900">.com</span>
                   </div>
                 </Transition>
@@ -249,7 +249,7 @@ onUnmounted(() => {
                     <div class="border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white px-5 py-4">
                       <h4 class="font-google-sans text-sm font-semibold text-gray-700">{{ link.name }}</h4>
                       <p v-if="link.description" class="mt-1 text-[11px] leading-snug text-gray-500">{{ link.description
-                      }}</p>
+                        }}</p>
                     </div>
 
                     <div class="p-2">
@@ -301,11 +301,13 @@ onUnmounted(() => {
         <div class="flex items-center lg:hidden">
 
           <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-            class="flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-2.5 text-white shadow-lg shadow-orange-200 transition-all duration-300 hover:bg-orange-600 active:scale-95">
-            <span class="material-symbols-outlined notranslate text-[24px]">
+            class="group flex items-center gap-2 rounded-2xl border border-orange-100 bg-white px-4 py-2.5 text-gray-700  transition-all duration-300 hover:border-orange-200 hover:bg-orange-50 active:scale-95">
+            <span
+              class="material-symbols-outlined notranslate text-[24px] text-orange-500 transition-transform duration-300 group-hover:scale-110">
               {{ isMobileMenuOpen ? 'close' : 'menu' }}
             </span>
-            <span class="text-sm font-medium">
+
+            <span class="text-sm font-semibold tracking-tight text-gray-800">
               {{ isMobileMenuOpen ? 'Cerrar' : 'Menú' }}
             </span>
           </button>
@@ -363,7 +365,7 @@ onUnmounted(() => {
                       @click="handleChildClick(child); isMobileMenuOpen = false"
                       class="flex w-full items-center gap-3 px-5 py-3 text-left transition hover:bg-orange-50">
                       <span v-if="child.icon" class="material-symbols-outlined notranslate text-gray-400">{{ child.icon
-                      }}</span>
+                        }}</span>
                       <span class="text-sm text-gray-700">{{ child.label }}</span>
                     </button>
                   </div>

@@ -7,7 +7,7 @@
         <div class="flex items-center gap-1.5 pt-2 md:pt-0">
           <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">Hola de nuevo,</h1>
           <span class="text-orange-500 text-lg font-bold tracking-tight leading-none">{{ useUserStore().getFirstName
-            }}</span>
+          }}</span>
           <span class="text-lg font-black tracking-tighter leading-none text-slate-900">!</span>
         </div>
         <p class="text-slate-500 text-[11px] font-medium">Mis Códigos QR</p>
@@ -61,7 +61,7 @@
                     class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest">
                     {{ group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'Acabado' :
                       group.subscription.status === 'active' ? 'Activo' : group.subscription.status === 'canceled' ?
-                    'Cancelado' : 'Inactivo' }}
+                        'Cancelado' : 'Inactivo' }}
                   </span>
                 </div>
                 <div class="text-right shrink-0">
@@ -81,16 +81,28 @@
 
               <!-- Row 3: Info banner compacto -->
               <template v-if="group.subscription.planType === 'trial' && group.subscription.status === 'active'">
-                <div class="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
-                  <span
-                    class="material-symbols-outlined notranslate text-[12px] mt-0.5 shrink-0 text-amber-500">info</span>
-                  <span class="text-[10px] text-amber-700 leading-tight">
-                    Este es un <strong class="text-amber-200 font-semibold">plan gratuito de prueba</strong> con
-                    duración de 1 año incluido en su cuenta. Termina el <strong class="text-amber-200 font-semibold">{{
-                      formatEndDate(group.subscription.endDate) }}</strong>. Después de esa fecha si decide continuar
-                    con el plan podrá renovarlo.
+                <div
+                  class="flex items-start gap-3 rounded-2xl border border-orange-100 bg-white px-4 py-3 shadow-[0_4px_16px_rgba(249,115,22,0.08)]">
+                  <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-50">
+                    <span class="material-symbols-outlined notranslate text-[15px] text-orange-500">
+                      info
+                    </span>
+                  </div>
+
+                  <span class="text-[11px] leading-relaxed text-gray-600">
+                    Este es un
+                    <strong class="font-semibold text-orange-500">
+                      plan gratuito de prueba
+                    </strong>
+                    con duración de 1 año incluido en su cuenta.
+                    Termina el
+                    <strong class="font-semibold text-gray-900">
+                      {{ formatEndDate(group.subscription.endDate) }}
+                    </strong>.
+                    Después de esa fecha, si decide continuar con el plan podrá renovarlo.
                   </span>
                 </div>
+
               </template>
               <template
                 v-else-if="(group.subscription.planType === 'trial' && group.subscription.status === 'canceled') || group.subscription.status === 'canceled'">
@@ -115,9 +127,9 @@
                   <span class="text-[11px]">✓</span>
                   <span class="text-[10px] text-emerald-600 leading-tight">
                     Plan <strong class="text-emerald-200 font-semibold capitalize">{{ group.subscription.planType
-                      }}</strong> activo
+                    }}</strong> activo
                     <span v-if="group.subscription.endDate"> — termina {{ formatEndDate(group.subscription.endDate)
-                      }}</span>
+                    }}</span>
                     <span v-else> — sin vencimiento</span>
                     · {{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}/{{
                       group.subscription.totalQRsAllowed }} QRs
@@ -129,7 +141,7 @@
                   <span class="text-[11px]">⚬</span>
                   <span class="text-[10px] text-gray-500 leading-tight">
                     Plan <strong class="text-gray-300 font-semibold capitalize">{{ group.subscription.planType
-                      }}</strong> inactivo
+                    }}</strong> inactivo
                   </span>
                 </div>
               </template>
