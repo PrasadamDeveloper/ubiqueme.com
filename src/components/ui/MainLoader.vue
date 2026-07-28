@@ -3,7 +3,7 @@
 .box2,
 .box3 {
   /* border: 16px solid #f5f5f5; */
-  background-color: #efefef;
+  background-color: #f97316;
   border-radius: 10px;
   box-sizing: border-box;
   position: absolute;
