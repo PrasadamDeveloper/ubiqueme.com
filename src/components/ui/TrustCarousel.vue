@@ -105,30 +105,37 @@ const panelWidth = computed(() => {
 </script>
 
 <template>
-  <!-- DESKTOP: hover-expand panel -->
+  <!-- DESKTOP: pill trigger + hover-expand panel -->
   <div class="relative hidden md:block h-[59px] w-[195px] overflow-visible shrink-0">
 
     <div
-      class="absolute left-0 top-0 overflow-hidden transition-all duration-300 bg-white/90 backdrop-blur-xl rounded-2xl border"
+      class="absolute left-0 top-0 overflow-hidden transition-all duration-300 rounded-full shadow-sm backdrop-blur-xl border"
+      :class="isHovered ? 'bg-white shadow-lg rounded-2xl' : 'bg-white/70'"
       :style="{
-        width: panelWidth,
-        maxHeight: isHovered ? '500px' : '59px',
-        borderColor: isHovered ? 'rgba(226,232,240,1)' : 'rgba(226,232,240,0.5)',
+        width: isHovered ? panelWidth : '195px',
+        maxHeight: isHovered ? '500px' : '44px',
+        borderColor: isHovered ? 'rgba(226,232,240,1)' : 'rgba(226,232,240,0.6)',
         boxShadow: isHovered
           ? '0 20px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08)'
-          : '0 1px 2px rgba(0,0,0,0.04)',
+          : '0 1px 3px rgba(0,0,0,0.04)',
         transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
         zIndex: isHovered ? 40 : 'auto',
       }" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
-      <div class="flex items-center justify-between px-3 py-2" :class="isHovered ? 'border-b border-slate-100' : ''">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="text-[11px] font-medium tracking-wide text-slate-500 whitespace-nowrap">
+      <div class="flex items-center justify-between h-11 px-4" :class="isHovered ? 'border-b border-slate-100' : ''">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-5 h-5 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined notranslate text-[12px] text-orange-500">verified</span>
+          </div>
+          <span class="text-[11px] font-medium tracking-tight text-slate-600 whitespace-nowrap">
             {{ isHovered ? 'Señales de confianza' : items[currentIndex]!.text }}
           </span>
         </div>
 
-        <img v-if="!isHovered" :src="items[currentIndex]!.icon" :alt="items[currentIndex]!.alt"
-          class="h-[45px] w-[45px] object-contain shrink-0 grayscale" />
+        <div v-if="!isHovered" class="flex items-center gap-1">
+          <img :src="items[currentIndex]!.icon" :alt="items[currentIndex]!.alt"
+            class="h-6 w-6 object-contain shrink-0" />
+          <span class="material-symbols-outlined notranslate text-[12px] text-slate-400">chevron_right</span>
+        </div>
       </div>
 
       <div class="px-2 py-1.5 flex gap-3 overflow-y-auto relative" :style="{
@@ -179,14 +186,17 @@ const panelWidth = computed(() => {
     </div>
   </div>
 
-  <!-- MOBILE: tappable trigger -->
-  <div class="md:hidden flex items-center gap-1.5 shrink-0">
-    <div @click="openMobileOverlay"
-      class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white/90 px-2 py-1 shadow-xs active:scale-95 transition-all duration-150 cursor-pointer select-none">
-      <img :src="items[currentIndex]!.icon" :alt="items[currentIndex]!.alt" class="h-5 w-5 object-contain shrink-0" />
-      <span class="text-[10px] font-medium text-slate-600 whitespace-nowrap">{{ items[currentIndex]!.text }}</span>
-      <span class="material-symbols-outlined notranslate text-[14px] text-slate-400">expand_more</span>
-    </div>
+  <!-- MOBILE: iOS-style pill trigger -->
+  <div class="md:hidden flex items-center shrink-0">
+    <button @click="openMobileOverlay"
+      class="flex items-center gap-2 h-8 pl-2.5 pr-3 rounded-full border border-slate-200/70 bg-white/70 shadow-xs active:scale-[0.96] active:bg-white transition-all duration-150 cursor-pointer select-none">
+      <div class="w-4 h-4 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined notranslate text-[10px] text-orange-500">verified</span>
+      </div>
+      <img :src="items[currentIndex]!.icon" :alt="items[currentIndex]!.alt" class="h-4 w-4 object-contain shrink-0" />
+      <span class="text-[10px] font-medium tracking-tight text-slate-600 whitespace-nowrap">{{ items[currentIndex]!.text }}</span>
+      <span class="material-symbols-outlined notranslate text-[12px] text-slate-400">chevron_right</span>
+    </button>
   </div>
 
   <!-- MOBILE: full-screen overlay -->
