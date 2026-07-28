@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuth } from '@/handleAuth'
+import TrustCarousel from '@/components/ui/TrustCarousel.vue'
 
 const { handleLogout } = useAuth()
 const router = useRouter()
@@ -62,7 +63,6 @@ const navLinks: NavLink[] = [
 const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
 const currentDomainIndex = ref(0);
 const isMobileMenuOpen = ref(false);
-const showCompactBadge = ref(false);
 const isScrolled = ref(false);
 let intervalId: ReturnType<typeof setInterval> | undefined;
 
@@ -118,11 +118,7 @@ watch(isMobileMenuOpen, (open) => {
 })
 
 onMounted(() => {
-  setTimeout(() => {
-    showCompactBadge.value = true;
-  }, 4000);
-
-  intervalId = setInterval(() => {
+    intervalId = setInterval(() => {
     currentDomainIndex.value = (currentDomainIndex.value + 1) % domains.length;
   }, 5000);
 
@@ -162,36 +158,7 @@ onUnmounted(() => {
         <!-- LEFT -->
         <div class="flex items-center gap-5">
 
-          <!-- SSL Badge (animated) -->
-          <div
-            class="group/badge relative flex items-center gap-1.5 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] active:scale-[0.97] transition-all duration-300 cursor-default"
-            :class="showCompactBadge ? 'px-2 py-1' : 'px-2.5 py-1.5'">
-            <Transition name="fade">
-              <span v-if="!showCompactBadge"
-                class="absolute inset-0 rounded-lg animate-pulse-ring-orange pointer-events-none"></span>
-            </Transition>
-            <Transition name="fade" mode="out-in">
-              <span :key="showCompactBadge ? 'shield' : 'lock'"
-                class="material-symbols-outlined notranslate relative z-[1]"
-                :class="showCompactBadge ? 'text-orange-500/50' : 'text-orange-400'" style="font-size:16px">{{
-                  showCompactBadge ? 'shield' : 'lock' }}</span>
-            </Transition>
-            <Transition name="fade" mode="out-in">
-              <span :key="showCompactBadge ? 'ssl' : 'conexion'"
-                class="relative z-[1] font-black transition-colors duration-300"
-                :class="showCompactBadge ? 'text-[9px] text-orange-500/40' : 'text-[10px] sm:text-[11px] text-orange-500/80'">{{
-                  showCompactBadge ? 'SSL' : 'Conexión segura' }}</span>
-            </Transition>
-            <div
-              class="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-all duration-300 z-50 w-max max-w-[220px]">
-              <div class="bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2 shadow-2xl">
-                <p class="text-[10px] leading-relaxed text-white/70">
-                  <span class="text-orange-400 font-bold">🔒 SSL 256-bit</span><br>
-                  Su información viaja cifrada y protegida.
-                </p>
-              </div>
-            </div>
-          </div>
+          <TrustCarousel />
 
           <!-- LOGO + Animated Domain -->
           <RouterLink :to="{ name: 'home' }"
@@ -445,34 +412,6 @@ onUnmounted(() => {
   scrollbar-width: none;
 }
 
-/* Pulse ring animation for SSL badge */
-@keyframes pulse-ring-orange {
-  0% {
-    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
-  }
-}
-
-.animate-pulse-ring-orange {
-  animation: pulse-ring-orange 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Fade transition for badge state change */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 /* Dropdown transition */
 .dropdown-enter-active {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -493,10 +432,6 @@ onUnmounted(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-pulse-ring-orange {
-    animation: none;
-  }
-
   .slide-up-enter-active,
   .slide-up-leave-active {
     transition: none;
