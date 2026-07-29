@@ -50,10 +50,10 @@ export const layoutPresets: Record<DownloadSize, LayoutPreset> = {
     width: 400, height: 173,
     qr: { size: 80, containerPadding: 5, containerRadius: 10 },
     logo: { size: 20, containerPadding: 1, containerRadius: 6 },
-    fonts: { topDomain: 19, name: 16, desc: 11, footerDomain: 14, footerEmail: 9, footerNote: 8 },
+    fonts: { topDomain: 19, name: 16, desc: 11, footerDomain: 9, footerEmail: 8, footerNote: 7 },
     sslIcon: { w: 14, h: 10 },
-    socialIcons: { gap: 4, items: [{ w: 21, h: 22 }, { w: 20, h: 21 }, { w: 20, h: 19 }, { w: 19, h: 18 }, { w: 18, h: 19 }, { w: 20, h: 20 }] },
-    spacing: { outerPadding: 6, mainGap: 3, headerGap: 6, contentGap: 12, textGap: 20, footerGap: 4 },
+    socialIcons: { gap: 3, items: [{ w: 17, h: 18 }, { w: 16, h: 17 }, { w: 16, h: 15 }, { w: 15, h: 14 }, { w: 14, h: 15 }, { w: 16, h: 16 }] },
+    spacing: { outerPadding: 6, mainGap: 2, headerGap: 6, contentGap: 12, textGap: 18, footerGap: 2 },
   },
   md: {
     width: 720, height: 500,
