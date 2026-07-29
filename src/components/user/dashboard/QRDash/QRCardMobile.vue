@@ -255,8 +255,7 @@ const canMakePrivate = computed(() => qrStatusLoaded.value || canMakePublic.valu
 const menuOptions = computed(() => {
   if (isEditor.value) {
     return [
-      { label: 'Personalizar posición', icon: 'open_with', description: 'Arrastre cada elemento del QR para reposicionarlo a su gusto.', action: openDrag },
-      { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible', action: () => openPrompt('download') },
+      { label: 'Descargar QR', icon: 'download', description: 'Selecciona tamaño y formato para descargar', action: openDrag },
       { divider: true },
       { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR', action: () => openPrompt('edit') },
       { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo', action: () => openPrompt('renew') },
@@ -442,7 +441,7 @@ const hiddeLogsHandle = () => {
             <span class="text-slate-400 text-[9px] uppercase tracking-[0.1em] font-bold">Escaneos</span>
             <span class="text-orange-500 font-mono text-sm font-bold">{{ qrStatus.totalScans }}</span>
           </div>
-          <button @click="isEditor ? openPrompt('download') : openDrag()"
+           <button @click="openDrag()"
             class="ml-auto flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-500 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 border border-orange-500/20 cursor-pointer">
             <span class="material-symbols-outlined notranslate text-[14px]">download</span>
             Descargar

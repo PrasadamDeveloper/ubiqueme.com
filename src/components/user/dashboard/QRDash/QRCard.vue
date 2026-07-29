@@ -351,8 +351,7 @@ const openDrag = () => {
 const menuOptions = computed(() => {
   if (isEditor.value) {
     return [
-      { label: 'Personalizar posición', icon: 'open_with', description: 'Arrastre cada elemento del QR para reposicionarlo a su gusto.', action: openDrag },
-      { label: 'Descargar QR', icon: 'download', description: 'Descargar imagen PNG o PDF imprimible con los datos de su código QR.', action: () => openPrompt('download') },
+      { label: 'Descargar QR', icon: 'download', description: 'Selecciona tamaño y formato para descargar', action: openDrag },
       { divider: true },
       { label: 'Editar nombre', icon: 'edit', description: 'Cambiar el nombre de su QR, tenga en cuenta que el nombre es público, no comparta información sensible.', action: () => openPrompt('edit') },
       { label: 'Reemplazar QR', icon: 'autorenew', description: 'Crea un QR completamente nuevo. El anterior dejará de funcionar permanentemente.', action: () => openPrompt('renew') },
@@ -636,7 +635,7 @@ const imageSettingsUIOnly: ImageSettings = {
             <QrcodeVue :value="qrScanUrl" :size="140" render-as="svg" level="H" :image-settings="imageSettingsUIOnly" />
           </template>
         </div>
-        <button @click="isEditor ? openPrompt('download') : openDrag()"
+        <button @click="openDrag()"
           class="mt-4 w-full max-w-[180px] flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl text-sm font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-[0.97] shadow-md shadow-orange-500/10 border border-orange-300">
           <span class="material-symbols-outlined notranslate text-lg">download</span>
           Descargar QR
