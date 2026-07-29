@@ -4,6 +4,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import SatIcon from '@/assets/images/formal/sat.webp'
 import YearsIcon from '@/assets/images/formal/15YearsExp.webp'
 import SafeIcon from '@/assets/images/formal/safeSite.webp'
+import RrpycIcon from '@/assets/images/formal/rrpyc.webp'
 
 interface TrustItem {
   text: string
@@ -20,6 +21,13 @@ const items: TrustItem[] = [
     alt: 'Registro SAT',
     description: 'Registrado ante el SAT · RFC activo',
     detail: 'Nuestra trayectoria en el mercado nos ha permitido consolidar un servicio integral enfocado en la importación de productos desde México, ofreciendo procesos de supervisión y certificación. Con esa misma visión de calidad y transparencia, creamos esta plataforma para ayudar a las personas a estar alertadas sobre las cosas que aman mediante códigos QR, facilitando una conexión segura y confiable con la información que realmente les importa.',
+  },
+  {
+    text: 'RPPYC',
+    icon: RrpycIcon,
+    alt: 'Registro Público de la Propiedad y de Comercio',
+    description: 'Inscrito en el Registro Público de la Propiedad y de Comercio',
+    detail: 'Como empresa formalmente constituida, contamos con inscripción vigente en el Registro Público de la Propiedad y de Comercio (RPPYC), lo que garantiza nuestra existencia legal y la transparencia de nuestra operación. Este registro respalda cada uno de nuestros compromisos contractuales y brinda a nuestros usuarios la certeza de estar tratando con una sociedad mercantil debidamente acreditada ante las autoridades correspondientes.',
   },
   {
     text: '15 Años Exp.',
