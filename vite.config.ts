@@ -25,7 +25,7 @@ export default defineConfig({
       ],
     },
   },
-  base: '/',
+  base: '/ubiqueme.com/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
