@@ -347,7 +347,7 @@ onUnmounted(() => {
                   Panel
                 </RouterLink>
 
-                <button @click="handleLogout; isMobileMenuOpen = false"
+                <button @click="handleLogout(); isMobileMenuOpen = false"
                   class="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 font-medium text-gray-700 transition hover:bg-orange-50 hover:text-orange-600">
                   <span class="material-symbols-outlined notranslate">logout</span>
                   Cerrar sesión
