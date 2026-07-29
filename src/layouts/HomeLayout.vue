@@ -509,7 +509,7 @@ onUnmounted(() => {
         <div class="flex items-center gap-2 lg:hidden">
 
           <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-            class="group flex items-center gap-2 rounded-full border border-orange-100 bg-white px-4 py-2.5 text-gray-700 shadow-[0_4px_14px_rgba(249,115,22,0.12)] transition-all duration-300 hover:border-orange-200 hover:bg-orange-50 active:scale-95">
+            class="group flex items-center gap-2 rounded-full border border-slate-100 bg-white px-4 py-2.5 text-gray-700 transition-all duration-300 hover:border-orange-100 hover:bg-white active:scale-95">
             <span
               class="material-symbols-outlined notranslate text-[22px] text-orange-500 transition-transform duration-300 group-hover:scale-110">
               {{ isMobileMenuOpen ? 'close' : 'menu' }}
@@ -617,7 +617,7 @@ onUnmounted(() => {
 
                     </span>
 
-                    <span class="font-medium text-gray-700 group-hover:text-orange-600">
+                    <span class="font-medium text-gray-700 group-hover:text-orange-600 ">
 
                       {{ link.name }}
 
@@ -644,10 +644,13 @@ onUnmounted(() => {
 
                     </div>
 
-                    <button v-for="child in link.children" :key="child.label" @click="
+                    <button v-for="(child, index) in link.children" :key="child.label" @click="
                       handleChildClick(child);
                     isMobileMenuOpen = false;
-                    " class="flex w-full items-center gap-3 px-5 py-3 text-left transition hover:bg-orange-50">
+                    " :class="[
+                      'flex w-full items-center gap-3 px-5 py-3 text-left transition hover:bg-orange-50 animate-fade-down'
+                    ]" :style="{ animationDelay: `${index * 90}ms` }">
+
 
                       <span v-if="child.icon" class="material-symbols-outlined notranslate text-gray-400">
 

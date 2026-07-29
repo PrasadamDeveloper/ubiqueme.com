@@ -166,7 +166,7 @@ const panelWidth = computed(() => {
             <div class="flex items-center gap-2 mb-3">
               <span class="w-[7px] h-[7px] rounded-xl bg-blue-400 shrink-0"></span>
               <span class="text-[11px] font-medium tracking-wide text-slate-500">{{ items[hoveredItemIndex!]!.text
-              }}</span>
+                }}</span>
             </div>
             <p class="text-[11px] leading-relaxed text-slate-500">
               <img :src="items[hoveredItemIndex!]!.icon" :alt="items[hoveredItemIndex!]!.alt"
@@ -216,7 +216,7 @@ const panelWidth = computed(() => {
           <div class="flex-1 overflow-y-auto px-5 pb-6 space-y-3">
             <div v-for="(item, index) in items" :key="index"
               class="rounded-xl border border-slate-200 overflow-hidden transition-all duration-200"
-              :class="mobileSelectedIndex === index ? 'border-orange-200 bg-orange-50' : 'bg-white'">
+              :class="mobileSelectedIndex === index ? 'border-orange-200 bg-slate-50' : 'bg-white'">
               <button @click="mobileSelectedIndex = mobileSelectedIndex === index ? null : index"
                 class="w-full flex items-center gap-3 px-4 py-3 cursor-pointer text-left transition-colors">
                 <img :src="item.icon" :alt="item.alt" class="h-9 w-9 object-contain shrink-0" />

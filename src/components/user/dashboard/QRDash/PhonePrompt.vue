@@ -28,14 +28,14 @@
         </div>
 
         <!-- Security transparency message -->
-        <div class="mb-6 p-4 rounded-2xl bg-orange-50 border border-orange-200">
+        <div class="mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-200">
           <div class="flex items-start gap-3">
             <div
-              class="w-8 h-8 rounded-xl bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0 mt-0.5">
-              <span class="material-symbols-outlined notranslate text-orange-500 text-lg">verified_user</span>
+              class="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 mt-0.5">
+              <span class="material-symbols-outlined notranslate text-slate-500 text-lg">verified_user</span>
             </div>
             <div class="space-y-1">
-              <p class="text-[11px] font-bold text-orange-600 uppercase tracking-wider">Verificación de seguridad</p>
+              <p class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Verificación de seguridad</p>
               <p class="text-[12px] text-slate-600 leading-relaxed">
                 Le enviaremos un código por WhatsApp para confirmar que es el dueño de este número.
                 Así protegemos su cuenta y aseguramos que solo usted reciba las notificaciones de escaneo.
