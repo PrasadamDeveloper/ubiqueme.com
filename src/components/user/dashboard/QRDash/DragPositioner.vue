@@ -62,19 +62,10 @@ const currentImages = computed<DragImage[]>(() => {
   }))
 })
 
-// ─── Overlay IDs to exclude (SSL icon inline on all sizes, social icons only on md/lg) ─
-const excludedOverlayIds = computed(() => {
-  const ids = new Set(['userImg-10'])
-  if (activeSize.value !== 'sm') {
-    ids.add('userImg-4')
-    ids.add('userImg-5')
-    ids.add('userImg-6')
-    ids.add('userImg-7')
-    ids.add('userImg-8')
-    ids.add('userImg-9')
-  }
-  return ids
-})
+// ─── Overlay IDs to exclude (all rendered inline now) ─
+const excludedOverlayIds = computed(() => new Set([
+  'userImg-4', 'userImg-5', 'userImg-6', 'userImg-7', 'userImg-8', 'userImg-9', 'userImg-10',
+]))
 
 // ─── Drag handling (user images overlay only) ─────────────────
 const dragging = ref<{
@@ -222,7 +213,7 @@ const close = () => emit('close')
                       <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
                         class="text-black font-black tracking-widest uppercase leading-none">HTTPS://</span>
                       <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
-                        class="text-white font-black tracking-widest uppercase leading-none">ubiqueme.com</span>
+                        class="text-black font-black tracking-widest uppercase leading-none">ubiqueme.com</span>
                     </div>
                     <div :style="{
                       padding: cfg.logo.containerPadding + 'px',
@@ -292,49 +283,31 @@ const close = () => emit('close')
                 </div>
 
                 <!-- FOOTER -->
-                <template v-if="activeSize === 'sm'">
-                  <div class="flex flex-col shrink-0 items-center justify-center"
+                <div class="flex shrink-0 justify-between items-center"
+                  :style="{ gap: cfg.spacing.mainGap + 'px' }">
+                  <div class="flex flex-col items-start"
                     :style="{ gap: cfg.spacing.footerGap + 'px' }">
                     <span :style="{ fontSize: cfg.fonts.footerEmail + 'px' }"
-                      class="text-white font-bold tracking-wider">soporte@ubiqueme.com</span>
-                    <div class="flex items-center justify-center"
-                      :style="{ gap: cfg.spacing.footerGap + 'px' }">
-                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
-                        class="text-white font-bold uppercase tracking-wider" translate="no">localizarme.com</span>
-                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
-                        class="text-white/50">•</span>
-                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
-                        class="text-white font-bold uppercase tracking-wider" translate="no">contactomio.com</span>
-                    </div>
-                  </div>
-                </template>
-                <template v-else>
-                  <div class="flex shrink-0 justify-between items-center"
-                    :style="{ gap: cfg.spacing.mainGap + 'px' }">
-                    <div class="flex flex-col items-start"
-                      :style="{ gap: cfg.spacing.footerGap + 'px' }">
-                      <span :style="{ fontSize: cfg.fonts.footerEmail + 'px' }"
-                        class="text-black font-bold tracking-wider">soporte@ubiqueme.com</span>
-                      <div class="flex items-center"
-                        :style="{ gap: cfg.spacing.footerGap + 'px' }">
-                        <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
-                          class="text-black font-bold uppercase tracking-wider" translate="no">localizarme.com</span>
-                        <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
-                          class="text-black/50">•</span>
-                        <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
-                          class="text-black font-bold uppercase tracking-wider" translate="no">contactomio.com</span>
-                      </div>
-                    </div>
+                      class="text-black font-bold tracking-wider">soporte@ubiqueme.com</span>
                     <div class="flex items-center"
-                      :style="{ gap: cfg.socialIcons.gap + 'px' }">
-                      <template v-for="(icon, idx) in cfg.socialIcons.items" :key="idx">
-                        <img :src="socialIconImages[idx]"
-                          :style="{ width: icon.w + 'px', height: icon.h + 'px' }"
-                          class="object-contain block" />
-                      </template>
+                      :style="{ gap: cfg.spacing.footerGap + 'px' }">
+                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
+                        class="text-black font-bold uppercase tracking-wider" translate="no">localizarme.com</span>
+                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
+                        class="text-black/50">•</span>
+                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
+                        class="text-black font-bold uppercase tracking-wider" translate="no">contactomio.com</span>
                     </div>
                   </div>
-                </template>
+                  <div class="flex items-center"
+                    :style="{ gap: cfg.socialIcons.gap + 'px' }">
+                    <template v-for="(icon, idx) in cfg.socialIcons.items" :key="idx">
+                      <img :src="socialIconImages[idx]"
+                        :style="{ width: icon.w + 'px', height: icon.h + 'px' }"
+                        class="object-contain block" />
+                    </template>
+                  </div>
+                </div>
               </div>
             </div>
 

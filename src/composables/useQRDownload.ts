@@ -52,7 +52,7 @@ export const layoutPresets: Record<DownloadSize, LayoutPreset> = {
     logo: { size: 20, containerPadding: 1, containerRadius: 6 },
     fonts: { topDomain: 19, name: 16, desc: 11, footerDomain: 14, footerEmail: 9, footerNote: 8 },
     sslIcon: { w: 14, h: 10 },
-    socialIcons: { gap: 0, items: [] },
+    socialIcons: { gap: 4, items: [{ w: 21, h: 22 }, { w: 20, h: 21 }, { w: 20, h: 19 }, { w: 19, h: 18 }, { w: 18, h: 19 }, { w: 20, h: 20 }] },
     spacing: { outerPadding: 6, mainGap: 3, headerGap: 6, contentGap: 12, textGap: 20, footerGap: 4 },
   },
   md: {
