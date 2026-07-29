@@ -16,21 +16,76 @@ export interface QRDownloadProps {
   category?: string
 }
 
-// ─── Size configs for template rendering ────────────────────────
-// height = width / aspectRatio to match the physical PDF dimensions
-// SM stays as-is. MD and LG have larger templates so QR, name & text scale up.
-// === NORMAL STYLE CONFIG START ===
-export const sizeConfig: Record<DownloadSize, { width: number; height: number; qrSize: number }> = {
-  sm: { width: 400, height: 173, qrSize: 115 },
-  md: { width: 720, height: 500, qrSize: 300 },
-  lg: { width: 1080, height: 749, qrSize: 460 },
+// ─── Layout presets — global scale tokens per size ──────────────
+export interface LayoutPreset {
+  width: number
+  height: number
+  qr: { size: number; containerPadding: number; containerRadius: number }
+  logo: { size: number; containerPadding: number; containerRadius: number }
+  fonts: {
+    topDomain: number
+    name: number
+    desc: number
+    footerDomain: number
+    footerEmail: number
+    footerNote: number
+  }
+  sslIcon: { w: number; h: number }
+  socialIcons: {
+    gap: number
+    items: Array<{ w: number; h: number }>
+  }
+  spacing: {
+    outerPadding: number
+    mainGap: number
+    headerGap: number
+    contentGap: number
+    textGap: number
+    footerGap: number
+  }
 }
 
-// === COMPACT STYLE CONFIG START ===
-export const compactSizeConfig: Record<DownloadSize, { size: number; qrSize: number }> = {
-  sm: { size: 200, qrSize: 100 },
-  md: { size: 280, qrSize: 190 },
-  lg: { size: 380, qrSize: 260 },
+export const layoutPresets: Record<DownloadSize, LayoutPreset> = {
+  sm: {
+    width: 400, height: 173,
+    qr: { size: 80, containerPadding: 5, containerRadius: 10 },
+    logo: { size: 20, containerPadding: 1, containerRadius: 6 },
+    fonts: { topDomain: 19, name: 16, desc: 11, footerDomain: 14, footerEmail: 9, footerNote: 8 },
+    sslIcon: { w: 14, h: 10 },
+    socialIcons: { gap: 0, items: [] },
+    spacing: { outerPadding: 6, mainGap: 3, headerGap: 6, contentGap: 12, textGap: 20, footerGap: 4 },
+  },
+  md: {
+    width: 720, height: 500,
+    qr: { size: 275, containerPadding: 8, containerRadius: 18 },
+    logo: { size: 70, containerPadding: 6, containerRadius: 11 },
+    fonts: { topDomain: 28, name: 54, desc: 22, footerDomain: 20, footerEmail: 20, footerNote: 18 },
+    sslIcon: { w: 28, h: 22 },
+    socialIcons: { gap: 6, items: [{ w: 39, h: 40 }, { w: 36, h: 38 }, { w: 37, h: 35 }, { w: 35, h: 33 }, { w: 33, h: 34 }, { w: 36, h: 36 }] },
+    spacing: { outerPadding: 14, mainGap: 12, headerGap: 8, contentGap: 16, textGap: 34, footerGap: 4 },
+  },
+  lg: {
+    width: 1080, height: 749,
+    qr: { size: 430, containerPadding: 8, containerRadius: 26 },
+    logo: { size: 108, containerPadding: 9, containerRadius: 16 },
+    fonts: { topDomain: 43, name: 84, desc: 34, footerDomain: 30, footerEmail: 30, footerNote: 27 },
+    sslIcon: { w: 40, h: 32 },
+    socialIcons: { gap: 8, items: [{ w: 59, h: 60 }, { w: 54, h: 57 }, { w: 55, h: 53 }, { w: 53, h: 50 }, { w: 50, h: 52 }, { w: 54, h: 54 }] },
+    spacing: { outerPadding: 22, mainGap: 16, headerGap: 10, contentGap: 20, textGap: 44, footerGap: 6 },
+  },
+}
+
+export interface CompactPreset {
+  size: number
+  qr: { size: number; containerPadding: number }
+  fonts: { top: number; side: number; bottom: number }
+  spacing: { padding: number; gap: number }
+}
+
+export const compactPresets: Record<DownloadSize, CompactPreset> = {
+  sm: { size: 200, qr: { size: 100, containerPadding: 4 }, fonts: { top: 11, side: 9, bottom: 7 }, spacing: { padding: 2, gap: 1 } },
+  md: { size: 280, qr: { size: 190, containerPadding: 6 }, fonts: { top: 17, side: 13, bottom: 10 }, spacing: { padding: 3, gap: 2 } },
+  lg: { size: 380, qr: { size: 260, containerPadding: 8 }, fonts: { top: 23, side: 18, bottom: 14 }, spacing: { padding: 4, gap: 3 } },
 }
 
 // ─── Physical dimensions for PDF (mm) — estilo Normal only ──────
@@ -71,57 +126,16 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     return `https://wa.me/525652094079?text=${encodeURIComponent(text)}`
   })
 
-  /** Current size config for normal style */
-  const currentSize = computed(() => sizeConfig[downloadSize.value])
+  /** Current layout preset for normal style */
+  const currentPreset = computed(() => layoutPresets[downloadSize.value])
 
-  /** Current size config for compact style */
-  const currentCompactSize = computed(() => compactSizeConfig[downloadSize.value])
-
-  /** Font-size scale factors per size — SM gets 1.2×, MD/LG get 1.5× */
-  const textScale = computed(() => {
-    const isSm = downloadSize.value === 'sm'
-    return {
-      name: isSm ? 0.066 : 0.082,
-      desc: isSm ? 0.038 : 0.048,
-    }
-  })
-
-  /** Font-size scale factors for domain texts in normal style */
-  const domainTextScale = computed(() => {
-    const isSm = downloadSize.value === 'sm'
-    return {
-      top: isSm ? 0.048 : 0.035, // ubiqueme.com
-      bottom: isSm ? 0.04 : 0.025, // localizarme / contactomio
-    }
-  })
-
-  /** Font-size scale factors for domain texts in compact style based on compactSize */
-  const compactDomainTextScale = computed(() => {
-    const isSm = downloadSize.value === 'sm'
-    return {
-      top: isSm ? 0.055 : 0.06, // ubiqueme.com
-      bottom: isSm ? 0.045 : 0.048, // localizarme / contactomio
-    }
-  })
-
-  /** Logo scale factor per size — bigger logo on larger templates */
-  const logoScale = computed(() => {
-    const size = downloadSize.value
-    if (size === 'sm') return 0.1
-    if (size === 'md') return 0.097
-    if (size === 'lg') return 0.1
-    return 0.06
-  })
+  /** Current layout preset for compact style */
+  const currentCompactPreset = computed(() => compactPresets[downloadSize.value])
 
   /** Both styles are available for PNG and PDF */
   const availableStyles = computed<DownloadStyle[]>(() => {
     return ['normal', 'compact']
   })
-
-  /** Generate a DOM element ID for the capture template */
-  const getQrCaptureId = (suffix: 'normal' | 'compact'): string => {
-    return `qr-capture-${suffix}-${p.value.id}`
-  }
 
   // ── QR Generation ────────────────────────────────────────────
 
@@ -143,57 +157,23 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     }
   }
 
-  // ── Capture helper ──────────────────────────────────────────
+  // ── Capture helpers ─────────────────────────────────────────
 
-  /** Capture a template element with html-to-image and return the canvas */
-  const captureTemplate = async (
-    elementId: string,
-    bgColor: string,
-    pixelRatio = 4,
-  ): Promise<HTMLCanvasElement | null> => {
-    const el = document.getElementById(elementId)
-    if (!el) return null
-    // toPng works with the live DOM — no cloning, no oklch hacks needed
-    const dataUrl = await toPng(el, {
-      pixelRatio,
-      backgroundColor: bgColor,
-      skipFonts: true,
-      cacheBust: true,
-    })
-    // Convert data URL back to canvas for PDF export compatibility
-    const img = new Image()
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve()
-      img.onerror = () => reject(new Error('Failed to load captured image'))
-      img.src = dataUrl
-    })
-    const canvas = document.createElement('canvas')
-    canvas.width = img.width
-    canvas.height = img.height
-    const ctx = canvas.getContext('2d')!
-    ctx.drawImage(img, 0, 0)
-    return canvas
+  const doCapture = async (el: HTMLElement, pixelRatio = 4): Promise<string | null> => {
+    try {
+      return await toPng(el, { pixelRatio, skipFonts: true, cacheBust: true })
+    } catch {
+      return null
+    }
   }
 
   // ── Download: PNG (normal style) ─────────────────────────────
-  // === NORMAL PNG DOWNLOAD HANDLER START ===
-  const handleDownloadPNG = async (onClose?: () => void) => {
-    const elId = getQrCaptureId('normal')
-    const el = document.getElementById(elId)
-    if (!el) {
-      toast.error('Error al capturar el QR. Intente de nuevo.')
-      return
-    }
-
+  const handleDownloadPNG = async (el: HTMLElement | null, onClose?: () => void) => {
+    if (!el) { toast.error('Error al capturar el QR. Intente de nuevo.'); return }
     isDownloading.value = true
     try {
-      const dataUrl = await toPng(el, {
-        pixelRatio: 4,
-        backgroundColor: '#0a0401',
-        skipFonts: true,
-        cacheBust: true,
-      })
-
+      const dataUrl = await doCapture(el)
+      if (!dataUrl) throw new Error('Capture returned null')
       const link = document.createElement('a')
       link.download = `qr-${p.value.id}.png`
       link.href = dataUrl
@@ -208,24 +188,12 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   }
 
   // ── Download: PNG (compact style) ────────────────────────────
-  // === COMPACT PNG DOWNLOAD HANDLER START ===
-  const handleDownloadCompactPNG = async (onClose?: () => void) => {
-    const elId = getQrCaptureId('compact')
-    const el = document.getElementById(elId)
-    if (!el) {
-      toast.error('Error al capturar el QR compacto. Intente de nuevo.')
-      return
-    }
-
+  const handleDownloadCompactPNG = async (el: HTMLElement | null, onClose?: () => void) => {
+    if (!el) { toast.error('Error al capturar el QR compacto. Intente de nuevo.'); return }
     isDownloading.value = true
     try {
-      const dataUrl = await toPng(el, {
-        pixelRatio: 4,
-        backgroundColor: '#ffffff',
-        skipFonts: true,
-        cacheBust: true,
-      })
-
+      const dataUrl = await doCapture(el)
+      if (!dataUrl) throw new Error('Capture returned null')
       const link = document.createElement('a')
       link.download = `qr-compact-${p.value.id}.png`
       link.href = dataUrl
@@ -240,36 +208,16 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   }
 
   // ── Download: PDF (from compact style canvas) ────────────────
-  // === COMPACT PDF DOWNLOAD HANDLER START ===
-  const handleDownloadCompactPDF = async (onClose?: () => void) => {
-    const elId = getQrCaptureId('compact')
-    const el = document.getElementById(elId)
-    if (!el) {
-      toast.error('Error al capturar el QR compacto. Intente de nuevo.')
-      return
-    }
-
+  const handleDownloadCompactPDF = async (el: HTMLElement | null, onClose?: () => void) => {
+    if (!el) { toast.error('Error al capturar el QR compacto. Intente de nuevo.'); return }
     isDownloading.value = true
     try {
-      const dataUrl = await toPng(el, {
-        pixelRatio: 4,
-        backgroundColor: '#ffffff',
-        skipFonts: true,
-        cacheBust: true,
-      })
-
+      const dataUrl = await doCapture(el)
+      if (!dataUrl) throw new Error('Capture returned null')
       const { sizeMm } = PHYSICAL_SIZE_MM_COMPACT[downloadSize.value]
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [sizeMm, sizeMm],
-      })
-
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [sizeMm, sizeMm] })
       pdf.addImage(dataUrl, 'PNG', 0, 0, sizeMm, sizeMm)
-
       pdf.save(`qr-compact-${p.value.id}.pdf`)
-
       toast.success('QR compacto descargado como PDF — tamaño físico exacto para impresión')
       onClose?.()
     } catch (error) {
@@ -280,40 +228,20 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
   }
 
   // ── Download: PDF (from normal style canvas) ─────────────────
-  // === NORMAL PDF DOWNLOAD HANDLER START ===
-  const handleDownloadPDF = async (onClose?: () => void) => {
-    const elId = getQrCaptureId('normal')
-    const el = document.getElementById(elId)
-    if (!el) {
-      toast.error('Error al capturar el QR. Intente de nuevo.')
-      return
-    }
-
+  const handleDownloadPDF = async (el: HTMLElement | null, onClose?: () => void) => {
+    if (!el) { toast.error('Error al capturar el QR. Intente de nuevo.'); return }
     isDownloading.value = true
     try {
-      const dataUrl = await toPng(el, {
-        pixelRatio: 4,
-        backgroundColor: '#0a0401',
-        skipFonts: true,
-        cacheBust: true,
-      })
-
-      // 2. Get physical dimensions for the selected size
+      const dataUrl = await doCapture(el)
+      if (!dataUrl) throw new Error('Capture returned null')
       const { widthMm, heightMm } = PHYSICAL_SIZE_MM[downloadSize.value]
-
-      // 3. Create PDF with exact physical dimensions
       const pdf = new jsPDF({
         orientation: widthMm >= heightMm ? 'landscape' : 'portrait',
         unit: 'mm',
         format: [widthMm, heightMm],
       })
-
-      // 5. Insert the full canvas image scaled to fill the page
       pdf.addImage(dataUrl, 'PNG', 0, 0, widthMm, heightMm)
-
-      // 6. Save (triggers download)
       pdf.save(`qr-${p.value.id}.pdf`)
-
       toast.success('QR descargado como PDF — tamaño físico exacto para impresión')
       onClose?.()
     } catch (error) {
@@ -325,17 +253,13 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
   // ── Unified download dispatcher ──────────────────────────────
 
-  const handleDownload = (onClose?: () => void) => {
+  const handleDownload = (el: HTMLElement | null, onClose?: () => void) => {
     if (downloadFormat.value === 'pdf') {
-      if (downloadStyle.value === 'compact') {
-        return handleDownloadCompactPDF(onClose)
-      }
-      return handleDownloadPDF(onClose)
+      if (downloadStyle.value === 'compact') return handleDownloadCompactPDF(el, onClose)
+      return handleDownloadPDF(el, onClose)
     }
-    if (downloadStyle.value === 'compact') {
-      return handleDownloadCompactPNG(onClose)
-    }
-    return handleDownloadPNG(onClose)
+    if (downloadStyle.value === 'compact') return handleDownloadCompactPNG(el, onClose)
+    return handleDownloadPNG(el, onClose)
   }
 
   const getDownloadLabel = computed(() => {
@@ -356,19 +280,12 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     // Computed
     qrScanUrl,
-    currentSize,
-    currentCompactSize,
-    textScale,
-    logoScale,
+    currentPreset,
+    currentCompactPreset,
     availableStyles,
     getDownloadLabel,
 
-    // Scale factors
-    domainTextScale,
-    compactDomainTextScale,
-
     // Methods
-    getQrCaptureId,
     generateHighResQR,
     handleDownloadPNG,
     handleDownloadCompactPNG,
