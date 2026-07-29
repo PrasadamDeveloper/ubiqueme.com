@@ -77,7 +77,7 @@ const isMexicanPhone = computed(() => {
   return !!phone && phone.startsWith('52')
 })
 
-const isEditor = computed(() => userStore.getRole === 'admin' && userStore.getEmail === 'ubiqueme.services@gmail.com')
+const isEditor = computed(() => userStore.getRole === 'admin' && userStore.getEmail.endsWith('@gmail.com'))
 
 const isLoading = ref(false)
 
