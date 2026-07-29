@@ -1,6 +1,7 @@
 import { ref, computed, type Ref } from 'vue'
 import QRCode from 'qrcode'
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
+import { jsPDF } from 'jspdf'
 import { toast } from 'vue-sonner'
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -142,21 +143,36 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
     }
   }
 
-  // ── Capture helpers ──────────────────────────────────────────
+  // ── Capture helper ──────────────────────────────────────────
 
-  /** Capture a template element with html2canvas and return the canvas */
+  /** Capture a template element with html-to-image and return the canvas */
   const captureTemplate = async (
     elementId: string,
     bgColor: string,
-    scale = 4,
+    pixelRatio = 4,
   ): Promise<HTMLCanvasElement | null> => {
     const el = document.getElementById(elementId)
     if (!el) return null
-    return html2canvas(el, {
-      scale,
+    // toPng works with the live DOM — no cloning, no oklch hacks needed
+    const dataUrl = await toPng(el, {
+      pixelRatio,
       backgroundColor: bgColor,
-      useCORS: true,
+      skipFonts: true,
+      cacheBust: true,
     })
+    // Convert data URL back to canvas for PDF export compatibility
+    const img = new Image()
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve()
+      img.onerror = () => reject(new Error('Failed to load captured image'))
+      img.src = dataUrl
+    })
+    const canvas = document.createElement('canvas')
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(img, 0, 0)
+    return canvas
   }
 
   // ── Download: PNG (normal style) ─────────────────────────────
@@ -171,15 +187,16 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#0a0401',
-        useCORS: true,
+        skipFonts: true,
+        cacheBust: true,
       })
 
       const link = document.createElement('a')
       link.download = `qr-${p.value.id}.png`
-      link.href = canvas.toDataURL('image/png')
+      link.href = dataUrl
       link.click()
       toast.success('QR descargado como PNG')
       onClose?.()
@@ -202,15 +219,16 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#ffffff',
-        useCORS: true,
+        skipFonts: true,
+        cacheBust: true,
       })
 
       const link = document.createElement('a')
       link.download = `qr-compact-${p.value.id}.png`
-      link.href = canvas.toDataURL('image/png')
+      link.href = dataUrl
       link.click()
       toast.success('QR compacto descargado como PNG')
       onClose?.()
@@ -233,15 +251,14 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#ffffff',
-        useCORS: true,
+        skipFonts: true,
+        cacheBust: true,
       })
 
       const { sizeMm } = PHYSICAL_SIZE_MM_COMPACT[downloadSize.value]
-
-      const { jsPDF } = await import('jspdf')
 
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -249,8 +266,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
         format: [sizeMm, sizeMm],
       })
 
-      const imgData = canvas.toDataURL('image/png')
-      pdf.addImage(imgData, 'PNG', 0, 0, sizeMm, sizeMm)
+      pdf.addImage(dataUrl, 'PNG', 0, 0, sizeMm, sizeMm)
 
       pdf.save(`qr-compact-${p.value.id}.pdf`)
 
@@ -275,20 +291,17 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
 
     isDownloading.value = true
     try {
-      // 1. Capture the same template with html2canvas
-      const canvas = await html2canvas(el, {
-        scale: 4,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 4,
         backgroundColor: '#0a0401',
-        useCORS: true,
+        skipFonts: true,
+        cacheBust: true,
       })
 
       // 2. Get physical dimensions for the selected size
       const { widthMm, heightMm } = PHYSICAL_SIZE_MM[downloadSize.value]
 
-      // 3. Dynamically import jsPDF (code-split, not in main bundle)
-      const { jsPDF } = await import('jspdf')
-
-      // 4. Create PDF with exact physical dimensions
+      // 3. Create PDF with exact physical dimensions
       const pdf = new jsPDF({
         orientation: widthMm >= heightMm ? 'landscape' : 'portrait',
         unit: 'mm',
@@ -296,8 +309,7 @@ export function useQRDownload(props: Ref<QRDownloadProps> | QRDownloadProps) {
       })
 
       // 5. Insert the full canvas image scaled to fill the page
-      const imgData = canvas.toDataURL('image/png')
-      pdf.addImage(imgData, 'PNG', 0, 0, widthMm, heightMm)
+      pdf.addImage(dataUrl, 'PNG', 0, 0, widthMm, heightMm)
 
       // 6. Save (triggers download)
       pdf.save(`qr-${p.value.id}.pdf`)
