@@ -62,10 +62,18 @@ const currentImages = computed<DragImage[]>(() => {
   }))
 })
 
-// ─── Overlay IDs to exclude on md/lg (social icons + SSL icon) ─
+// ─── Overlay IDs to exclude (SSL icon inline on all sizes, social icons only on md/lg) ─
 const excludedOverlayIds = computed(() => {
-  if (activeSize.value === 'sm') return new Set<string>()
-  return new Set(['userImg-10', 'userImg-4', 'userImg-5', 'userImg-6', 'userImg-7', 'userImg-8', 'userImg-9'])
+  const ids = new Set(['userImg-10'])
+  if (activeSize.value !== 'sm') {
+    ids.add('userImg-4')
+    ids.add('userImg-5')
+    ids.add('userImg-6')
+    ids.add('userImg-7')
+    ids.add('userImg-8')
+    ids.add('userImg-9')
+  }
+  return ids
 })
 
 // ─── Drag handling (user images overlay only) ─────────────────
