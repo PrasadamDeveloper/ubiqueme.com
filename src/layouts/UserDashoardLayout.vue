@@ -38,7 +38,7 @@ const navLinks: NavLink[] = [
       { label: 'Volver a la página principal', pathName: 'home', icon: 'open_in_new', description: 'Regresar al inicio del sitio' },
     ],
   },
-  { name: 'Dashboard', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
+  { name: 'Mis QR', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
   {
     name: 'Ayuda', pathName: 'help', icon: 'help', requiredLogin: false,
     description: 'Resuelve tus dudas y obtén soporte personalizado',
@@ -188,7 +188,7 @@ onUnmounted(() => {
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-center font-black tracking-tight text-sm leading-none">
                     <span translate="no" class="text-gray-900!">{{ domains[currentDomainIndex]?.split('.com')[0]
-                      }}</span>
+                    }}</span>
                     <span class="text-orange-500!">.com</span>
                   </div>
                 </Transition>
@@ -202,7 +202,7 @@ onUnmounted(() => {
                   <div :key="currentDomainIndex"
                     class="absolute inset-0 flex items-end font-black tracking-tight text-2xl leading-none font-inter-tight">
                     <span translate="no" class="text-orange-500">{{ domains[currentDomainIndex]?.split('.com')[0]
-                      }}</span>
+                    }}</span>
                     <span class="text-slate-900">.com</span>
                   </div>
                 </Transition>
@@ -262,7 +262,7 @@ onUnmounted(() => {
                     <div class="border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white px-5 py-4">
                       <h4 class="font-google-sans text-sm font-semibold text-gray-700">{{ link.name }}</h4>
                       <p v-if="link.description" class="mt-1 text-[11px] leading-snug text-gray-500">{{ link.description
-                        }}</p>
+                      }}</p>
                     </div>
 
                     <div class="p-2">
@@ -399,7 +399,7 @@ onUnmounted(() => {
                       @click="handleChildClick(child); isMobileMenuOpen = false"
                       class="flex w-full items-center gap-3 px-5 py-3 text-left transition hover:bg-orange-50">
                       <span v-if="child.icon" class="material-symbols-outlined notranslate text-gray-400">{{ child.icon
-                        }}</span>
+                      }}</span>
                       <span class="text-sm text-gray-700">{{ child.label }}</span>
                     </button>
                   </div>

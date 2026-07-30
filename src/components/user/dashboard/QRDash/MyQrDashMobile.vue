@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-dvh bg-[#F2F2F7] font-google-sans">
+  <div class="min-h-dvh bg-white font-google-sans">
     <!-- Pattern overlay -->
     <div class="fixed inset-0 opacity-[0.05] pointer-events-none bg-pattern-diamond"></div>
 
@@ -12,16 +12,14 @@
     <!-- Ambient glow -->
     <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-orange-500/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <div class="px-4 pt-3 pb-32 space-y-5">
+    <div class="px-4 pt-2 pb-32 space-y-6">
 
       <!-- Header -->
-      <div class="space-y-0.5 pt-1">
-        <div class="flex items-baseline gap-1">
-          <h1 class="text-[28px] font-semibold text-[#1C1C1E] tracking-tight leading-tight">Hola de nuevo,</h1>
-          <span class="text-[28px] font-semibold text-orange-500 tracking-tight leading-tight">{{ useUserStore().getFirstName }}</span>
-          <span class="text-[28px] font-semibold tracking-tight leading-tight text-[#1C1C1E]">!</span>
-        </div>
-        <p class="text-[15px] text-[#8E8E93] font-medium">Mis Códigos QR</p>
+      <div class="pt-1">
+        <h1 class="text-[30px] font-semibold text-[#1C1C1E] tracking-tight leading-tight">
+          Hola de nuevo, <span class="text-orange-500">{{ useUserStore().getFirstName }}</span>!
+        </h1>
+        <p class="text-[14px] text-[#8E8E93] font-medium mt-0.5">Mis Códigos QR</p>
       </div>
 
       <!-- Segmented Control (iOS style) -->
@@ -90,16 +88,16 @@
       </div>
 
       <!-- Content -->
-      <div class="space-y-4">
+      <div class="space-y-6">
         <!-- Loading -->
         <div v-if="isLoading" class="flex justify-center py-20">
           <div class="w-8 h-8 border-2.5 border-[#E5E5EA] border-t-orange-500 rounded-full animate-spin"></div>
         </div>
 
         <!-- Groups -->
-        <div v-else-if="filteredGroups.length > 0" class="space-y-4">
+        <div v-else-if="filteredGroups.length > 0" class="space-y-6">
           <div v-for="group in filteredGroups" :key="group.subscription.id" class="space-y-3">
-            <!-- Subscription card (iOS grouped cells style) -->
+            <!-- Subscription card -->
             <div class="bg-white rounded-2xl overflow-hidden">
 
               <!-- Header cell -->
@@ -122,72 +120,92 @@
                 <p class="text-[11px] text-[#8E8E93] font-mono mt-1">ID: {{ group.subscription.id.slice(0, 8) }}..</p>
               </div>
 
-              <!-- Progress cell -->
-              <div class="px-4 pb-1">
-                <div class="h-1 bg-[#F2F2F7] rounded-full overflow-hidden">
+              <!-- Progress cell with separator -->
+              <div class="px-4 pb-2 border-b border-[#C6C6C8]/20">
+                <div class="h-[3px] bg-[#F2F2F7] rounded-full overflow-hidden">
                   <div class="h-full bg-orange-500 rounded-full transition-all duration-500"
                     :style="{ width: `${Math.min((group.subscription.totalQRsCreated / group.subscription.totalQRsAllowed) * 100, 100)}%` }">
                   </div>
                 </div>
               </div>
 
-              <!-- Info banner (conditional) -->
+              <!-- Info banner (conditional) with separator -->
               <template v-if="group.subscription.planType === 'trial' && group.subscription.status === 'active'">
-                <div class="mx-4 my-2 px-3.5 py-2.5 rounded-xl bg-orange-50 border border-orange-100/50">
-                  <div class="flex items-start gap-2.5">
-                    <span class="material-symbols-outlined notranslate text-[15px] text-orange-500 shrink-0 mt-0.5">info</span>
-                    <span class="text-[12px] leading-relaxed text-[#3A3A3C]">
-                      Este es un <strong class="font-semibold text-orange-500">plan gratuito de prueba</strong> con duración de 1 año incluido en su cuenta. Termina el <strong class="font-semibold text-[#1C1C1E]">{{ formatEndDate(group.subscription.endDate) }}</strong>. Después de esa fecha, si decide continuar con el plan podrá renovarlo.
-                    </span>
+                <div class="border-b border-[#C6C6C8]/20">
+                  <div class="px-4 py-3">
+                    <div class="flex items-start gap-2.5">
+                      <div class="flex h-7 w-7 items-center justify-center rounded-full bg-orange-100 shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined notranslate text-[14px] text-orange-500">info</span>
+                      </div>
+                      <p class="text-[13px] leading-relaxed text-[#3A3A3C]">
+                        Este es un <strong class="font-semibold text-orange-500">plan gratuito de prueba</strong> con duración de 1 año. Termina el <strong class="font-semibold text-[#1C1C1E]">{{ formatEndDate(group.subscription.endDate) }}</strong>.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </template>
 
               <template v-else-if="(group.subscription.planType === 'trial' && group.subscription.status === 'canceled') || group.subscription.status === 'canceled'">
-                <div class="mx-4 my-2 px-3.5 py-2.5 rounded-xl bg-red-50/70">
-                  <div class="flex items-start gap-2.5">
-                    <span class="material-symbols-outlined notranslate text-[15px] text-red-400 shrink-0 mt-0.5">cancel</span>
-                    <span class="text-[12px] leading-relaxed text-red-600">
-                      Plan <strong class="font-semibold">{{ group.subscription.planType === 'trial' ? 'de prueba' : group.subscription.planType }}</strong> cancelado — QRs no disponibles
-                    </span>
+                <div class="border-b border-[#C6C6C8]/20">
+                  <div class="px-4 py-3">
+                    <div class="flex items-start gap-2.5">
+                      <div class="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined notranslate text-[14px] text-red-400">cancel</span>
+                      </div>
+                      <p class="text-[13px] leading-relaxed text-red-600">
+                        Plan <strong class="font-semibold">{{ group.subscription.planType === 'trial' ? 'de prueba' : group.subscription.planType }}</strong> cancelado — QRs no disponibles
+                      </p>
+                    </div>
                   </div>
                 </div>
               </template>
 
               <template v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'inactive'">
-                <div class="mx-4 my-2 px-3.5 py-2.5 rounded-xl bg-slate-100/70">
-                  <div class="flex items-start gap-2.5">
-                    <span class="material-symbols-outlined notranslate text-[15px] text-[#8E8E93] shrink-0 mt-0.5">schedule</span>
-                    <span class="text-[12px] leading-relaxed text-[#8E8E93]">Plan de prueba finalizado — reactiva tus QRs</span>
+                <div class="border-b border-[#C6C6C8]/20">
+                  <div class="px-4 py-3">
+                    <div class="flex items-start gap-2.5">
+                      <div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined notranslate text-[14px] text-[#8E8E93]">schedule</span>
+                      </div>
+                      <p class="text-[13px] leading-relaxed text-[#8E8E93]">Plan de prueba finalizado — reactiva tus QRs</p>
+                    </div>
                   </div>
                 </div>
               </template>
 
               <template v-else-if="group.subscription.status === 'active'">
-                <div class="mx-4 my-2 px-3.5 py-2.5 rounded-xl bg-emerald-50/70">
-                  <div class="flex items-start gap-2.5">
-                    <span class="material-symbols-outlined notranslate text-[15px] text-emerald-500 shrink-0 mt-0.5">check_circle</span>
-                    <span class="text-[12px] leading-relaxed text-emerald-700">
-                      Plan <strong class="font-semibold text-emerald-600 capitalize">{{ group.subscription.planType }}</strong> activo
-                      <span v-if="group.subscription.endDate"> — termina {{ formatEndDate(group.subscription.endDate) }}</span>
-                      <span v-else> — sin vencimiento</span>
-                      · {{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}/{{ group.subscription.totalQRsAllowed }} QRs
-                    </span>
+                <div class="border-b border-[#C6C6C8]/20">
+                  <div class="px-4 py-3">
+                    <div class="flex items-start gap-2.5">
+                      <div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined notranslate text-[14px] text-emerald-500">check_circle</span>
+                      </div>
+                      <p class="text-[13px] leading-relaxed text-emerald-700">
+                        Plan <strong class="font-semibold text-emerald-600 capitalize">{{ group.subscription.planType }}</strong> activo
+                        <span v-if="group.subscription.endDate"> — termina {{ formatEndDate(group.subscription.endDate) }}</span>
+                        <span v-else> — sin vencimiento</span>
+                        · {{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}/{{ group.subscription.totalQRsAllowed }} QRs
+                      </p>
+                    </div>
                   </div>
                 </div>
               </template>
 
               <template v-else>
-                <div class="mx-4 my-2 px-3.5 py-2.5 rounded-xl bg-slate-100/70">
-                  <div class="flex items-start gap-2.5">
-                    <span class="material-symbols-outlined notranslate text-[15px] text-[#8E8E93] shrink-0 mt-0.5">remove_circle</span>
-                    <span class="text-[12px] leading-relaxed text-[#8E8E93]">Plan <strong class="font-semibold text-[#3A3A3C] capitalize">{{ group.subscription.planType }}</strong> inactivo</span>
+                <div class="border-b border-[#C6C6C8]/20">
+                  <div class="px-4 py-3">
+                    <div class="flex items-start gap-2.5">
+                      <div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined notranslate text-[14px] text-[#8E8E93]">remove_circle</span>
+                      </div>
+                      <p class="text-[13px] leading-relaxed text-[#8E8E93]">Plan <strong class="font-semibold text-[#3A3A3C] capitalize">{{ group.subscription.planType }}</strong> inactivo</p>
+                    </div>
                   </div>
                 </div>
               </template>
 
               <!-- Assign QR button cell -->
-              <div v-if="group.subscription.status === 'active'" class="px-4 pb-4 pt-1">
+              <div v-if="group.subscription.status === 'active'" class="px-4 py-3">
                 <button @click="() => toggleCreateQrModal(group.subscription)"
                   class="w-full h-10 rounded-full bg-orange-500 text-white text-[13px] font-semibold hover:bg-orange-600 transition-all duration-150 active:scale-[0.97] flex items-center justify-center gap-1.5 cursor-pointer">
                   <span class="material-symbols-outlined notranslate text-[16px]">add</span>
@@ -196,7 +214,13 @@
               </div>
             </div>
 
-            <!-- QRs list (iOS style cells) -->
+            <!-- QR section label -->
+            <div v-if="group.qrs.length > 0" class="flex items-center gap-2 px-1 pt-1">
+              <span class="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">Códigos QR</span>
+              <div class="flex-1 h-px bg-[#C6C6C8]/20"></div>
+            </div>
+
+            <!-- QRs list -->
             <div v-if="group.qrs.length > 0" class="space-y-2">
               <QRCardMobile v-for="qr in group.qrs" :key="qr.id" :id="qr.id" :name="qr.name" :category="qr.category"
                 :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link"
@@ -206,7 +230,7 @@
                 :planType="group.subscription.planType" @request-physical="handleRequestPhysical(group.subscription)" />
             </div>
 
-            <div v-else class="py-5 flex flex-col items-center gap-1.5">
+            <div v-else class="py-6 flex flex-col items-center gap-2">
               <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#F2F2F7]">
                 <span class="material-symbols-outlined notranslate text-[#8E8E93] text-[20px]">qr_code</span>
               </div>
@@ -217,25 +241,25 @@
 
         <!-- Empty: no subscriptions -->
         <div v-else-if="groupedQRs.length === 0"
-          class="flex flex-col items-center justify-center py-20 text-center px-6">
+          class="flex flex-col items-center justify-center py-24 text-center px-8">
           <div class="flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 mb-5">
             <span class="material-symbols-outlined notranslate text-[28px] text-orange-500">account_balance_wallet</span>
           </div>
-          <h3 class="text-[17px] font-semibold text-[#1C1C1E] mb-1.5">No tiene suscripciones activas</h3>
-          <p class="text-[14px] text-[#8E8E93] mb-6 max-w-[280px]">Adquiera un plan para registrar códigos QR y comenzar a proteger sus pertenencias.</p>
+          <h3 class="text-[18px] font-semibold text-[#1C1C1E] mb-1.5">No tienes suscripciones activas</h3>
+          <p class="text-[14px] text-[#8E8E93] mb-7 max-w-[280px] leading-relaxed">Adquiere un plan para registrar códigos QR y comenzar a proteger tus pertenencias.</p>
           <RouterLink to="/pricing"
-            class="inline-flex items-center gap-2 h-11 px-7 rounded-full bg-orange-500 text-white text-[14px] font-semibold hover:bg-orange-600 active:scale-[0.97] transition-all duration-150 shadow-sm">
-            <span class="material-symbols-outlined notranslate text-[16px]">workspace_premium</span>
+            class="inline-flex items-center gap-2 h-12 px-8 rounded-full bg-orange-500 text-white text-[15px] font-semibold hover:bg-orange-600 active:scale-[0.97] transition-all duration-150 shadow-sm">
+            <span class="material-symbols-outlined notranslate text-[18px]">workspace_premium</span>
             Ver Planes
           </RouterLink>
         </div>
 
         <!-- Empty: filter no results -->
-        <div v-else class="flex flex-col items-center justify-center py-20 text-center px-6">
+        <div v-else class="flex flex-col items-center justify-center py-24 text-center px-8">
           <div class="flex h-14 w-14 items-center justify-center rounded-full bg-[#F2F2F7] mb-4">
             <span class="material-symbols-outlined notranslate text-[24px] text-[#8E8E93]">search_off</span>
           </div>
-          <h3 class="text-[17px] font-semibold text-[#1C1C1E] mb-1.5 capitalize">No hay planes {{ plansView }}</h3>
+          <h3 class="text-[18px] font-semibold text-[#1C1C1E] mb-1.5 capitalize">No hay planes {{ plansView }}</h3>
           <p class="text-[14px] text-[#8E8E93]">No se encontraron suscripciones con este estado.</p>
         </div>
       </div>
