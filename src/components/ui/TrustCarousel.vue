@@ -119,6 +119,10 @@ watch(showMobileOverlay, (open) => {
   document.body.style.overflow = open ? 'hidden' : ''
 })
 
+const desktopItems = computed(() => items.filter((item) => item.text !== 'SSL' && item.text !== 'HTTPS'))
+
+const desktopIndex = computed(() => currentIndex.value % desktopItems.value.length)
+
 const panelWidth = computed(() => {
   if (!isHovered.value) return '195px'
   if (hoveredItemIndex.value !== null) return '480px'
@@ -145,11 +149,11 @@ const panelWidth = computed(() => {
       <div class="flex items-center justify-between px-3 py-2" :class="isHovered ? 'border-b border-slate-100' : ''">
         <div class="flex items-center gap-2 min-w-0">
           <span class="text-[11px] font-medium tracking-wide text-slate-500 whitespace-nowrap">
-            {{ isHovered ? 'Señales de confianza' : items[currentIndex]!.text }}
+            {{ isHovered ? 'Señales de confianza' : desktopItems[desktopIndex]!.text }}
           </span>
         </div>
 
-        <img v-if="!isHovered" :src="items[currentIndex]!.icon" :alt="items[currentIndex]!.alt"
+        <img v-if="!isHovered" :src="desktopItems[desktopIndex]!.icon" :alt="desktopItems[desktopIndex]!.alt"
           class="h-[45px] w-[45px] object-contain shrink-0 grayscale" />
       </div>
 
@@ -160,7 +164,7 @@ const panelWidth = computed(() => {
       }">
 
         <div class="flex-1 min-w-0">
-          <div v-for="(item, index) in items" :key="index"
+          <div v-for="(item, index) in desktopItems" :key="index"
             class="flex flex-col gap-0.5 rounded-lg px-2 py-2 transition-colors hover:bg-blue-50"
             @mouseenter="onItemEnter(index)" @mouseleave="onItemLeave">
             <div class="flex items-start gap-2">
@@ -187,13 +191,13 @@ const panelWidth = computed(() => {
           <div v-if="hoveredItemIndex !== null">
             <div class="flex items-center gap-2 mb-3">
               <span class="w-[7px] h-[7px] rounded-xl bg-blue-400 shrink-0"></span>
-              <span class="text-[11px] font-medium tracking-wide text-slate-500">{{ items[hoveredItemIndex!]!.text
+              <span class="text-[11px] font-medium tracking-wide text-slate-500">{{ desktopItems[hoveredItemIndex!]!.text
                 }}</span>
             </div>
             <p class="text-[11px] leading-relaxed text-slate-500">
-              <img :src="items[hoveredItemIndex!]!.icon" :alt="items[hoveredItemIndex!]!.alt"
+              <img :src="desktopItems[hoveredItemIndex!]!.icon" :alt="desktopItems[hoveredItemIndex!]!.alt"
                 class="w-14 object-contain float-right ml-2 mb-1" />
-              {{ items[hoveredItemIndex!]!.detail }}
+              {{ desktopItems[hoveredItemIndex!]!.detail }}
             </p>
           </div>
         </div>
