@@ -82,11 +82,38 @@
         <div class="relative grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-11 sm:p-16 z-10">
           <div class="w-full max-w-sm space-y-10">
 
-            <div class="md:hidden flex flex-col items-center mb-10 text-center">
+            <div class="md:hidden flex flex-col items-center mb-10 text-center mt-2">
               <span class="material-symbols-outlined notranslate text-orange-500 text-6xl mb-4">location_on</span>
               <h2 class="text-2xl font-black text-gray-900 uppercase tracking-widest leading-none">Ubiqueme</h2>
               <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Inicio de
                 sesión</span>
+            </div>
+
+            <!-- Plan purchase prompt — eye‑catching CTA when redirected from plan selection -->
+            <div v-if="planName && showPlanPrompt" class="rounded-2xl bg-white border border-gray-200 p-5 space-y-3">
+              <div class="flex items-start gap-3.5">
+                <div
+                  class="w-10 h-10 rounded-full bg-white border border-orange-200 flex items-center justify-center shrink-0 shadow-sm">
+                  <span class="material-symbols-outlined notranslate text-orange-500 text-xl">shopping_cart</span>
+                </div>
+                <div class="flex-1 min-w-0 pt-0.5">
+                  <p class="text-sm font-semibold text-slate-900">
+                    Compra de <span class="font-black text-orange-600">{{ planName }}</span>
+                  </p>
+                  <p class="text-sm font-semibold text-slate-700 mt-1.5 leading-snug">
+                    Inicia sesión para continuar con su compra.
+                  </p>
+                  <div class="flex items-center gap-1.5 mt-2.5">
+                    <span class="material-symbols-outlined notranslate text-orange-500 text-sm">expand_more</span>
+                    <span class="text-[10px] font-bold text-orange-600 uppercase tracking-[0.08em]">Ingrese sus datos
+                      abajo</span>
+                  </div>
+                </div>
+                <button @click="showPlanPrompt = false"
+                  class="w-7 h-7 rounded-full bg-white/70 border border-orange-200 flex items-center justify-center shrink-0 hover:bg-white transition-colors cursor-pointer">
+                  <span class="material-symbols-outlined notranslate text-slate-400 text-sm">close</span>
+                </button>
+              </div>
             </div>
 
             <template v-if="emailVerified">
@@ -116,7 +143,7 @@
                       class="absolute right-5 inset-y-0 my-auto flex items-center text-gray-400 hover:text-gray-600 transition-colors">
                       <span class="material-symbols-outlined notranslate text-xl">{{ showPassword ? 'visibility' :
                         'visibility_off'
-                        }}</span>
+                      }}</span>
                     </button>
                   </div>
                 </div>
@@ -163,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import VerificationBanner from '@/components/auth/VerificationBanner.vue'
 import { signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth'
@@ -179,6 +206,23 @@ const route = useRoute()
 const showPassword = ref(false)
 const emailVerified = ref(true)
 const resendLoading = ref(false)
+const showPlanPrompt = ref(true)
+
+const planNames: Record<string, string> = {
+  bronce: 'Bronce',
+  plata: 'Plata',
+  oro: 'Oro',
+}
+
+const planName = computed(() => {
+  const redirect = route.query.redirect as string | undefined
+  if (!redirect) return null
+  const match = redirect.match(/\/checkout\/(\w+)/)
+  if (!match) return null
+  const planId = match[1]
+  if (!planId) return null
+  return planNames[planId] || null
+})
 const form = reactive({
   email: '',
   password: '',

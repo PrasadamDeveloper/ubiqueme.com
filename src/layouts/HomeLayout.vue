@@ -258,6 +258,18 @@ onUnmounted(() => {
         <!-- LEFT -->
         <div class="flex items-center gap-5">
 
+          <!-- Desktop SSL + HTTPS badges (hidden on mobile) — iOS-style neutral -->
+          <div class="hidden md:flex flex-col gap-1">
+            <div class="flex items-center gap-1 rounded-full bg-slate-50 border border-slate-200/70 px-2 py-[3px]">
+              <span class="material-symbols-outlined notranslate text-[9px] text-slate-400" style="font-variation-settings:'wght'@300">lock</span>
+              <span class="text-[8px] font-medium text-slate-500 uppercase tracking-[0.06em]">SSL</span>
+            </div>
+            <div class="flex items-center gap-1 rounded-full bg-slate-50 border border-slate-200/70 px-2 py-[3px]">
+              <span class="material-symbols-outlined notranslate text-[9px] text-slate-400" style="font-variation-settings:'wght'@300">verified</span>
+              <span class="text-[8px] font-medium text-slate-500 uppercase tracking-[0.06em]">HTTPS</span>
+            </div>
+          </div>
+
           <TrustCarousel />
 
           <!-- LOGO + Mobile domain -->

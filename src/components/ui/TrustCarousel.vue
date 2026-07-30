@@ -43,6 +43,20 @@ const items: TrustItem[] = [
     description: 'Conexión cifrada SSL 256-bit — tus datos protegidos',
     detail: 'La seguridad es fundamental en cada aspecto de nuestra operación. Nuestro sitio cuenta con conexión cifrada SSL 256-bit y certificación HTTPS, protegiendo cada interacción. Así como garantizamos procesos seguros en la importación, también aseguramos que los datos compartidos a través de nuestros códigos QR estén protegidos con altos estándares, para que los usuarios puedan usar la plataforma con total confianza al mantenerse alertados sobre lo que aman.',
   },
+  {
+    text: 'SSL',
+    icon: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394a3b8%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Crect x=%273%27 y=%2711%27 width=%2718%27 height=%2711%27 rx=%272%27 ry=%272%27/%3E%3Cpath d=%27M7 11V7a5 5 0 0 1 10 0v4%27/%3E%3C/svg%3E',
+    alt: 'SSL',
+    description: 'Cifrado SSL 256-bit — tus datos están protegidos',
+    detail: 'Navega con total confianza. Nuestro sitio utiliza cifrado SSL de 256 bits, protegiendo cada bit de información que transmites. Esta capa de seguridad impide la interceptación de datos entre tu dispositivo y nuestros servidores, garantizando que tu experiencia en ubiqueme.com sea completamente segura.',
+  },
+  {
+    text: 'HTTPS',
+    icon: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394a3b8%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Crect x=%273%27 y=%2711%27 width=%2718%27 height=%2711%27 rx=%272%27 ry=%272%27/%3E%3Cpath d=%27M7 11V7a5 5 0 0 1 10 0v4%27/%3E%3Cpath d=%27m9 17 2 2 4-4%27/%3E%3C/svg%3E',
+    alt: 'HTTPS',
+    description: 'Conexión segura verificada — navegación protegida',
+    detail: 'La conexión HTTPS está activa y verificada en todas las páginas de ubiqueme.com. Esto autentica la identidad del sitio y cifra la comunicación, asegurando que los datos que compartes lleguen exactamente a donde deben ir, sin riesgos de suplantación o escuchas no autorizadas.',
+  },
 ]
 
 const currentIndex = ref(0)
