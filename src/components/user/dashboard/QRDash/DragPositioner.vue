@@ -4,7 +4,15 @@ import { toast } from 'vue-sonner'
 import { toCanvas } from 'html-to-image'
 import { jsPDF } from 'jspdf'
 import LogoWhite from '@/assets/Ubiqueme_Logo_white.webp'
-import { DEFAULT_ELEMENT_OFFSETS, DEFAULT_USER_IMAGES } from '@/config/dragDefaults'
+import Social4 from '@/assets/drag-images/social-4.webp'
+import Social5 from '@/assets/drag-images/social-5.webp'
+import Social6 from '@/assets/drag-images/social-6.webp'
+import Social7 from '@/assets/drag-images/social-7.webp'
+import Social8 from '@/assets/drag-images/social-8.webp'
+import Social9 from '@/assets/drag-images/social-9.webp'
+import { DEFAULT_USER_IMAGES } from '@/config/dragDefaults'
+
+const socialIconImages = [Social4, Social5, Social6, Social7, Social8, Social9]
 
 const props = defineProps<{
   visible: boolean
@@ -21,49 +29,45 @@ const emit = defineEmits<{
 }>()
 
 // ══════════════════════════════════════════════════════════════
-//  SIZE CONFIG — matching useQRDownload.ts exactly
+//  SIZE CONFIG — from shared layoutPresets
 // ══════════════════════════════════════════════════════════════
-interface SizeCfg {
-  width: number
-  height: number
-  qrSize: number
-}
+import { layoutPresets } from '@/composables/useQRDownload'
 
-const SIZE_CONFIG: Record<string, SizeCfg> = {
-  sm: { width: 400, height: 173, qrSize: 115 },
-  md: { width: 720, height: 500, qrSize: 300 },
-  lg: { width: 1080, height: 749, qrSize: 460 },
-}
-
-// ══════════════════════════════════════════════════════════════
-//  DEFAULT POSITIONS
-// ══════════════════════════════════════════════════════════════
-
-function PAD(w: number) { return w * 0.02 }
-
-function logoScale(size: string) { return size === 'sm' ? 0.1 : 0.097 }
+const tplRef = ref<HTMLElement | null>(null)
 
 // ─── Reactive size ─────────────────────────────────────────────
 const activeSize = ref<string>(props.downloadSize)
 
-const cfg = computed<SizeCfg>(() => SIZE_CONFIG[activeSize.value] ?? SIZE_CONFIG.md!)
+const cfg = computed(() => layoutPresets[activeSize.value as keyof typeof layoutPresets] ?? layoutPresets.md)
 
-// ─── Offsets for built-in elements ─────────────────────────────
-type OffsetKey = keyof typeof DEFAULT_ELEMENT_OFFSETS.md
+// ─── Preview scaling — fit within viewport without affecting download ─────
+const previewContainerRef = ref<HTMLElement | null>(null)
+const containerWidth = ref(0)
 
-function buildOffsets(size: string) {
-  return JSON.parse(JSON.stringify(DEFAULT_ELEMENT_OFFSETS[size as keyof typeof DEFAULT_ELEMENT_OFFSETS]))
-}
-
-const offsets = ref<Record<OffsetKey, { left: number; top: number }>>(buildOffsets(activeSize.value))
-
-watch(activeSize, (newSize) => {
-  offsets.value = buildOffsets(newSize)
+watch(previewContainerRef, (el) => {
+  if (!el) { containerWidth.value = 0; return }
+  const update = () => { containerWidth.value = el.clientWidth }
+  update()
+  const ro = new ResizeObserver(update)
+  ro.observe(el)
 })
 
-function resetOffsets() {
-  offsets.value = buildOffsets(activeSize.value)
-}
+const scaleFactor = computed(() => {
+  if (containerWidth.value === 0) return 1
+  const available = containerWidth.value - 48
+  if (available <= 32) return 1
+  return Math.min(1, (available - 16) / cfg.value.width)
+})
+
+const templateStyle = computed(() => {
+  const c = cfg.value
+  const s = scaleFactor.value
+  let css = `width:${c.width}px;height:${c.height}px;padding:${c.spacing.outerPadding}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${c.spacing.mainGap}px`
+  if (s < 1) {
+    css += `;transform:scale(${s});transform-origin:top left`
+  }
+  return css
+})
 
 // ─── Images — hardcoded from config ────────────────────────────
 interface DragImage {
@@ -87,112 +91,55 @@ const currentImages = computed<DragImage[]>(() => {
   }))
 })
 
-// ─── Drag handling (supports both built-in and user images) ────
+// ─── Overlay IDs to exclude (all rendered inline now) ─
+// @TODO: userImg-12 is also excluded — none of the social icons render correctly
+// (positioned with hardcoded absolute offsets that don't match the live layout).
+// Remove the ID from this set once positioning is fixed per size.
+const excludedOverlayIds = computed(() => new Set([
+  'userImg-4', 'userImg-5', 'userImg-6', 'userImg-7', 'userImg-8', 'userImg-9', 'userImg-10', 'userImg-12',
+]))
+
+// ─── Drag handling (user images overlay only) ─────────────────
 const dragging = ref<{
-  key: string
+  id: string
   startX: number
   startY: number
   origLeft: number
   origTop: number
 } | null>(null)
 
-const startDrag = (key: string, e: MouseEvent) => {
+const startDrag = (id: string, e: MouseEvent) => {
   if (props.readonly) return
   e.preventDefault()
-
-  const userImg = currentImages.value.find((i) => i.id === key)
-  if (userImg) {
-    dragging.value = {
-      key,
-      startX: e.clientX,
-      startY: e.clientY,
-      origLeft: userImg.offsets.left,
-      origTop: userImg.offsets.top,
-    }
-    const onMove = (ev: MouseEvent) => {
-      if (!dragging.value) return
-      const dx = ev.clientX - dragging.value.startX
-      const dy = ev.clientY - dragging.value.startY
-      userImg.offsets.left = dragging.value.origLeft + dx
-      userImg.offsets.top = dragging.value.origTop + dy
-    }
-    const onUp = () => {
-      dragging.value = null
-      document.removeEventListener('mousemove', onMove)
-      document.removeEventListener('mouseup', onUp)
-    }
-    document.addEventListener('mousemove', onMove)
-    document.addEventListener('mouseup', onUp)
-    return
-  }
-
-  const o = offsets.value[key as OffsetKey]
-  if (!o) return
-  dragging.value = {
-    key,
-    startX: e.clientX,
-    startY: e.clientY,
-    origLeft: o.left,
-    origTop: o.top,
-  }
-
+  const img = currentImages.value.find((i) => i.id === id)
+  if (!img) return
+  dragging.value = { id, startX: e.clientX, startY: e.clientY, origLeft: img.offsets.left, origTop: img.offsets.top }
   const onMove = (ev: MouseEvent) => {
     if (!dragging.value) return
     const dx = ev.clientX - dragging.value.startX
     const dy = ev.clientY - dragging.value.startY
-    const k = dragging.value.key
-    offsets.value[k as OffsetKey] = {
-      left: dragging.value.origLeft + dx,
-      top: dragging.value.origTop + dy,
-    }
+    img.offsets.left = dragging.value.origLeft + dx
+    img.offsets.top = dragging.value.origTop + dy
   }
-
   const onUp = () => {
     dragging.value = null
     document.removeEventListener('mousemove', onMove)
     document.removeEventListener('mouseup', onUp)
   }
-
   document.addEventListener('mousemove', onMove)
   document.addEventListener('mouseup', onUp)
 }
 
-// ─── Reset ────────────────────────────────────────────────────
-const resetPositions = () => {
-  resetOffsets()
-  toast.success('Posiciones restablecidas')
-}
-
-// ─── Copy positions to clipboard ──────────────────────────────
-const copyPositions = () => {
-  const size = activeSize.value
-
-  // built-in element offsets
-  const offsetLines = Object.entries(offsets.value)
-    .map(([key, val]) => `    ${key}: { left: ${val.left}, top: ${val.top} }`)
-    .join(',\n')
-  const builtInBlock = `// ${size} — element offsets
-DEFAULT_ELEMENT_OFFSETS.${size} = {\n${offsetLines},\n}`
-
-  // user image offsets
-  const userImgLines = currentImages.value
-    .map((img) => `// ${img.id} → { left: ${img.offsets.left}, top: ${img.offsets.top} }`)
-    .join('\n')
-  const userImgBlock = `// ${size} — user image offsets\n${userImgLines}`
-
-  const output = `${builtInBlock}\n\n${userImgBlock}`
-
-  navigator.clipboard.writeText(output)
-  toast.success('Posiciones copiadas al portapapeles')
-}
-
 // ─── Export helpers ──────────────────────────────────────────
-const getTemplateEl = () => document.getElementById(`drag-tpl-${props.qrId}`)
 
-/** Capture the template directly with html-to-image (no iframe, no oklch hacks) */
+/** Capture the template directly with html-to-image */
 const captureCanvas = async () => {
-  const el = getTemplateEl()
+  const el = tplRef.value
   if (!el) { toast.error('No se encontró la plantilla'); return null }
+  const origTransform = el.style.transform
+  const origOrigin = el.style.transformOrigin
+  el.style.transform = ''
+  el.style.transformOrigin = ''
   try {
     return await toCanvas(el, {
       pixelRatio: 4,
@@ -203,6 +150,9 @@ const captureCanvas = async () => {
   } catch (e) {
     toast.error(`Error al capturar: ${e}`)
     return null
+  } finally {
+    el.style.transform = origTransform
+    el.style.transformOrigin = origOrigin
   }
 }
 
@@ -252,8 +202,10 @@ const close = () => emit('close')
             <!-- ─── HEADER ─── -->
             <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
               <div>
-                <h2 class="text-lg font-bold text-slate-900">{{ readonly ? `Descargar QR — ${qrName}` : `Personalizar posición — ${qrName}` }}</h2>
-                <p class="text-xs text-slate-400">{{ readonly ? 'Selecciona el tamaño y formato para descargar' : 'Arrastra cada elemento para reposicionarlo' }}</p>
+                <h2 class="text-lg font-bold text-slate-900">{{ readonly ? `Descargar QR — ${qrName}` : `Descargar QR —
+                  ${qrName}` }}</h2>
+                <p class="text-xs text-slate-400">{{ readonly ? 'Descargar QR' :
+                  'Elija el tamaño' }}</p>
               </div>
               <button @click="close"
                 class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition cursor-pointer">
@@ -275,17 +227,24 @@ const close = () => emit('close')
             </div>
 
             <!-- ─── CANVAS AREA ─── -->
-            <div class="flex-1 overflow-auto bg-slate-50 p-6 flex justify-center items-start" :class="{ 'pointer-events-none': readonly }">
-              <!-- Template — uses Tailwind classes directly. html-to-image respects all CSS via foreignObject. -->
-              <div :id="`drag-tpl-${props.qrId}`"
-                :style="`width:${cfg.width}px;height:${cfg.height}px;padding:${PAD(cfg.width)}px`"
-                class="relative overflow-hidden shrink-0 font-sans"
-                style="background:linear-gradient(80deg,#f97316,#fcbd74)">
+            <div class="flex-1 overflow-auto bg-slate-50 p-6 flex justify-center items-start"
+              :class="{ 'pointer-events-none': readonly }"
+              ref="previewContainerRef">
+              <div :style="{
+                width: Math.ceil(cfg.width * scaleFactor) + 'px',
+                height: Math.ceil(cfg.height * scaleFactor) + 'px',
+                overflow: 'hidden',
+                position: 'relative',
+                flexShrink: 0,
+              }">
+              <div :id="`drag-tpl-${props.qrId}`" ref="tplRef"
+                :style="templateStyle"
+                class="relative overflow-hidden shrink-0">
 
-                <!-- User images (draggable) — from hardcoded defaults -->
+                <!-- User images overlay (draggable, absolute positioning for superpositions) -->
                 <template v-for="img in currentImages" :key="img.id">
-                  <div
-                    :style="`position:absolute;left:${PAD(cfg.width) + img.offsets.left}px;top:${PAD(cfg.width) + img.offsets.top}px;z-index:20`"
+                  <div v-if="!excludedOverlayIds.has(img.id)"
+                    :style="`position:absolute;left:${cfg.spacing.outerPadding + img.offsets.left}px;top:${cfg.spacing.outerPadding + img.offsets.top}px;z-index:20`"
                     class="cursor-grab border-2 border-transparent rounded overflow-hidden transition-colors duration-150 hover:border-white/80"
                     @mousedown="startDrag(img.id, $event)">
                     <img :src="img.src" :style="`width:${img.width}px;height:${img.height}px`"
@@ -293,128 +252,105 @@ const close = () => emit('close')
                   </div>
                 </template>
 
-                <!-- Logo top-right (draggable) -->
-                <div
-                  :style="`position:absolute;top:${cfg.width * 0.015 + offsets.logo.top}px;right:${cfg.width * 0.015 - offsets.logo.left}px;z-index:10`"
-                  class="cursor-grab bg-black/80 rounded-[3px] p-px" @mousedown="startDrag('logo', $event)">
-                  <img :src="LogoWhite" :style="`width:${cfg.width * logoScale(activeSize)}px`"
-                    class="h-auto opacity-90 block pointer-events-none" alt="Ubiqueme" />
-                </div>
-
-                <!-- SM: HTTPS:// ubiqueme.com — position:absolute fuera del flex column para que capture igual que preview -->
-                <div v-if="activeSize === 'sm'"
-                  :style="`position:absolute;left:${PAD(cfg.width) + offsets.topDomain.left}px;top:${PAD(cfg.width) + cfg.height * 0.12 + offsets.topDomain.top}px;z-index:15`"
-                  class="cursor-grab" @mousedown="startDrag('topDomain', $event)">
-                  <div class="flex flex-row items-center justify-center gap-0.5">
+                <!-- HEADER: SSL + HTTPS// + Dominio | Logo -->
+                <template v-if="activeSize === 'sm'">
+                  <div class="flex items-center justify-between shrink-0"
+                    :style="{ gap: cfg.spacing.headerGap + 'px' }">
+                    <div class="flex items-center" :style="{ gap: cfg.spacing.headerGap + 'px' }">
+                      <img src="/src/assets/drag-images/social-10.webp"
+                        :style="{ width: cfg.sslIcon.w + 'px', height: cfg.sslIcon.h + 'px' }" class="object-contain" />
+                      <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
+                        class="text-black font-black tracking-widest uppercase leading-none">HTTPS://</span>
+                      <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
+                        class="text-black font-black tracking-widest uppercase leading-none">ubiqueme.com</span>
+                    </div>
+                    <div :style="{
+                      padding: cfg.logo.containerPadding + 'px',
+                      borderRadius: cfg.logo.containerRadius + 'px',
+                    }" class="bg-black/80 flex items-center justify-center shrink-0">
+                      <img :src="LogoWhite" :style="{ width: cfg.logo.size + 'px' }" class="h-auto opacity-90 block" />
+                    </div>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="flex items-center justify-center shrink-0" :style="{ gap: cfg.spacing.headerGap + 'px' }">
                     <img src="/src/assets/drag-images/social-10.webp"
-                      class="w-4 h-3 block pointer-events-none object-contain" />
-                    <span :style="`font-size:${cfg.width * 0.035}px`"
-                      class="text-black font-black tracking-widest uppercase whitespace-nowrap pointer-events-none">HTTPS://</span>
-                    <span :style="`font-size:${cfg.width * 0.055}px`"
-                      class="text-black font-black tracking-widest uppercase whitespace-nowrap pointer-events-none">ubiqueme.com</span>
+                      :style="{ width: cfg.sslIcon.w + 'px', height: cfg.sslIcon.h + 'px' }" class="object-contain" />
+                    <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
+                      class="text-black font-black tracking-widest uppercase leading-none">HTTPS://</span>
+                    <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
+                      class="text-black font-black tracking-widest uppercase leading-none">ubiqueme.com</span>
+                    <div :style="{
+                      padding: cfg.logo.containerPadding + 'px',
+                      borderRadius: cfg.logo.containerRadius + 'px',
+                    }" class="bg-black/80 flex items-center justify-center shrink-0">
+                      <img :src="LogoWhite" :style="{ width: cfg.logo.size + 'px' }" class="h-auto opacity-90 block" />
+                    </div>
+                  </div>
+                </template>
+
+                <!-- CONTENT: QR + Info -->
+                <div class="flex items-start flex-1 min-h-0" :style="{ gap: cfg.spacing.contentGap + 'px' }">
+                  <div :style="{
+                    width: (cfg.qr.size + cfg.qr.containerPadding * 2) + 'px',
+                    height: (cfg.qr.size + cfg.qr.containerPadding * 2) + 'px',
+                    borderRadius: cfg.qr.containerRadius + 'px',
+                    padding: cfg.qr.containerPadding + 'px',
+                  }" class="shrink-0 self-start bg-white flex items-center justify-center overflow-hidden">
+                    <template v-if="qrDataUrl">
+                      <img :src="qrDataUrl" :style="{ width: cfg.qr.size + 'px', height: cfg.qr.size + 'px' }"
+                        class="object-contain" />
+                    </template>
+                    <template v-else-if="qrImg">
+                      <img :src="qrImg" :style="{ width: cfg.qr.size + 'px', height: cfg.qr.size + 'px' }"
+                        class="object-contain" />
+                    </template>
+                  </div>
+                  <div class="flex flex-col flex-1 min-w-0 text-center overflow-hidden self-stretch"
+                    :style="{ gap: cfg.spacing.textGap + 'px' }">
+                    <p :style="{ fontSize: cfg.fonts.name + 'px' }"
+                      class="text-[#171717] font-black leading-tight m-0 truncate">
+                      {{ qrName || 'QR Name' }}
+                    </p>
+                    <p :style="{ fontSize: cfg.fonts.desc + 'px' }"
+                      :class="activeSize === 'sm' ? 'max-w-[75%] self-center' : ''"
+                      class="text-[#303030] font-medium leading-tight m-0 line-clamp-2">
+                      Escanee este QR para contactar al responsable.
+                    </p>
+                    <p :style="{ fontSize: cfg.fonts.footerNote + 'px' }"
+                      class="text-black font-medium leading-tight m-0 shrink-0">
+                      QR oficial de Ubiqueme.com® — Marca 100% segura y verificada.
+                    </p>
                   </div>
                 </div>
 
-                <!-- Inner column -->
-                <div
-                  :style="`position:absolute;left:${PAD(cfg.width) + offsets.qrBox.left}px;top:${PAD(cfg.width) + offsets.qrBox.top}px;width:${cfg.width - PAD(cfg.width) * 2}px;height:${cfg.height - PAD(cfg.width) * 2}px`"
-                  class="flex flex-col items-center justify-center gap-1">
-
-                  <!-- MD/LG: HTTPS separate + ubiqueme.com separate -->
-                  <template v-if="activeSize !== 'sm'">
-                    <div
-                      :style="`display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;position:relative;left:${offsets.httpsLabel.left}px;top:${offsets.httpsLabel.top}px`"
-                      class="cursor-grab" @mousedown="startDrag('httpsLabel', $event)">
-                      <span :style="`font-size:${cfg.width * 0.035}px`"
-                        class="text-black font-black tracking-widest uppercase text-center whitespace-nowrap pointer-events-none">HTTPS://</span>
-                    </div>
-                    <span
-                      :style="`font-size:${cfg.width * 0.055}px;position:relative;left:${offsets.topDomain.left}px;top:${offsets.topDomain.top}px;padding:1px 51px;border-radius:20px`"
-                      class="text-black font-black tracking-widest uppercase text-center cursor-grab"
-                      @mousedown="startDrag('topDomain', $event)">ubiqueme.com</span>
-                  </template>
-
-                  <!-- Row: QR + info -->
-                  <div class="flex flex-row items-center justify-center gap-1 flex-1 w-full">
-
-                    <!-- QR box -->
-                    <div
-                      :style="`width:${cfg.qrSize + 16}px;height:${cfg.qrSize + 16}px;padding:8px;position:relative;left:${offsets.qrBox.left}px;top:${offsets.qrBox.top}px`"
-                      class="shrink-0 bg-white rounded-[10px] flex items-center justify-center overflow-hidden cursor-grab"
-                      @mousedown="startDrag('qrBox', $event)">
-                      <template v-if="qrDataUrl">
-                        <img :src="qrDataUrl" :style="`width:${cfg.qrSize}px;height:${cfg.qrSize}px`"
-                          class="block pointer-events-none" />
-                      </template>
-                      <template v-else-if="qrImg">
-                        <img :src="qrImg" :style="`width:${cfg.qrSize}px;height:${cfg.qrSize}px`"
-                          class="object-contain block pointer-events-none" />
-                      </template>
-                    </div>
-
-                    <!-- Info texts -->
-                    <div class="flex flex-col gap-1 justify-center flex-[0_1_auto] text-center">
-                      <p :style="`font-size:${cfg.width * 0.082}px;position:relative;left:${offsets.name.left}px;top:${offsets.name.top}px${activeSize === 'sm' ? ';max-width:195px' : ''}`"
-                        class="text-neutral-900 font-black leading-none m-0 cursor-grab line"
-                        :class="activeSize === 'sm' ? 'break-words' : ''" @mousedown="startDrag('name', $event)">{{
-                          qrName || 'QR Name' }}</p>
-                      <p :style="`font-size:${Math.round(cfg.width * 0.02)}px;position:relative;left:${offsets.id.left}px;top:${offsets.id.top}px`"
-                        class="text-[#444] font-semibold leading-tight m-0 font-mono cursor-grab"
-                        @mousedown="startDrag('id', $event)">
-                        ID:#{{ qrId }}</p>
-                      <p :style="`font-size:${cfg.width * 0.048}px;position:relative;left:${offsets.desc1.left}px;top:${offsets.desc1.top}px`"
-                        class="text-[#303030] font-medium  m-0 cursor-grab"
-                        :class="activeSize == 'sm' ? 'leading-none' : 'leading-tight'"
-                        @mousedown="startDrag('desc1', $event)">
-                        Escanee
-                        este QR<br />para contactar<br />al responsable.
-                      </p>
-                      <p :style="`font-size:${Math.round(cfg.width * 0.022)}px;position:relative;left:${offsets.desc2.left}px;top:${offsets.desc2.top}px`"
-                        class="text-black font-medium leading-tight mt-1 m-0 cursor-grab"
-                        @mousedown="startDrag('desc2', $event)">QR
-                        oficial <span class="ml-0.5">
-                          de Ubiqueme.com®
-                        </span><br>
-                        Marca 100% segura y
-                        verificada.</p>
+                <!-- FOOTER -->
+                <div class="flex shrink-0 justify-between items-center" :style="{ gap: cfg.spacing.mainGap + 'px' }">
+                  <div class="flex flex-col items-start" :style="{ gap: cfg.spacing.footerGap + 'px' }">
+                    <span :style="{ fontSize: cfg.fonts.footerEmail + 'px' }"
+                      class="text-black font-bold tracking-wider">soporte@ubiqueme.com</span>
+                    <div class="flex items-center" :style="{ gap: cfg.spacing.footerGap + 'px' }">
+                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
+                        class="text-black font-bold uppercase tracking-wider" translate="no">localizarme.com</span>
+                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }" class="text-black/50">•</span>
+                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
+                        class="text-black font-bold uppercase tracking-wider" translate="no">contactomio.com</span>
                     </div>
                   </div>
-                  <div
-                    :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;padding-bottom:9px;position:relative;left:${offsets.bottomEmail.left}px;top:${offsets.bottomEmail.top}px`"
-                    class="cursor-grab" @mousedown="startDrag('bottomEmail', $event)">
-                    <span :style="`font-size:${cfg.width * 0.025}px`"
-                      class="text-black font-bold uppercase tracking-wider pointer-events-none">soporte@ubiqueme.com</span>
-                  </div>
-
-                  <!-- Bottom domains -->
-                  <div
-                    :style="`display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;padding-bottom:9px;position:relative;left:${offsets.bottomDomains.left}px;top:${offsets.bottomDomains.top}px`"
-                    class="cursor-grab" @mousedown="startDrag('bottomDomains', $event)">
-                    <span :style="`font-size:${cfg.width * 0.025}px`"
-                      class="text-black font-bold uppercase tracking-wider pointer-events-none"
-                      translate="no">localizarme.com</span>
-                    <span :style="`font-size:${cfg.width * 0.025}px`" class="text-white/50 pointer-events-none">•</span>
-                    <span :style="`font-size:${cfg.width * 0.025}px`"
-                      class="text-black font-bold uppercase tracking-wider pointer-events-none"
-                      translate="no">contactomio.com</span>
+                  <div class="flex items-center" :style="{ gap: cfg.socialIcons.gap + 'px' }">
+                    <template v-for="(icon, idx) in cfg.socialIcons.items" :key="idx">
+                      <img :src="socialIconImages[idx]" :style="{ width: icon.w + 'px', height: icon.h + 'px' }"
+                        class="object-contain block" />
+                    </template>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
 
             <!-- ─── BOTTOM TOOLBAR ─── -->
             <div class="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-white">
               <div v-if="!readonly" class="flex items-center gap-2">
-                <button @click="copyPositions"
-                  class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer">
-                  <span class="material-symbols-outlined notranslate text-lg align-middle">content_copy</span> Copiar
-                  posiciones
-                </button>
-                <button @click="resetPositions"
-                  class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition cursor-pointer">
-                  <span class="material-symbols-outlined notranslate text-lg align-middle">refresh</span> Restablecer
-                </button>
-                <span class="text-xs text-slate-400">Arrastra los elementos</span>
               </div>
               <div class="flex items-center gap-3">
                 <button @click="close"

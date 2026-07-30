@@ -42,7 +42,25 @@ const formatDate = (timestamp: any) => {
 </script>
 
 <template>
-  <div class="font-google-sans text-white space-y-10 pb-20">
+  <div class="relative font-google-sans text-white space-y-10 pb-20">
+
+    <!-- White diamond pattern overlay -->
+    <div class="absolute inset-0 opacity-[0.08] pointer-events-none bg-pattern-diamond-light"></div>
+
+    <!-- White grid overlay -->
+    <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+      style="background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 48px 48px;">
+    </div>
+
+    <!-- Ambient orange glow -->
+    <div class="absolute top-[-5%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-orange-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Floating decorative icons -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
+      <span class="material-symbols-outlined notranslate absolute top-[10%] right-[8%] text-7xl text-orange-500 opacity-[0.04] animate-float-slow max-md:text-5xl max-md:right-[3%]">fingerprint</span>
+      <span class="material-symbols-outlined notranslate absolute bottom-[15%] left-[5%] text-6xl text-orange-500 opacity-[0.03] animate-float-medium max-md:text-4xl max-md:left-[2%]">security</span>
+      <span class="material-symbols-outlined notranslate absolute top-[40%] right-[2%] text-5xl text-orange-500 opacity-[0.025] animate-float-slow max-md:hidden">verified</span>
+    </div>
 
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-8">

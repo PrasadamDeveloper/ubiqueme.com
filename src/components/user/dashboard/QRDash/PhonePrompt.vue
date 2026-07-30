@@ -1,173 +1,178 @@
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#070b14]/80"
+  <div class="fixed inset-0 z-50 flex items-end justify-center p-0 bg-black/40"
     @click.self="$emit('dismiss')">
-    <div class="relative w-full max-w-lg bg-[#0c0c0c] border border-white/10 rounded-3xl p-6 sm:p-10 animate-fade-in">
 
-      <!-- ═══════════════════════════════════════════════════════
-           STEP 1 — Phone input
-           ═══════════════════════════════════════════════════════ -->
-      <template v-if="step === 1">
-        <!-- Header -->
-        <div class="flex items-start gap-4 mb-8">
-          <div
-            class="flex items-center justify-center w-12 h-12 border shrink-0 bg-orange-500/10 border-orange-500/20 rounded-2xl">
-            <svg class="w-6 h-6 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-            </svg>
+    <!-- Sheet -->
+    <div class="relative w-full max-w-lg bg-white rounded-3xl rounded-b-none max-h-[90vh] flex flex-col shadow-xl animate-ios-sheet">
+
+      <!-- Handle -->
+      <div class="flex justify-center pt-3 pb-1 shrink-0">
+        <div class="w-9 h-1 bg-[#C6C6C8] rounded-full"></div>
+      </div>
+
+      <!-- Scrollable content -->
+      <div class="overflow-y-auto px-6 pb-8 -webkit-overflow-scrolling:touch">
+
+        <!-- ═══════════════════════════════════════════════════════
+             STEP 1 — Phone input
+             ═══════════════════════════════════════════════════════ -->
+        <template v-if="step === 1">
+          <!-- Header -->
+          <div class="flex items-start gap-3.5 pt-1 pb-5">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-orange-100 shrink-0 mt-0.5">
+              <svg class="w-5.5 h-5.5 text-orange-500" style="width:22px;height:22px" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h2 class="text-[17px] font-semibold text-[#1C1C1E] leading-tight">
+                ¡Bienvenido a <span class="text-orange-500">Ubiqueme</span>!
+              </h2>
+              <p class="mt-1 text-[13px] text-[#8E8E93] leading-relaxed">
+                Introduzca su número de WhatsApp para recibir notificaciones cuando alguien escanee un código QR.
+              </p>
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <h2 class="text-xl font-black tracking-tight text-white sm:text-2xl">
-              ¡Bienvenido a Ubiqueme!
-            </h2>
-            <p class="mt-1 text-sm font-medium leading-relaxed text-white/50">
-              Introduzca el número de WhatsApp donde podrá recibir notificaciones cuando alguien
-              escanee un código QR.
-            </p>
-          </div>
-        </div>
 
-        <!-- Form -->
-        <div class="space-y-5">
-          <!-- Country Code + Phone -->
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">
-              Número de WhatsApp
-            </label>
-            <div class="flex gap-2">
-              <!-- Country code input with suggestions -->
-              <div class="relative shrink-0">
-                <!-- Input for typing country code -->
-                <input v-model="countryCodeSearch" type="text" inputmode="numeric" placeholder="+52"
-                  @input="onCountrySearch" @focus="suggestionsOpen = true" @blur="closeSuggestions"
-                  class="w-[110px] h-14 px-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white text-sm font-medium text-center focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all placeholder:text-white/40"
-                  v-if="!selectedCountry || editingCountry" />
-
-                <!-- Chip when country is selected -->
-                <button v-else @click="editCountry" type="button"
-                  class="flex items-center gap-1.5 h-14 px-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white text-sm font-medium cursor-pointer transition-all hover:bg-white/10">
-                  <span class="text-lg">{{ selectedCountry.flag }}</span>
-                  <span class="font-medium tracking-wider">{{ selectedCountry.prefix }}</span>
-                  <span class="text-xs text-white/30 material-symbols-outlined notranslate">expand_more</span>
-                </button>
-
-                <!-- Suggestions dropdown -->
-                <div v-if="suggestionsOpen && filteredCountries.length"
-                  class="absolute z-50 mt-1 left-0 min-w-[240px] bg-[#151515] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-48 overflow-y-auto">
-                  <button v-for="c in filteredCountries" :key="c.code" @mousedown.prevent="selectCountry(c)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 transition-colors text-white text-sm text-left">
-                    <span class="text-lg shrink-0">{{ c.flag }}</span>
-                    <span class="font-medium truncate">{{ c.name }}</span>
-                    <span class="ml-auto text-white/40 shrink-0">{{ c.prefix }}</span>
-                  </button>
-                </div>
+          <!-- Security note (iOS grouped cell style) -->
+          <div class="mb-5 px-3.5 py-3 rounded-xl bg-[#F2F2F7]">
+            <div class="flex items-start gap-2.5">
+              <div class="flex h-7 w-7 items-center justify-center rounded-full bg-white shrink-0 mt-0.5">
+                <span class="material-symbols-outlined notranslate text-[#8E8E93] text-[14px]">verified_user</span>
               </div>
-
-              <!-- Phone input -->
-              <div class="relative flex-1">
-                <input ref="phoneInput" v-model="phoneNumber" type="tel" placeholder="55 1234 5678"
-                  @input="onPhoneInput" :disabled="!selectedCountry"
-                  class="w-full px-5 text-lg font-medium tracking-wider text-white transition-all border h-14 bg-white/5 border-white/20 hover:border-white/30 rounded-2xl placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed" />
+              <div>
+                <p class="text-[11px] font-semibold text-[#3A3A3C] uppercase tracking-wider">Verificación de seguridad</p>
+                <p class="text-[12px] text-[#8E8E93] leading-relaxed mt-0.5">Le enviaremos un código por WhatsApp para confirmar que es el dueño de este número. Así protegemos su cuenta.</p>
               </div>
             </div>
-            <p v-if="selectedCountry" class="text-[11px] text-white/30 font-medium ml-1">
-              {{ selectedCountry.flag }} {{ selectedCountry.name }}
-            </p>
           </div>
 
-          <!-- Send OTP button -->
-          <button @click="handleSendOtp" :disabled="isSendingOtp || !isValid"
-            class="group w-full h-14 bg-orange-500 text-[#070b14] rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed">
-            <span class="flex items-center gap-2" v-if="!isSendingOtp">
-              <span class="text-lg material-symbols-outlined notranslate">send</span>
-              Enviar código
-            </span>
-            <span v-else class="flex items-center gap-2">
-              <span class="w-5 h-5 border-2 rounded-full border-black/20 border-t-black animate-spin"></span>
-              Enviando...
-            </span>
-          </button>
-        </div>
-      </template>
+          <!-- Form -->
+          <div class="space-y-4">
+            <!-- Phone input group -->
+            <div>
+              <label class="text-[13px] font-medium text-[#3A3A3C] mb-1.5 block">Número de WhatsApp</label>
+              <div class="flex gap-2">
+                <!-- Country code selector -->
+                <div class="relative shrink-0">
+                  <input v-model="countryCodeSearch" type="text" inputmode="numeric" placeholder="+52"
+                    @input="onCountrySearch" @focus="suggestionsOpen = true" @blur="closeSuggestions"
+                    class="w-[100px] h-11 px-3 rounded-2xl bg-[#F2F2F7] text-[#1C1C1E] text-[15px] font-medium text-center outline-none"
+                    v-if="!selectedCountry || editingCountry" />
 
-      <!-- ═══════════════════════════════════════════════════════
-           STEP 2 — OTP verification
-           ═══════════════════════════════════════════════════════ -->
-      <template v-else-if="step === 2">
-        <!-- Header -->
-        <div class="flex items-start gap-4 mb-8">
-          <div
-            class="flex items-center justify-center w-12 h-12 border shrink-0 bg-green-500/10 border-green-500/20 rounded-2xl">
-            <span class="text-3xl text-green-500 material-symbols-outlined notranslate">lock</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h2 class="text-xl font-black tracking-tight text-white sm:text-2xl">
-              Verifique su número
-            </h2>
-            <p class="mt-1 text-sm font-medium leading-relaxed text-white/50">
-              Hemos enviado un código de verificación de 6 dígitos al número
-              <span class="font-bold text-white/70">{{ selectedCountry.prefix }} {{ phoneNumber }}</span>
-              por WhatsApp. Introduzcalo abajo para confirmar.
-            </p>
-          </div>
-        </div>
+                  <button v-else @click="editCountry" type="button"
+                    class="flex items-center gap-1 h-11 px-3 rounded-2xl bg-[#F2F2F7] text-[#1C1C1E] text-[15px] font-medium cursor-pointer transition-all active:bg-[#E5E5EA]">
+                    <span class="text-base">{{ selectedCountry.flag }}</span>
+                    <span class="font-medium tracking-wider">{{ selectedCountry.prefix }}</span>
+                    <span class="text-xs material-symbols-outlined notranslate text-[#8E8E93]">expand_more</span>
+                  </button>
 
-        <!-- Code input -->
-        <div class="space-y-5">
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">
-              Código de verificación
-            </label>
-            <input v-model="otpCode" type="text" inputmode="numeric" maxlength="6" placeholder="••••••"
-              @input="onOtpInput"
-              class="w-full h-14 px-5 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all tracking-[0.5em] text-center text-2xl font-black"
-              autofocus />
-          </div>
+                  <div v-if="suggestionsOpen && filteredCountries.length"
+                    class="absolute z-50 mt-1 left-0 min-w-[220px] bg-white rounded-2xl shadow-lg border border-[#C6C6C8]/30 overflow-hidden max-h-48 overflow-y-auto">
+                    <button v-for="c in filteredCountries" :key="c.code" @mousedown.prevent="selectCountry(c)"
+                      class="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-[#F2F2F7] transition-colors text-[#1C1C1E] text-[14px] text-left">
+                      <span class="text-base shrink-0">{{ c.flag }}</span>
+                      <span class="font-medium truncate">{{ c.name }}</span>
+                      <span class="ml-auto text-[#8E8E93] shrink-0 text-[13px]">{{ c.prefix }}</span>
+                    </button>
+                  </div>
+                </div>
 
-          <!-- Verify button -->
-          <button @click="handleVerifyOtp" :disabled="isVerifying || otpCode.length !== 6"
-            class="group w-full h-14 bg-orange-500 text-[#070b14] rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed">
-            <span class="flex items-center gap-2" v-if="!isVerifying">
-              <span class="text-lg material-symbols-outlined notranslate">verified</span>
-              Verificar
-            </span>
-            <span v-else class="flex items-center gap-2">
-              <span class="w-5 h-5 border-2 rounded-full border-black/20 border-t-black animate-spin"></span>
-              Verificando...
-            </span>
-          </button>
+                <!-- Phone input -->
+                <div class="relative flex-1">
+                  <input ref="phoneInput" v-model="phoneNumber" type="tel" placeholder="55 1234 5678"
+                    @input="onPhoneInput" :disabled="!selectedCountry"
+                    class="w-full h-11 px-4 rounded-2xl bg-[#F2F2F7] text-[#1C1C1E] text-[15px] font-medium tracking-wider outline-none placeholder:text-[#8E8E93] disabled:opacity-40 disabled:cursor-not-allowed" />
+                </div>
+              </div>
+              <p v-if="selectedCountry" class="text-[12px] text-[#8E8E93] font-medium mt-1.5 ml-1">
+                {{ selectedCountry.flag }} {{ selectedCountry.name }}
+              </p>
+            </div>
 
-          <!-- Resend link -->
-          <div class="text-center flex flex-col items-center gap-2.5">
-            <small class="text-white/40">
-              ¿No recibó el código?
-            </small>
-            <button @click="handleResendOtp" :disabled="isSendingOtp"
-              class="text-xs  transition-colors text-white/40 disabled:opacity-30 group">
-              <span
-                class="group-hover:text-slate-200 group-hover:ring group-hover:ring-offset-white shadow-white group-hover:shadow-sm transition-shadow duration-400 ease-out  px-1 py-1.5 rounded-lg border border-gray-500 bg-[#0F0F0F]    cursor-pointer font-google-sans font-medium">Enviar
-                de
-                nuevo</span>
+            <!-- Send OTP button -->
+            <button @click="handleSendOtp" :disabled="isSendingOtp || !isValid"
+              class="w-full h-11 rounded-full bg-orange-500 text-white text-[15px] font-semibold hover:bg-orange-600 active:scale-[0.97] transition-all duration-150 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+              <span v-if="!isSendingOtp" class="flex items-center gap-2">
+                <span class="material-symbols-outlined notranslate text-[18px]">send</span>
+                Enviar código
+              </span>
+              <span v-else class="flex items-center gap-2">
+                <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                Enviando...
+              </span>
             </button>
-            <span v-if="resendCooldown > 0" class="ml-2 text-xs font-medium text-white/20">
-              ({{ resendCooldown }}s)
-            </span>
           </div>
-          <div class="text-center">
-            <button @click="handleCancelOTPValidation" :disabled="isSendingOtp"
-              class="text-xs font-medium transition-colors text-orange-100/40 italic hover:text-gray-100 disabled:opacity-30 flex items-center justify-center w-full gap-1 cursor-pointer">
-              <span class="material-symbols-outlined text-sm! ">phone</span>
-              <span class="underline">¿Número equivocado?</span>
+        </template>
+
+        <!-- ═══════════════════════════════════════════════════════
+             STEP 2 — OTP verification
+             ═══════════════════════════════════════════════════════ -->
+        <template v-else-if="step === 2">
+          <!-- Header -->
+          <div class="flex items-start gap-3.5 pt-1 pb-5">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 shrink-0 mt-0.5">
+              <span class="material-symbols-outlined notranslate text-emerald-500 text-[22px]">lock</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h2 class="text-[17px] font-semibold text-[#1C1C1E] leading-tight">Verifique su número</h2>
+              <p class="mt-1 text-[13px] text-[#8E8E93] leading-relaxed">
+                Hemos enviado un código de verificación de 6 dígitos al número
+                <strong class="font-semibold text-[#3A3A3C]">{{ selectedCountry.prefix }} {{ phoneNumber }}</strong>
+                por WhatsApp.
+              </p>
+            </div>
+          </div>
+
+          <!-- OTP input -->
+          <div class="space-y-4">
+            <div>
+              <label class="text-[13px] font-medium text-[#3A3A3C] mb-1.5 block">Código de verificación</label>
+              <input v-model="otpCode" type="text" inputmode="numeric" maxlength="6" placeholder="••••••"
+                @input="onOtpInput"
+                class="w-full h-11 px-4 rounded-2xl bg-[#F2F2F7] text-[#1C1C1E] text-[20px] font-semibold tracking-[0.4em] text-center outline-none placeholder:text-[#C6C6C8]"
+                autofocus />
+            </div>
+
+            <!-- Verify button -->
+            <button @click="handleVerifyOtp" :disabled="isVerifying || otpCode.length !== 6"
+              class="w-full h-11 rounded-full bg-orange-500 text-white text-[15px] font-semibold hover:bg-orange-600 active:scale-[0.97] transition-all duration-150 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+              <span v-if="!isVerifying" class="flex items-center gap-2">
+                <span class="material-symbols-outlined notranslate text-[18px]">verified</span>
+                Verificar
+              </span>
+              <span v-else class="flex items-center gap-2">
+                <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                Verificando...
+              </span>
             </button>
 
-          </div>
-        </div>
-      </template>
+            <!-- Resend -->
+            <div class="flex flex-col items-center gap-2 pt-1">
+              <p class="text-[13px] text-[#8E8E93]">¿No recibió el código?</p>
+              <button @click="handleResendOtp" :disabled="isSendingOtp || resendCooldown > 0"
+                class="h-9 px-5 rounded-full bg-[#F2F2F7] text-[#1C1C1E] text-[13px] font-semibold hover:bg-[#E5E5EA] active:scale-[0.97] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                Enviar de nuevo
+                <span v-if="resendCooldown > 0" class="ml-1 text-[#8E8E93]">({{ resendCooldown }}s)</span>
+              </button>
+            </div>
 
-      <!-- Footer (same in both steps) -->
-      <p class="mt-5 text-[10px] text-white/20 font-medium text-center leading-relaxed">
-        Este número solo se usará para enviarle notificaciones de escaneo de sus códigos QR.
-      </p>
+            <!-- Wrong number -->
+            <div class="text-center pt-1">
+              <button @click="handleCancelOTPValidation" :disabled="isSendingOtp"
+                class="text-[13px] font-medium text-orange-500 hover:text-orange-600 active:scale-[0.97] transition-all duration-150 disabled:opacity-30 flex items-center justify-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined notranslate text-[15px]">phone</span>
+                <span class="underline">¿Número equivocado?</span>
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <!-- Footer -->
+        <p class="mt-6 text-[11px] text-[#8E8E93] text-center leading-relaxed">
+          Este número solo se usará para enviarle notificaciones de escaneo de sus códigos QR.
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -194,10 +199,6 @@ interface Country {
   prefix: string
 }
 
-/**
- * Convert an ISO country code to a flag emoji.
- * Example: 'CL' → '🇨🇱'
- */
 const getFlagEmoji = (countryCode: string): string => {
   const codePoints = countryCode
     .toUpperCase()
@@ -206,7 +207,6 @@ const getFlagEmoji = (countryCode: string): string => {
   return String.fromCodePoint(...codePoints)
 }
 
-/** Full country name map (will fallback to code if not found) */
 const countryNames: Record<string, string> = {
   MX: 'México', AR: 'Argentina', BO: 'Bolivia', CL: 'Chile',
   CO: 'Colombia', CR: 'Costa Rica', CU: 'Cuba', DO: 'Rep. Dominicana',
@@ -261,7 +261,6 @@ const isValid = computed(() => {
 })
 
 const onPhoneInput = () => {
-  // Strip non-digits
   phoneNumber.value = phoneNumber.value.replace(/\D/g, '')
 }
 
@@ -272,10 +271,8 @@ const filteredCountries = computed(() => {
 })
 
 const onCountrySearch = () => {
-  // Strip non-digits
   countryCodeSearch.value = countryCodeSearch.value.replace(/\D/g, '')
   suggestionsOpen.value = true
-  // Auto-select if exactly one country matches the typed prefix
   if (filteredCountries.value.length === 1) {
     selectCountry(filteredCountries.value[0]!)
   }
@@ -286,7 +283,6 @@ const selectCountry = async (country: Country) => {
   countryCodeSearch.value = ''
   editingCountry.value = false
   suggestionsOpen.value = false
-  // Focus the phone input after selection
   await nextTick()
   phoneInput.value?.focus()
 }
@@ -298,21 +294,15 @@ const editCountry = () => {
 }
 
 const closeSuggestions = () => {
-  // Delay so click on suggestion registers first
   setTimeout(() => {
     suggestionsOpen.value = false
   }, 150)
 }
 
 const onOtpInput = () => {
-  // Strip non-digits, max 6
   otpCode.value = otpCode.value.replace(/\D/g, '').slice(0, 6)
 }
 
-/**
- * Formats to E.164 without the +.
- * Example: +52 5512345678 → 525512345678
- */
 const formatForWhatsApp = (): string => {
   try {
     const phone = parsePhoneNumber(phoneNumber.value, selectedCountry.value.code)
@@ -350,7 +340,6 @@ const handleSendOtp = async () => {
       return
     }
 
-    // Move to step 2
     step.value = 2
     startResendCooldown()
     toast.success('Código de verificación enviado a tu WhatsApp.')
@@ -396,7 +385,6 @@ const handleVerifyOtp = async () => {
       return
     }
 
-    // Success — phone verified
     const phone = formatForWhatsApp()
     userStore.setUserPhone(phone)
     toast.success('Número verificado exitosamente. Ya puede recibir notificaciones.')
@@ -456,23 +444,19 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@keyframes fadeIn {
+@keyframes iosSheet {
   from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(100%);
   }
-
   to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.35s ease-out forwards;
+.animate-ios-sheet {
+  animation: iosSheet 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
-/* Scrollbar for suggestions */
 .overflow-y-auto::-webkit-scrollbar {
   width: 4px;
 }
@@ -482,7 +466,7 @@ onUnmounted(() => {
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
 </style>

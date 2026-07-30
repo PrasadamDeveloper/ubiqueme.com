@@ -3,7 +3,7 @@
 .box2,
 .box3 {
   /* border: 16px solid #f5f5f5; */
-  background-color: #efefef;
+  background-color: #f97316;
   border-radius: 10px;
   box-sizing: border-box;
   position: absolute;
@@ -231,7 +231,7 @@
 </style>
 
 <template>
-  <div class="flex items-center justify-center fixed inset-0 z-20 bg-[#0F1324]/80">
+  <div class="flex items-center justify-center fixed inset-0 z-20 bg-white/70">
     <div class="loader">
       <div class="box1"></div>
       <div class="box2"></div>

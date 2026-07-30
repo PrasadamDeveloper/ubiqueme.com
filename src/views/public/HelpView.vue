@@ -1,11 +1,14 @@
 <template>
   <HomeLayout>
     <template #main>
-      <div class="relative min-h-screen w-full bg-[#0a0a0b] font-google-sans overflow-hidden">
+      <div class="relative min-h-screen w-full bg-gradient-to-b from-white to-slate-50 font-google-sans overflow-hidden">
+
+        <!-- Diamond pattern overlay -->
+        <div class="absolute inset-0 opacity-[0.25] pointer-events-none bg-pattern-diamond"></div>
 
         <!-- Grid overlay -->
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style="background-image: linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px); background-size: 48px 48px;">
+          style="background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px); background-size: 48px 48px;">
         </div>
 
         <!-- Radial glow -->
@@ -19,14 +22,14 @@
             <!-- Header -->
             <div class="text-center mb-16 space-y-5">
               <div
-                class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#ff7900]/10 rounded-full border border-[#ff7900]/20">
-                <span class="material-symbols-outlined notranslate text-[14px] text-[#ff7900]">help</span>
-                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff7900]">Soporte y Ayuda</span>
+                class="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-50 rounded-full border border-orange-200">
+                <span class="material-symbols-outlined notranslate text-[14px] text-orange-500">help</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-orange-500">Soporte y Ayuda</span>
               </div>
-              <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight leading-[0.9]">
-                Preguntas <span class="text-[#ff7900]">Frecuentes.</span>
+              <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-[0.9]">
+                Preguntas <span class="text-orange-500">Frecuentes.</span>
               </h1>
-              <p class="text-white/35 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+              <p class="text-slate-500 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                 Resuelva sus dudas sobre cómo Ubiqueme protege y gestiona su información mediante códigos QR
                 inteligentes.
               </p>
@@ -35,14 +38,14 @@
             <!-- FAQ Accordion -->
             <div class="w-full space-y-3">
               <div v-for="(faq, index) in faqs" :key="index"
-                class="rounded-2xl border border-white/[0.06] bg-[#0d0d0e] overflow-hidden transition-colors hover:border-white/[0.12]">
+                class="rounded-2xl border border-slate-200 bg-white overflow-hidden transition-colors hover:border-slate-300">
                 <button @click="toggleFaq(index)"
                   class="w-full flex items-center justify-between p-5 md:p-6 text-left focus:outline-none cursor-pointer">
-                  <h3 class="text-base md:text-lg font-bold text-white tracking-tight pr-6">
+                  <h3 class="text-base md:text-lg font-bold text-slate-900 tracking-tight pr-6">
                     {{ faq.question }}
                   </h3>
-                  <span class="material-symbols-outlined notranslate text-white/30 transition-transform duration-300 shrink-0"
-                    :class="{ 'rotate-180 text-[#ff7900]': activeIndex === index }">
+                  <span class="material-symbols-outlined notranslate text-slate-400 transition-transform duration-300 shrink-0"
+                    :class="{ 'rotate-180 text-orange-500': activeIndex === index }">
                     keyboard_arrow_down
                   </span>
                 </button>
@@ -50,7 +53,7 @@
                 <div class="grid transition-all duration-300 ease-in-out"
                   :class="activeIndex === index ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'">
                   <div class="overflow-hidden">
-                    <p class="px-5 md:px-6 pb-5 md:pb-6 text-white/50 leading-relaxed text-sm">
+                    <p class="px-5 md:px-6 pb-5 md:pb-6 text-slate-600 leading-relaxed text-sm">
                       {{ faq.answer }}
                     </p>
                   </div>
@@ -60,13 +63,13 @@
 
             <!-- Contact Prompt -->
             <div
-              class="mt-16 relative rounded-2xl border border-[#ff7900]/10 bg-[#ff7900]/[0.02] p-8 md:p-12 text-center overflow-hidden">
+              class="mt-16 relative rounded-2xl border border-orange-200 bg-orange-50 p-8 md:p-12 text-center overflow-hidden">
               <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-                style="background-image: linear-gradient(rgba(255,121,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,121,0,.3) 1px, transparent 1px); background-size: 20px 20px;">
+                style="background-image: linear-gradient(rgba(234,88,12,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(234,88,12,.12) 1px, transparent 1px); background-size: 20px 20px;">
               </div>
               <div class="relative z-10">
-                <h4 class="text-2xl font-black text-white tracking-tight mb-3">¿Aún tiene dudas?</h4>
-                <p class="text-white/50 mb-8">Nuestro equipo de soporte está listo para ayudarle con su configuración o
+                <h4 class="text-2xl font-black text-slate-900 tracking-tight mb-3">¿Aún tiene dudas?</h4>
+                <p class="text-slate-600 mb-8">Nuestro equipo de soporte está listo para ayudarle con su configuración o
                   resolver problemas específicos.</p>
                 <RouterLink :to="{ name: 'contact' }"
                   class="inline-flex h-12 items-center justify-center gap-2 bg-[#ff7900] text-black px-8 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-[#ff7900]/90 shadow-lg shadow-[#ff7900]/15 active:scale-[0.97]">

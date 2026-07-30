@@ -119,7 +119,7 @@ const handleCreate = async () => {
   <Transition name="fade">
     <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div
-        class="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#0b0b0d] p-6 shadow-2xl space-y-6 font-google-sans">
+        class="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-6 font-google-sans">
 
         <!-- Background Ornament -->
         <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
@@ -128,36 +128,36 @@ const handleCreate = async () => {
 
         <div class="relative z-10 space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-xl font-black text-white flex items-center gap-2">
+            <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
               <span class="material-symbols-outlined notranslate text-orange-400">qr_code</span>
               Crear QR Digital
             </h3>
-            <button @click="emit('close')" class="text-white/40 hover:text-white transition-colors cursor-pointer">
+            <button @click="emit('close')" class="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
               <span class="material-symbols-outlined notranslate">close</span>
             </button>
           </div>
 
-          <p class="text-xs text-white/50 leading-relaxed">
+          <p class="text-xs text-slate-500 leading-relaxed">
             Se generará un nuevo código digital de forma inmediata para que pueda descargarlo e imprimirlo.
           </p>
 
           <div class="space-y-4">
             <!-- Name -->
             <div class="space-y-2">
-              <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">
+              <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">
                 Nombre del QR
               </label>
               <input v-model="qrName" placeholder="Ej. Mochila, Llaves de casa..."
-                class="w-full h-11 px-4 rounded-xl border border-white/10 bg-black/40 text-sm text-white placeholder:text-white/20 outline-none focus:border-orange-500 transition-all">
+                class="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-orange-500 transition-all">
             </div>
 
             <!-- Category -->
             <div class="space-y-2">
-              <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">
+              <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">
                 Categoría
               </label>
               <select v-model="qrCategory"
-                class="w-full h-11 px-4 rounded-xl border border-white/10 bg-black/40 text-sm text-white outline-none focus:border-orange-500 cursor-pointer appearance-none transition-all">
+                class="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-orange-500 cursor-pointer appearance-none transition-all">
                 <option value="vehicle">Vehículos</option>
                 <option value="home">Hogares</option>
                 <option value="phone">Celulares</option>
@@ -173,7 +173,7 @@ const handleCreate = async () => {
 
           <div class="flex gap-3 pt-2">
             <button @click="emit('close')"
-              class="flex-1 h-11 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-bold text-white hover:bg-white/[0.05] transition-all cursor-pointer">
+              class="flex-1 h-11 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer">
               Cancelar
             </button>
             <button @click="handleCreate" :disabled="isSubmitting || qrsRemaining <= 0"

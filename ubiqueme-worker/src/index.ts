@@ -244,6 +244,32 @@ function metaHeaders(env: Env): Record<string, string> {
 const FORMAT_INSTRUCTION_TEXT =
 	'❌ Formato incorrecto\n\nPara notificar al propietario, envía el mensaje EXACTAMENTE como aparece al escanear el QR:\n\nID: [código del QR]\nQR: [nombre del objeto]\nMensaje: [tu mensaje]\n\nEjemplo:\nID: abc123\nQR: Mochila negra\nMensaje: Encontré tu mochila, contáctame por favor\n\nGracias por usar Ubiqueme';
 
+const WELCOME_MESSAGE = `¡Hola! Bienvenido a Ubiqueme
+
+A partir de ahora usted está protegido. El chat oficial de Ubiqueme será quien reciba los mensajes de las personas que escaneen sus códigos QR, y será también quien le envíe a usted la notificación al instante. Su número personal nunca queda expuesto.
+
+¿Cómo funciona?
+
+Usted crea un código QR para cualquier cosa que quiera proteger: su auto, su casa, la mochila de su hijo, la placa de su perro, sus herramientas de trabajo, lo que sea.
+
+Coloca el QR en el objeto y listo. Si alguien lo encuentra o nota algo extraño (por ejemplo "su auto tiene las luces encendidas" o "encontré su mochila"), escanea el código y nos escribe un mensaje. Ese mensaje lo recibe directamente el chat oficial de Ubiqueme, y nosotros le enviaremos la notificación a usted al instante.
+
+La persona que escanea nunca ve sus datos personales. Su información está protegida en todo momento.
+
+🎁 Promoción especial: 1 año gratis del Plan Bronce
+
+Solo necesita registrar una cuenta gratuita y automáticamente obtendrá un año completo del Plan Bronce sin costo alguno. Este plan le permite tener hasta 5 códigos QR activos. Sin pagos, sin compromiso.
+
+Si usted decide contactar a la persona que encontró su objeto, hágalo con precaución: evite compartir direcciones, contraseñas o cualquier información sensible. Puede consultar nuestra política de privacidad para más detalles:
+
+https://ubiqueme.com/privacy
+
+No espere a perder algo para protegerlo. Cree su cuenta gratis y active su año gratuito hoy mismo:
+
+https://ubiqueme.com
+
+- ubiqueme`;
+
 async function sendFormatInstruction(env: Env, to: string): Promise<void> {
 	await fetch(MESSAGES_URL(env), {
 		method: 'POST',
@@ -254,6 +280,20 @@ async function sendFormatInstruction(env: Env, to: string): Promise<void> {
 			to,
 			type: 'text',
 			text: { body: FORMAT_INSTRUCTION_TEXT },
+		}),
+	});
+}
+
+async function sendWelcomeMessage(env: Env, to: string): Promise<void> {
+	await fetch(MESSAGES_URL(env), {
+		method: 'POST',
+		headers: metaHeaders(env),
+		body: JSON.stringify({
+			messaging_product: 'whatsapp',
+			recipient_type: 'individual',
+			to,
+			type: 'text',
+			text: { body: WELCOME_MESSAGE },
 		}),
 	});
 }
@@ -1026,7 +1066,15 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response('No text body', { status: 200 });
 		}
 
-		// 2. Extract QR ID and optional fields
+		// 2. Check for promotional QR scan message
+		const PROMO_MESSAGE = 'Hola, es mi primera vez escaneando en ubiqueme';
+		if (bodyText.trim() === PROMO_MESSAGE) {
+			await sendWelcomeMessage(env, senderPhone);
+			console.log(`[Worker] Mensaje de bienvenida enviado a ${senderPhone}`);
+			return new Response('OK', { status: 200 });
+		}
+
+		// 3. Extract QR ID and optional fields
 		const idMatch = bodyText.match(/ID:\s*([A-Za-z0-9_-]+)/i);
 		if (!idMatch || !idMatch[1]) {
 			await sendFormatInstruction(env, senderPhone);

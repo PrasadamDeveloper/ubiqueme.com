@@ -6,43 +6,61 @@ const steps = [
     icon: 'layers',
     title: 'Compre y adhiera el QR',
     description:
-      'Compre su QR y péguelo en su maleta, reja, puerta o cualquier lugar visible para un fácil acceso.',
-    number: 1,
+      'Pegue el código en su maleta, puerta, vehículo o cualquier objeto que quiera proteger.',
+    number: '01',
     video: new URL('@/assets/videos/step_two.mp4', import.meta.url).href,
   },
   {
     icon: 'qr_code_scanner',
     title: 'Alguien escanea el QR',
     description:
-      'En caso de emergencia, cualquier persona puede escanear el QR y seleccionar un mensaje predefinido.',
-    number: 2,
+      'Cualquier persona puede escanearlo desde la cámara del teléfono sin instalar aplicaciones.',
+    number: '02',
     video: new URL('@/assets/videos/step_three.mp4', import.meta.url).href,
   },
   {
     icon: 'notifications_active',
-    title: 'Reciba alerta instantánea',
-    description: 'Reciba una notificación vía WhatsApp o SMS sin exponer su información personal.',
-    number: 3,
+    title: 'Reciba una alerta',
+    description:
+      'Reciba la notificación por WhatsApp o SMS manteniendo sus datos protegidos.',
+    number: '03',
     video: new URL('@/assets/videos/step_four.mp4', import.meta.url).href,
   },
 ]
 </script>
 
+
 <template>
-  <section class="bg-[#09090b] pb-16 md:pb-24">
-    <div class="px-4 md:px-24 max-w-screen-2xl mx-auto">
-      <div class="text-center mb-12 md:mb-24 pt-16 md:pt-32">
-        <h2 class="font-headline text-6xl font-bold mb-4 text-white">Ubiqueme en 3 pasos</h2>
-        <p class="text-on-surface-variant max-w-2xl mx-auto">
-          Desde la configuración hasta la seguridad, hemos diseñado cada interacción para que sea
-          fluida y confiable.
+  <section class="bg-slate-50 py-2 sm:py-5">
+
+    <div class=" px-5 sm:px-8">
+
+      <header class="max-w-2xl mb-10 sm:mb-14">
+
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">
+          Cómo funciona
+        </span>
+
+        <h2 class="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-slate-950">
+          <span class="text-orange-500">Ubiqueme</span> en 3 simples pasos
+        </h2>
+
+        <p class="mt-4 text-slate-600 leading-7">
+          Diseñamos cada interacción para que encontrar sus objetos
+          sea rápido, seguro y sin complicaciones.
         </p>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
+
+      </header>
+
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
         <StepsCard v-for="step in steps" :key="step.number" :steps="step" />
+
       </div>
+
+
     </div>
+
   </section>
 </template>
-
-<style scoped></style>

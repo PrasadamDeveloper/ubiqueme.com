@@ -1,64 +1,88 @@
 <template>
-  <section class="relative z-10 px-4 sm:px-8 py-1 sm:py-24 mx-auto max-w-7xl">
+  <section class="bg-white py-16 sm:py-20 overflow-hidden">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8">
+      <!-- Header -->
+      <header class="mx-auto mb-10 max-w-2xl text-center sm:mb-14">
+        <span class="inline-block rounded-full bg-orange-50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-orange-600">
+          Demostración
+        </span>
+        <h2 class="mt-5 text-[28px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+          Ubiqueme en acción
+        </h2>
+        <p class="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-slate-500">
+          Descubra cómo nuestra tecnología protege lo que más valora.
+        </p>
+      </header>
 
-    <!-- Section Header -->
-    <div class="text-center mb-10 sm:mb-16" data-aos="fade-up">
-      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-        Ubiqueme en acción <span
-          class="material-symbols-outlined notranslate text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
-      </h2>
-      <p class="text-white/50 text-base sm:text-lg font-medium max-w-2xl mx-auto">
-        Descubra cómo nuestra tecnología protege lo que más valora.
-      </p>
-    </div>
-
-    <!-- Responsive Grid of 6 Videos -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-
-      <!-- Video Item Wrapper -->
-      <div v-for="(v, i) in videoSources" :key="i" class="flex flex-col gap-4" data-aos="fade-up"
-        :data-aos-delay="(i - 1) * 100">
-
-        <!-- Title Above Video -->
-        <h3 class="text-xl sm:text-2xl font-bold text-white text-center px-2">{{ v.title }}</h3>
-
-        <!-- Video Card -->
-        <div class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group"
-          :id="`video-${i}`">
-          <!-- User's Main Video -->
-          <video class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video"
-            v-lazy-video="v.src" autoplay loop muted playsinline :ref="setVideoRef(i)">
-          </video>
-
-          <!-- Hover Overlay for Description -->
-          <div
-            class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
-            <p class="text-white/90 text-sm md:text-base font-medium leading-relaxed mb-8">{{ v.description }}</p>
+      <!-- Mobile: horizontal scroll snap carousel -->
+      <div class="sm:hidden -mx-5 overflow-hidden">
+        <div ref="scrollContainer" @scroll="onScroll"
+          class="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none px-5 pb-2">
+          <div v-for="(v, i) in videoSources" :key="i" class="w-[85vw] shrink-0 snap-center">
+            <div class="bg-slate-50 rounded-2xl overflow-hidden">
+              <div class="relative aspect-video bg-black">
+                <video class="absolute inset-0 w-full h-full object-cover"
+                  v-lazy-video="v.src" autoplay loop muted playsinline :ref="setVideoRef(i)">
+                </video>
+                <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+                <button @click="activateSound(i)"
+                  class="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xs text-[10px] font-semibold text-slate-800 transition active:scale-95 flex items-center gap-1 shadow-xs">
+                  <span class="material-symbols-outlined notranslate text-[13px]">{{ mutedStates[i] ? 'volume_off' : 'volume_up' }}</span>
+                  {{ mutedStates[i] ? 'Activar sonido' : 'Silenciar' }}
+                </button>
+              </div>
+              <div class="p-3">
+                <div class="flex items-start gap-2">
+                  <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100">
+                    <span class="material-symbols-outlined notranslate text-[14px] text-orange-500">play_arrow</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[14px] font-medium text-slate-900">{{ v.title }}</p>
+                    <p class="mt-0.5 text-[11px] text-slate-500 leading-relaxed">{{ v.description }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <!-- Bottom Gradient for button readability -->
-          <div
-            class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#09090b]/80 to-transparent pointer-events-none transition-opacity duration-300 z-10">
-          </div>
-
-          <!-- Sound Activation Button -->
-          <button @click="activateSound(i)"
-            class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-[#09090b] hover:bg-orange-500 border border-orange-500/30 hover:border-transparent text-white/90 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 z-30 flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_25px_rgba(249,115,22,0.3)]">
-            <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' :
-              'volume_up' }}</span>
-            {{ mutedStates[i] ? 'Haga click para activar el sonido' : 'Haga click para silenciar' }}
-          </button>
+        </div>
+        <!-- Scroll hint dots -->
+        <div class="flex justify-center gap-1.5 mt-4">
+          <span v-for="(v, i) in videoSources" :key="i"
+            class="h-1.5 rounded-full transition-all duration-300"
+            :class="i === activeIndex ? 'w-5 bg-orange-500' : 'w-1.5 bg-slate-300'">
+          </span>
         </div>
       </div>
 
+      <!-- Tablet / Desktop: grid -->
+      <div class="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="(v, i) in videoSources" :key="i" class="flex flex-col gap-3">
+          <h3 class="text-lg font-semibold text-slate-900 text-center">{{ v.title }}</h3>
+          <div class="relative bg-white border border-slate-200 rounded-2xl overflow-hidden group">
+            <video class="w-full h-auto object-cover main-video"
+              v-lazy-video="v.src" autoplay loop muted playsinline :ref="setVideoRef(i)">
+            </video>
+            <div
+              class="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
+              <p class="text-slate-600 text-sm leading-relaxed">{{ v.description }}</p>
+            </div>
+            <div
+              class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-white/80 to-transparent pointer-events-none z-10">
+            </div>
+            <button @click="activateSound(i)"
+              class="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold uppercase tracking-wider rounded-full transition z-30 flex items-center gap-1.5 shadow-xs hover:border-orange-300 hover:text-orange-600 whitespace-nowrap">
+              <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' : 'volume_up' }}</span>
+              {{ mutedStates[i] ? 'Activar sonido' : 'Silenciar' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import AOS from 'aos'
-import 'aos/dist/aos.css'
+import { ref } from 'vue'
 import { toast } from 'vue-sonner'
 
 const videoSources = [
@@ -109,54 +133,65 @@ const videoSources = [
   },
 ]
 
-onMounted(() => {
-  AOS.init({
-    duration: 800,
-    once: true,
-    offset: 50,
-    easing: 'ease-out-cubic'
-  })
-})
-
 const mutedStates = ref(videoSources.map(() => true))
 
-// Template refs array — reemplaza querySelector para mejor reactividad
 const videoRefs = ref<(HTMLVideoElement | null)[]>([])
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const setVideoRef = (index: number) => (el: any) => {
+const setVideoRef = (index: number) => (el: unknown) => {
   videoRefs.value[index] = el as HTMLVideoElement | null
 }
 
+const scrollContainer = ref<HTMLElement | null>(null)
+const activeIndex = ref(0)
+
+const onScroll = () => {
+  const container = scrollContainer.value
+  if (!container) return
+  const children = Array.from(container.children) as HTMLElement[]
+  const containerCenter = container.scrollLeft + container.clientWidth / 2
+  let closest = 0
+  let closestDist = Infinity
+  children.forEach((child, i) => {
+    const childCenter = child.offsetLeft + child.offsetWidth / 2
+    const dist = Math.abs(childCenter - containerCenter)
+    if (dist < closestDist) {
+      closestDist = dist
+      closest = i
+    }
+  })
+  activeIndex.value = closest
+}
+
 const activateSound = (videoId: number) => {
-  const videoSelected = videoRefs.value[videoId];
+  const videoSelected = videoRefs.value[videoId]
+  if (!videoSelected) return
 
-  if (!videoSelected) return;
-
-  videoSelected.muted = !videoSelected.muted;
-  mutedStates.value[videoId] = videoSelected.muted;
+  videoSelected.muted = !videoSelected.muted
+  mutedStates.value[videoId] = videoSelected.muted
 
   if (!videoSelected.muted) {
-    // Silenciar los demás videos
     videoSources.forEach((_, index) => {
       if (index !== videoId) {
-        const otherVideo = videoRefs.value[index];
+        const otherVideo = videoRefs.value[index]
         if (otherVideo && !otherVideo.muted) {
-          otherVideo.muted = true;
-          mutedStates.value[index] = true;
+          otherVideo.muted = true
+          mutedStates.value[index] = true
         }
       }
-    });
-
-    videoSelected.play();
+    })
+    videoSelected.play()
   }
 
-  toast.info(videoSelected.muted ? 'Sonido desactivado' : 'Sonido activado');
+  toast.info(videoSelected.muted ? 'Sonido desactivado' : 'Sonido activado')
 }
 </script>
 
 <style scoped>
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 </style>
