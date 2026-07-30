@@ -69,10 +69,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section data-od-id="features-section" ref="sectionEl" class="relative overflow-hidden bg-white py-20 sm:py-28">
+  <section data-od-id="features-section" ref="sectionEl"
+    class="relative overflow-hidden bg-linear-to-b from-slate-50 to-white py-20 sm:py-28">
     <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div class="bg-gradient-to-br from-orange-400/8 to-orange-500/15 absolute -right-48 -top-48 h-[500px] w-[500px] rounded-full blur-3xl" />
-      <div class="bg-gradient-to-tr from-orange-400/5 to-orange-500/10 absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full blur-3xl" />
+      <div
+        class="bg-gradient-to-br from-orange-400/8 to-orange-500/15 absolute -right-48 top-9 h-[500px] w-[500px] rounded-full blur-3xl" />
+      <div
+        class="bg-gradient-to-tr from-orange-400/5 to-orange-500/10 absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full blur-3xl" />
     </div>
 
     <div class="relative mx-auto max-w-7xl px-5 sm:px-8">
@@ -91,12 +94,8 @@ onBeforeUnmount(() => {
         </p>
       </header>
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div
-          v-for="(feature, index) in features"
-          :key="feature.title"
-          class="feature-card-wrapper"
-          :style="{ transitionDelay: `${index * 80}ms` }"
-        >
+        <div v-for="(feature, index) in features" :key="feature.title" class="feature-card-wrapper"
+          :style="{ transitionDelay: `${index * 80}ms` }">
           <FeatureCard :feature="feature" />
         </div>
       </div>

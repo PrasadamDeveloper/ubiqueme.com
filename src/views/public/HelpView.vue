@@ -3,6 +3,9 @@
     <template #main>
       <div class="relative min-h-screen w-full bg-gradient-to-b from-white to-slate-50 font-google-sans overflow-hidden">
 
+        <!-- Diamond pattern overlay -->
+        <div class="absolute inset-0 opacity-[0.25] pointer-events-none bg-pattern-diamond"></div>
+
         <!-- Grid overlay -->
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
           style="background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px); background-size: 48px 48px;">

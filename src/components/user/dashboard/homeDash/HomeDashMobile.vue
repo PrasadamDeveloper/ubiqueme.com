@@ -36,6 +36,18 @@ const formatDate = (timestamp: any) => {
 
 <template>
   <div class="relative min-h-dvh bg-[#1C1B1F] w-full font-google-sans">
+    <!-- White diamond pattern (mobile) -->
+    <div class="absolute inset-0 opacity-[0.06] pointer-events-none bg-pattern-diamond-light"></div>
+
+    <!-- Ambient glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-orange-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <!-- Floating icons (compact) -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
+      <span class="material-symbols-outlined notranslate absolute top-[8%] right-[3%] text-4xl text-orange-500 opacity-[0.03] animate-float-slow">fingerprint</span>
+      <span class="material-symbols-outlined notranslate absolute bottom-[20%] left-[2%] text-3xl text-orange-500 opacity-[0.025] animate-float-medium">security</span>
+    </div>
+
     <div class="px-4 pt-3 pb-32 space-y-4">
 
       <!-- Header -->

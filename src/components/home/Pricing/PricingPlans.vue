@@ -145,7 +145,20 @@ const plans = [
 
 <template>
 
-  <section class="bg-slate-50 py-4 sm:py-4">
+  <section class="relative overflow-hidden bg-slate-50 py-4 sm:py-4">
+
+    <!-- Diamond pattern overlay -->
+    <div class="absolute inset-0 opacity-[0.2] pointer-events-none bg-pattern-diamond"></div>
+
+    <!-- Decorative floating icons -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none">
+      <span class="material-symbols-outlined notranslate absolute top-[8%] left-[4%] text-8xl text-orange-500 opacity-[0.04] animate-float-slow">verified</span>
+      <span class="material-symbols-outlined notranslate absolute bottom-[12%] right-[2%] text-7xl text-orange-500 opacity-[0.03] animate-float-medium">qr_code_2</span>
+      <span class="material-symbols-outlined notranslate absolute top-[45%] right-[6%] text-6xl text-orange-500 opacity-[0.03] animate-float-slow">shield</span>
+    </div>
+
+    <!-- Decorative circle -->
+    <div class="absolute top-[-8%] right-[10%] w-[400px] h-[400px] border border-orange-500/10 rounded-full pointer-events-none"></div>
 
     <div class="mx-auto max-w-8xl px-5 sm:px-8">
 
@@ -423,7 +436,7 @@ text-xs
 text-slate-400
 ">
 
-        Sin contratos forzosos · Cancela cuando quieras · Protección segura
+
 
       </p>
 

@@ -577,13 +577,11 @@ onUnmounted(() => {
 
             <!-- 1. Heading + animated place name -->
             <div class="flex flex-col items-center text-center">
-              <h1
-                class="text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1] pt-1 text-slate-800">
+              <h1 class="text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1] pt-1 text-slate-800">
                 Códigos QR para notificar
               </h1>
               <div class="flex gap-1 justify-center mt-1">
-                <h2
-                  class="text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1] text-slate-700">
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1] text-slate-700">
                   sobre su:
                 </h2>
                 <div class="relative overflow-hidden">
@@ -596,8 +594,7 @@ onUnmounted(() => {
                 </div>
               </div>
 
-              <p
-                class="mt-2 text-sm sm:text-base leading-6 text-slate-600 max-w-md">
+              <p class="mt-2 text-sm sm:text-base leading-6 text-slate-600 max-w-md">
                 Etiquetas físicas y pulseras inteligentes para recuperar
                 objetos perdidos, ayudar a mascotas, niños y adultos mayores,
                 manteniendo siempre protegida su información personal.
@@ -620,7 +617,7 @@ onUnmounted(() => {
               <div class="flex-1 min-w-0">
                 <p class="text-[9px] uppercase tracking-[0.3em] text-neutral-400 mb-1.5 text-center">Prueba Gratuita</p>
                 <router-link :to="{ name: 'register' }"
-                  class="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-2.5 text-white font-semibold text-xs w-full justify-center transition hover:bg-slate-800 mb-1.5">
+                  class="inline-flex items-center gap-1 rounded-xl bg-orange-400 px-3 py-2.5 text-white font-semibold text-xs w-full justify-center transition hover:bg-slate-800 mb-1.5">
                   Crear cuenta gratis
                   <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </router-link>
@@ -733,10 +730,8 @@ onUnmounted(() => {
             <!-- 4. Phone Mockup with entrance animation -->
             <div class="flex justify-center animate-fade-up animate-delay-[.6s]">
               <div class="relative origin-top scale-[0.7] sm:scale-[0.8] -my-8 shrink-0">
-                <img src="../../assets/images/phonemockup-ubq.webp" alt=""
-                  class="w-44 sm:w-48 relative z-20">
-                <section
-                  class="absolute inset-[7px] rounded-[28px] overflow-hidden bg-[#efeae2] z-10 flex flex-col">
+                <img src="../../assets/images/phonemockup-ubq.webp" alt="" class="w-44 sm:w-48 relative z-20">
+                <section class="absolute inset-[7px] rounded-[28px] overflow-hidden bg-[#efeae2] z-10 flex flex-col">
                   <div class="h-5 bg-[#00342e] text-white text-[8px] flex justify-between items-center px-3">
                     <span class="pl-3">9:41</span>
                     <div class="flex items-center gap-0.5">
@@ -786,7 +781,8 @@ onUnmounted(() => {
                   </main>
                   <footer class="bg-[#f0f2f5] h-10 px-2.5 flex items-center gap-1.5">
                     <i class="ri-emotion-line text-sm text-gray-500"></i>
-                    <div class="flex-1 bg-white rounded-full px-3 py-1.5 text-[10px] text-gray-400">Escribe un mensaje...
+                    <div class="flex-1 bg-white rounded-full px-3 py-1.5 text-[10px] text-gray-400">Escribe un
+                      mensaje...
                     </div>
                     <i class="ri-attachment-2 text-sm text-gray-500"></i>
                     <i class="ri-camera-line text-sm text-gray-500"></i>

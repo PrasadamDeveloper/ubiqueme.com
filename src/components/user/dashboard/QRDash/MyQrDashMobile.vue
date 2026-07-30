@@ -1,5 +1,21 @@
 <template>
   <div class="relative min-h-dvh bg-gray-50 w-full font-google-sans">
+    <!-- Pattern overlay -->
+    <div class="absolute inset-0 opacity-[0.1] pointer-events-none bg-pattern-diamond"></div>
+
+    <!-- Floating icons (compact for mobile) -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
+      <span
+        class="material-symbols-outlined notranslate absolute top-[12%] right-[3%] text-4xl text-orange-500 opacity-[0.025] animate-float-slow">qr_code</span>
+      <span
+        class="material-symbols-outlined notranslate absolute bottom-[18%] left-[2%] text-3xl text-orange-500 opacity-[0.025] animate-float-medium">verified</span>
+    </div>
+
+    <!-- Ambient glow -->
+    <div
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-orange-500/5 rounded-full blur-[100px] pointer-events-none">
+    </div>
+
     <div class="px-4 pt-3 pb-32 space-y-4">
 
       <!-- Header: Compact greeting -->
@@ -7,7 +23,7 @@
         <div class="flex items-center gap-1.5 pt-2 md:pt-0">
           <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">Hola de nuevo,</h1>
           <span class="text-orange-500 text-lg font-bold tracking-tight leading-none">{{ useUserStore().getFirstName
-          }}</span>
+            }}</span>
           <span class="text-lg font-black tracking-tighter leading-none text-slate-900">!</span>
         </div>
         <p class="text-slate-500 text-[11px] font-medium">Mis Códigos QR</p>
@@ -36,6 +52,76 @@
         </button>
       </div>
 
+      <!-- Quick Stats (mobile) -->
+      <div v-if="userSubscriptions.length > 0" class="flex gap-2 animate-fade-up">
+        <!-- Plan -->
+        <div
+          class="flex-1 flex items-center gap-2 rounded-2xl bg-slate-50/80 border border-slate-100 px-3 py-2.5 min-w-0">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 shrink-0">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-[18px]">
+              workspace_premium
+            </span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-[10px] text-slate-400 font-medium">
+              Plan
+            </p>
+
+            <p class="text-xs font-semibold text-slate-800 truncate capitalize">
+              {{ userSubscriptions[0]?.planType || '—' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- QRs -->
+        <div
+          class="flex-1 flex items-center gap-2 rounded-2xl bg-slate-50/80 border border-slate-100 px-3 py-2.5 min-w-0">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 shrink-0">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-[18px]">
+              qr_code
+            </span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-[10px] text-slate-400 font-medium">
+              QRs
+            </p>
+
+            <p class="text-xs font-semibold text-slate-800 truncate">
+              {{ activeQRs.length }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div
+          class="flex-1 flex items-center gap-2 rounded-2xl bg-slate-50/80 border border-slate-100 px-3 py-2.5 min-w-0">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full shrink-0" :class="userSubscriptions.some(s => s.status === 'active')
+            ? 'bg-emerald-100'
+            : 'bg-slate-200'">
+            <span class="material-symbols-outlined notranslate text-[18px]" :class="userSubscriptions.some(s => s.status === 'active')
+              ? 'text-emerald-600'
+              : 'text-slate-500'">
+              schedule
+            </span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-[10px] text-slate-400 font-medium">
+              Estado
+            </p>
+
+            <p class="text-xs font-semibold truncate" :class="userSubscriptions.some(s => s.status === 'active')
+              ? 'text-emerald-600'
+              : 'text-slate-500'">
+              {{userSubscriptions.some(s => s.status === 'active') ? 'Activo' : 'Inactivo'}}
+            </p>
+          </div>
+        </div>
+      </div>
+
+
       <!-- Content -->
       <div class="space-y-4">
         <!-- Loading -->
@@ -44,8 +130,8 @@
         </div>
 
         <!-- Groups -->
-        <div v-else-if="filteredGroups.length > 0" class="space-y-4">
-          <div v-for="group in filteredGroups" :key="group.subscription.id" class="space-y-3">
+        <div v-else-if="filteredGroups.length > 0" class="space-y-4 bg-white">
+          <div v-for="group in filteredGroups" :key="group.subscription.id" class="space-y-3 bg-white">
             <!-- Subscription header card (M3 surface container) -->
             <div class="bg-white rounded-xl p-3 border border-slate-200 space-y-2">
               <!-- Row 1: Title + badge + usage -->
@@ -127,9 +213,9 @@
                   <span class="text-[11px]">✓</span>
                   <span class="text-[10px] text-emerald-600 leading-tight">
                     Plan <strong class="text-emerald-200 font-semibold capitalize">{{ group.subscription.planType
-                    }}</strong> activo
+                      }}</strong> activo
                     <span v-if="group.subscription.endDate"> — termina {{ formatEndDate(group.subscription.endDate)
-                    }}</span>
+                      }}</span>
                     <span v-else> — sin vencimiento</span>
                     · {{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}/{{
                       group.subscription.totalQRsAllowed }} QRs
@@ -141,7 +227,7 @@
                   <span class="text-[11px]">⚬</span>
                   <span class="text-[10px] text-gray-500 leading-tight">
                     Plan <strong class="text-gray-300 font-semibold capitalize">{{ group.subscription.planType
-                    }}</strong> inactivo
+                      }}</strong> inactivo
                   </span>
                 </div>
               </template>
@@ -171,22 +257,40 @@
         </div>
 
         <!-- Empty: no subscriptions -->
-        <div v-else-if="groupedQRs.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
-          <span class="material-symbols-outlined notranslate text-5xl text-slate-300 mb-3">account_balance_wallet</span>
-          <h3 class="text-base font-semibold text-slate-900 mb-1">No tiene suscripciones activas</h3>
-          <p class="text-slate-500 text-xs mb-4">Adquiera un plan para registrar códigos QR.</p>
-          <RouterLink to="/pricing"
-            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 text-white font-black text-xs uppercase tracking-widest hover:bg-orange-600 transition-all">
-            <span class="material-symbols-outlined notranslate text-sm">workspace_premium</span>
-            Ver Planes
-          </RouterLink>
+        <div v-else-if="groupedQRs.length === 0"
+          class="relative flex flex-col items-center justify-center py-16 text-center overflow-hidden">
+          <div class="absolute inset-0 opacity-[0.04] pointer-events-none bg-pattern-diamond"></div>
+          <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-orange-500/5 rounded-full blur-[80px] pointer-events-none">
+          </div>
+          <div class="relative z-10">
+            <div
+              class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <span class="material-symbols-outlined notranslate text-2xl text-orange-500">account_balance_wallet</span>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 mb-1">No tiene suscripciones activas</h3>
+            <p class="text-slate-500 text-xs mb-4 px-4">Adquiera un plan para registrar códigos QR y comenzar a proteger
+              sus
+              pertenencias.</p>
+            <RouterLink to="/pricing"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 text-white font-black text-xs uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20">
+              <span class="material-symbols-outlined notranslate text-sm">workspace_premium</span>
+              Ver Planes
+            </RouterLink>
+          </div>
         </div>
 
         <!-- Empty: filter no results -->
-        <div v-else class="flex flex-col items-center justify-center py-16 text-center">
-          <span class="material-symbols-outlined notranslate text-5xl text-slate-300 mb-3">search_off</span>
-          <h3 class="text-base font-semibold text-slate-900 mb-1 capitalize">No hay planes {{ plansView }}</h3>
-          <p class="text-slate-500 text-xs">No se encontraron suscripciones con este estado.</p>
+        <div v-else class="relative flex flex-col items-center justify-center py-16 text-center overflow-hidden">
+          <div class="absolute inset-0 opacity-[0.04] pointer-events-none bg-pattern-diamond"></div>
+          <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-orange-500/5 rounded-full blur-[60px] pointer-events-none">
+          </div>
+          <div class="relative z-10">
+            <span class="material-symbols-outlined notranslate text-4xl text-slate-300 mb-3">search_off</span>
+            <h3 class="text-sm font-bold text-slate-900 mb-1 capitalize">No hay planes {{ plansView }}</h3>
+            <p class="text-slate-500 text-xs">No se encontraron suscripciones con este estado.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -290,6 +394,11 @@ const filterOptions = [
   { value: 'inactive', label: 'Inactivos' },
   { value: 'canceled', label: 'Cancelados' },
 ] as const
+
+const activeQRs = computed(() => {
+  const activeIds = new Set(userSubscriptions.value.filter(s => s.status === 'active').map(s => s.id))
+  return userQRs.value.filter(qr => activeIds.has(qr.subscriptionId))
+})
 
 const groupedQRs = computed(() => {
   return userSubscriptions.value.map((sub) => ({

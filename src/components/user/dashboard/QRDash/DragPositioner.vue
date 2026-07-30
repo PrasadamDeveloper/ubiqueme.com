@@ -163,8 +163,10 @@ const close = () => emit('close')
             <!-- ─── HEADER ─── -->
             <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
               <div>
-                <h2 class="text-lg font-bold text-slate-900">{{ readonly ? `Descargar QR — ${qrName}` : `Personalizar posición — ${qrName}` }}</h2>
-                <p class="text-xs text-slate-400">{{ readonly ? 'Selecciona el tamaño y formato para descargar' : 'Arrastra cada elemento para reposicionarlo' }}</p>
+                <h2 class="text-lg font-bold text-slate-900">{{ readonly ? `Descargar QR — ${qrName}` : `Descargar QR —
+                  ${qrName}` }}</h2>
+                <p class="text-xs text-slate-400">{{ readonly ? 'Descargar QR' :
+                  'Elija el tamaño' }}</p>
               </div>
               <button @click="close"
                 class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition cursor-pointer">
@@ -186,7 +188,8 @@ const close = () => emit('close')
             </div>
 
             <!-- ─── CANVAS AREA ─── -->
-            <div class="flex-1 overflow-auto bg-slate-50 p-6 flex justify-center items-start" :class="{ 'pointer-events-none': readonly }">
+            <div class="flex-1 overflow-auto bg-slate-50 p-6 flex justify-center items-start"
+              :class="{ 'pointer-events-none': readonly }">
               <div :id="`drag-tpl-${props.qrId}`" ref="tplRef"
                 :style="`width:${cfg.width}px;height:${cfg.height}px;padding:${cfg.spacing.outerPadding}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${cfg.spacing.mainGap}px`"
                 class="relative overflow-hidden shrink-0">
@@ -208,8 +211,7 @@ const close = () => emit('close')
                     :style="{ gap: cfg.spacing.headerGap + 'px' }">
                     <div class="flex items-center" :style="{ gap: cfg.spacing.headerGap + 'px' }">
                       <img src="/src/assets/drag-images/social-10.webp"
-                        :style="{ width: cfg.sslIcon.w + 'px', height: cfg.sslIcon.h + 'px' }"
-                        class="object-contain" />
+                        :style="{ width: cfg.sslIcon.w + 'px', height: cfg.sslIcon.h + 'px' }" class="object-contain" />
                       <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
                         class="text-black font-black tracking-widest uppercase leading-none">HTTPS://</span>
                       <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
@@ -219,17 +221,14 @@ const close = () => emit('close')
                       padding: cfg.logo.containerPadding + 'px',
                       borderRadius: cfg.logo.containerRadius + 'px',
                     }" class="bg-black/80 flex items-center justify-center shrink-0">
-                      <img :src="LogoWhite" :style="{ width: cfg.logo.size + 'px' }"
-                        class="h-auto opacity-90 block" />
+                      <img :src="LogoWhite" :style="{ width: cfg.logo.size + 'px' }" class="h-auto opacity-90 block" />
                     </div>
                   </div>
                 </template>
                 <template v-else>
-                  <div class="flex items-center justify-center shrink-0"
-                    :style="{ gap: cfg.spacing.headerGap + 'px' }">
+                  <div class="flex items-center justify-center shrink-0" :style="{ gap: cfg.spacing.headerGap + 'px' }">
                     <img src="/src/assets/drag-images/social-10.webp"
-                      :style="{ width: cfg.sslIcon.w + 'px', height: cfg.sslIcon.h + 'px' }"
-                      class="object-contain" />
+                      :style="{ width: cfg.sslIcon.w + 'px', height: cfg.sslIcon.h + 'px' }" class="object-contain" />
                     <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
                       class="text-black font-black tracking-widest uppercase leading-none">HTTPS://</span>
                     <span :style="{ fontSize: cfg.fonts.topDomain + 'px' }"
@@ -238,15 +237,13 @@ const close = () => emit('close')
                       padding: cfg.logo.containerPadding + 'px',
                       borderRadius: cfg.logo.containerRadius + 'px',
                     }" class="bg-black/80 flex items-center justify-center shrink-0">
-                      <img :src="LogoWhite" :style="{ width: cfg.logo.size + 'px' }"
-                        class="h-auto opacity-90 block" />
+                      <img :src="LogoWhite" :style="{ width: cfg.logo.size + 'px' }" class="h-auto opacity-90 block" />
                     </div>
                   </div>
                 </template>
 
                 <!-- CONTENT: QR + Info -->
-                <div class="flex items-start flex-1 min-h-0"
-                  :style="{ gap: cfg.spacing.contentGap + 'px' }">
+                <div class="flex items-start flex-1 min-h-0" :style="{ gap: cfg.spacing.contentGap + 'px' }">
                   <div :style="{
                     width: (cfg.qr.size + cfg.qr.containerPadding * 2) + 'px',
                     height: (cfg.qr.size + cfg.qr.containerPadding * 2) + 'px',
@@ -254,13 +251,11 @@ const close = () => emit('close')
                     padding: cfg.qr.containerPadding + 'px',
                   }" class="shrink-0 self-start bg-white flex items-center justify-center overflow-hidden">
                     <template v-if="qrDataUrl">
-                      <img :src="qrDataUrl"
-                        :style="{ width: cfg.qr.size + 'px', height: cfg.qr.size + 'px' }"
+                      <img :src="qrDataUrl" :style="{ width: cfg.qr.size + 'px', height: cfg.qr.size + 'px' }"
                         class="object-contain" />
                     </template>
                     <template v-else-if="qrImg">
-                      <img :src="qrImg"
-                        :style="{ width: cfg.qr.size + 'px', height: cfg.qr.size + 'px' }"
+                      <img :src="qrImg" :style="{ width: cfg.qr.size + 'px', height: cfg.qr.size + 'px' }"
                         class="object-contain" />
                     </template>
                   </div>
@@ -283,27 +278,21 @@ const close = () => emit('close')
                 </div>
 
                 <!-- FOOTER -->
-                <div class="flex shrink-0 justify-between items-center"
-                  :style="{ gap: cfg.spacing.mainGap + 'px' }">
-                  <div class="flex flex-col items-start"
-                    :style="{ gap: cfg.spacing.footerGap + 'px' }">
+                <div class="flex shrink-0 justify-between items-center" :style="{ gap: cfg.spacing.mainGap + 'px' }">
+                  <div class="flex flex-col items-start" :style="{ gap: cfg.spacing.footerGap + 'px' }">
                     <span :style="{ fontSize: cfg.fonts.footerEmail + 'px' }"
                       class="text-black font-bold tracking-wider">soporte@ubiqueme.com</span>
-                    <div class="flex items-center"
-                      :style="{ gap: cfg.spacing.footerGap + 'px' }">
+                    <div class="flex items-center" :style="{ gap: cfg.spacing.footerGap + 'px' }">
                       <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
                         class="text-black font-bold uppercase tracking-wider" translate="no">localizarme.com</span>
-                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
-                        class="text-black/50">•</span>
+                      <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }" class="text-black/50">•</span>
                       <span :style="{ fontSize: cfg.fonts.footerDomain + 'px' }"
                         class="text-black font-bold uppercase tracking-wider" translate="no">contactomio.com</span>
                     </div>
                   </div>
-                  <div class="flex items-center"
-                    :style="{ gap: cfg.socialIcons.gap + 'px' }">
+                  <div class="flex items-center" :style="{ gap: cfg.socialIcons.gap + 'px' }">
                     <template v-for="(icon, idx) in cfg.socialIcons.items" :key="idx">
-                      <img :src="socialIconImages[idx]"
-                        :style="{ width: icon.w + 'px', height: icon.h + 'px' }"
+                      <img :src="socialIconImages[idx]" :style="{ width: icon.w + 'px', height: icon.h + 'px' }"
                         class="object-contain block" />
                     </template>
                   </div>
@@ -314,7 +303,6 @@ const close = () => emit('close')
             <!-- ─── BOTTOM TOOLBAR ─── -->
             <div class="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-white">
               <div v-if="!readonly" class="flex items-center gap-2">
-                <span class="text-xs text-slate-400">Arrastra tus imágenes para superponer</span>
               </div>
               <div class="flex items-center gap-3">
                 <button @click="close"

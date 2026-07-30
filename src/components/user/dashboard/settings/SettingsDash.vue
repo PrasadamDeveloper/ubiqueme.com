@@ -234,8 +234,7 @@ const showUpdateModal = (mode: boolean) => {
     <!-- Page Header -->
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-2">
-        <div
-          class="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center">
+        <div class="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center">
           <span class="material-symbols-outlined notranslate text-orange-500 text-lg">settings</span>
         </div>
         <div>
@@ -261,8 +260,7 @@ const showUpdateModal = (mode: boolean) => {
         <!-- Identity Card -->
         <div class="lg:col-span-1 bg-white rounded-2xl border border-gray-200 p-6">
           <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-            <div
-              class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
               <span class="material-symbols-outlined notranslate text-orange-500 text-lg">badge</span>
             </div>
             <div>
@@ -318,8 +316,7 @@ const showUpdateModal = (mode: boolean) => {
         <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6">
           <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
             <div class="flex items-center gap-3">
-              <div
-                class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
                 <span class="material-symbols-outlined notranslate text-orange-500 text-lg">qr_code_2</span>
               </div>
               <div>
@@ -338,17 +335,18 @@ const showUpdateModal = (mode: boolean) => {
               class="bg-white border border-gray-200 rounded-xl p-3 hover:border-orange-300 transition-all group cursor-pointer block shadow-sm">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-mono text-gray-400 truncate max-w-[80px]">{{ qr.id?.slice(0, 8)
-                }}...</span>
+                  }}...</span>
                 <span :class="qrStatusColor(qr.status)"
                   class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border">
                   {{ qr.status }}
                 </span>
               </div>
-              <p class="text-sm font-medium text-gray-700 truncate group-hover:text-gray-900 transition-colors">{{ qr.name
-              }}</p>
+              <p class="text-sm font-medium text-gray-700 truncate group-hover:text-gray-900 transition-colors">{{
+                qr.name
+                }}</p>
               <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined notranslate text-[12px] text-gray-400">visibility</span>
+                  <span class="material-symbols-outlined notranslate text-[12px] text-gray-800">visibility</span>
                   <span class="text-[10px] text-gray-500 font-mono">{{ qr.scans ?? 0 }} escaneos</span>
                 </div>
 
@@ -367,8 +365,7 @@ const showUpdateModal = (mode: boolean) => {
       <!-- ─── ROW 2: Planes y Suscripción ─── -->
       <div class="bg-white rounded-2xl border border-gray-200 p-6">
         <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-          <div
-            class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
             <span class="material-symbols-outlined notranslate text-orange-500 text-lg">workspace_premium</span>
           </div>
           <div>
@@ -381,8 +378,7 @@ const showUpdateModal = (mode: boolean) => {
           <div v-for="sub in subscriptions" :key="sub.id"
             class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-gray-100 rounded-xl border border-gray-200">
             <div class="flex items-center gap-4">
-              <div
-                class="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+              <div class="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
                 <span class="material-symbols-outlined notranslate text-orange-500 text-2xl">star</span>
               </div>
               <div>
@@ -426,8 +422,7 @@ const showUpdateModal = (mode: boolean) => {
         <!-- Security / Password Reset -->
         <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6">
           <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-            <div
-              class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
               <span class="material-symbols-outlined notranslate text-orange-500 text-lg">lock</span>
             </div>
             <div>

@@ -536,7 +536,8 @@ const imageSettingsUIOnly: ImageSettings = {
         <div class="flex items-start justify-between gap-3 mb-4">
           <div class="flex items-center gap-3 min-w-0">
             <span class="material-symbols-outlined notranslate text-orange-500 text-xl shrink-0">location_on</span>
-            <span class="text-slate-900 font-black tracking-widest text-xs uppercase whitespace-nowrap">ubiqueme.com</span>
+            <span
+              class="text-slate-900 font-black tracking-widest text-xs uppercase whitespace-nowrap">ubiqueme.com</span>
             <span
               class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-sm"
               :class="[currentStatus.bg, 'border border-slate-200']">
@@ -627,7 +628,7 @@ const imageSettingsUIOnly: ImageSettings = {
       <div
         class="w-full sm:w-[260px] lg:w-[300px] bg-orange-50 border-t sm:border-t-0 sm:border-l md:rounded-r-4xl border-slate-100 flex flex-col items-center justify-center p-6 lg:p-8 shrink-0 relative">
         <div
-          class="w-40 h-40 sm:w-36 sm:h-36 lg:w-44 lg:h-44 rounded-3xl flex items-center justify-center bg-[#fff7ed] p-3 shadow-lg relative border border-orange-300">
+          class="w-40 h-40 sm:w-36 sm:h-36 lg:w-44 lg:h-44 rounded-3xl flex items-center justify-center bg-[#ffffff] p-3 shadow-lg relative border border-orange-300">
           <template v-if="propsComputed.img">
             <img :src="propsComputed.img" class="w-full h-full object-cover rounded-xl" />
           </template>
@@ -675,7 +676,7 @@ const imageSettingsUIOnly: ImageSettings = {
               ]">
                 <span
                   :class="[option.color ? 'text-rose-400' : 'text-orange-500', 'material-symbols-outlined notranslate text-xl mt-0.5']">{{
-                  option.icon }}</span>
+                    option.icon }}</span>
                 <div class="flex flex-col min-w-0">
                   <p class="text-sm font-semibold leading-tight">{{ option.label }}</p>
                   <p class="text-[11px] text-slate-500 leading-relaxed mt-1">{{ option.description }}</p>
@@ -692,7 +693,8 @@ const imageSettingsUIOnly: ImageSettings = {
       <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0"
         enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
         leave-from-class="opacity-100" leave-to-class="opacity-0">
-        <div v-if="showMenu" @click="showMenu = false" class="sm:hidden fixed inset-0 bg-gray-900/60 z-40 cursor-default">
+        <div v-if="showMenu" @click="showMenu = false"
+          class="sm:hidden fixed inset-0 bg-gray-900/60 z-40 cursor-default">
         </div>
       </Transition>
       <Transition enter-active-class="transition-all duration-300 ease-out"
@@ -728,7 +730,7 @@ const imageSettingsUIOnly: ImageSettings = {
               ]">
                 <span
                   :class="[option.color || 'text-orange-500', 'material-symbols-outlined notranslate text-[22px]']">{{
-                  option.icon }}</span>
+                    option.icon }}</span>
                 <div class="flex flex-col">
                   <span>{{ option.label }}</span>
                   <span class="text-[10px] text-slate-400 font-normal leading-tight">{{ option.description }}</span>
@@ -748,8 +750,7 @@ const imageSettingsUIOnly: ImageSettings = {
     <Transition enter-active-class="transition-all duration-200 ease-out" enter-from-class="opacity-0"
       enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
       leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div v-if="activePrompt"
-        class="fixed inset-0 bg-white/90 z-[100] p-6 flex flex-col justify-center items-center">
+      <div v-if="activePrompt" class="fixed inset-0 bg-white/90 z-[100] p-6 flex flex-col justify-center items-center">
         <button @click="closeAll"
           class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:text-slate-900 transition-all cursor-pointer">
           <span class="material-symbols-outlined notranslate text-[18px]">close</span>
@@ -764,7 +765,8 @@ const imageSettingsUIOnly: ImageSettings = {
               <span class="material-symbols-outlined notranslate text-rose-500 text-[24px]">warning</span>
             </div>
             <h3 class="text-slate-900 text-lg font-medium mb-1.5">¿Desactivar código?</h3>
-            <p class="text-slate-500 text-sm leading-relaxed mb-6 px-4">Esta acción desactivará el código inmediatamente.
+            <p class="text-slate-500 text-sm leading-relaxed mb-6 px-4">Esta acción desactivará el código
+              inmediatamente.
             </p>
             <div class="flex gap-3 w-full">
               <button @click="closeAll"
@@ -904,7 +906,7 @@ const imageSettingsUIOnly: ImageSettings = {
                 previa
                 <span class="text-slate-300 font-mono font-normal normal-case ml-1">({{
                   downloadStyle === 'normal' ? currentPreset.width : currentCompactPreset.size }}×{{
-                  downloadStyle === 'normal' ? currentPreset.height : currentCompactPreset.size }}px)</span>
+                    downloadStyle === 'normal' ? currentPreset.height : currentCompactPreset.size }}px)</span>
               </label>
               <div
                 class="w-full rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fed7aa] border border-orange-300 relative overflow-hidden">
@@ -915,14 +917,13 @@ const imageSettingsUIOnly: ImageSettings = {
                   <!-- NORMAL template — single source of truth for preview + capture -->
                   <template v-if="downloadStyle === 'normal'">
                     <div ref="desktopTemplateRef"
-                        :style="`width:${currentPreset.width}px;height:${currentPreset.height}px;padding:${currentPreset.spacing.outerPadding}px;font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${currentPreset.spacing.mainGap}px`"
+                      :style="`width:${currentPreset.width}px;height:${currentPreset.height}px;padding:${currentPreset.spacing.outerPadding}px;font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${currentPreset.spacing.mainGap}px`"
                       class="relative overflow-hidden">
                       <!-- HEADER -->
                       <div class="flex items-center justify-between shrink-0"
                         :style="{ gap: currentPreset.spacing.headerGap + 'px' }">
-                        <div class="flex items-center"
-  :style="{ gap: currentPreset.spacing.headerGap + 'px' }">
-                                                    <img :src="SslIcon"
+                        <div class="flex items-center" :style="{ gap: currentPreset.spacing.headerGap + 'px' }">
+                          <img :src="SslIcon"
                             :style="{ width: currentPreset.sslIcon.w + 'px', height: currentPreset.sslIcon.h + 'px' }"
                             class="object-contain" />
                           <span :style="{ fontSize: currentPreset.fonts.topDomain + 'px' }"
@@ -953,14 +954,14 @@ const imageSettingsUIOnly: ImageSettings = {
                               class="object-contain" />
                           </template>
                           <template v-else>
-                            <QrcodeVue :value="qrScanUrl" :size="currentPreset.qr.size * 4" render-as="canvas"
-                              level="H" :image-settings="imageSettings"
+                            <QrcodeVue :value="qrScanUrl" :size="currentPreset.qr.size * 4" render-as="canvas" level="H"
+                              :image-settings="imageSettings"
                               :style="{ width: currentPreset.qr.size + 'px', height: currentPreset.qr.size + 'px', maxWidth: '100%', maxHeight: '100%' }" />
                           </template>
                         </div>
-                         <div class="flex flex-col flex-1 min-w-0 text-center overflow-hidden self-stretch"
-                           :style="{ gap: currentPreset.spacing.textGap + 'px' }">
-                           <p :style="{ fontSize: currentPreset.fonts.name + 'px' }"
+                        <div class="flex flex-col flex-1 min-w-0 text-center overflow-hidden self-stretch"
+                          :style="{ gap: currentPreset.spacing.textGap + 'px' }">
+                          <p :style="{ fontSize: currentPreset.fonts.name + 'px' }"
                             class="text-[#171717] font-black leading-tight m-0 truncate">
                             {{ displayName }}
                           </p>
@@ -1069,7 +1070,7 @@ const imageSettingsUIOnly: ImageSettings = {
               <div class="w-9 h-1 bg-slate-300 rounded-full mx-auto my-3"></div>
               <div class="flex items-center justify-center mb-4 relative">
                 <button @click="closeAll"
-class="absolute left-0 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors cursor-pointer rounded-lg hover:bg-slate-100">
+                  class="absolute left-0 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors cursor-pointer rounded-lg hover:bg-slate-100">
                   <span class="material-symbols-outlined notranslate text-[22px]">arrow_back</span>Atrás
                 </button>
                 <span class="text-slate-500 text-[10px] font-bold uppercase tracking-widest text-center">Descargar
@@ -1141,16 +1142,15 @@ class="absolute left-0 w-8 h-8 flex items-center justify-center text-slate-400 h
                   <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style="background-image:linear-gradient(rgba(255,255,255,1)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1)1px,transparent 1px);background-size:20px 20px;">
                   </div>
-                   <div class="relative overflow-auto max-h-[200px] p-1">
+                  <div class="relative overflow-auto max-h-[200px] p-1">
                     <template v-if="downloadStyle === 'normal'">
                       <div ref="mobileTemplateRef"
-:style="`width:${currentPreset.width}px;height:${currentPreset.height}px;padding:${currentPreset.spacing.outerPadding}px;font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${currentPreset.spacing.mainGap}px`"
+                        :style="`width:${currentPreset.width}px;height:${currentPreset.height}px;padding:${currentPreset.spacing.outerPadding}px;font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${currentPreset.spacing.mainGap}px`"
                         class="relative overflow-hidden">
                         <div class="flex items-center justify-between shrink-0"
                           :style="{ gap: currentPreset.spacing.headerGap + 'px' }">
-                          <div class="flex items-center"
-  :style="{ gap: currentPreset.spacing.headerGap + 'px' }">
-                                                      <img :src="SslIcon"
+                          <div class="flex items-center" :style="{ gap: currentPreset.spacing.headerGap + 'px' }">
+                            <img :src="SslIcon"
                               :style="{ width: currentPreset.sslIcon.w + 'px', height: currentPreset.sslIcon.h + 'px' }"
                               class="object-contain" />
                             <span :style="{ fontSize: currentPreset.fonts.topDomain + 'px' }"
@@ -1208,11 +1208,13 @@ class="absolute left-0 w-8 h-8 flex items-center justify-center text-slate-400 h
                           <div class="flex items-center justify-center"
                             :style="{ gap: currentPreset.spacing.footerGap + 'px' }">
                             <span :style="{ fontSize: currentPreset.fonts.footerDomain + 'px' }"
-                              class="text-white font-bold uppercase tracking-wider" translate="no">localizarme.com</span>
+                              class="text-white font-bold uppercase tracking-wider"
+                              translate="no">localizarme.com</span>
                             <span :style="{ fontSize: currentPreset.fonts.footerDomain + 'px' }"
                               class="text-white/50">•</span>
                             <span :style="{ fontSize: currentPreset.fonts.footerDomain + 'px' }"
-                              class="text-white font-bold uppercase tracking-wider" translate="no">contactomio.com</span>
+                              class="text-white font-bold uppercase tracking-wider"
+                              translate="no">contactomio.com</span>
                           </div>
                         </div>
                       </div>
@@ -1264,9 +1266,10 @@ class="absolute left-0 w-8 h-8 flex items-center justify-center text-slate-400 h
                 class="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md shadow-orange-500/10">
                 <span class="material-symbols-outlined notranslate text-[18px]">download</span>
                 Descargar como {{ downloadFormat === 'pdf' ? 'PDF' : 'PNG' }}
-                <span class="text-slate-500 text-[10px] font-normal">({{ downloadSize === 'sm' ? 'Pequeño' : downloadSize
-                  === 'md'
-                  ? 'Mediano' : 'Grande' }})</span>
+                <span class="text-slate-500 text-[10px] font-normal">({{ downloadSize === 'sm' ? 'Pequeño' :
+                  downloadSize
+                    === 'md'
+                    ? 'Mediano' : 'Grande' }})</span>
               </button>
               <button @click="closeAll"
                 class="w-full mt-3 py-3 bg-slate-100 text-slate-500 rounded-xl text-sm font-medium hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer active:scale-[0.98]">Cerrar</button>

@@ -11,6 +11,24 @@
       class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-orange-500/5 rounded-full blur-[120px] pointer-events-none">
     </div>
 
+    <!-- Dot pattern overlay -->
+    <div class="absolute inset-0 opacity-[0.12] pointer-events-none bg-pattern-dots"></div>
+
+    <!-- Decorative floating icons -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
+      <span
+        class="material-symbols-outlined notranslate absolute top-[15%] right-[5%] text-7xl text-orange-500 opacity-[0.03] animate-float-slow max-md:text-5xl max-md:top-[10%] max-md:right-[2%]">qr_code</span>
+      <span
+        class="material-symbols-outlined notranslate absolute bottom-[20%] left-[3%] text-6xl text-orange-500 opacity-[0.03] animate-float-medium max-md:text-4xl max-md:bottom-[15%] max-md:left-[1%]">verified</span>
+      <span
+        class="material-symbols-outlined notranslate absolute top-[55%] left-[8%] text-5xl text-orange-500 opacity-[0.025] animate-float-slow max-md:text-3xl max-md:top-[50%] max-md:hidden">shield</span>
+    </div>
+
+    <!-- Decorative circle -->
+    <div
+      class="absolute top-[-5%] right-[5%] w-[350px] h-[350px] border border-orange-500/10 rounded-full pointer-events-none max-md:hidden"
+      aria-hidden="true"></div>
+
     <div class="relative z-10 px-4 sm:px-6 lg:px-8 pt-5 pb-20  mx-auto space-y-10">
 
       <!-- Header Section -->
@@ -65,6 +83,76 @@
           <span class="material-symbols-outlined notranslate text-lg">close</span>
         </button>
       </div>
+
+      <!-- Quick Stats Row -->
+      <div v-if="userSubscriptions.length > 0" class="flex flex-wrap gap-3 animate-fade-up">
+        <!-- Plan -->
+        <div
+          class="flex items-center gap-3 flex-1 min-w-0 rounded-2xl bg-slate-50/90 px-4 py-3 border border-slate-100">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-[20px]">
+              workspace_premium
+            </span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-[11px] text-slate-400 font-medium">
+              Plan
+            </p>
+
+            <p class="truncate text-sm font-semibold text-slate-800 capitalize">
+              {{ userSubscriptions.length > 0 ? userSubscriptions[0].planType : '—' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- QRs -->
+        <div
+          class="flex items-center gap-3 flex-1 min-w-0 rounded-2xl bg-slate-50/90 px-4 py-3 border border-slate-100">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+            <span class="material-symbols-outlined notranslate text-orange-500 text-[20px]">
+              qr_code
+            </span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-[11px] text-slate-400 font-medium">
+              QRs
+            </p>
+
+            <p class="truncate text-sm font-semibold text-slate-800">
+              {{ activeQRs.length }} activos
+            </p>
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div
+          class="flex items-center gap-3 flex-1 min-w-0 rounded-2xl bg-slate-50/90 px-4 py-3 border border-slate-100">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full" :class="userSubscriptions.some(s => s.status === 'active')
+            ? 'bg-emerald-100'
+            : 'bg-slate-200'">
+            <span class="material-symbols-outlined notranslate text-[20px]" :class="userSubscriptions.some(s => s.status === 'active')
+              ? 'text-emerald-600'
+              : 'text-slate-500'">
+              schedule
+            </span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-[11px] text-slate-400 font-medium">
+              Estado
+            </p>
+
+            <p class="truncate text-sm font-semibold" :class="userSubscriptions.some(s => s.status === 'active')
+              ? 'text-emerald-600'
+              : 'text-slate-500'">
+              {{userSubscriptions.some(s => s.status === 'active') ? 'Activo' : 'Inactivo'}}
+            </p>
+          </div>
+        </div>
+      </div>
+
 
       <!-- Content Section -->
       <div class="space-y-10">
@@ -159,12 +247,15 @@
                 <div>
                   <div class="flex items-center gap-3 mb-1">
                     <h3 class="text-xl font-bold capitalize text-slate-900">
-                      Plan {{ group.subscription.planType === 'trial' ? 'Bronce de prueba' : group.subscription.planType }}
+                      Plan {{ group.subscription.planType === 'trial' ? 'Bronce de prueba' : group.subscription.planType
+                      }}
                     </h3>
                     <span
                       :class="group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'bg-amber-50 text-amber-600 border-amber-200' : group.subscription.status === 'active' ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-slate-100 text-slate-500 border-slate-200'"
                       class="px-2.5 py-0.5 rounded-full border text-[10px] font-black uppercase tracking-widest">
-                      {{ group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'Acabado' : group.subscription.status === 'active' ? 'Activo' : group.subscription.status === 'canceled' ? 'Cancelado' : 'Inactivo' }}
+                      {{ group.subscription.planType === 'trial' && group.subscription.status === 'inactive' ? 'Acabado'
+                        : group.subscription.status === 'active' ? 'Activo' : group.subscription.status === 'canceled' ?
+                          'Cancelado' : 'Inactivo' }}
                     </span>
                   </div>
                   <p class="text-[12px] text-slate-400 font-mono">
@@ -175,31 +266,40 @@
                   <div class="mt-3 pt-3 border-t border-slate-200 space-y-1">
                     <p class="text-xs text-slate-500 flex items-center gap-1.5 leading-relaxed">
                       <span class="material-symbols-outlined notranslate text-sm mt-0.5 shrink-0">info</span>
-                      <template v-if="group.subscription.planType === 'trial' && group.subscription.status === 'active'">
-                        Este es un <strong class="text-slate-700">plan gratuito de prueba</strong> con duración de 1 año incluido en su cuenta.
-                        Termina el <strong class="text-slate-700">{{ formatEndDate(group.subscription.endDate) }}</strong>.
+                      <template
+                        v-if="group.subscription.planType === 'trial' && group.subscription.status === 'active'">
+                        Este es un <strong class="text-slate-700">plan gratuito de prueba</strong> con duración de 1 año
+                        incluido en su cuenta.
+                        Termina el <strong class="text-slate-700">{{ formatEndDate(group.subscription.endDate)
+                          }}</strong>.
                         Después de esa fecha si decide continuar con el plan podrá renovarlo.
                       </template>
-                      <template v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'canceled'">
+                      <template
+                        v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'canceled'">
                         Este <strong class="text-slate-700">plan gratuito de prueba</strong> fue
                         <strong class="text-slate-700">cancelado</strong>.
                         Los QRs asociados ya no están disponibles. Revisa los planes disponibles para activarlos.
                       </template>
-                      <template v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'inactive'">
+                      <template
+                        v-else-if="group.subscription.planType === 'trial' && group.subscription.status === 'inactive'">
                         Este <strong class="text-slate-700">plan gratuito de prueba</strong> ha
                         <strong class="text-slate-700">finalizado</strong>.
-                        Terminó el {{ formatEndDate(group.subscription.endDate) }}. Adquiera un plan para reactivar sus QRs.
+                        Terminó el {{ formatEndDate(group.subscription.endDate) }}. Adquiera un plan para reactivar sus
+                        QRs.
                       </template>
                       <template v-else-if="group.subscription.status === 'active'">
                         Plan <strong class="text-slate-700 capitalize">{{ group.subscription.planType }}</strong> —
                         <span v-if="group.subscription.endDate">
-                          termina el <strong class="text-slate-700">{{ formatEndDate(group.subscription.endDate) }}</strong>.
+                          termina el <strong class="text-slate-700">{{ formatEndDate(group.subscription.endDate)
+                            }}</strong>.
                         </span>
                         <span v-else>
                           <strong class="text-slate-700">sin fecha de vencimiento</strong>.
                         </span>
-                        Tienes <strong class="text-slate-700">{{ group.subscription.totalQRsAllowed - group.subscription.totalQRsCreated }}</strong> de
-                        <strong class="text-slate-700">{{ group.subscription.totalQRsAllowed }}</strong> QRs disponibles.
+                        Tienes <strong class="text-slate-700">{{ group.subscription.totalQRsAllowed -
+                          group.subscription.totalQRsCreated }}</strong> de
+                        <strong class="text-slate-700">{{ group.subscription.totalQRsAllowed }}</strong> QRs
+                        disponibles.
                       </template>
                       <template v-else-if="group.subscription.status === 'canceled'">
                         Plan <strong class="text-slate-700 capitalize">{{ group.subscription.planType }}</strong>
@@ -207,7 +307,8 @@
                         Los QRs asociados ya no están disponibles.
                       </template>
                       <template v-else>
-                        Plan <strong class="text-slate-700 capitalize">{{ group.subscription.planType }}</strong> inactivo.
+                        Plan <strong class="text-slate-700 capitalize">{{ group.subscription.planType }}</strong>
+                        inactivo.
                         Adquiere o reactiva un plan para usar tus QRs.
                       </template>
                     </p>
@@ -245,10 +346,10 @@
                 class="grid grid-cols-1 xl:grid-cols-2 gap-8 relative z-0 pl-2 sm:pl-6 border-l-2 border-slate-200">
                 <QRCard v-for="qr in group.qrs" :key="qr.id" :id="qr.id" :name="qr.name" :category="qr.category"
                   :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link"
-                  :subscriptionStatus="group.subscription.status"
-                  :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason" :createdAt="qr.createdAt"
-                  :subscriptionId="qr.subscriptionId" :physicalShipped="qr.physicalShipped"
-                  :physicalShippedAt="qr.physicalShippedAt" :planType="group.subscription.planType"
+                  :subscriptionStatus="group.subscription.status" :isActive="qr.isActive" :isBanned="qr.isBanned"
+                  :banReason="qr.banReason" :createdAt="qr.createdAt" :subscriptionId="qr.subscriptionId"
+                  :physicalShipped="qr.physicalShipped" :physicalShippedAt="qr.physicalShippedAt"
+                  :planType="group.subscription.planType"
                   @request-physical="handleRequestPhysical(group.subscription)" />
               </div>
 
@@ -265,23 +366,41 @@
 
           <!-- Empty State — no subscriptions at all -->
           <div v-else-if="groupedQRs.length === 0" key="empty-all"
-            class="flex flex-col items-center justify-center py-20 text-center w-full">
-            <span
-              class="material-symbols-outlined notranslate text-6xl text-slate-500 mb-4">account_balance_wallet</span>
-            <h3 class="text-xl font-semibold text-slate-900 mb-2">No tiene suscripciones activas</h3>
-            <p class="text-slate-400 mb-6">Adquiera un plan para poder registrar códigos QR.</p>
-            <RouterLink to="/pricing"
-              class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-500 text-white font-black text-xs uppercase tracking-widest hover:bg-orange-600 transition-all">
-              <span class="material-symbols-outlined notranslate text-sm">workspace_premium</span>
-              Ver Planes
-            </RouterLink>
+            class="relative flex flex-col items-center justify-center py-20 sm:py-24 text-center w-full overflow-hidden">
+            <div class="absolute inset-0 opacity-[0.04] pointer-events-none bg-pattern-diamond"></div>
+            <div
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-orange-500/5 rounded-full blur-[100px] pointer-events-none">
+            </div>
+            <div class="relative z-10">
+              <div
+                class="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl sm:rounded-3xl bg-orange-50 border border-orange-200 flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-sm">
+                <span
+                  class="material-symbols-outlined notranslate text-3xl sm:text-4xl text-orange-500">account_balance_wallet</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black text-slate-900 mb-2">No tiene suscripciones activas</h3>
+              <p class="text-sm sm:text-base text-slate-500 max-w-md mx-auto mb-6 sm:mb-8 px-4">Adquiera un plan para
+                poder registrar códigos QR y comenzar a proteger sus pertenencias.</p>
+              <RouterLink to="/pricing"
+                class="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-orange-500 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20">
+                <span class="material-symbols-outlined notranslate text-sm">workspace_premium</span>
+                Ver Planes
+              </RouterLink>
+            </div>
           </div>
 
           <!-- Empty State — filtro sin resultados -->
-          <div v-else key="empty-filter" class="flex flex-col items-center justify-center py-20 text-center w-full">
-            <span class="material-symbols-outlined notranslate text-6xl text-slate-500 mb-4">search_off</span>
-            <h3 class="text-xl font-semibold text-slate-900 mb-2 capitalize">No hay planes {{ plansView }}</h3>
-            <p class="text-slate-400 mb-6">No se encontraron suscripciones con este estado.</p>
+          <div v-else key="empty-filter"
+            class="relative flex flex-col items-center justify-center py-20 text-center w-full overflow-hidden">
+            <div class="absolute inset-0 opacity-[0.04] pointer-events-none bg-pattern-diamond"></div>
+            <div
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-orange-500/5 rounded-full blur-[80px] pointer-events-none">
+            </div>
+            <div class="relative z-10">
+              <span
+                class="material-symbols-outlined notranslate text-5xl sm:text-6xl text-slate-300 mb-4">search_off</span>
+              <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2 capitalize">No hay planes {{ plansView }}</h3>
+              <p class="text-sm sm:text-base text-slate-400 mb-6">No se encontraron suscripciones con este estado.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -335,6 +454,12 @@ const filterOptions = [
   { value: 'inactive', label: 'Inactivos' },
   { value: 'canceled', label: 'Cancelados' },
 ] as const
+
+// QRs solo de suscripciones activas
+const activeQRs = computed(() => {
+  const activeIds = new Set(userSubscriptions.value.filter(s => s.status === 'active').map(s => s.id))
+  return userQRs.value.filter(qr => activeIds.has(qr.subscriptionId))
+})
 
 // Agrupar QRs por suscripción
 // Alternativa simple: por cada suscripción, filtrar los QRs que le pertenecen
