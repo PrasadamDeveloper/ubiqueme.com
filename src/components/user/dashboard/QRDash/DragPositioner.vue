@@ -40,6 +40,35 @@ const activeSize = ref<string>(props.downloadSize)
 
 const cfg = computed(() => layoutPresets[activeSize.value as keyof typeof layoutPresets] ?? layoutPresets.md)
 
+// ─── Preview scaling — fit within viewport without affecting download ─────
+const previewContainerRef = ref<HTMLElement | null>(null)
+const containerWidth = ref(0)
+
+watch(previewContainerRef, (el) => {
+  if (!el) { containerWidth.value = 0; return }
+  const update = () => { containerWidth.value = el.clientWidth }
+  update()
+  const ro = new ResizeObserver(update)
+  ro.observe(el)
+})
+
+const scaleFactor = computed(() => {
+  if (containerWidth.value === 0) return 1
+  const available = containerWidth.value - 48
+  if (available <= 32) return 1
+  return Math.min(1, (available - 16) / cfg.value.width)
+})
+
+const templateStyle = computed(() => {
+  const c = cfg.value
+  const s = scaleFactor.value
+  let css = `width:${c.width}px;height:${c.height}px;padding:${c.spacing.outerPadding}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${c.spacing.mainGap}px`
+  if (s < 1) {
+    css += `;transform:scale(${s});transform-origin:top left`
+  }
+  return css
+})
+
 // ─── Images — hardcoded from config ────────────────────────────
 interface DragImage {
   id: string
@@ -104,6 +133,10 @@ const startDrag = (id: string, e: MouseEvent) => {
 const captureCanvas = async () => {
   const el = tplRef.value
   if (!el) { toast.error('No se encontró la plantilla'); return null }
+  const origTransform = el.style.transform
+  const origOrigin = el.style.transformOrigin
+  el.style.transform = ''
+  el.style.transformOrigin = ''
   try {
     return await toCanvas(el, {
       pixelRatio: 4,
@@ -114,6 +147,9 @@ const captureCanvas = async () => {
   } catch (e) {
     toast.error(`Error al capturar: ${e}`)
     return null
+  } finally {
+    el.style.transform = origTransform
+    el.style.transformOrigin = origOrigin
   }
 }
 
@@ -189,9 +225,17 @@ const close = () => emit('close')
 
             <!-- ─── CANVAS AREA ─── -->
             <div class="flex-1 overflow-auto bg-slate-50 p-6 flex justify-center items-start"
-              :class="{ 'pointer-events-none': readonly }">
+              :class="{ 'pointer-events-none': readonly }"
+              ref="previewContainerRef">
+              <div :style="{
+                width: Math.ceil(cfg.width * scaleFactor) + 'px',
+                height: Math.ceil(cfg.height * scaleFactor) + 'px',
+                overflow: 'hidden',
+                position: 'relative',
+                flexShrink: 0,
+              }">
               <div :id="`drag-tpl-${props.qrId}`" ref="tplRef"
-                :style="`width:${cfg.width}px;height:${cfg.height}px;padding:${cfg.spacing.outerPadding}px;background:linear-gradient(80deg,#f97316,#fcbd74);font-family:'Google Sans',sans-serif;display:flex;flex-direction:column;gap:${cfg.spacing.mainGap}px`"
+                :style="templateStyle"
                 class="relative overflow-hidden shrink-0">
 
                 <!-- User images overlay (draggable, absolute positioning for superpositions) -->
@@ -297,6 +341,7 @@ const close = () => emit('close')
                     </template>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
 
