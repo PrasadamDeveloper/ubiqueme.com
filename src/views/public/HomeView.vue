@@ -120,7 +120,7 @@ const featureCards = [
 
 const switchPlaces = () => {
   placeInterval = setInterval(() => {
-    const placeIndexRandom = Math.round(Math.random() * qrPlaces.length - 1);
+    const placeIndexRandom = Math.floor(Math.random() * qrPlaces.length);
     currentPlace.value = qrPlaces[placeIndexRandom]
   }, 3600);
 }
