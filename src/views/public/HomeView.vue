@@ -110,34 +110,13 @@ const qrDynamicUrl = computed(() => {
 let placeInterval: ReturnType<typeof setInterval> | undefined;
 
 const featureCards = [
-  { icon: 'public', title: 'Cobertura mundial', desc: 'Funciona desde cualquier lugar con internet.' },
-  { icon: 'notifications_active', title: 'Alertas inmediatas', desc: 'Notificación en segundos al escanear tu QR.' },
-  { icon: 'install_mobile', title: 'Sin aplicaciones', desc: 'Solo escanea el QR, el navegador hace todo.' },
-  { icon: 'bi-whatsapp', title: 'WhatsApp en tiempo real', desc: 'Alerta directa a WhatsApp, sin apps extra.' },
-  { icon: 'schedule', title: 'Notificaciones 24/7', desc: 'Monitoreo constante, incluso mientras duermes.' },
-  { icon: 'shield_lock', title: 'Privacidad protegida', desc: 'Nunca compartimos tu info personal.' },
+  { icon: 'public', title: 'Cobertura mundial', desc: 'Funciona en todo el mundo' },
+  { icon: 'notifications_active', title: 'Alertas inmediatas', desc: 'Notifica al instante' },
+  { icon: 'install_mobile', title: 'Sin aplicaciones', desc: 'Sin apps, solo QR' },
+  { icon: 'bi-whatsapp', title: 'WhatsApp en tiempo real', desc: 'Alerta por WhatsApp' },
+  { icon: 'schedule', title: 'Notificaciones 24/7', desc: 'Monitoreo constante' },
+  { icon: 'shield_lock', title: 'Privacidad protegida', desc: 'Tus datos seguros' },
 ]
-
-const mobileCardsRef = ref<HTMLElement | null>(null)
-const activeFeatureIndex = ref(0)
-
-const onFeatureScroll = () => {
-  const container = mobileCardsRef.value
-  if (!container) return
-  const children = Array.from(container.children) as HTMLElement[]
-  const containerCenter = container.scrollLeft + container.clientWidth / 2
-  let closest = 0
-  let closestDist = Infinity
-  children.forEach((child, i) => {
-    const childCenter = child.offsetLeft + child.offsetWidth / 2
-    const dist = Math.abs(childCenter - containerCenter)
-    if (dist < closestDist) {
-      closestDist = dist
-      closest = i
-    }
-  })
-  activeFeatureIndex.value = closest
-}
 
 const switchPlaces = () => {
   placeInterval = setInterval(() => {
@@ -148,14 +127,6 @@ const switchPlaces = () => {
 
 onMounted(() => {
   switchPlaces()
-  setTimeout(() => {
-    if (mobileCardsRef.value) {
-      const wrappers = mobileCardsRef.value.querySelectorAll('.mobile-card-wrapper')
-      wrappers.forEach((el, i) => {
-        setTimeout(() => el.classList.add('is-visible'), i * 60)
-      })
-    }
-  }, 200)
 })
 
 onUnmounted(() => {
@@ -613,9 +584,10 @@ onUnmounted(() => {
               </p>
             </div>
 
-            <!-- 2. Phone Mockup — hero visual -->
-            <div class="flex justify-center -my-4">
-              <div class="relative w-56 sm:w-64 shrink-0">
+            <!-- 2. Phone (left) + iOS-style pills (right) -->
+            <div class="flex items-center gap-2.5 sm:gap-4 -my-3">
+              <!-- Phone - left -->
+              <div class="relative w-44 sm:w-52 shrink-0">
                 <img src="../../assets/images/phonemockup-ubq.webp" alt="" class="w-full relative z-20">
                 <section class="absolute inset-[8px] rounded-[30px] overflow-hidden bg-[#efeae2] z-10 flex flex-col">
                   <div class="h-6 bg-[#00342e] text-white text-[9px] flex justify-between items-center px-3.5">
@@ -673,6 +645,22 @@ onUnmounted(() => {
                   </footer>
                 </section>
               </div>
+
+              <!-- iOS-style pills - right (supporting) -->
+              <div class="flex-1 flex flex-col gap-1.5">
+                <div v-for="(card, i) in featureCards" :key="card.title"
+                     class="bg-white rounded-xl p-2 shadow-sm border border-slate-100 flex items-center gap-2 animate-fade-right"
+                     :style="{ animationDelay: `${i * 0.08}s` }">
+                  <div class="h-6 w-6 shrink-0 rounded-full bg-orange-100 flex items-center justify-center">
+                    <span v-if="card.icon !== 'bi-whatsapp'" class="material-symbols-outlined notranslate text-orange-500 text-[13px]">{{ card.icon }}</span>
+                    <v-icon v-else name="bi-whatsapp" class="text-orange-500 text-[13px] notranslate" />
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-semibold text-slate-900 leading-tight truncate">{{ card.title }}</p>
+                    <p class="text-[10px] text-slate-500 leading-tight truncate">{{ card.desc }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- 3. QR + CTA compact row -->
@@ -696,34 +684,6 @@ onUnmounted(() => {
                     <span class="material-symbols-outlined text-[15px]">payments</span>
                   </router-link>
                 </div>
-              </div>
-            </div>
-
-            <!-- 4. Features carousel — compact horizontal scroll -->
-            <div ref="mobileCardsRef" class="-mx-5 overflow-hidden">
-              <div @scroll="onFeatureScroll" class="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none px-5 pb-1">
-                <div v-for="(card, i) in featureCards" :key="card.title"
-                  class="mobile-card-wrapper shrink-0 snap-start w-[160px]"
-                  :style="{ transitionDelay: `${i * 60}ms` }">
-                  <div class="bg-slate-50 rounded-2xl p-3">
-                    <div class="flex items-start gap-2.5">
-                      <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-orange-100">
-                        <span v-if="card.icon !== 'bi-whatsapp'" class="material-symbols-outlined notranslate text-[15px] text-orange-500">{{ card.icon }}</span>
-                        <v-icon v-else name="bi-whatsapp" class="text-orange-500 text-[15px] notranslate" />
-                      </div>
-                      <div class="min-w-0">
-                        <p class="text-[12px] font-semibold text-slate-900 leading-tight">{{ card.title }}</p>
-                        <p class="mt-0.5 text-[11px] leading-snug text-slate-500">{{ card.desc }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="flex justify-center gap-1.5 mt-3">
-                <span v-for="(card, i) in featureCards" :key="i"
-                  class="h-1 rounded-full transition-all duration-300"
-                  :class="i === activeFeatureIndex ? 'w-4 bg-orange-500' : 'w-1 bg-slate-300'">
-                </span>
               </div>
             </div>
 
@@ -972,31 +932,19 @@ button {
   opacity: 0;
 }
 
-/* Mobile cards staggered entrance animation */
-.mobile-card-wrapper {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+/* Fade animations for mini-cards behind phone */
+@keyframes fade-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-
-.mobile-card-wrapper.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+@keyframes fade-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-
-.scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.animate-fade-left {
+  animation: fade-left 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mobile-card-wrapper {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
+.animate-fade-right {
+  animation: fade-right 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 </style>
