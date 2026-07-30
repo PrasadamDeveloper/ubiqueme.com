@@ -144,306 +144,100 @@ const plans = [
 
 
 <template>
-
-  <section class="relative overflow-hidden bg-slate-50 py-4 sm:py-4">
-
-    <!-- Diamond pattern overlay -->
-    <div class="absolute inset-0 opacity-[0.2] pointer-events-none bg-pattern-diamond"></div>
-
-    <!-- Decorative floating icons -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none">
-      <span class="material-symbols-outlined notranslate absolute top-[8%] left-[4%] text-8xl text-orange-500 opacity-[0.04] animate-float-slow">verified</span>
-      <span class="material-symbols-outlined notranslate absolute bottom-[12%] right-[2%] text-7xl text-orange-500 opacity-[0.03] animate-float-medium">qr_code_2</span>
-      <span class="material-symbols-outlined notranslate absolute top-[45%] right-[6%] text-6xl text-orange-500 opacity-[0.03] animate-float-slow">shield</span>
-    </div>
-
-    <!-- Decorative circle -->
-    <div class="absolute top-[-8%] right-[10%] w-[400px] h-[400px] border border-orange-500/10 rounded-full pointer-events-none"></div>
-
-    <div class="mx-auto max-w-8xl px-5 sm:px-8">
-
+  <section class="bg-white py-6 sm:py-5">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8">
 
       <!-- Header -->
-
-      <header class="max-w-2xl mb-10 sm:mb-12">
-
-        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">
+      <header class="mx-auto mb-12 max-w-2xl text-center sm:mb-16">
+        <span
+          class="inline-block rounded-full bg-orange-50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-orange-600">
           Planes
         </span>
-
-
-        <h2 class="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-slate-950">
+        <h2 class="mt-5 text-[28px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
           Elija la protección que necesita
         </h2>
-
-
-        <p class="mt-4 text-slate-600 leading-7">
+        <p class="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-slate-500">
           Todos los planes incluyen privacidad, alertas y protección mediante código QR.
           Seleccione el nivel de control adecuado para usted.
         </p>
-
       </header>
 
-
-
-      <!-- Currency -->
-
-
-      <div class="flex mb-8">
-
-        <div class="
-inline-flex
-rounded-xl
-bg-white
-border
-border-slate-200
-p-1
-">
-
+      <!-- Currency segmented control -->
+      <div class="flex justify-center mb-8">
+        <div class="inline-flex rounded-full bg-slate-100 p-0.5">
           <button v-for="currency in currencies" :key="currency.key" @click="selectedCurrency = currency.key as any"
-            class="
-px-4
-py-2
-rounded-lg
-text-xs
-font-semibold
-transition
-" :class="selectedCurrency === currency.key
-  ?
-  'bg-orange-500 text-white'
-  :
-  'text-slate-500 hover:text-slate-900'
-  ">
+            class="px-4 py-2 rounded-full text-[12px] font-semibold transition"
+            :class="selectedCurrency === currency.key ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'">
             {{ currency.label }}
-
           </button>
-
         </div>
-
       </div>
-
-
 
       <!-- Plans -->
-
-
-      <div class="grid gap-5 md:grid-cols-3">
-
-
-        <article v-for="plan in plans" :key="plan.id" class="
-relative
-flex
-flex-col
-rounded-2xl
-border
-bg-white
-p-6
-transition
-hover:border-orange-300
-" :class="plan.recommended
-  ?
-  'border-orange-400'
-  :
-  'border-slate-200'
-  ">
-
+      <div class="grid gap-4 sm:gap-5 md:grid-cols-3">
+        <article v-for="plan in plans" :key="plan.id"
+          class="relative flex flex-col rounded-2xl border bg-white p-5 sm:p-6 transition hover:border-orange-300"
+          :class="plan.recommended ? 'border-orange-400' : 'border-slate-200'">
 
           <!-- Badge -->
-
-          <div v-if="plan.badge" class="
-absolute
--top-3
-left-5
-rounded-full
-bg-orange-500
-px-3
-py-1
-text-[10px]
-font-bold
-uppercase
-tracking-wider
-text-white
-">
-
+          <div v-if="plan.badge"
+            class="absolute -top-3 left-5 rounded-full bg-orange-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
             {{ plan.badge }}
-
           </div>
-
-
 
           <!-- Identity -->
-
-
-          <div class="mb-6">
-
-            <h3 class="text-2xl font-semibold text-slate-950">
-              {{ plan.name }}
-            </h3>
-
-
-            <p class="mt-2 text-sm text-slate-600">
-              {{ plan.tagline }}
-            </p>
-
+          <div class="mb-5">
+            <h3 class="text-xl font-semibold text-slate-900 sm:text-2xl">{{ plan.name }}</h3>
+            <p class="mt-1.5 text-[13px] text-slate-500 sm:text-sm">{{ plan.tagline }}</p>
           </div>
-
-
 
           <!-- Price -->
-
-
-          <div class="border-b border-slate-100 pb-6 mb-6">
-
-
+          <div class="border-b border-slate-100 pb-5 mb-5">
             <div class="flex items-end gap-2">
-
-              <span class="text-4xl font-bold tracking-tight text-slate-950">
-
+              <span class="text-[32px] font-semibold tracking-tight text-slate-900 sm:text-4xl">
                 ${{ plan.prices[selectedCurrency].price }}
-
               </span>
-
-
-              <span class="text-sm text-slate-500">
-                {{ selectedCurrency }} <span class="uppercase bg-orange-500 text-white px-2 py-1 rounded-2xl">AÑO</span>
+              <span class="text-[13px] text-slate-500">
+                {{ selectedCurrency }}
+                <span
+                  class="ml-1 rounded-full bg-orange-500 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">AÑO</span>
               </span>
-
-
             </div>
-
-
-            <p class="mt-2 text-xs text-slate-500">
-
-              ≈ ${{ plan.prices[selectedCurrency].monthly }} / mes
-
-            </p>
-
-
+            <p class="mt-1.5 text-[12px] text-slate-400">≈ ${{ plan.prices[selectedCurrency].monthly }} / mes</p>
           </div>
 
-
-
-
           <!-- Features -->
-
-
-          <ul class="space-y-3 flex-1">
-
-
-            <li v-for="feature in plan.features" :key="feature[0]" class="flex gap-3 text-sm">
-
-
-              <span class="
-material-symbols-outlined
-text-base
-" :class="feature[1]
-  ?
-  'text-orange-500'
-  :
-  'text-slate-300'
-  ">
-
+          <ul class="space-y-2.5 flex-1">
+            <li v-for="feature in plan.features" :key="feature[0]" class="flex items-start gap-2.5 text-sm">
+              <span class="material-symbols-outlined notranslate text-[16px] mt-0.5"
+                :class="feature[1] ? 'text-orange-500' : 'text-slate-300'">
                 {{ feature[1] ? 'check' : 'remove' }}
-
               </span>
-
-
-              <span :class="feature[1]
-                ?
-                'text-slate-700'
-                :
-                'text-slate-300 line-through'
-                ">
-
+              <span :class="feature[1] ? 'text-slate-700' : 'text-slate-300 line-through'">
                 {{ feature[0] }}
-
               </span>
-
-
             </li>
-
-
           </ul>
 
-
-
-
-          <button @click="handlePlanClick(plan.id)" class="
-mt-8
-h-12
-rounded-xl
-bg-orange-500
-text-sm
-font-semibold
-text-white
-transition
-hover:bg-orange-600
-active:scale-95
-">
-
+          <button @click="handlePlanClick(plan.id)"
+            class="mt-6 h-11 rounded-full bg-orange-500 text-sm font-semibold text-white transition hover:bg-orange-600 active:scale-[0.97]">
             Activar {{ plan.name }}
-
           </button>
-
-
         </article>
-
-
       </div>
 
-
-
-
-
-      <!-- Shipping -->
-
-      <div class="
-mt-12
-rounded-xl
-border
-border-slate-200
-bg-white
-p-5
-text-center
-">
-
-
+      <!-- Shipping – iOS grouped cell -->
+      <div class="mt-10 bg-slate-50 rounded-2xl p-5 sm:p-6 text-center">
         <div class="flex justify-center gap-2 items-center text-sm font-semibold text-slate-900">
-
-          <span class="material-symbols-outlined text-orange-500">
-            local_shipping
-          </span>
-
+          <span class="material-symbols-outlined notranslate text-orange-500 text-[18px]">local_shipping</span>
           Envío físico incluido en México
-
         </div>
-
-
-        <p class="mt-2 text-sm text-slate-600">
+        <p class="mt-1.5 text-[13px] text-slate-500">
           Cada plan incluye un primer envío gratuito.
           Los códigos adicionales pueden solicitarse posteriormente.
         </p>
-
-
       </div>
 
-
-
-      <p class="
-mt-6
-text-center
-text-xs
-text-slate-400
-">
-
-
-
-      </p>
-
-
-
     </div>
-
   </section>
-
 </template>
