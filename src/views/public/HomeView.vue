@@ -151,7 +151,7 @@ onUnmounted(() => {
 <template>
   <HomeLayout>
     <template #main>
-      <main class="relative bg-gray-50 overflow-hidden font-google-sans">
+      <main class="relative bg-white overflow-hidden font-google-sans">
 
         <!-- HERO -->
         <section class="px-6 sm:px-10 lg:px-6 pt-24 lg:pt-20 pb-20 relative z-20 min-h-[600px]">
@@ -165,7 +165,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Gradient overlay -->
-          <div aria-hidden="true" class="absolute inset-0 -z-10 bg-linear-to-b from-slate-100/50 to-slate-50 to-100%">
+          <div aria-hidden="true" class="absolute inset-0 -z-10 bg-white">
           </div>
 
           <!-- VIDEO MARQUEE -->
@@ -572,164 +572,151 @@ onUnmounted(() => {
 
           </div>
 
-          <!-- MOBILE HERO — redesigned layout -->
-          <div class="lg:hidden flex flex-col gap-4">
+          <!-- MOBILE HERO — iOS style -->
+          <div class="lg:hidden flex flex-col gap-6">
 
-            <!-- 1. Heading + animated place name -->
-            <div class="flex flex-col items-center text-center">
-              <h1 class="text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1] pt-1 text-slate-800">
-                Códigos QR para notificar
+            <!-- 1. Heading -->
+            <div class="flex flex-col items-center text-center pt-4">
+              <h1 class="text-[28px] font-semibold text-slate-900 tracking-tight leading-[1.15]">
+                Códigos QR para notificar sobre su:
               </h1>
-              <div class="flex gap-1 justify-center mt-1">
-                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1] text-slate-700">
-                  sobre su:
-                </h2>
-                <div class="relative overflow-hidden">
-                  <Transition name="slide-up" mode="out-in">
-                    <div :key="currentPlace?.name"
-                      class="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-800 bg-clip-text text-transparent text-3xl sm:text-4xl font-black tracking-tight leading-[1.1]">
-                      {{ currentPlace?.name }}
-                    </div>
-                  </Transition>
-                </div>
+              <div class="relative overflow-hidden mt-1">
+                <Transition name="slide-up" mode="out-in">
+                  <div :key="currentPlace?.name"
+                    class="text-[28px] font-semibold text-orange-500 tracking-tight leading-[1.15]">
+                    {{ currentPlace?.name }}
+                  </div>
+                </Transition>
               </div>
-
-              <p class="mt-2 text-sm sm:text-base leading-6 text-slate-600 max-w-md">
-                Etiquetas físicas y pulseras inteligentes para recuperar
-                objetos perdidos, ayudar a mascotas, niños y adultos mayores,
-                manteniendo siempre protegida su información personal.
+              <p class="mt-3 text-[15px] leading-6 text-slate-500 max-w-md">
+                Etiquetas físicas y pulseras inteligentes para recuperar objetos perdidos, ayudando a mascotas, niños y adultos mayores, manteniendo siempre protegida su información personal.
               </p>
             </div>
 
-            <!-- 2. QR + CTA compact row -->
-            <div class="flex flex-row items-center gap-3 bg-white rounded-2xl border border-neutral-200 p-3 shadow-sm">
-
-              <!-- QR compacto -->
-              <div class="shrink-0">
-                <div class="rounded-xl border border-neutral-100 bg-white p-1.5 flex justify-center">
-                  <QrcodeVue :value="qrDynamicUrl" :size="80" render-as="svg" level="Q"
-                    :image-settings="imageSettings" />
+            <!-- 2. QR + CTA card -->
+            <div class="bg-slate-50 rounded-2xl p-4">
+              <div class="flex items-center gap-4">
+                <div class="shrink-0">
+                  <div class="rounded-xl bg-white p-2 flex justify-center border border-slate-100">
+                    <QrcodeVue :value="qrDynamicUrl" :size="76" render-as="svg" level="Q" :image-settings="imageSettings" />
+                  </div>
+                  <p class="mt-1 text-[9px] text-slate-400 font-medium text-center">Escanea</p>
                 </div>
-                <p class="mt-1 text-[8px] text-neutral-500 text-center">Escanea</p>
-              </div>
-
-              <!-- CTAs -->
-              <div class="flex-1 min-w-0">
-                <p class="text-[9px] uppercase tracking-[0.3em] text-neutral-400 mb-1.5 text-center">Prueba Gratuita</p>
-                <router-link :to="{ name: 'register' }"
-                  class="inline-flex items-center gap-1 rounded-xl bg-orange-400 px-3 py-2.5 text-white font-semibold text-xs w-full justify-center transition hover:bg-slate-800 mb-1.5">
-                  Crear cuenta gratis
-                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </router-link>
-                <router-link :to="{ name: 'pricing' }"
-                  class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 text-[11px] w-full justify-center transition hover:bg-slate-50">
-                  Ver planes
-                  <span class="material-symbols-outlined text-xs">payments</span>
-                </router-link>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 text-center">Prueba Gratuita</p>
+                  <router-link :to="{ name: 'register' }"
+                    class="flex items-center justify-center gap-1.5 w-full h-10 rounded-full bg-orange-500 text-white text-[13px] font-semibold hover:bg-orange-600 active:scale-[0.97] transition-all duration-150 mb-2">
+                    Crear cuenta gratis
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </router-link>
+                  <router-link :to="{ name: 'pricing' }"
+                    class="flex items-center justify-center gap-1.5 w-full h-10 rounded-full bg-orange-50 text-orange-600 text-[13px] font-semibold hover:bg-orange-100 active:scale-[0.97] transition-all duration-150">
+                    Ver planes
+                    <span class="material-symbols-outlined text-[16px]">payments</span>
+                  </router-link>
+                </div>
               </div>
             </div>
 
-            <!-- 3. Feature cards (2-column animated grid) -->
-            <div ref="mobileCardsRef" class="grid grid-cols-2 gap-2">
+            <!-- 3. Feature cards (2-column grid) -->
+            <div ref="mobileCardsRef" class="grid grid-cols-2 gap-3">
 
-              <!-- Cobertura mundial -->
               <div class="mobile-card-wrapper" :style="{ transitionDelay: '0ms' }">
-                <div
-                  class="rounded-xl border border-slate-100 bg-white/90 p-2.5 text-left flex flex-col gap-1.5 shadow-xs">
-                  <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50">
-                    <span class="material-symbols-outlined text-orange-600 text-sm">public</span>
+                <div class="bg-slate-50 rounded-2xl p-3.5 flex flex-col gap-2.5">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+                    <span class="material-symbols-outlined text-orange-500 text-[16px]">public</span>
                   </div>
-                  <h3 class="font-semibold text-slate-900 text-[10px] leading-tight">Cobertura mundial</h3>
-                  <p class="text-[9px] leading-snug text-slate-500">Funciona desde cualquier lugar con internet.</p>
+                  <div>
+                    <h3 class="text-[13px] font-semibold text-slate-900 leading-tight">Cobertura mundial</h3>
+                    <p class="text-[12px] leading-snug text-slate-500 mt-0.5">Funciona desde cualquier lugar con internet.</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- Alertas inmediatas -->
               <div class="mobile-card-wrapper" :style="{ transitionDelay: '80ms' }">
-                <div
-                  class="rounded-xl border border-slate-100 bg-white/90 p-2.5 text-left flex flex-col gap-1.5 shadow-xs">
-                  <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50">
-                    <span class="material-symbols-outlined text-orange-600 text-sm">notifications_active</span>
+                <div class="bg-slate-50 rounded-2xl p-3.5 flex flex-col gap-2.5">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+                    <span class="material-symbols-outlined text-orange-500 text-[16px]">notifications_active</span>
                   </div>
-                  <h3 class="font-semibold text-slate-900 text-[10px] leading-tight">Alertas inmediatas</h3>
-                  <p class="text-[9px] leading-snug text-slate-500">Notificación en segundos al escanear tu QR.</p>
+                  <div>
+                    <h3 class="text-[13px] font-semibold text-slate-900 leading-tight">Alertas inmediatas</h3>
+                    <p class="text-[12px] leading-snug text-slate-500 mt-0.5">Notificación en segundos al escanear tu QR.</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- Sin aplicaciones -->
               <div class="mobile-card-wrapper" :style="{ transitionDelay: '160ms' }">
-                <div
-                  class="rounded-xl border border-slate-100 bg-white/90 p-2.5 text-left flex flex-col gap-1.5 shadow-xs">
-                  <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50">
-                    <span class="material-symbols-outlined text-orange-600 text-sm">install_mobile</span>
+                <div class="bg-slate-50 rounded-2xl p-3.5 flex flex-col gap-2.5">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+                    <span class="material-symbols-outlined text-orange-500 text-[16px]">install_mobile</span>
                   </div>
-                  <h3 class="font-semibold text-slate-900 text-[10px] leading-tight">Sin aplicaciones</h3>
-                  <p class="text-[9px] leading-snug text-slate-500">Solo escanea el QR, el navegador hace todo.</p>
+                  <div>
+                    <h3 class="text-[13px] font-semibold text-slate-900 leading-tight">Sin aplicaciones</h3>
+                    <p class="text-[12px] leading-snug text-slate-500 mt-0.5">Solo escanea el QR, el navegador hace todo.</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- WhatsApp en tiempo real -->
               <div class="mobile-card-wrapper" :style="{ transitionDelay: '240ms' }">
-                <div
-                  class="rounded-xl border border-slate-100 bg-white/90 p-2.5 text-left flex flex-col gap-1.5 shadow-xs">
-                  <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50">
-                    <v-icon name="bi-whatsapp" class="text-orange-600 text-sm notranslate" />
+                <div class="bg-slate-50 rounded-2xl p-3.5 flex flex-col gap-2.5">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+                    <v-icon name="bi-whatsapp" class="text-orange-500 text-[16px] notranslate" />
                   </div>
-                  <h3 class="font-semibold text-slate-900 text-[10px] leading-tight">
-                    <span class="flex items-center gap-1">
-                      WhatsApp en tiempo real
-                      <span class="h-1 w-1 rounded-full bg-orange-500 animate-pulse inline-block"></span>
-                    </span>
-                  </h3>
-                  <p class="text-[9px] leading-snug text-slate-500">Alerta directa a WhatsApp, sin apps extra.</p>
+                  <div>
+                    <h3 class="text-[13px] font-semibold text-slate-900 leading-tight">
+                      <span class="flex items-center gap-1">
+                        WhatsApp en tiempo real
+                        <span class="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse inline-block"></span>
+                      </span>
+                    </h3>
+                    <p class="text-[12px] leading-snug text-slate-500 mt-0.5">Alerta directa a WhatsApp, sin apps extra.</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- Notificaciones 24/7 -->
               <div class="mobile-card-wrapper" :style="{ transitionDelay: '320ms' }">
-                <div
-                  class="rounded-xl border border-slate-100 bg-white/90 p-2.5 text-left flex flex-col gap-1.5 shadow-xs">
-                  <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50">
-                    <span class="material-symbols-outlined text-orange-600 text-sm">schedule</span>
+                <div class="bg-slate-50 rounded-2xl p-3.5 flex flex-col gap-2.5">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+                    <span class="material-symbols-outlined text-orange-500 text-[16px]">schedule</span>
                   </div>
-                  <h3 class="font-semibold text-slate-900 text-[10px] leading-tight">Notificaciones 24/7</h3>
-                  <p class="text-[9px] leading-snug text-slate-500">Monitoreo constante, incluso mientras duermes.</p>
+                  <div>
+                    <h3 class="text-[13px] font-semibold text-slate-900 leading-tight">Notificaciones 24/7</h3>
+                    <p class="text-[12px] leading-snug text-slate-500 mt-0.5">Monitoreo constante, incluso mientras duermes.</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- Privacidad protegida -->
               <div class="mobile-card-wrapper" :style="{ transitionDelay: '400ms' }">
-                <div
-                  class="rounded-xl border border-slate-100 bg-white/90 p-2.5 text-left flex flex-col gap-1.5 shadow-xs">
-                  <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50">
-                    <span class="material-symbols-outlined text-orange-600 text-sm">shield_lock</span>
+                <div class="bg-slate-50 rounded-2xl p-3.5 flex flex-col gap-2.5">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+                    <span class="material-symbols-outlined text-orange-500 text-[16px]">shield_lock</span>
                   </div>
-                  <h3 class="font-semibold text-slate-900 text-[10px] leading-tight">Privacidad protegida</h3>
-                  <p class="text-[9px] leading-snug text-slate-500">Nunca compartimos tu info personal.</p>
+                  <div>
+                    <h3 class="text-[13px] font-semibold text-slate-900 leading-tight">Privacidad protegida</h3>
+                    <p class="text-[12px] leading-snug text-slate-500 mt-0.5">Nunca compartimos tu info personal.</p>
+                  </div>
                 </div>
               </div>
 
               <!-- CTA: 1 año gratis (full-width) -->
               <div class="mobile-card-wrapper col-span-2" :style="{ transitionDelay: '480ms' }">
                 <router-link :to="{ name: 'register' }"
-                  class="rounded-xl border border-orange-200 bg-orange-50/90 p-2.5 text-left hover:bg-orange-100/80 transition flex items-start gap-2.5">
-                  <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-100">
-                    <span class="material-symbols-outlined text-orange-600 text-sm">workspace_premium</span>
+                  class="bg-slate-50 rounded-2xl p-3.5 flex items-start gap-3 hover:bg-slate-100 transition active:scale-[0.99]">
+                  <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100">
+                    <span class="material-symbols-outlined text-orange-500 text-[16px]">workspace_premium</span>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <h3 class="font-semibold text-orange-800 text-[10px]">1 año Plan Bronce GRATIS</h3>
-                    <p class="text-[9px] leading-snug text-orange-600/80">Crea tu cuenta y actívalo hoy sin costo.</p>
-                    <span
-                      class="mt-1 inline-block rounded-lg bg-orange-600 px-2.5 py-0.5 text-[9px] font-semibold text-white">Crear
-                      cuenta</span>
+                    <h3 class="text-[13px] font-semibold text-slate-900">1 año Plan Bronce GRATIS</h3>
+                    <p class="text-[12px] leading-snug text-slate-500 mt-0.5">Crea tu cuenta y actívalo hoy sin costo.</p>
+                    <span class="mt-2 inline-flex h-7 items-center rounded-full bg-orange-500 px-3 text-[11px] font-semibold text-white">Crear cuenta</span>
                   </div>
                 </router-link>
               </div>
             </div>
 
-            <!-- 4. Phone Mockup with entrance animation -->
-            <div class="flex justify-center animate-fade-up animate-delay-[.6s]">
-              <div class="relative origin-top scale-[0.7] sm:scale-[0.8] -my-8 shrink-0">
+            <!-- 4. Phone Mockup -->
+            <div class="flex justify-center pt-2">
+              <div class="relative origin-top scale-[0.7] sm:scale-[0.8] -my-6 shrink-0">
                 <img src="../../assets/images/phonemockup-ubq.webp" alt="" class="w-44 sm:w-48 relative z-20">
                 <section class="absolute inset-[7px] rounded-[28px] overflow-hidden bg-[#efeae2] z-10 flex flex-col">
                   <div class="h-5 bg-[#00342e] text-white text-[8px] flex justify-between items-center px-3">
@@ -742,8 +729,7 @@ onUnmounted(() => {
                   </div>
                   <header class="bg-[#075E54] h-10 flex items-center px-2.5 text-white">
                     <i class="ri-arrow-left-line text-base mr-1.5"></i>
-                    <div
-                      class="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-[#075E54] font-bold">
+                    <div class="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-[#075E54] font-bold">
                       <img src="../../assets/Logo_Ubiqueme.webp" class="rounded-full p-0.5 bg-emerald-50">
                     </div>
                     <div class="ml-2 flex-1">
@@ -756,8 +742,7 @@ onUnmounted(() => {
                       <i class="ri-more-2-fill"></i>
                     </div>
                   </header>
-                  <main
-                    class="flex-1 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')] p-2 space-y-2 overflow-hidden">
+                  <main class="flex-1 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')] p-2 space-y-2 overflow-hidden">
                     <div class="flex">
                       <div :key="currentPlace?.name"
                         class="bg-white rounded-lg rounded-tl-sm px-2 py-1.5 max-w-[75%] shadow text-[7px]">
@@ -772,8 +757,7 @@ onUnmounted(() => {
                         "Escaneé su QR
                         <span class="font-bold">{{ currentPlace?.name }}</span>
                         para contactarlo"<br><br>
-                        Recuerde <b>NO compartir datos personales</b> si decide contactar al usuario que escaneó su
-                        QR.<br><br>
+                        Recuerde <b>NO compartir datos personales</b> si decide contactar al usuario que escaneó su QR.<br><br>
                         <i>Gracias por usar los servicios de Ubiqueme.</i>
                         <div class="text-right text-[7px] text-gray-500 mt-0.5">9:40</div>
                       </div>
@@ -781,9 +765,7 @@ onUnmounted(() => {
                   </main>
                   <footer class="bg-[#f0f2f5] h-10 px-2.5 flex items-center gap-1.5">
                     <i class="ri-emotion-line text-sm text-gray-500"></i>
-                    <div class="flex-1 bg-white rounded-full px-3 py-1.5 text-[10px] text-gray-400">Escribe un
-                      mensaje...
-                    </div>
+                    <div class="flex-1 bg-white rounded-full px-3 py-1.5 text-[10px] text-gray-400">Escribe un mensaje...</div>
                     <i class="ri-attachment-2 text-sm text-gray-500"></i>
                     <i class="ri-camera-line text-sm text-gray-500"></i>
                     <div class="w-7 h-7 rounded-full bg-[#25D366] flex items-center justify-center">
@@ -800,172 +782,82 @@ onUnmounted(() => {
 
 
 
-        <!-- Lightweight Features Grid (full-width, centered) -->
-        <!-- FEATURES -->
+        <!-- FEATURES — iOS style -->
         <section id="benefits" class="px-5 sm:px-8 lg:px-10 pb-20">
 
-          <!-- Header -->
-
           <header class="max-w-2xl">
-            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">
+            <span class="text-[12px] font-semibold uppercase tracking-[0.15em] text-orange-500">
               Beneficios
             </span>
-
-            <h2 class="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-slate-950">
+            <h2 class="mt-2 text-[24px] font-semibold tracking-tight text-slate-900 leading-tight">
               Diseñado para proteger lo que más le importa
             </h2>
-
-            <p class="mt-4 text-base sm:text-lg leading-7 text-slate-600">
-              Cada código QR conecta a la persona que encuentra un objeto
-              con su propietario de forma inmediata, segura y privada.
+            <p class="mt-3 text-[15px] leading-6 text-slate-500">
+              Cada código QR conecta a la persona que encuentra un objeto con su propietario de forma inmediata, segura y privada.
             </p>
           </header>
 
+          <div class="mt-8 space-y-3">
 
-          <!-- Features -->
-
-          <div class="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2">
-
-            <!-- Item -->
-
-            <article class="group flex gap-4">
-
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                <span class="material-symbols-outlined text-2xl">
-                  notifications_active
-                </span>
+            <article class="bg-slate-50 rounded-2xl p-4 flex items-start gap-3.5">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 mt-0.5">
+                <span class="material-symbols-outlined text-orange-500 text-[18px]">notifications_active</span>
               </div>
-
-              <div>
-                <h3 class="text-lg font-semibold text-slate-950">
-                  Alertas inmediatas
-                </h3>
-
-                <p class="mt-1.5 text-sm leading-6 text-slate-600">
-                  Reciba una notificación apenas alguien escanee el código QR.
-                  La comunicación ocurre prácticamente en tiempo real.
-                </p>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-[15px] font-semibold text-slate-900">Alertas inmediatas</h3>
+                <p class="mt-1 text-[13px] leading-5 text-slate-500">Reciba una notificación apenas alguien escanee el código QR. La comunicación ocurre prácticamente en tiempo real.</p>
               </div>
-
             </article>
 
-
-
-            <article class="group flex gap-4">
-
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                <span class="material-symbols-outlined text-2xl">
-                  shield_lock
-                </span>
+            <article class="bg-slate-50 rounded-2xl p-4 flex items-start gap-3.5">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 mt-0.5">
+                <span class="material-symbols-outlined text-orange-500 text-[18px]">shield_lock</span>
               </div>
-
-              <div>
-                <h3 class="text-lg font-semibold text-slate-950">
-                  Privacidad protegida
-                </h3>
-
-                <p class="mt-1.5 text-sm leading-6 text-slate-600">
-                  Sus datos permanecen ocultos. La persona que encuentra
-                  el objeto nunca accede a su teléfono, correo o dirección.
-                </p>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-[15px] font-semibold text-slate-900">Privacidad protegida</h3>
+                <p class="mt-1 text-[13px] leading-5 text-slate-500">Sus datos permanecen ocultos. La persona que encuentra el objeto nunca accede a su teléfono, correo o dirección.</p>
               </div>
-
             </article>
 
-
-
-            <article class="group flex gap-4">
-
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                <span class="material-symbols-outlined text-2xl">
-                  public
-                </span>
+            <article class="bg-slate-50 rounded-2xl p-4 flex items-start gap-3.5">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 mt-0.5">
+                <span class="material-symbols-outlined text-orange-500 text-[18px]">public</span>
               </div>
-
-              <div>
-                <h3 class="text-lg font-semibold text-slate-950">
-                  Cobertura mundial
-                </h3>
-
-                <p class="mt-1.5 text-sm leading-6 text-slate-600">
-                  Funciona desde cualquier país con un teléfono conectado
-                  a internet. Sin depender de aplicaciones específicas.
-                </p>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-[15px] font-semibold text-slate-900">Cobertura mundial</h3>
+                <p class="mt-1 text-[13px] leading-5 text-slate-500">Funciona desde cualquier país con un teléfono conectado a internet. Sin depender de aplicaciones específicas.</p>
               </div>
-
             </article>
 
-
-
-            <article class="group flex gap-4">
-
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                <span class="material-symbols-outlined text-2xl">
-                  install_mobile
-                </span>
+            <article class="bg-slate-50 rounded-2xl p-4 flex items-start gap-3.5">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 mt-0.5">
+                <span class="material-symbols-outlined text-orange-500 text-[18px]">install_mobile</span>
               </div>
-
-              <div>
-                <h3 class="text-lg font-semibold text-slate-950">
-                  Sin aplicaciones
-                </h3>
-
-                <p class="mt-1.5 text-sm leading-6 text-slate-600">
-                  Solo escanee el código QR. El navegador realiza todo
-                  sin instalaciones ni configuraciones adicionales.
-                </p>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-[15px] font-semibold text-slate-900">Sin aplicaciones</h3>
+                <p class="mt-1 text-[13px] leading-5 text-slate-500">Solo escanee el código QR. El navegador realiza todo sin instalaciones ni configuraciones adicionales.</p>
               </div>
-
             </article>
 
           </div>
-
-
 
           <!-- WhatsApp -->
-
-          <div
-            class="mt-12 flex flex-col gap-5 rounded-2xl bg-green-50/70 p-6 sm:flex-row sm:items-center sm:justify-between">
-
-            <div class="flex gap-4">
-
-              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-500 text-white">
-                <v-icon name="bi-whatsapp" class="text-2xl notranslate" />
+          <div class="mt-8 bg-slate-50 rounded-2xl p-5">
+            <div class="flex items-start gap-3.5">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 mt-0.5">
+                <v-icon name="bi-whatsapp" class="text-orange-500 text-lg notranslate" />
               </div>
-
-
-              <div>
-
-                <span class="text-xs font-semibold uppercase tracking-[0.18em] text-green-700">
-                  WhatsApp
-                </span>
-
-                <h3 class="mt-1 text-xl font-semibold text-slate-950">
-                  Reciba notificaciones en tiempo real
-                </h3>
-
-                <p class="mt-2 max-w-xl text-sm leading-6 text-slate-600">
-                  Cuando alguien encuentre su objeto recibirá una alerta
-                  directamente en WhatsApp sin revisar correos ni instalar apps.
-                </p>
-
+              <div class="flex-1 min-w-0">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.15em] text-orange-500">WhatsApp</span>
+                <h3 class="mt-1.5 text-[16px] font-semibold text-slate-900 leading-tight">Reciba notificaciones en tiempo real</h3>
+                <p class="mt-1.5 text-[13px] leading-5 text-slate-500">Cuando alguien encuentre su objeto recibirá una alerta directamente en WhatsApp sin revisar correos ni instalar apps.</p>
+                <div class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-[11px] font-semibold text-slate-600 border border-slate-100">
+                  <span class="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                  Tiempo real
+                </div>
               </div>
-
             </div>
-
-
-            <div
-              class="flex items-center gap-2 self-start rounded-full bg-white px-4 py-2 text-sm font-medium text-green-700 shadow-sm sm:self-center">
-
-              <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-
-              Tiempo real
-
-            </div>
-
-
           </div>
-
 
         </section>
         <section id="how-it-works">

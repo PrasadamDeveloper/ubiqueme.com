@@ -1,8 +1,9 @@
 <script lang="ts" setup>
+import type { IFeature } from '@/interfaces/IFeature'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import FeatureCard from './FeatureCard.vue'
 
-const features = [
+const features: IFeature[] = [
   {
     icon: 'visibility_off',
     title: 'Privacidad blindada',
@@ -56,10 +57,9 @@ onMounted(() => {
     },
     { threshold: 0.1 }
   )
-
   if (sectionEl.value) {
-    const wrappers = sectionEl.value.querySelectorAll('.feature-card-wrapper')
-    wrappers.forEach((el) => observer?.observe(el))
+    const els = sectionEl.value.querySelectorAll('.feature-stagger')
+    els.forEach((el) => observer?.observe(el))
   }
 })
 
@@ -70,31 +70,46 @@ onBeforeUnmount(() => {
 
 <template>
   <section data-od-id="features-section" ref="sectionEl"
-    class="relative overflow-hidden bg-linear-to-b from-slate-50 to-white py-20 sm:py-28">
-    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div
-        class="bg-gradient-to-br from-orange-400/8 to-orange-500/15 absolute -right-48 top-9 h-[500px] w-[500px] rounded-full blur-3xl" />
-      <div
-        class="bg-gradient-to-tr from-orange-400/5 to-orange-500/10 absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full blur-3xl" />
-    </div>
+    class="bg-white py-16 sm:py-20">
 
-    <div class="relative mx-auto max-w-7xl px-5 sm:px-8">
-      <header data-od-id="features-header" class="mx-auto mb-16 max-w-2xl text-center sm:mb-20">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8">
+      <header data-od-id="features-header" class="mx-auto mb-12 max-w-2xl text-center sm:mb-16">
         <span
-          class="inline-block rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">
+          class="inline-block rounded-full bg-orange-50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-orange-600">
           Características
         </span>
         <h2 data-od-id="features-heading"
-          class="mt-6 text-4xl font-bold leading-tight tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+          class="mt-5 text-[28px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
           Diseñado para proteger,<br>
-          <span class="text-orange-600">creado para confiar</span>
+          <span class="text-orange-500">creado para confiar</span>
         </h2>
-        <p class="mx-auto mt-4 max-w-lg text-base leading-7 text-gray-500">
+        <p class="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-slate-500">
           Cada función mantiene sus objetos localizables sin comprometer su privacidad.
         </p>
       </header>
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="(feature, index) in features" :key="feature.title" class="feature-card-wrapper"
+
+      <!-- Mobile: iOS grouped cells -->
+      <div class="bg-slate-50 rounded-2xl overflow-hidden sm:hidden">
+        <div v-for="(feature, index) in features" :key="feature.title" class="feature-stagger"
+          :style="{ transitionDelay: `${index * 60}ms` }">
+          <div class="flex items-start gap-3 px-4 py-3.5"
+            :class="index < features.length - 1 ? 'border-b border-[#C6C6C8]/30' : ''">
+            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-orange-100">
+              <span class="material-symbols-outlined notranslate text-[16px] text-orange-500">
+                {{ feature.icon }}
+              </span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[15px] font-medium text-slate-900">{{ feature.title }}</p>
+              <p class="mt-0.5 text-[13px] leading-relaxed text-slate-500">{{ feature.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tablet / Desktop: card grid -->
+      <div class="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="(feature, index) in features" :key="feature.title" class="feature-stagger"
           :style="{ transitionDelay: `${index * 80}ms` }">
           <FeatureCard :feature="feature" />
         </div>
@@ -104,21 +119,21 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.feature-card-wrapper {
+.feature-stagger {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(16px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .feature-card-wrapper {
+  .feature-stagger {
     opacity: 1;
     transform: none;
     transition: none;
   }
 }
 
-.feature-card-wrapper.is-visible {
+.feature-stagger.is-visible {
   opacity: 1;
   transform: translateY(0);
 }

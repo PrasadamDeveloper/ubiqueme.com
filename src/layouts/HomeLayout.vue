@@ -683,158 +683,135 @@ onUnmounted(() => {
     <main id="main-content">
       <slot name="main"></slot>
     </main>
-    <footer class="relative overflow-hidden border-t border-slate-200 bg-gradient-to-b from-white to-slate-50">
-      <div class="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-orange-500/5 blur-3xl"></div>
-      <div class="relative mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
-        <div class="grid gap-10 lg:grid-cols-3">
-          <!-- Marca -->
-          <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
-            <div class="mb-5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
-              <div class="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">
-                <span class="material-symbols-outlined notranslate text-slate-600 text-[14px]">lock</span>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-slate-700">SSL</span>
-              </div>
-              <div class="flex items-center gap-1.5 rounded-full border border-slate-200/30 bg-slate-50/70 px-3 py-1.5">
-                <span class="material-symbols-outlined notranslate text-slate-600 text-[14px]">verified</span>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-slate-700">Empresa Formalmente
-                  Registrada</span>
-              </div>
+    <footer class="bg-white border-t border-slate-100">
+      <div class="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12">
+        <!-- Brand section -->
+        <div class="flex flex-col items-center text-center mb-8">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5">
+              <span class="material-symbols-outlined notranslate text-slate-500 text-[13px]">lock</span>
+              <span class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">SSL</span>
             </div>
-            <Transition name="slide-up">
-              <div :key="currentDomainIndex" class="mb-3 text-3xl font-black lowercase tracking-tight">
-                <span class="text-slate-900">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
-                <span class="text-orange-500">.com</span>
-              </div>
-            </Transition>
-            <p class="text-sm text-slate-500">© {{ new Date().getFullYear() }} ubiqueme.com</p>
-            <p class="mt-1 text-[10px] uppercase tracking-[0.25em] text-slate-400">
-              Una marca de
-              <span class="font-semibold text-orange-500">AZIECHRIE PHARMA</span>
-            </p>
+            <div class="flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5">
+              <span class="material-symbols-outlined notranslate text-slate-500 text-[13px]">verified</span>
+              <span class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">Empresa Formal</span>
+            </div>
           </div>
-          <!-- Navegación -->
-          <div class="flex flex-col items-center">
-            <h3 class="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Navegación</h3>
-            <div class="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3">
+          <Transition name="slide-up">
+            <div :key="currentDomainIndex" class="text-[28px] font-semibold tracking-tight mb-1">
+              <span class="text-slate-900">{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+              <span class="text-orange-500">.com</span>
+            </div>
+          </Transition>
+          <p class="text-[13px] text-slate-500">© {{ new Date().getFullYear() }} ubiqueme.com</p>
+          <p class="mt-1 text-[10px] text-slate-400 uppercase tracking-wider">
+            Una marca de <span class="font-semibold text-orange-500">AZIECHRIE PHARMA</span>
+          </p>
+        </div>
+
+        <!-- Navigation & Legal — iOS grouped cells on mobile -->
+        <div class="space-y-3 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0">
+          <div class="bg-slate-50 rounded-2xl overflow-hidden lg:bg-transparent lg:rounded-none">
+            <div class="px-4 py-3 border-b border-slate-100 lg:border-0 lg:px-0">
+              <h3 class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Navegación</h3>
+            </div>
+            <div class="divide-y divide-slate-100 lg:divide-y-0 lg:flex lg:flex-col lg:gap-2">
               <RouterLink :to="{ name: 'home' }"
-                class="group flex items-center gap-2 text-sm text-slate-500 transition hover:text-orange-500">
-                <span class="material-symbols-outlined text-[18px]">home</span> Inicio
+                class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">home</span> Inicio
               </RouterLink>
               <RouterLink :to="{ name: 'help' }"
-                class="group flex items-center gap-2 text-sm text-slate-500 transition hover:text-orange-500">
-                <span class="material-symbols-outlined text-[18px]">help</span> Ayuda
+                class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">help</span> Ayuda
               </RouterLink>
               <RouterLink :to="{ name: 'pricing' }"
-                class="group flex items-center gap-2 text-sm text-slate-500 transition hover:text-orange-500">
-                <span class="material-symbols-outlined text-[18px]">attach_money</span> Precios
+                class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">attach_money</span> Precios
               </RouterLink>
               <template v-if="!useUserStore().getUserId">
                 <RouterLink :to="{ name: 'login' }"
-                  class="group flex items-center gap-2 text-sm text-slate-500 transition hover:text-orange-500">
-                  <span class="material-symbols-outlined text-[18px]">login</span> Iniciar sesión
+                  class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                  <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">login</span> Iniciar sesión
                 </RouterLink>
                 <RouterLink :to="{ name: 'register' }"
-                  class="group flex items-center gap-2 text-sm text-slate-500 transition hover:text-orange-500">
-                  <span class="material-symbols-outlined text-[18px]">person_add</span> Registrarse
+                  class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                  <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">person_add</span> Registrarse
                 </RouterLink>
               </template>
             </div>
           </div>
-          <!-- Legal -->
-          <div class="flex flex-col items-center lg:items-end text-center lg:text-right">
-            <h3 class="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Información</h3>
-            <div class="space-y-4">
+
+          <div class="bg-slate-50 rounded-2xl overflow-hidden lg:bg-transparent lg:rounded-none">
+            <div class="px-4 py-3 border-b border-slate-100 lg:border-0 lg:px-0">
+              <h3 class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Información</h3>
+            </div>
+            <div class="divide-y divide-slate-100 lg:divide-y-0 lg:flex lg:flex-col lg:gap-2">
               <RouterLink :to="{ name: 'privacy' }"
-                class="flex items-center justify-center gap-2 text-sm text-slate-500 transition hover:text-orange-500 lg:justify-end">
-                <span class="material-symbols-outlined text-[18px]">privacy_tip</span> Política de Privacidad
+                class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">privacy_tip</span> Política de Privacidad
               </RouterLink>
               <RouterLink :to="{ name: 'terms' }"
-                class="flex items-center justify-center gap-2 text-sm text-slate-500 transition hover:text-orange-500 lg:justify-end">
-                <span class="material-symbols-outlined text-[18px]">gavel</span> Términos de Servicio
+                class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">gavel</span> Términos de Servicio
               </RouterLink>
               <RouterLink :to="{ name: 'contact' }"
-                class="flex items-center justify-center gap-2 text-sm text-slate-500 transition hover:text-orange-500 lg:justify-end">
-                <span class="material-symbols-outlined text-[18px]">contact_mail</span> Contacto
+                class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">contact_mail</span> Contacto
               </RouterLink>
             </div>
-            <div
-              class="mt-8 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-500 shadow-sm">
-              <span class="material-symbols-outlined text-[18px]">public</span>
-              <span translate="no">{{ domains[currentDomainIndex] }}</span>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl overflow-hidden lg:bg-transparent lg:rounded-none">
+            <div class="px-4 py-3 border-b border-slate-100 lg:border-0 lg:px-0">
+              <h3 class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Dominio</h3>
+            </div>
+            <div class="px-4 py-4">
+              <div class="flex items-center gap-2 text-[14px] text-slate-600">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">public</span>
+                <span translate="no" class="font-medium">{{ domains[currentDomainIndex] }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- Logos trust marquee -->
-      <div class="border-t border-slate-200 pt-10 pb-6">
-        <p class="text-center text-xs uppercase tracking-[0.3em] text-slate-400 mb-6">
+
+      <!-- Trust marquee -->
+      <div class="border-t border-slate-100 pt-8 pb-6">
+        <p class="text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-5">
           Medios de pago y confianza
         </p>
         <div class="trust-marquee-mask overflow-hidden">
-          <div class="trust-marquee-track flex gap-12 items-center">
-            <img :src="PayPalLogo" alt="PayPal"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MercadoPagoLogo" alt="Mercado Pago"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MercadoLibreLogo" alt="Mercado Libre"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MastercardLogo" alt="Mastercard"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="VisaLogo" alt="Visa"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MetaLogo" alt="Meta"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="FacebookLogo" alt="Facebook"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="InstagramLogo" alt="Instagram"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="TikTokLogo" alt="TikTok"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="XLogo" alt="X" class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="YoutubeLogo" alt="YouTube"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <!-- Duplicate for seamless scroll -->
-            <img :src="PayPalLogo" alt="PayPal"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MercadoPagoLogo" alt="Mercado Pago"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MercadoLibreLogo" alt="Mercado Libre"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MastercardLogo" alt="Mastercard"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="VisaLogo" alt="Visa"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="MetaLogo" alt="Meta"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="FacebookLogo" alt="Facebook"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="InstagramLogo" alt="Instagram"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="TikTokLogo" alt="TikTok"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="XLogo" alt="X" class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
-            <img :src="YoutubeLogo" alt="YouTube"
-              class="h-8 w-auto shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
+          <div class="trust-marquee-track flex gap-10 items-center">
+            <img :src="PayPalLogo" alt="PayPal" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MercadoPagoLogo" alt="Mercado Pago" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MercadoLibreLogo" alt="Mercado Libre" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MastercardLogo" alt="Mastercard" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="VisaLogo" alt="Visa" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MetaLogo" alt="Meta" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="FacebookLogo" alt="Facebook" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="InstagramLogo" alt="Instagram" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="TikTokLogo" alt="TikTok" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="XLogo" alt="X" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="YoutubeLogo" alt="YouTube" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="PayPalLogo" alt="PayPal" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MercadoPagoLogo" alt="Mercado Pago" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MercadoLibreLogo" alt="Mercado Libre" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MastercardLogo" alt="Mastercard" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="VisaLogo" alt="Visa" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="MetaLogo" alt="Meta" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="FacebookLogo" alt="Facebook" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="InstagramLogo" alt="Instagram" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="TikTokLogo" alt="TikTok" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="XLogo" alt="X" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
+            <img :src="YoutubeLogo" alt="YouTube" class="h-7 w-auto shrink-0 opacity-40 hover:opacity-70 transition-opacity" />
           </div>
         </div>
       </div>
+
       <!-- PACA Credit -->
-      <div class="group/credit relative flex justify-center pb-4 pt-2">
-        <span class="text-[10px] tracking-[0.25em] text-slate-300 cursor-default">
-          © Created by
-          <span class="relative inline-block">
-            <span class="font-semibold text-slate-400 hover:text-slate-600 transition-colors duration-300">PACA</span>
-            <div
-              class="absolute -top-2 left-1/2 -translate-x-1/2 translate-y-[-100%] opacity-0 group-hover/credit:opacity-100 transition-opacity duration-300 delay-[0s] group-hover/credit:delay-[3000ms] pointer-events-none z-50 w-max max-w-[280px]">
-              <div class="bg-white border border-slate-200 rounded-xl px-4 py-2.5 shadow-2xl">
-                <p class="text-[11px] leading-relaxed text-slate-700 whitespace-nowrap">Pablo Alejandro Carbajal Aburto
-                </p>
-              </div>
-              <div
-                class="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-white border-r border-b border-slate-200 rotate-45">
-              </div>
-            </div>
-          </span>
+      <div class="flex justify-center pb-5">
+        <span class="text-[9px] tracking-wider text-slate-300">
+          © Created by <span class="font-semibold text-slate-400">PACA</span>
         </span>
       </div>
     </footer>
