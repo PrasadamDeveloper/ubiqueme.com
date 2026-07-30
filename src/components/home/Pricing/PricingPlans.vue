@@ -208,7 +208,7 @@ const plans = [
 
           <!-- Features -->
           <ul class="space-y-2.5 flex-1">
-            <li v-for="feature in plan.features" :key="feature[0]" class="flex items-start gap-2.5 text-sm">
+            <li v-for="(feature, idx) in plan.features" :key="idx" class="flex items-start gap-2.5 text-sm">
               <span class="material-symbols-outlined notranslate text-[16px] mt-0.5"
                 :class="feature[1] ? 'text-orange-500' : 'text-slate-300'">
                 {{ feature[1] ? 'check' : 'remove' }}

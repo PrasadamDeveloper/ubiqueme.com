@@ -101,7 +101,7 @@
             </p>
 
             <p class="truncate text-sm font-semibold text-slate-800 capitalize">
-              {{ userSubscriptions.length > 0 ? userSubscriptions[0].planType : '—' }}
+              {{ userSubscriptions.length > 0 ? userSubscriptions[0]?.planType : '—' }}
             </p>
           </div>
         </div>

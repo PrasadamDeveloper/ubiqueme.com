@@ -7,7 +7,7 @@ const steps = [
     title: 'Compre y adhiera el QR',
     description:
       'Pegue el código en su maleta, puerta, vehículo o cualquier objeto que quiera proteger.',
-    number: '01',
+    number: 1,
     video: new URL('@/assets/videos/step_two.mp4', import.meta.url).href,
   },
   {
@@ -15,7 +15,7 @@ const steps = [
     title: 'Alguien escanea el QR',
     description:
       'Cualquier persona puede escanearlo desde la cámara del teléfono sin instalar aplicaciones.',
-    number: '02',
+    number: 2,
     video: new URL('@/assets/videos/step_three.mp4', import.meta.url).href,
   },
   {
@@ -23,7 +23,7 @@ const steps = [
     title: 'Reciba una alerta',
     description:
       'Reciba la notificación por WhatsApp o SMS manteniendo sus datos protegidos.',
-    number: '03',
+    number: 3,
     video: new URL('@/assets/videos/step_four.mp4', import.meta.url).href,
   },
 ]
