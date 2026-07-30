@@ -92,8 +92,11 @@ const currentImages = computed<DragImage[]>(() => {
 })
 
 // ─── Overlay IDs to exclude (all rendered inline now) ─
+// @TODO: userImg-12 is also excluded — none of the social icons render correctly
+// (positioned with hardcoded absolute offsets that don't match the live layout).
+// Remove the ID from this set once positioning is fixed per size.
 const excludedOverlayIds = computed(() => new Set([
-  'userImg-4', 'userImg-5', 'userImg-6', 'userImg-7', 'userImg-8', 'userImg-9', 'userImg-10',
+  'userImg-4', 'userImg-5', 'userImg-6', 'userImg-7', 'userImg-8', 'userImg-9', 'userImg-10', 'userImg-12',
 ]))
 
 // ─── Drag handling (user images overlay only) ─────────────────
