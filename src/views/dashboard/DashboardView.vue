@@ -132,9 +132,9 @@ const changeComponent = (component: ComponentName) => {
               class="w-18 h-12 bg-[#090300] rounded-xl flex items-center justify-center shadow-2xl overflow-hidden absolute left-0">
               <span v-if="!hoverOnSideBar" class="text-orange-100 text-xs font-google-sans font-medium">{{
                 'Hola'
-                }}</span>
+              }}</span>
               <span v-else class="text-white text-xs font-google-sans animate-fade-right">{{ useUserStore().getFirstName
-                }}</span>
+              }}</span>
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { toast } from 'vue-sonner'
+import { plans } from '@/data/plans'
 
 const route = useRoute()
 const router = useRouter()
@@ -28,69 +29,9 @@ const formData = ref({
   firebaseUid: userStore.getUserId || ''
 })
 
-const plans = [
-  {
-    id: 'bronce',
-    name: 'Bronce',
-    price: '$499',
-    period: '/año',
-    icon: 'shield',
-    description: 'Protección básica esencial para comenzar.',
-    cta: 'Seleccionar Bronce',
-    features: [
-      { label: '1 código QR activo', included: true },
-      { label: 'Contador de escaneos básico', included: true },
-      { label: 'Mensajes predefinidos', included: true },
-      { label: 'Pausar o reactivar QR', included: false },
-      { label: 'Historial de escaneos', included: false },
-      { label: 'Ubicación con mapa', included: false },
-      { label: 'Evidencia fotográfica', included: false },
-      { label: 'Notificaciones por correo', included: false }
-    ]
-  },
-  {
-    id: 'plata',
-    name: 'Plata',
-    price: '$999',
-    period: '/año',
-    icon: 'verified_user',
-    description: 'La opción más equilibrada con monitoreo avanzado.',
-    featured: true,
-    cta: 'Seleccionar Plata',
-    features: [
-      { label: '3 códigos QR activos', included: true },
-      { label: 'Contador de escaneos en tiempo real', included: true },
-      { label: '3 regeneraciones digitales', included: true },
-      { label: 'Pausar o reactivar QR', included: true },
-      { label: 'Historial de escaneos (30 días)', included: true },
-      { label: 'Ubicación aproximada', included: true },
-      { label: 'Evidencia fotográfica', included: true },
-      { label: 'Notificaciones por correo', included: true }
-    ]
-  },
-  {
-    id: 'oro',
-    name: 'Oro',
-    price: '$1,499',
-    period: '/año',
-    icon: 'military_tech',
-    description: 'Control total con todas las funciones premium.',
-    cta: 'Seleccionar Oro',
-    features: [
-      { label: '5 códigos QR activos', included: true },
-      { label: 'Mapa dinámico de ubicación', included: true },
-      { label: 'Ubicación aproximada', included: true },
-      { label: '5 regeneraciones digitales', included: true },
-      { label: 'Mensajes personalizados', included: true },
-      { label: 'Pausar o reactivar QR', included: true },
-      { label: 'Historial ilimitado', included: true },
-      { label: 'Evidencia fotográfica', included: true },
-      { label: 'Notificaciones prioritarias', included: true }
-    ]
-  }
-]
-
 const currentPlan = computed(() => plans.find(p => p.id === selectedPlan.value))
+
+const planIcon = (id: string) => id === 'bronce' ? 'shield' : id === 'plata' ? 'verified_user' : 'military_tech'
 
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || 'http://localhost:8787'
 
@@ -191,15 +132,15 @@ const handleSubmit = async () => {
                         seleccionado</p>
                       <h3 class="text-xl font-black text-slate-900">{{ currentPlan.name }}</h3>
                     </div>
-                    <span class="material-symbols-outlined notranslate text-xl text-orange-500">{{ currentPlan.icon
+                    <span class="material-symbols-outlined notranslate text-xl text-orange-500">{{ planIcon(currentPlan.id)
                       }}</span>
                   </div>
 
                   <div class="flex items-baseline gap-1.5 mb-2">
-                    <span class="text-2xl font-black text-slate-900">{{ currentPlan.price }}</span>
+                    <span class="text-2xl font-black text-slate-900">{{ currentPlan.prices.MXN.symbol }}{{ currentPlan.prices.MXN.price }}</span>
                     <span
                       class="px-2.5 py-0.5 rounded-md bg-orange-500 text-white text-[10px] font-black uppercase tracking-[0.15em] shadow-sm shadow-orange-500/20">{{
-                      currentPlan.period }}</span>
+                      currentPlan.prices.MXN.period }}</span>
                   </div>
                   <p class="text-[12px] text-slate-500 mb-5">{{ currentPlan.description }}</p>
 
@@ -229,7 +170,7 @@ const handleSubmit = async () => {
                     </p>
                     <div class="flex flex-wrap gap-1.5">
                       <div
-                        v-for="(f, i) in (selectedPlan === 'plata' ? (plans[0]?.features ?? []) : [...(plans[0]?.features ?? []), ...(plans[1]?.features ?? [])])"
+                        v-for="(f, i) in (selectedPlan === 'plata' ? (plans[0]?.features ?? []).filter(f => f.included) : [...(plans[0]?.features ?? []), ...(plans[1]?.features ?? [])].filter(f => f.included))"
                         :key="(f?.label ?? '') + i"
                         class="px-2 py-1 rounded-md bg-slate-50 border border-slate-200 flex items-center gap-1">
                         <span class="material-symbols-outlined notranslate text-[8px] text-slate-400">add</span>

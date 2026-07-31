@@ -53,8 +53,8 @@ const navLinks: NavLink[] = [
     description: 'Planes flexibles desde $499 MXN/año — elige el tuyo',
     children: [
       { label: 'Plan Bronce', pathName: 'checkout', params: { planId: 'bronce' }, icon: 'workspace_premium', description: 'Protección básica — 1 QR activo, contador de escaneos' },
-      { label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium', description: 'La opción más equilibrada — 3 QRs, historial 30 días' },
-      { label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium', description: 'Control total — 5 QRs, mapa dinámico, ilimitado' },
+      { label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium', description: 'La opción más equilibrada — 3 QRs, QR público y pausa' },
+      { label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium', description: 'Control total — 5 QRs, QR público y pausa' },
       { label: 'Ver todos los planes', pathName: 'pricing', icon: 'apps', description: 'Compara todos los planes y elige el que más te convenga' },
     ],
   },

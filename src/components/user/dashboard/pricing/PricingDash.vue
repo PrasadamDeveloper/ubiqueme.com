@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { plans } from '@/data/plans'
 
 const router = useRouter()
 
@@ -10,74 +11,6 @@ const currencies = [
   { key: 'CLP' as const, label: 'CLP', flag: '🇨🇱' },
 ]
 const selectedCurrency = ref<'MXN' | 'USD' | 'CLP'>('MXN')
-
-const plans = [
-  {
-    id: 'bronce',
-    name: 'Bronce',
-    description: 'Protección básica esencial',
-    cta: 'Activar Bronce',
-    prices: {
-      MXN: { price: '499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '42' },
-      USD: { price: '29', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '2.4' },
-      CLP: { price: '25000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '2100' },
-    },
-    features: [
-      { label: 'Hasta 1 código QR activo', included: true },
-      { label: 'Contador de escaneos básico', included: true },
-      { label: 'Mensajes predefinidos de contacto', included: true },
-      { label: 'Pausar o reactivar QR', included: false },
-      { label: 'Historial de escaneos', included: false },
-      { label: 'Ubicación con Mapa dinámico', included: false },
-      { label: 'Evidencia fotográfica adjunta', included: false },
-      { label: 'Notificaciones por correo', included: false }
-    ]
-  },
-  {
-    id: 'plata',
-    name: 'Plata',
-    description: 'Para quienes toman en serio sus bienes',
-    featured: true,
-    cta: 'Activar Plata',
-    prices: {
-      MXN: { price: '999', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '83' },
-      USD: { price: '59', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '4.9' },
-      CLP: { price: '49000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '4100' },
-    },
-    features: [
-      { label: 'Hasta 3 códigos QR activos', included: true },
-      { label: 'Contador de escaneos en tiempo real', included: true },
-      { label: '3 Regeneraciones digitales sin costo', included: true },
-      { label: 'Pausar o reactivar QR', included: true },
-      { label: 'Historial de escaneos (últimos 30 días)', included: true },
-      { label: 'Ubicación aproximada del escaneo', included: true },
-      { label: 'Evidencia fotográfica adjunta', included: true },
-      { label: 'Notificaciones por correo', included: true }
-    ]
-  },
-  {
-    id: 'oro',
-    name: 'Oro',
-    description: 'Control total. Sin compromisos.',
-    cta: 'Seleccionar Oro',
-    prices: {
-      MXN: { price: '1499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '125' },
-      USD: { price: '89', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '7.4' },
-      CLP: { price: '75000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '6300' },
-    },
-    features: [
-      { label: 'Hasta 5 códigos QR activos', included: true },
-      { label: 'Ubicación con Mapa dinámico incluido', included: true },
-      { label: 'Ubicación aproximada del escaneo', included: true },
-      { label: '5 Regeneraciones digitales sin costo', included: true },
-      { label: 'Mensajes predefinidos y personalizados', included: true },
-      { label: 'Pausar o reactivar QR', included: true },
-      { label: 'Historial de escaneos ilimitado', included: true },
-      { label: 'Evidencia fotográfica adjunta', included: true },
-      { label: 'Notificaciones por correo prioritarias', included: true }
-    ]
-  }
-]
 
 const handleSelect = (id: string) => {
   router.push({ name: 'checkout', params: { planId: id } })

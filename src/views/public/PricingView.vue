@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import HomeLayout from '@/layouts/HomeLayout.vue'
+import { plans } from '@/data/plans'
 
 const router = useRouter()
 
@@ -12,74 +13,6 @@ const currencies = [
   { key: 'CLP' as const, label: 'CLP', flag: '🇨🇱' },
 ]
 const selectedCurrency = ref<'MXN' | 'USD' | 'CLP'>('MXN')
-
-const plans = [
-  {
-    id: 'bronce',
-    name: 'Bronce',
-    description: 'Protección básica esencial',
-    cta: 'Activar Bronce',
-    prices: {
-      MXN: { price: '499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '42' },
-      USD: { price: '29', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '2.4' },
-      CLP: { price: '25000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '2100' },
-    },
-    features: [
-      { label: 'Hasta 1 código QR activo', included: true },
-      { label: 'Contador de escaneos básico', included: true },
-      { label: 'Mensajes predefinidos de contacto', included: true },
-      { label: 'Pausar o reactivar QR', included: false },
-      { label: 'Historial de escaneos', included: false },
-      { label: 'Ubicación con Mapa dinámico', included: false },
-      { label: 'Evidencia fotográfica adjunta', included: false },
-      { label: 'Notificaciones por correo', included: false }
-    ]
-  },
-  {
-    id: 'plata',
-    name: 'Plata',
-    description: 'Para quienes toman en serio sus bienes',
-    featured: true,
-    cta: 'Activar Plata',
-    prices: {
-      MXN: { price: '999', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '83' },
-      USD: { price: '59', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '4.9' },
-      CLP: { price: '49000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '4100' },
-    },
-    features: [
-      { label: 'Hasta 3 códigos QR activos', included: true },
-      { label: 'Contador de escaneos en tiempo real', included: true },
-      { label: '3 Regeneraciones digitales sin costo', included: true },
-      { label: 'Pausar o reactivar QR', included: true },
-      { label: 'Historial de escaneos (últimos 30 días)', included: true },
-      { label: 'Ubicación aproximada del escaneo', included: true },
-      { label: 'Evidencia fotográfica adjunta', included: true },
-      { label: 'Notificaciones por correo', included: true }
-    ]
-  },
-  {
-    id: 'oro',
-    name: 'Oro',
-    description: 'Control total. Sin compromisos.',
-    cta: 'Seleccionar Oro',
-    prices: {
-      MXN: { price: '1499', symbol: '$', label: 'MXN', period: '/año', note: '1er envío físico gratis', monthly: '125' },
-      USD: { price: '89', symbol: '$', label: 'USD', period: '/año', note: '1er envío físico gratis', monthly: '7.4' },
-      CLP: { price: '75000', symbol: '$', label: 'CLP', period: '/año', note: '1er envío físico gratis', monthly: '6300' },
-    },
-    features: [
-      { label: 'Hasta 5 códigos QR activos', included: true },
-      { label: 'Ubicación con Mapa dinámico incluido', included: true },
-      { label: 'Ubicación aproximada del escaneo', included: true },
-      { label: '5 Regeneraciones digitales sin costo', included: true },
-      { label: 'Mensajes predefinidos y personalizados', included: true },
-      { label: 'Pausar o reactivar QR', included: true },
-      { label: 'Historial de escaneos ilimitado', included: true },
-      { label: 'Evidencia fotográfica adjunta', included: true },
-      { label: 'Notificaciones por correo prioritarias', included: true }
-    ]
-  }
-]
 
 const handleSelect = (id: string) => {
   router.push({ name: 'checkout', params: { planId: id } })
@@ -203,10 +136,10 @@ const handleSelect = (id: string) => {
                   <!-- Features -->
                   <ul class="flex-1 space-y-2.5 mb-7">
                     <li v-for="(feature, idx) in plan.features" :key="idx" class="flex items-start gap-2.5">
-                      <div class="w-4 h-4 rounded flex items-center justify-center shrink-0 mt-0.5"
+                      <div class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
                         :class="feature.included ? 'bg-orange-50 text-orange-500' : 'bg-slate-100 text-slate-300'">
-                        <span class="material-symbols-outlined notranslate text-[10px] font-bold">{{ feature.included ?
-                          'check' : 'remove' }}</span>
+                        <span class="material-symbols-outlined notranslate text-[13px] font-bold">{{ feature.icon ||
+                          (feature.included ? 'check' : 'remove') }}</span>
                       </div>
                       <span class="text-[12px] leading-snug"
                         :class="feature.included ? 'text-slate-700 font-medium' : 'text-slate-300 line-through'">

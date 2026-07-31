@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, watch, computed } from 'vue'
 import PlanDeleteConfirm from './PlanDeleteConfirm.vue';
+import { planById } from '@/data/plans';
 
 const props = defineProps<{
   isOpen: boolean
@@ -47,9 +48,9 @@ const cancelDeletePlan = () => {
 }
 
 const plans = [
-  { key: 'bronce', label: 'Bronce', price: '$499 MXN / año', qrs: '1 QR' },
-  { key: 'plata', label: 'Plata', price: '$999 MXN / año', qrs: '3 QR' },
-  { key: 'oro', label: 'Oro', price: '$1499 MXN / año', qrs: '5 QR' },
+  { key: 'bronce', label: 'Bronce', price: `$${planById('bronce')?.prices.MXN.price} MXN / año`, qrs: `${planById('bronce')?.maxQrs} QR` },
+  { key: 'plata', label: 'Plata', price: `$${planById('plata')?.prices.MXN.price} MXN / año`, qrs: `${planById('plata')?.maxQrs} QR` },
+  { key: 'oro', label: 'Oro', price: `$${planById('oro')?.prices.MXN.price} MXN / año`, qrs: `${planById('oro')?.maxQrs} QR` },
 ]
 </script>
 

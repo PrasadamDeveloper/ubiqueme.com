@@ -55,6 +55,10 @@ const navLinks: NavLink[] = [
         description: 'Conoce las características que hacen de Ubiqueme tu mejor aliado'
       },
       {
+        label: 'Sobre nosotros', pathName: 'about', icon: 'groups',
+        description: 'Nuestra historia, misión y visión'
+      },
+      {
         label: 'Cómo funciona', href: '#how-it-works', icon: 'settings',
         description: 'Activa, vincula y recibe alertas en solo 3 pasos'
       },
@@ -105,11 +109,11 @@ const navLinks: NavLink[] = [
       },
       {
         label: 'Plan Plata', pathName: 'checkout', params: { planId: 'plata' }, icon: 'workspace_premium',
-        description: 'La opción más equilibrada — 3 QRs, historial 30 días'
+        description: 'La opción más equilibrada — 3 QRs, QR público y pausa'
       },
       {
         label: 'Plan Oro', pathName: 'checkout', params: { planId: 'oro' }, icon: 'workspace_premium',
-        description: 'Control total — 5 QRs, mapa dinámico, ilimitado'
+        description: 'Control total — 5 QRs, QR público y pausa'
       },
       {
         label: 'Ver todos los planes', pathName: 'pricing', icon: 'apps',
@@ -758,6 +762,10 @@ onUnmounted(() => {
               <h3 class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Información</h3>
             </div>
             <div class="divide-y divide-slate-100 lg:divide-y-0 lg:flex lg:flex-col lg:gap-2">
+              <RouterLink :to="{ name: 'about' }"
+                class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
+                <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">groups</span> Sobre nosotros
+              </RouterLink>
               <RouterLink :to="{ name: 'privacy' }"
                 class="flex items-center gap-3 px-4 py-3 text-[14px] text-slate-600 hover:text-orange-500 transition lg:px-0 lg:rounded-xl lg:hover:bg-slate-50 lg:px-3">
                 <span class="material-symbols-outlined notranslate text-[18px] text-slate-400">privacy_tip</span> Política de Privacidad

@@ -86,6 +86,14 @@ const router = createRouter({
       component: () => import('@/views/public/PricingView.vue'),
     },
     {
+      path: '/about',
+      name: 'about',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/AboutView.vue'),
+    },
+    {
       path: '/en-accion',
       name: 'videos',
       meta: {

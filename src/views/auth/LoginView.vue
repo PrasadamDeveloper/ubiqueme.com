@@ -27,10 +27,10 @@
 
         <!-- 💠 LEFT SIDE: BRAND NARRATIVE (Desktop) -->
         <div
-          class="relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center p-16 lg:p-24 border-r border-gray-200 bg-white/50">
+          class="relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center p-14 lg:p-16 border-r border-gray-200 bg-white/50">
 
 
-          <div class="relative z-10 space-y-8">
+          <div class="relative z-10 space-y-3">
             <div class="flex items-center gap-4 group">
               <span
                 class="material-symbols-outlined notranslate text-orange-500 text-6xl group-hover:rotate-12 transition-transform">location_on</span>
@@ -48,7 +48,7 @@
               <span class="text-orange-500">Sesión.</span>
             </h1>
 
-            <div class="max-w-md space-y-6">
+            <div class="max-w-md space-y-1">
               <p class="text-gray-500 text-lg font-medium leading-relaxed">
                 Ingrese a su cuenta de Ubiqueme para gestionar sus códigos QR.
               </p>
@@ -73,6 +73,11 @@
               <span
                 class="material-symbols-outlined notranslate absolute bottom-[20%] right-[10%] text-8xl animate-float-medium">qr_code_2</span>
             </div>
+
+            <!-- Plan detail (desktop) -->
+            <div v-if="selectedPlan" class="max-w-lg">
+              <PlanPurchaseCard :plan="selectedPlan" />
+            </div>
           </div>
 
 
@@ -89,31 +94,9 @@
                 sesión</span>
             </div>
 
-            <!-- Plan purchase prompt — eye‑catching CTA when redirected from plan selection -->
-            <div v-if="planName && showPlanPrompt" class="rounded-2xl bg-white border border-gray-200 p-5 space-y-3">
-              <div class="flex items-start gap-3.5">
-                <div
-                  class="w-10 h-10 rounded-full bg-white border border-orange-200 flex items-center justify-center shrink-0 shadow-sm">
-                  <span class="material-symbols-outlined notranslate text-orange-500 text-xl">shopping_cart</span>
-                </div>
-                <div class="flex-1 min-w-0 pt-0.5">
-                  <p class="text-sm font-semibold text-slate-900">
-                    Compra de <span class="font-black text-orange-600">{{ planName }}</span>
-                  </p>
-                  <p class="text-sm font-semibold text-slate-700 mt-1.5 leading-snug">
-                    Inicia sesión para continuar con su compra.
-                  </p>
-                  <div class="flex items-center gap-1.5 mt-2.5">
-                    <span class="material-symbols-outlined notranslate text-orange-500 text-sm">expand_more</span>
-                    <span class="text-[10px] font-bold text-orange-600 uppercase tracking-[0.08em]">Ingrese sus datos
-                      abajo</span>
-                  </div>
-                </div>
-                <button @click="showPlanPrompt = false"
-                  class="w-7 h-7 rounded-full bg-white/70 border border-orange-200 flex items-center justify-center shrink-0 hover:bg-white transition-colors cursor-pointer">
-                  <span class="material-symbols-outlined notranslate text-slate-400 text-sm">close</span>
-                </button>
-              </div>
+            <!-- Plan detail (mobile) -->
+            <div v-if="selectedPlan" class="md:hidden -mt-6">
+              <PlanPurchaseCard :plan="selectedPlan" />
             </div>
 
             <template v-if="emailVerified">
@@ -193,6 +176,8 @@
 import { ref, reactive, computed } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import VerificationBanner from '@/components/auth/VerificationBanner.vue'
+import PlanPurchaseCard from '@/components/auth/PlanPurchaseCard.vue'
+import { planById } from '@/data/plans'
 import { signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth'
 import type { AuthError } from 'firebase/auth'
 import { doc, Timestamp, updateDoc } from 'firebase/firestore'
@@ -206,22 +191,12 @@ const route = useRoute()
 const showPassword = ref(false)
 const emailVerified = ref(true)
 const resendLoading = ref(false)
-const showPlanPrompt = ref(true)
-
-const planNames: Record<string, string> = {
-  bronce: 'Bronce',
-  plata: 'Plata',
-  oro: 'Oro',
-}
-
-const planName = computed(() => {
+const selectedPlan = computed(() => {
   const redirect = route.query.redirect as string | undefined
-  if (!redirect) return null
+  if (!redirect) return undefined
   const match = redirect.match(/\/checkout\/(\w+)/)
-  if (!match) return null
-  const planId = match[1]
-  if (!planId) return null
-  return planNames[planId] || null
+  if (!match) return undefined
+  return planById(match[1])
 })
 const form = reactive({
   email: '',
