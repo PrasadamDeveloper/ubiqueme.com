@@ -2,41 +2,40 @@
   <HomeLayout>
     <template #main>
       <section
-        class="relative min-h-screen w-full flex pt-20 flex-col items-center justify-center bg-[#070b14] font-google-sans overflow-hidden py-10 px-4">
+        class="relative min-h-screen w-full flex pt-20 flex-col items-center justify-center bg-slate-50 font-google-sans overflow-hidden py-10 px-4">
 
-        <!-- 📐 BACKGROUND DOT MATRIX (Lightweight) -->
-        <div class="absolute inset-0 z-0 opacity-[0.05]"
-          style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;">
-        </div>
+        <!-- Soft orange glow decorations -->
+        <div class="absolute -top-32 -right-24 w-96 h-96 rounded-full bg-orange-200/30 blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-24 w-96 h-96 rounded-full bg-orange-100/40 blur-3xl pointer-events-none"></div>
 
         <div
-          class="relative z-10 w-full max-w-md bg-white/5 border border-white/10 rounded-3xl p-8 sm:p-12 text-center flex flex-col items-center">
+          class="relative z-10 w-full max-w-md bg-white border border-gray-200/70 rounded-3xl p-8 sm:p-10 text-center flex flex-col items-center shadow-xl shadow-gray-900/5">
 
           <div
-            class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(249,115,22,0.3)]">
-            <span class="text-black font-black text-3xl">U</span>
+            class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-orange-500/25">
+            <span class="text-white font-black text-3xl">U</span>
           </div>
 
-          <h1 class="text-3xl font-black text-white tracking-tight mb-2">
+          <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2">
             Verificación
           </h1>
 
           <div v-if="!oobCode" class="flex flex-col items-center mt-6 space-y-6 w-full">
             <div
-              class="w-16 h-16 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center">
+              class="w-16 h-16 bg-orange-50 border border-orange-100 rounded-2xl flex items-center justify-center">
               <span class="material-symbols-outlined notranslate text-orange-500 text-3xl">mail</span>
             </div>
-            <p class="text-white/70 text-base font-medium leading-relaxed">
+            <p class="text-gray-600 text-base font-medium leading-relaxed">
               Le hemos enviado un correo de verificación a su bandeja de entrada. Por favor revise su correo
               electrónico y haga clic en el enlace para activar su cuenta.
             </p>
-            <p class="text-white/40 text-sm font-medium">
+            <p class="text-gray-400 text-sm font-medium">
               ¿No recibió el correo? Verifique su carpeta de spam o solicite un nuevo enlace desde el inicio de sesión.
             </p>
             <RouterLink to="/login"
-              class="w-full mt-4 h-14 bg-orange-500 text-black rounded-2xl font-black text-sm transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] flex items-center justify-center gap-2">
+              class="w-full mt-4 h-14 bg-orange-500 text-white rounded-2xl font-bold text-sm shadow-lg shadow-orange-500/25 transition-all duration-300 ease-out hover:bg-orange-600 hover:shadow-orange-500/35 hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
               <span>Ir al Login</span>
-              <span class="material-symbols-outlined notranslate font-black text-xl">arrow_forward</span>
+              <span class="material-symbols-outlined notranslate font-bold text-xl">arrow_forward</span>
             </RouterLink>
           </div>
 
@@ -44,19 +43,19 @@
             <!-- Reset Password Form -->
             <template v-if="action === 'resetPassword'">
               <div class="w-full space-y-6">
-                <p class="text-white/50 text-sm font-medium leading-relaxed">
+                <p class="text-gray-500 text-sm font-medium leading-relaxed">
                   Ingrese su nueva contraseña para restablecer el acceso a su cuenta.
                 </p>
 
-                <div class="space-y-2">
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Nueva
+                <div class="space-y-2 text-left">
+                  <label class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] ml-1">Nueva
                     Contraseña</label>
                   <div class="relative">
                     <input v-model="resetForm.newPassword" :type="showNewPassword ? 'text' : 'password'"
                       placeholder="••••••••" :disabled="isResetting"
-                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
+                      class="w-full h-12 px-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 placeholder:text-gray-400 focus:border-orange-400 focus:bg-white focus:ring-4 focus:ring-orange-500/10 outline-none transition-all duration-300 disabled:opacity-50" />
                     <button type="button" @click="showNewPassword = !showNewPassword"
-                      class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
+                      class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
                       <span class="material-symbols-outlined notranslate text-xl">{{ showNewPassword ? 'visibility' :
                         'visibility_off'
                         }}</span>
@@ -64,15 +63,15 @@
                   </div>
                 </div>
 
-                <div class="space-y-2">
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Confirmar
+                <div class="space-y-2 text-left">
+                  <label class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] ml-1">Confirmar
                     Contraseña</label>
                   <div class="relative">
                     <input v-model="resetForm.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'"
                       placeholder="••••••••" :disabled="isResetting"
-                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
+                      class="w-full h-12 px-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 placeholder:text-gray-400 focus:border-orange-400 focus:bg-white focus:ring-4 focus:ring-orange-500/10 outline-none transition-all duration-300 disabled:opacity-50" />
                     <button type="button" @click="showConfirmPassword = !showConfirmPassword"
-                      class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
+                      class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
                       <span class="material-symbols-outlined notranslate text-xl">{{ showConfirmPassword ? 'visibility'
                         :
                         'visibility_off'
@@ -82,10 +81,10 @@
                 </div>
 
                 <button @click="handleResetPassword" :disabled="isResetting"
-                  class="group w-full h-14 bg-orange-500 text-[#070b14] rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
+                  class="group w-full h-14 bg-orange-500 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-orange-500/25 transition-all duration-300 ease-out hover:bg-orange-600 hover:shadow-orange-500/35 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed cursor-pointer">
                   <span v-if="!isResetting">Restablecer Contraseña</span>
                   <span v-else class="flex items-center gap-2">
-                    <span class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
+                    <span class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                     Procesando...
                   </span>
                 </button>
@@ -95,8 +94,8 @@
             <!-- Spinner for verifyEmail -->
             <template v-else>
               <div class="flex flex-col items-center space-y-4">
-                <div class="w-12 h-12 border-4 border-white/10 border-t-orange-500 rounded-full animate-spin"></div>
-                <p class="text-white/50 text-sm font-medium tracking-widest uppercase mt-4">Validando credenciales...
+                <div class="w-12 h-12 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin"></div>
+                <p class="text-gray-500 text-sm font-medium tracking-widest uppercase mt-4">Validando credenciales...
                 </p>
               </div>
             </template>
@@ -104,29 +103,29 @@
 
           <div v-else-if="status === 'success'" class="flex flex-col items-center mt-6 space-y-6 w-full">
             <div
-              class="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined notranslate text-green-500 text-3xl">check_circle</span>
+              class="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+              <span class="material-symbols-outlined notranslate text-emerald-500 text-3xl">check_circle</span>
             </div>
-            <p class="text-white/70 text-base font-medium">
+            <p class="text-gray-600 text-base font-medium">
               Su cuenta ha sido verificada exitosamente. Le damos la bienvenida a ubiqueme.com, ahora podra crear y
               gestionar sus QRs con total libertad.
             </p>
             <RouterLink to="/login"
-              class="w-full mt-4 h-14 bg-white text-black rounded-2xl font-black text-base transition-all duration-300 hover:bg-orange-500 hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] flex items-center justify-center gap-2">
+              class="w-full mt-4 h-14 bg-orange-500 text-white rounded-2xl font-bold text-base shadow-lg shadow-orange-500/25 transition-all duration-300 ease-out hover:bg-orange-600 hover:shadow-orange-500/35 hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
               <span>Ir al Login</span>
-              <span class="material-symbols-outlined notranslate font-black text-xl">arrow_forward</span>
+              <span class="material-symbols-outlined notranslate font-bold text-xl">arrow_forward</span>
             </RouterLink>
           </div>
 
           <div v-else-if="status === 'error'" class="flex flex-col items-center mt-6 space-y-6 w-full">
-            <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <div class="w-16 h-16 rounded-full bg-red-50 border border-red-100 flex items-center justify-center">
               <span class="material-symbols-outlined notranslate text-red-500 text-3xl">error</span>
             </div>
-            <p class="text-white/70 text-base font-medium">
+            <p class="text-gray-600 text-base font-medium">
               El enlace de verificación es inválido o ha expirado. Por favor, solicite uno nuevo.
             </p>
             <RouterLink to="/login"
-              class="w-full mt-4 h-14 bg-white/10 text-white border border-white/20 rounded-2xl font-black text-base transition-all duration-300 hover:bg-white/20 flex items-center justify-center gap-2">
+              class="w-full mt-4 h-14 bg-gray-100 text-gray-700 rounded-2xl font-bold text-base transition-all duration-300 ease-out hover:bg-gray-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
               <span>Volver al Login</span>
             </RouterLink>
           </div>
