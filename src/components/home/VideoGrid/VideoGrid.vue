@@ -54,26 +54,31 @@
         </div>
       </div>
 
-      <!-- Tablet / Desktop: grid -->
-      <div class="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="(v, i) in videoSources" :key="i" class="flex flex-col gap-3">
-          <h3 class="text-lg font-semibold text-slate-900 text-center">{{ v.title }}</h3>
-          <div class="relative bg-white border border-slate-200 rounded-2xl overflow-hidden group">
-            <video class="w-full h-auto object-cover main-video"
+      <!-- Tablet / Desktop: iOS-style grid (matches mobile cards) -->
+      <div class="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        <div v-for="(v, i) in videoSources" :key="i"
+          class="ios-card group overflow-hidden rounded-3xl bg-white">
+          <div class="relative aspect-video bg-black">
+            <video class="absolute inset-0 h-full w-full object-cover"
               v-lazy-video="v.src" autoplay loop muted playsinline :ref="setVideoRef(i)">
             </video>
-            <div
-              class="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
-              <p class="text-slate-600 text-sm leading-relaxed">{{ v.description }}</p>
-            </div>
-            <div
-              class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-white/80 to-transparent pointer-events-none z-10">
-            </div>
+            <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
             <button @click="activateSound(i)"
-              class="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold uppercase tracking-wider rounded-full transition z-30 flex items-center gap-1.5 shadow-xs hover:border-orange-300 hover:text-orange-600 whitespace-nowrap">
-              <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' : 'volume_up' }}</span>
+              class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full bg-white/80 px-3.5 py-2 text-[11px] font-semibold text-slate-800 shadow-md backdrop-blur-md transition active:scale-95 hover:bg-white/95">
+              <span class="material-symbols-outlined notranslate text-[15px]">{{ mutedStates[i] ? 'volume_off' : 'volume_up' }}</span>
               {{ mutedStates[i] ? 'Activar sonido' : 'Silenciar' }}
             </button>
+          </div>
+          <div class="p-4 sm:p-5">
+            <div class="flex items-start gap-3">
+              <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100">
+                <span class="material-symbols-outlined notranslate text-[17px] text-orange-500">play_arrow</span>
+              </div>
+              <div class="min-w-0">
+                <p class="text-[15px] font-semibold leading-snug text-slate-900 sm:text-base">{{ v.title }}</p>
+                <p class="mt-1 text-[12px] leading-relaxed text-slate-500 sm:text-[13px]">{{ v.description }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -162,24 +167,38 @@ const onScroll = () => {
   activeIndex.value = closest
 }
 
-const activateSound = (videoId: number) => {
+const activateSound = async (videoId: number) => {
   const videoSelected = videoRefs.value[videoId]
   if (!videoSelected) return
 
-  videoSelected.muted = !videoSelected.muted
-  mutedStates.value[videoId] = videoSelected.muted
+  const willUnmute = videoSelected.muted
 
-  if (!videoSelected.muted) {
+  if (willUnmute) {
+    // Silencia y pausa el resto para que solo suene uno a la vez
     videoSources.forEach((_, index) => {
-      if (index !== videoId) {
-        const otherVideo = videoRefs.value[index]
-        if (otherVideo && !otherVideo.muted) {
-          otherVideo.muted = true
-          mutedStates.value[index] = true
-        }
+      if (index === videoId) return
+      const otherVideo = videoRefs.value[index]
+      if (otherVideo) {
+        otherVideo.muted = true
+        otherVideo.setAttribute('muted', '')
+        mutedStates.value[index] = true
+        otherVideo.pause()
       }
     })
-    videoSelected.play()
+  }
+
+  videoSelected.muted = !willUnmute
+  if (willUnmute) {
+    videoSelected.removeAttribute('muted')
+  } else {
+    videoSelected.setAttribute('muted', '')
+  }
+  mutedStates.value[videoId] = videoSelected.muted
+
+  try {
+    await videoSelected.play()
+  } catch {
+    // Reproducción bloqueada por el navegador: se ignora en silencio
   }
 
   toast.info(videoSelected.muted ? 'Sonido desactivado' : 'Sonido activado')
@@ -193,5 +212,19 @@ const activateSound = (videoId: number) => {
 }
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+.ios-card {
+  box-shadow:
+    0 20px 40px -16px rgba(15, 23, 42, 0.16),
+    0 0 0 1px rgba(15, 23, 42, 0.05);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+
+.ios-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 28px 56px -18px rgba(15, 23, 42, 0.22),
+    0 0 0 1px rgba(15, 23, 42, 0.05);
 }
 </style>
