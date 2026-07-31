@@ -1,3 +1,5 @@
+rules_version = '2';
+
 // ===============================================================
 // 🔐 UBIQUEME FIREBASE SECURITY RULES
 // ===============================================================
@@ -35,6 +37,10 @@
  *   - 'Inactive':   nothing (owner cannot modify Inactive QRs)
  * Admin can always do anything.
  */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
 function canOwnerUpdateQR(currentStatus, affectedKeys, allowedKeys) {
   // Only Active QRs allow changing non-status fields
   return (currentStatus == 'Active' && affectedKeys.hasOnly(allowedKeys))
@@ -176,6 +182,21 @@ function isValidLogData(data) {
 
 match /sentEmails/{docId} {
   allow create: if isAuth();
+  allow read: if isAdmin();
+  allow update, delete: if isAdmin();
+}
+
+// ===============================================================
+// 📦 COLLECTION: deletionRecords (admin console)
+// ===============================================================
+// Anonymized, non-traceable audit records written atomically by the
+// admin-delete-user worker (worker signs in as an admin user).
+// Fields: deletedAt (timestamp), planTypes (string[]), hadActivePlan (bool),
+//         totalQrsDeleted (number), initiator ('admin'). NO PII.
+// ===============================================================
+
+match /deletionRecords/{docId} {
+  allow create: if isAdmin();
   allow read: if isAdmin();
   allow update, delete: if isAdmin();
 }
@@ -357,5 +378,8 @@ match /publicQR/{qrId} {
     // ── DELETE ──
     // Who can delete: only admin
     allow delete: if isAdmin();
+  }
+}
+
   }
 }

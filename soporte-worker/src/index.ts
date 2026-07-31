@@ -1,8 +1,24 @@
 import { EmailMessage } from 'cloudflare:email';
 import { Resend } from 'resend';
 import { initializeApp, FirebaseOptions, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore, doc, getDoc, Timestamp, collection, addDoc } from 'firebase/firestore/lite';
+import {
+	getFirestore,
+	Firestore,
+	doc,
+	getDoc,
+	getDocs,
+	collection,
+	query,
+	where,
+	addDoc,
+	writeBatch,
+	deleteDoc,
+	runTransaction,
+	Timestamp,
+	type DocumentReference,
+} from 'firebase/firestore/lite';
 import { getAuth, Auth, signInWithEmailAndPassword } from 'firebase/auth';
+import { SignJWT, importPKCS8 } from 'jose';
 
 // Extend Env with secrets
 declare global {
@@ -12,6 +28,8 @@ declare global {
 		FIREBASE_API_KEY: string;
 		FIREBASE_AUTH_EMAIL: string;
 		FIREBASE_AUTH_PASSWORD: string;
+		FIREBASE_CLIENT_EMAIL: string;
+		FIREBASE_PRIVATE_KEY: string;
 	}
 }
 
@@ -168,6 +186,37 @@ const NOTIF_TABLE_HTML = (title: string, fields: Record<string, string>) =>
           </td>
         </tr>
       </table>
+    </td>
+  </tr>
+</table>`.trim();
+
+// ─── Final account-deletion confirmation template (email to the user) ─
+const DELETE_CONFIRM_HTML = (userName: string) =>
+	`
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%">
+  <tr>
+    <td align="center" style="padding-bottom:8px">
+      <span style="display:inline-block;width:56px;height:56px;border-radius:16px;background:#fff7ed;border:1px solid #ffedd5;line-height:56px;text-align:center;font-size:28px">&#x1F5D1;&#xFE0F;</span>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-bottom:16px">
+      <h1 style="margin:0;font-size:22px;color:#111111;font-weight:800;letter-spacing:-0.3px">Tu cuenta ha sido eliminada</h1>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-bottom:6px;font-size:14px;color:#666666;line-height:1.7;max-width:420px;margin:0 auto">
+      Hola${userName ? ` <strong style="color:#111111">${userName}</strong>` : ''}, te confirmamos que tu cuenta de <strong style="color:#111111">Ubiqueme</strong> y todos tus datos asociados han sido eliminados de forma permanente.
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-bottom:20px;font-size:14px;color:#666666;line-height:1.7;max-width:420px;margin:0 auto">
+      Esto incluye tus c&oacute;digos QR, suscripciones y registros de actividad. Esta acci&oacute;n no se puede deshacer.
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-top:20px;font-size:14px;color:#111111;font-weight:500;letter-spacing:-0.2px">
+      &mdash; Equipo Ubiqueme
     </td>
   </tr>
 </table>`.trim();
@@ -348,6 +397,272 @@ async function handleAdminSendEmail(request: Request, env: Env): Promise<Respons
 	}
 }
 
+// ─── User deletion (admin console) ──────────────────────────────
+interface DeletionSummary {
+	subscriptions: number;
+	userQrs: number;
+	publicQrs: number;
+	logs: number;
+	planTypes: string[];
+	hadActivePlan: boolean;
+}
+
+const BATCH_LIMIT = 450; // Firestore cap is 500 ops/batch; headroom for safety
+
+/**
+ * Verifies an admin caller by exchanging their Firebase ID token for a localId
+ * via the Identity Toolkit REST API, then confirming role === 'admin' in /users.
+ * Returns the admin uid, or null if the caller is not a verified admin.
+ */
+async function verifyAdminIdToken(env: Env, idToken: string): Promise<string | null> {
+	const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${env.FIREBASE_API_KEY}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ idToken }),
+	});
+	if (!resp.ok) return null;
+	const data = (await resp.json()) as { users?: Array<{ localId?: string }> };
+	const localId = data.users?.[0]?.localId;
+	if (!localId) return null;
+
+	await ensureAuthenticated(env);
+	const { db } = getFirebase(env);
+	const snap = await getDoc(doc(db!, 'users', localId));
+	if (!snap.exists() || snap.data().role !== 'admin') return null;
+	return localId;
+}
+
+/**
+ * Signs a JWT assertion with the Firebase service account (RS256) so the worker
+ * can call Firebase Admin REST endpoints (OAuth2 jwt-bearer flow).
+ */
+async function signServiceAccountJwt(env: Env): Promise<string> {
+	const privateKey = await importPKCS8(env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'), 'RS256');
+	return new SignJWT({ scope: 'https://www.googleapis.com/auth/cloud-platform' })
+		.setProtectedHeader({ alg: 'RS256' })
+		.setIssuer(env.FIREBASE_CLIENT_EMAIL)
+		.setSubject(env.FIREBASE_CLIENT_EMAIL)
+		.setAudience('https://oauth2.googleapis.com/token')
+		.setIssuedAt()
+		.setExpirationTime('1h')
+		.sign(privateKey);
+}
+
+/**
+ * Deletes a Firebase Auth account via the Identity Toolkit Admin REST API.
+ * A USER_NOT_FOUND response is treated as success (idempotent).
+ */
+async function deleteFirebaseAuthUser(env: Env, uid: string): Promise<void> {
+	const assertion = await signServiceAccountJwt(env);
+	const tokenResp = await fetch('https://oauth2.googleapis.com/token', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		body: new URLSearchParams({
+			grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+			assertion,
+		}),
+	});
+	if (!tokenResp.ok) {
+		throw new Error(
+			`Failed to obtain service account access token: ${tokenResp.status} ${await tokenResp.text()}`,
+		);
+	}
+	const { access_token } = (await tokenResp.json()) as { access_token: string };
+
+	const delResp = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/accounts:delete`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${access_token}` },
+		body: JSON.stringify({ localId: uid }),
+	});
+
+	if (delResp.status === 400) {
+		const body = (await delResp.json()) as { error?: { message?: string } };
+		if (body.error?.message?.includes('USER_NOT_FOUND')) return; // already gone → success
+	}
+	if (!delResp.ok) {
+		throw new Error(`Failed to delete auth user ${uid}: status ${delResp.status}`);
+	}
+}
+
+/**
+ * Lists every document owned by the user: subscriptions, user QRs,
+ * public QRs (top-level collection keyed by uid) and their scan logs.
+ */
+async function enumerateUserData(db: Firestore, uid: string): Promise<{ refs: DocumentReference[]; summary: DeletionSummary }> {
+	const refs: DocumentReference[] = [];
+	const summary: DeletionSummary = {
+		subscriptions: 0,
+		userQrs: 0,
+		publicQrs: 0,
+		logs: 0,
+		planTypes: [],
+		hadActivePlan: false,
+	};
+
+	const subsSnap = await getDocs(collection(db, 'users', uid, 'subscriptions'));
+	subsSnap.forEach((subDoc) => {
+		refs.push(doc(db, 'users', uid, 'subscriptions', subDoc.id));
+		summary.subscriptions++;
+		const planType = subDoc.data().planType as string | undefined;
+		if (planType && !summary.planTypes.includes(planType)) summary.planTypes.push(planType);
+		if (subDoc.data().status === 'active') summary.hadActivePlan = true;
+	});
+
+	const qrsSnap = await getDocs(collection(db, 'users', uid, 'qrs'));
+	qrsSnap.forEach((qrDoc) => {
+		refs.push(doc(db, 'users', uid, 'qrs', qrDoc.id));
+		summary.userQrs++;
+	});
+
+	const publicSnap = await getDocs(query(collection(db, 'publicQR'), where('uid', '==', uid)));
+	for (const qrDoc of publicSnap.docs) {
+		refs.push(doc(db, 'publicQR', qrDoc.id));
+		summary.publicQrs++;
+		const logsSnap = await getDocs(collection(db, 'publicQR', qrDoc.id, 'logs'));
+		logsSnap.forEach((logDoc) => {
+			refs.push(doc(db, 'publicQR', qrDoc.id, 'logs', logDoc.id));
+			summary.logs++;
+		});
+	}
+
+	return { refs, summary };
+}
+
+/**
+ * Deletes doc refs in chunks of BATCH_LIMIT. Deleting already-deleted docs
+ * is a silent no-op, so re-running after a partial failure is safe.
+ */
+async function deleteInChunks(db: Firestore, refs: DocumentReference[]): Promise<void> {
+	for (let i = 0; i < refs.length; i += BATCH_LIMIT) {
+		const chunk = refs.slice(i, i + BATCH_LIMIT);
+		const batch = writeBatch(db);
+		chunk.forEach((ref) => batch.delete(ref));
+		await batch.commit();
+	}
+}
+
+/**
+ * POST /api/admin-delete-user
+ * Permanently deletes a user: all subscriptions, QRs, scan logs, the
+ * users/{uid} doc and the Firebase Auth account, writes an anonymized
+ * retention record, and emails the user a final confirmation.
+ */
+async function handleAdminDeleteUser(request: Request, env: Env): Promise<Response> {
+	try {
+		const body = (await request.json()) as { targetUid?: string; adminIdToken?: string };
+		if (!body.targetUid || !body.adminIdToken) {
+			return json({ error: 'Missing required fields: targetUid, adminIdToken' }, 400);
+		}
+
+		// 1. Authorize
+		const adminUid = await verifyAdminIdToken(env, body.adminIdToken);
+		if (!adminUid) return json({ error: 'Unauthorized' }, 403);
+		if (body.targetUid === adminUid) return json({ error: 'Cannot delete your own account' }, 403);
+
+		const { db } = getFirebase(env);
+		const userRef = doc(db!, 'users', body.targetUid);
+		const userSnap = await getDoc(userRef);
+		if (!userSnap.exists()) {
+			// Idempotent: a missing target after a previous run is success, but the
+			// Auth account may still exist if a previous run degraded. Clean it up.
+			let authDeleted = false;
+			try {
+				await deleteFirebaseAuthUser(env, body.targetUid);
+				authDeleted = true;
+			} catch (authError) {
+				console.error(
+					`[SoporteWorker] Auth account ${body.targetUid} was NOT deleted (service-account credentials missing?):`,
+					authError,
+				);
+			}
+			return json({ success: true, alreadyDeleted: true, authDeleted });
+		}
+		const userData = userSnap.data();
+		if (userData.role === 'admin') return json({ error: 'Cannot delete an admin account' }, 403);
+
+		// PII captured ONLY for the one-time final email; never persisted
+		const targetEmail = userData.email as string | undefined;
+		const targetName = (userData.name as string | undefined) || '';
+
+		// 2. Enumerate all owned docs (reads only)
+		const { refs, summary } = await enumerateUserData(db!, body.targetUid);
+
+		// 3. Atomic commit of intent: anonymized retention record + deletion marker
+		const retentionId = crypto.randomUUID();
+		await runTransaction(db!, async (transaction) => {
+			transaction.set(doc(db!, 'deletionRecords', retentionId), {
+				deletedAt: Timestamp.now(),
+				planTypes: summary.planTypes,
+				hadActivePlan: summary.hadActivePlan,
+				totalQrsDeleted: summary.publicQrs,
+				initiator: 'admin',
+			});
+			transaction.update(userRef, {
+				deletionInProgress: true,
+				deletionStartedAt: Timestamp.now(),
+			});
+		});
+
+		// 4. Cascade delete (idempotent, chunked)
+		await deleteInChunks(db!, refs);
+
+		// 5. Final commit: delete the user doc itself
+		await deleteDoc(userRef);
+
+		// 6. Delete the Firebase Auth account.
+		// Graceful degradation: if the service-account credentials aren't
+		// provisioned (FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY), the data
+		// cascade still succeeds and authDeleted is reported false.
+		let authDeleted = false;
+		try {
+			await deleteFirebaseAuthUser(env, body.targetUid);
+			authDeleted = true;
+		} catch (authError) {
+			console.error(
+				`[SoporteWorker] Auth account ${body.targetUid} was NOT deleted (service-account credentials missing?):`,
+				authError,
+			);
+		}
+
+		// 7. Orphan verification
+		const leftover = await getDocs(query(collection(db!, 'publicQR'), where('uid', '==', body.targetUid)));
+		if (leftover.size > 0) {
+			console.error(
+				`[SoporteWorker] ORPHAN ALERT: ${leftover.size} publicQR docs remain for deleted uid ${body.targetUid}`,
+			);
+		}
+
+		// 8. Final email (best-effort, after deletion is complete)
+		if (targetEmail) {
+			try {
+				const resend = new Resend(env.RESEND_API_KEY);
+				await resend.emails.send({
+					from: 'Ubiqueme <soporte@ubiqueme.com>',
+					to: [targetEmail],
+					subject: 'Confirmación: tu cuenta de Ubiqueme ha sido eliminada',
+					html: EMAIL_WRAPPER(DELETE_CONFIRM_HTML(targetName)),
+				});
+			} catch (emailError) {
+				console.error('[SoporteWorker] Failed to send deletion confirmation email:', emailError);
+			}
+		}
+
+		console.log(`[SoporteWorker] User ${body.targetUid} deleted: ${JSON.stringify(summary)}`);
+
+		return json({
+			success: true,
+			authDeleted,
+			deletedSubscriptions: summary.subscriptions,
+			deletedQrs: summary.publicQrs,
+			deletedLogs: summary.logs,
+			planTypes: summary.planTypes,
+		});
+	} catch (e) {
+		console.error('[SoporteWorker] Error in handleAdminDeleteUser:', e);
+		return json({ error: 'Internal error' }, 500);
+	}
+}
+
 // ─── Main export ──────────────────────────────────────────────
 export default {
 	// ── Incoming email (Email Routing) ────────────────────────
@@ -488,6 +803,11 @@ export default {
 		// ── POST /api/admin-send-email (admin console) ─────────
 		if (url.pathname === '/api/admin-send-email') {
 			return handleAdminSendEmail(request, env);
+		}
+
+		// ── POST /api/admin-delete-user (admin console) ────────
+		if (url.pathname === '/api/admin-delete-user') {
+			return handleAdminDeleteUser(request, env);
 		}
 
 		// ── POST /api/physical-request (notify QR shipment) ──

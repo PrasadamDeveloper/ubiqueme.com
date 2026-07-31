@@ -163,6 +163,14 @@
                         'how_to_reg' : 'gavel' }}</span>
                       {{ user.isBanned ? 'Restaurar' : 'Suspender' }}
                     </button>
+                    <button v-if="user.role !== 'admin' && user.uid !== userStore.getUserId"
+                      @click="openDeleteModal(user)" :disabled="processingDeleteUser"
+                      class="h-7 px-2.5 rounded-lg border border-red-500/25 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+                      <span v-if="processingDeleteUser"
+                        class="w-2.5 h-2.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
+                      <span v-else class="material-symbols-outlined notranslate text-[11px]">person_off</span>
+                      Eliminar
+                    </button>
                   </div>
 
                   <!-- Dates row -->
@@ -300,6 +308,9 @@
           :user-name="cancelReasonUserName" :loading="processingCancelReason" @submit="handleCancelReasonConfirm"
           @cancel="isCancelReasonOpen = false" />
 
+        <DeleteUserConfirm v-if="selectedUserForDelete" :is-open="isDeleteModalOpen" :user="selectedUserForDelete"
+          :processing="processingDeleteUser" @submit="handleDeleteUser" @cancel="isDeleteModalOpen = false" />
+
       </div>
     </template>
   </UserDashoardLayout>
@@ -312,9 +323,10 @@ import QRNamePrompt from '@/components/admin/QRNamePrompt.vue'
 import BanConfirmPrompt from '@/components/admin/BanConfirmPrompt.vue'
 import ChangePlanPrompt from '@/components/admin/ChangePlanPrompt.vue'
 import CancelReasonPrompt from '@/components/admin/CancelReasonPrompt.vue'
+import DeleteUserConfirm from '@/components/admin/DeleteUserConfirm.vue'
 import { toast } from 'vue-sonner'
 import { collection, doc, increment, onSnapshot, runTransaction, Timestamp, writeBatch, collectionGroup } from 'firebase/firestore'
-import { db as firestoreDb } from '@/firebase'
+import { db as firestoreDb, auth } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import type { IUser } from '@/interfaces/IUser'
 import type { ISubscription } from '@/interfaces/ISubscription'
@@ -493,6 +505,52 @@ const handleBanSubmit = async (reason: string) => {
     toast.error('Error al suspender usuario: ' + error);
   } finally {
     processingBanSubmit.value = false;
+  }
+}
+
+//DELETE USER
+const isDeleteModalOpen = ref(false)
+const selectedUserForDelete = ref<IUser | null>(null)
+const processingDeleteUser = ref(false)
+
+const openDeleteModal = (user: IUser) => {
+  selectedUserForDelete.value = user;
+  isDeleteModalOpen.value = true;
+}
+
+const handleDeleteUser = async () => {
+  const target = selectedUserForDelete.value;
+  if (!target?.uid) return;
+  processingDeleteUser.value = true;
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    if (!idToken) throw new Error('No se pudo autenticar la sesión de administrador');
+
+    const soporteUrl = import.meta.env.VITE_SOPORTE_WORKER_URL;
+    const res = await fetch(`${soporteUrl}/api/admin-delete-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetUid: target.uid, adminIdToken: idToken }),
+    });
+    let data: { error?: string; authDeleted?: boolean } = {};
+    try {
+      data = await res.json();
+    } catch {
+      data = {};
+    }
+    if (!res.ok) throw new Error(data.error || 'Error al eliminar el usuario');
+
+    if (data.authDeleted === false) {
+      toast.warning(`Datos de ${target.name} eliminados, pero el acceso de su cuenta quedó pendiente de eliminar`);
+    } else {
+      toast.success(`Usuario ${target.name} eliminado permanentemente`);
+    }
+    isDeleteModalOpen.value = false;
+    selectedUserForDelete.value = null;
+  } catch (error) {
+    toast.error(`Error al eliminar usuario: ${error}`);
+  } finally {
+    processingDeleteUser.value = false;
   }
 }
 

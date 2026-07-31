@@ -112,6 +112,36 @@
 
 ---
 
+## 6. Colección: `deletionRecords/{docId}` (User Deletion — audit)
+
+> Registros anónimos (sin PII) creados atómicamente por el worker admin-delete-user.
+> Escritos/leídos únicamente por cuentas con rol `admin`.
+
+| #    | Operación  | Actor       | Documento                    | Resultado Esperado | Fundamento                  |
+| ---- | ---------- | ----------- | ---------------------------- | ------------------ | --------------------------- |
+| 6.1  | **create** | `admin_1`   | `deletionRecords/new_rec`    | ✅ PASS            | `isAdmin()` = true          |
+| 6.2  | **create** | `user_1`    | `deletionRecords/new_rec`    | ❌ ERROR           | `isAdmin()` = false         |
+| 6.3  | **create** | `anonymous` | `deletionRecords/new_rec`    | ❌ ERROR           | `isAuth()` = false          |
+| 6.4  | **read**   | `admin_1`   | `deletionRecords/rec_1`      | ✅ PASS            | `isAdmin()` = true          |
+| 6.5  | **read**   | `user_1`    | `deletionRecords/rec_1`      | ❌ ERROR           | `isAdmin()` = false         |
+| 6.6  | **update** | `admin_1`   | `deletionRecords/rec_1`      | ✅ PASS            | `isAdmin()` = true          |
+| 6.7  | **delete** | `admin_1`   | `deletionRecords/rec_1`      | ✅ PASS            | `isAdmin()` = true          |
+| 6.8  | **delete** | `user_1`    | `deletionRecords/rec_1`      | ❌ ERROR           | `isAdmin()` = false         |
+
+## 7. Cascada de borrado (admin-delete-user worker)
+
+> El worker se autentica con una cuenta con rol `admin` (prerequisito de despliegue),
+> por lo que las rutas de borrado ya existentes se reutilizan sin cambios de reglas.
+
+| #    | Operación  | Actor    | Documento                                     | Resultado Esperado | Fundamento                    |
+| ---- | ---------- | -------- | --------------------------------------------- | ------------------ | ----------------------------- |
+| 7.1  | **delete** | worker   | `users/{target}/subscriptions/{subId}`        | ✅ PASS            | `isAdmin()` = true            |
+| 7.2  | **delete** | worker   | `users/{target}/qrs/{qrId}`                   | ✅ PASS            | `isAdmin()` = true            |
+| 7.3  | **delete** | worker   | `publicQR/{qrId}`                             | ✅ PASS            | `isAdmin()` = true            |
+| 7.4  | **delete** | worker   | `publicQR/{qrId}/logs/{logId}`                | ✅ PASS            | `isAdmin()` = true            |
+| 7.5  | **delete** | worker   | `users/{target}`                              | ✅ PASS            | `isAdmin()` = true            |
+| 7.6  | **create** | worker   | `deletionRecords/{retentionId}` (transacción) | ✅ PASS            | `isAdmin()` = true            |
+
 ## Resumen de Cobertura
 
 | Colección                           | Reads  | Creates | Updates | Deletes | Total  |
@@ -121,4 +151,6 @@
 | `users/{uid}/qrs/{qrId}`            | 3      | 5       | 4       | 2       | **14** |
 | `publicQR/{qrId}`                   | 2      | 4       | 5       | 2       | **13** |
 | `publicQR/{qrId}/logs/{logId}`      | 3      | 3       | 3       | 2       | **11** |
-| **Total**                           | **16** | **21**  | **18**  | **11**  | **66** |
+| `deletionRecords/{docId}`           | 2      | 3       | 1       | 2       | **8**  |
+| Cascada de borrado (worker)         | —      | 1       | —       | 5       | **6**  |
+| **Total**                           | **18** | **25**  | **19**  | **18**  | **80** |
