@@ -132,6 +132,22 @@ const startDrag = (id: string, e: MouseEvent) => {
 
 // ─── Export helpers ──────────────────────────────────────────
 
+/** Resolve only once every <img> inside the template is fully loaded.
+ *  Prevents the "first download exports blank images/QR" race on iOS Safari
+ *  and any slow first fetch, where html-to-image captures before onload. */
+const waitForImages = (el: HTMLElement) => {
+  const imgs = Array.from(el.querySelectorAll('img'))
+  const pending = imgs
+    .filter((img) => !img.complete || img.naturalWidth === 0)
+    .map((img) => new Promise<void>((resolve) => {
+      const done = () => resolve()
+      img.addEventListener('load', done, { once: true })
+      img.addEventListener('error', done, { once: true })
+      if (img.complete) resolve()
+    }))
+  return Promise.all(pending)
+}
+
 /** Capture the template directly with html-to-image */
 const captureCanvas = async () => {
   const el = tplRef.value
@@ -141,6 +157,8 @@ const captureCanvas = async () => {
   el.style.transform = ''
   el.style.transformOrigin = ''
   try {
+    // Guarantee images are painted before capture
+    await waitForImages(el)
     return await toCanvas(el, {
       pixelRatio: 4,
       backgroundColor: '#f97316',
