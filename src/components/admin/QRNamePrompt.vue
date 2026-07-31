@@ -33,63 +33,67 @@ const qrCategory = ref('other')
 
 <template>
   <Transition name="md3-dialog">
-    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
 
-      <div class="w-full max-w-sm rounded-2xl border border-white/[0.08] bg-[#0d0d0e] shadow-2xl overflow-hidden">
+      <div class="w-full max-w-sm rounded-3xl border border-gray-200/70 bg-white shadow-2xl overflow-hidden">
 
         <!-- Header -->
-        <div class="p-5 pb-3 space-y-1">
+        <div class="p-6 pb-4 space-y-1">
           <div class="flex items-center gap-3">
             <div
-              class="w-9 h-9 rounded-xl bg-[#ff7900]/10 border border-[#ff7900]/20 flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined notranslate text-[#ff7900] text-base">qr_code_scanner</span>
+              class="w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined notranslate text-orange-500 text-base">qr_code_scanner</span>
             </div>
             <div>
-              <h3 class="text-sm font-semibold text-white">Asignar QR</h3>
-              <p class="text-[11px] text-white/40">
-                para <span class="text-white/60">{{ userName }}</span>
+              <h3 class="text-base font-semibold text-gray-900">Asignar QR</h3>
+              <p class="text-[12px] text-gray-500">
+                para <span class="text-gray-700 font-medium">{{ userName }}</span>
               </p>
             </div>
           </div>
         </div>
 
         <!-- Form -->
-        <div class="px-5 pb-4 space-y-3.5">
+        <div class="px-6 pb-5 space-y-4">
           <div class="space-y-1.5">
-            <label class="text-[9px] uppercase tracking-widest text-white/35 font-medium">Nombre</label>
+            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Nombre</label>
             <input v-model="qrNameInput" placeholder="Ej. Llaves del auto" @keyup.enter="handleSubmit"
-              class="w-full h-10 px-3.5 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white text-[13px] outline-none focus:border-[#ff7900]/30 placeholder:text-white/20 transition-colors">
+              class="w-full h-11 px-4 rounded-2xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-orange-400 focus:bg-white focus:ring-4 focus:ring-orange-500/10">
           </div>
           <div class="space-y-1.5">
-            <label class="text-[9px] uppercase tracking-widest text-white/35 font-medium">Categoría</label>
-            <select v-model="qrCategory"
-              class="w-full h-10 px-3.5 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white text-[13px] outline-none focus:border-[#ff7900]/30 transition-colors cursor-pointer">
-              <option value="vehicle">Vehículos</option>
-              <option value="home">Hogares</option>
-              <option value="phone">Celulares</option>
-              <option value="laptop">Laptops</option>
-              <option value="bags">Mochilas / Maletas</option>
-              <option value="keys">Llaves</option>
-              <option value="pets">Mascotas</option>
-              <option value="people">Personas</option>
-              <option value="wallet">Carteras</option>
-              <option value="documents">Documentos</option>
-              <option value="bike">Bicicletas</option>
-              <option value="other">Otro</option>
-            </select>
+            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Categoría</label>
+            <div class="relative">
+              <select v-model="qrCategory"
+                class="w-full h-11 px-4 pr-9 rounded-2xl border border-gray-200 bg-gray-50 text-sm text-gray-900 outline-none transition-all duration-300 focus:border-orange-400 focus:bg-white focus:ring-4 focus:ring-orange-500/10 cursor-pointer appearance-none">
+                <option value="vehicle">Vehículos</option>
+                <option value="home">Hogares</option>
+                <option value="phone">Celulares</option>
+                <option value="laptop">Laptops</option>
+                <option value="bags">Mochilas / Maletas</option>
+                <option value="keys">Llaves</option>
+                <option value="pets">Mascotas</option>
+                <option value="people">Personas</option>
+                <option value="wallet">Carteras</option>
+                <option value="documents">Documentos</option>
+                <option value="bike">Bicicletas</option>
+                <option value="other">Otro</option>
+              </select>
+              <span
+                class="material-symbols-outlined notranslate absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-base pointer-events-none">expand_more</span>
+            </div>
           </div>
         </div>
 
         <!-- Actions -->
-        <div class="flex gap-2 px-5 pb-5">
+        <div class="flex gap-2.5 px-6 pb-6">
           <button @click="handleCancel"
-            class="flex-1 h-10 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white/70 text-[10px] font-semibold uppercase tracking-widest hover:bg-white/[0.06] transition cursor-pointer">
+            class="flex-1 h-11 rounded-2xl bg-gray-100 text-gray-700 text-[11px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all duration-200 active:scale-95 cursor-pointer">
             Cancelar
           </button>
           <button @click="handleSubmit" :disabled="!qrNameInput.trim() || loading"
-            class="flex-1 h-10 rounded-xl bg-[#ff7900] hover:bg-[#ff8c1a] text-white text-[10px] font-semibold uppercase tracking-widest transition disabled:opacity-40 cursor-pointer flex items-center justify-center gap-1.5">
+            class="flex-1 h-11 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5">
             <span v-if="loading"
-              class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             <span v-else>Crear QR</span>
           </button>
         </div>
@@ -117,13 +121,13 @@ const qrCategory = ref('other')
 .md3-dialog-enter-from,
 .md3-dialog-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(8px);
 }
 
 .md3-dialog-enter-to,
 .md3-dialog-leave-from {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1) translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {

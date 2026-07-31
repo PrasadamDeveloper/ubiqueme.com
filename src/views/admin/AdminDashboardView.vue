@@ -1,56 +1,84 @@
 <template>
   <UserDashoardLayout>
     <template #main>
-      <div class="relative min-h-screen bg-[#0a0a0b] w-full font-google-sans">
+      <div class="relative min-h-screen bg-slate-50 w-full font-google-sans">
 
-        <!-- Header surface -->
-        <div class="relative z-10 pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-screen-2xl mx-auto">
+        <div class="relative z-10 mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8 pt-24 pb-20">
 
-          <!-- Stats bar -->
-          <div class="flex flex-col gap-6 mb-8">
-            <div class="flex items-center gap-3">
-              <span
-                class="w-7 h-7 rounded-lg bg-[#ff7900]/10 border border-[#ff7900]/20 flex items-center justify-center text-[#ff7900] shrink-0">
-                <span class="material-symbols-outlined notranslate text-sm">admin_panel_settings</span>
-              </span>
-              <h1 class="text-lg font-bold text-white tracking-tight">Admin</h1>
-              <span
-                class="px-2 py-0.5 rounded-md bg-[#ff7900]/10 text-[#ff7900] text-[9px] font-black uppercase tracking-widest">Beta</span>
-              <RouterLink :to="{ name: 'admin-send-email' }"
-                class="ml-auto sm:ml-0 h-7 px-2.5 rounded-lg border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition-all flex items-center gap-1 text-[9px] font-black uppercase tracking-widest shrink-0 cursor-pointer">
-                <span class="material-symbols-outlined notranslate text-[11px]">mail</span>
-                Enviar correo
-              </RouterLink>
-            </div>
-
-            <div class="flex items-center gap-3 text-xs text-white/50">
-              <span class="flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-[#ff7900]"></span>
-                <span class="font-medium text-white">{{ usersData.length }}</span> usuarios
-              </span>
-              <span class="w-px h-4 bg-white/10"></span>
-              <span class="flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                <span class="font-medium text-green-400">{{usersData.filter(u => u.isActive && !u.isBanned).length
-                }}</span> activos
-              </span>
-              <span class="w-px h-4 bg-white/10"></span>
-              <span class="flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-red-400"></span>
-                <span class="font-medium text-red-400">{{usersData.filter(u => u.isBanned).length}}</span> suspendidos
-              </span>
-            </div>
-
-            <!-- Filters row -->
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="relative flex-1 min-w-[200px] max-w-xs">
+          <!-- Header -->
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-7">
+            <div>
+              <div class="flex items-center gap-3">
                 <span
-                  class="material-symbols-outlined notranslate absolute left-3 top-1/2 -translate-y-1/2 text-white/20 text-sm">search</span>
-                <input type="text" v-model="searchQuery" placeholder="Buscar por nombre o email..."
-                  class="w-full h-9 pl-9 pr-3 rounded-lg border border-white/[0.06] bg-white/[0.03] text-white text-[12px] outline-none focus:border-[#ff7900]/30 placeholder:text-white/20 transition-colors">
+                  class="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-500 shrink-0">
+                  <span class="material-symbols-outlined notranslate text-lg">admin_panel_settings</span>
+                </span>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Admin</h1>
+                <span
+                  class="px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-[9px] font-black uppercase tracking-widest">Beta</span>
               </div>
+              <p class="mt-2 text-sm text-gray-500">Gestiona usuarios, suscripciones y comunicaciones</p>
+            </div>
+            <RouterLink :to="{ name: 'admin-send-email' }"
+              class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-all duration-300 ease-out hover:bg-orange-600 hover:shadow-orange-500/35 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0">
+              <span class="material-symbols-outlined notranslate text-base">mail</span>
+              Enviar correo
+            </RouterLink>
+          </div>
+
+          <!-- Stats cards -->
+          <div class="grid grid-cols-3 gap-3 sm:gap-4 mb-7">
+            <div
+              class="rounded-2xl sm:rounded-3xl border border-gray-200/70 bg-white p-3.5 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div class="flex items-center gap-2.5 sm:gap-3">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
+                  <span class="material-symbols-outlined notranslate text-base sm:text-lg">group</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-base sm:text-2xl font-bold text-gray-900 leading-none">{{ usersData.length }}</p>
+                  <p class="mt-1 text-[9px] sm:text-[11px] font-medium text-gray-500 truncate">Usuarios</p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-2xl sm:rounded-3xl border border-gray-200/70 bg-white p-3.5 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div class="flex items-center gap-2.5 sm:gap-3">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
+                  <span class="material-symbols-outlined notranslate text-base sm:text-lg">verified_user</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-base sm:text-2xl font-bold text-gray-900 leading-none">{{
+                    usersData.filter(u => u.isActive && !u.isBanned).length }}</p>
+                  <p class="mt-1 text-[9px] sm:text-[11px] font-medium text-gray-500 truncate">Activos</p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-2xl sm:rounded-3xl border border-gray-200/70 bg-white p-3.5 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div class="flex items-center gap-2.5 sm:gap-3">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-red-50 flex items-center justify-center text-red-500 shrink-0">
+                  <span class="material-symbols-outlined notranslate text-base sm:text-lg">gavel</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-base sm:text-2xl font-bold text-gray-900 leading-none">{{
+                    usersData.filter(u => u.isBanned).length }}</p>
+                  <p class="mt-1 text-[9px] sm:text-[11px] font-medium text-gray-500 truncate">Suspendidos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filters row -->
+          <div class="flex items-center gap-3 flex-wrap mb-6">
+            <div class="relative flex-1 min-w-[200px] max-w-sm">
+              <span
+                class="material-symbols-outlined notranslate absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base">search</span>
+              <input type="text" v-model="searchQuery" placeholder="Buscar por nombre o email..."
+                class="w-full h-11 pl-10 pr-4 rounded-2xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none shadow-sm transition-all duration-300 focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10">
+            </div>
+            <div class="relative">
               <select v-model="selectedFilter"
-                class="h-9 px-3 rounded-lg border border-white/[0.06] bg-white/[0.03] text-white text-[11px] outline-none focus:border-[#ff7900]/30 cursor-pointer appearance-none min-w-[120px]">
+                class="h-11 px-4 pr-9 rounded-2xl border border-gray-200 bg-white text-sm text-gray-700 outline-none shadow-sm transition-all duration-300 focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 cursor-pointer appearance-none min-w-[150px]">
                 <option value="all">Todos</option>
                 <option value="active">Activos</option>
                 <option value="banned">Suspendidos</option>
@@ -58,193 +86,208 @@
                 <option value="canceled">Cancelados</option>
                 <option value="inactive">Expirados</option>
               </select>
-
+              <span
+                class="material-symbols-outlined notranslate absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-base pointer-events-none">expand_more</span>
             </div>
           </div>
 
-          <!-- Loading -->
-          <div v-if="loading" class="flex items-center justify-center py-20">
-            <span
-              class="material-symbols-outlined notranslate text-[#ff7900] text-2xl animate-spin">progress_activity</span>
+          <!-- Loading skeletons -->
+          <div v-if="loading" class="space-y-3">
+            <div v-for="i in 4" :key="i"
+              class="h-[68px] rounded-2xl border border-gray-200/70 bg-white shadow-sm animate-pulse overflow-hidden">
+              <div class="flex items-center gap-3 px-4 sm:px-5 h-full">
+                <div class="w-10 h-10 rounded-xl bg-gray-100 shrink-0"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-3 w-1/3 rounded-full bg-gray-100"></div>
+                  <div class="h-2.5 w-1/2 rounded-full bg-gray-100"></div>
+                </div>
+                <div class="h-6 w-16 rounded-full bg-gray-100"></div>
+              </div>
+            </div>
           </div>
 
           <!-- Empty -->
-          <div v-if="!loading && !usersComputed?.length" class="text-center py-20">
-            <span class="material-symbols-outlined notranslate text-4xl text-white/10 mb-3">group_off</span>
-            <p class="text-white/30 text-sm">No se encontraron usuarios</p>
+          <div v-if="!loading && !usersComputed?.length" class="flex flex-col items-center justify-center py-20 text-center">
+            <div
+              class="w-16 h-16 rounded-3xl bg-white border border-gray-200 shadow-sm flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined notranslate text-3xl text-gray-300">group_off</span>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">No se encontraron usuarios</h3>
+            <p class="text-xs text-gray-500">Prueba ajustando la búsqueda o los filtros</p>
           </div>
 
-          <!-- Users list (Google Admin style) -->
-          <div v-if="!loading && usersComputed?.length" class="space-y-1.5">
+          <!-- Users list -->
+          <div v-if="!loading && usersComputed?.length" class="space-y-3">
             <div v-for="(user, index) in usersComputed" :key="user.uid"
-              class="group/card rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.10] transition-all duration-200">
+              class="group/card overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm transition-all duration-300 hover:shadow-md">
 
               <!-- Row header — clickable expand -->
-              <button @click="toggleExpand(user.uid)"
-                class="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer">
+              <button @click="toggleExpand(user.uid)" :aria-expanded="expandedUsers.has(user.uid)"
+                class="w-full flex items-center gap-3 px-4 sm:px-5 py-4 text-left cursor-pointer transition-colors duration-200 hover:bg-gray-50/70 active:bg-gray-50">
 
                 <!-- Avatar dot -->
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[8px] font-black shrink-0" :class="user.isBanned
-                  ? 'bg-red-500/10 text-red-400'
-                  : 'bg-[#ff7900]/10 text-[#ff7900]'">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-[9px] font-black shrink-0 transition-colors" :class="user.isBanned
+                  ? 'bg-red-50 text-red-500'
+                  : 'bg-orange-50 text-orange-600'">
                   {{ getUserIdUI(user, index) }}
                 </div>
 
                 <!-- Name + email -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-white truncate">{{ user.name }}</span>
+                    <span class="text-sm font-semibold text-gray-900 truncate">{{ user.name }}</span>
                     <span v-if="user.role !== 'user'"
-                      class="px-1.5 py-0.5 rounded border border-white/[0.06] bg-white/[0.03] text-[8px] uppercase tracking-widest text-white/40 font-black shrink-0">{{
+                      class="px-1.5 py-0.5 rounded-md bg-gray-100 text-[8px] uppercase tracking-widest text-gray-500 font-black shrink-0">{{
                         user.role }}</span>
                     <span v-if="user.isBanned"
-                      class="px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 text-[8px] font-black uppercase tracking-widest shrink-0">Suspendido</span>
+                      class="px-1.5 py-0.5 rounded-md bg-red-50 text-red-600 text-[8px] font-black uppercase tracking-widest shrink-0">Suspendido</span>
                   </div>
-                  <div class="flex items-center gap-2 text-[11px] text-white/35 mt-0.5">
-                    <span>{{ user.email }}</span>
-                    <span v-if="user.phone" class="hidden sm:inline">· {{ user.phone }}</span>
-                    <span class="hidden md:inline">· {{ user.uid.slice(0, 8) }}…</span>
+                  <div class="flex items-center gap-2 text-[11px] text-gray-500 mt-0.5">
+                    <span class="truncate">{{ user.email }}</span>
+                    <span v-if="user.phone" class="hidden sm:inline shrink-0">· {{ user.phone }}</span>
+                    <span class="hidden md:inline shrink-0">· {{ user.uid.slice(0, 8) }}…</span>
                   </div>
                 </div>
 
                 <!-- Right: QRs + status -->
-                <div class="flex items-center gap-4 shrink-0">
-                  <div class="hidden sm:flex items-center gap-1.5 text-xs">
-                    <span class="material-symbols-outlined notranslate text-[13px] text-[#ff7900]">qr_code</span>
-                    <span class="text-white/60 font-mono">{{ user.totalQRs }}</span>
+                <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+                  <div class="hidden sm:flex items-center gap-1.5 text-xs text-gray-500">
+                    <span class="material-symbols-outlined notranslate text-[14px] text-orange-500">qr_code</span>
+                    <span class="font-semibold font-mono text-gray-700">{{ user.totalQRs }}</span>
                   </div>
-                  <span class="text-[10px] font-bold font-mono"
-                    :class="user.isActive ? 'text-green-400' : 'text-white/25'">
+                  <span
+                    class="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full transition-colors"
+                    :class="user.isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-400'">
                     {{ user.isActive ? 'Activo' : 'Inactivo' }}
                   </span>
                   <!-- Expand indicator -->
                   <span
-                    class="material-symbols-outlined notranslate text-white/20 text-base transition-transform duration-200"
+                    class="material-symbols-outlined notranslate text-gray-400 text-lg transition-transform duration-300 ease-out"
                     :class="expandedUsers.has(user.uid) ? 'rotate-180' : ''">expand_more</span>
                 </div>
               </button>
 
               <!-- Expanded detail panel -->
               <Transition name="expand">
-                <div v-if="expandedUsers.has(user.uid)" class="border-t border-white/[0.04] px-4 pb-4 pt-3 space-y-4">
+                <div v-if="expandedUsers.has(user.uid)" class="border-t border-gray-100 px-4 sm:px-5 pb-5 pt-4 space-y-4 bg-gray-50/40">
 
                   <!-- Quick actions row -->
                   <div class="flex items-center gap-2 flex-wrap">
                     <button @click="openPlanModal(user)" :disabled="processingPlanSubmit"
-                      class="h-7 px-2.5 rounded-lg border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+                      class="inline-flex h-8 items-center gap-1.5 rounded-xl bg-orange-50 px-3 text-[10px] font-bold uppercase tracking-widest text-orange-600 transition-all duration-200 ease-out hover:bg-orange-100 active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
                       <span v-if="processingPlanSubmit"
-                        class="w-2.5 h-2.5 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
-                      <span v-else class="material-symbols-outlined notranslate text-[11px]">workspace_premium</span>
+                        class="w-2.5 h-2.5 border-2 border-orange-300 border-t-orange-600 rounded-full animate-spin"></span>
+                      <span v-else class="material-symbols-outlined notranslate text-[12px]">workspace_premium</span>
                       Plan
                     </button>
                     <button v-if="hasActiveTrial(user.uid)" @click="endFreeTrial(user)"
                       :disabled="processingCancelReason"
-                      class="h-7 px-2.5 rounded-lg border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+                      class="inline-flex h-8 items-center gap-1.5 rounded-xl bg-red-50 px-3 text-[10px] font-bold uppercase tracking-widest text-red-600 transition-all duration-200 ease-out hover:bg-red-100 active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
                       <span v-if="processingCancelReason"
-                        class="w-2.5 h-2.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
-                      <span v-else class="material-symbols-outlined notranslate text-[11px]">cancel</span>
+                        class="w-2.5 h-2.5 border-2 border-red-300 border-t-red-600 rounded-full animate-spin"></span>
+                      <span v-else class="material-symbols-outlined notranslate text-[12px]">cancel</span>
                       Fin Bronce
                     </button>
                     <button v-else @click="addFreeTrial(user)" :disabled="processingAddTrial"
-                      class="h-7 px-2.5 rounded-lg border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/60 hover:bg-[#ff7900]/10 transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+                      class="inline-flex h-8 items-center gap-1.5 rounded-xl bg-orange-50/60 px-3 text-[10px] font-bold uppercase tracking-widest text-orange-500 transition-all duration-200 ease-out hover:bg-orange-100 active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
                       <span v-if="processingAddTrial"
-                        class="w-2.5 h-2.5 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
-                      <span v-else class="material-symbols-outlined notranslate text-[11px]">rocket_launch</span>
+                        class="w-2.5 h-2.5 border-2 border-orange-300 border-t-orange-500 rounded-full animate-spin"></span>
+                      <span v-else class="material-symbols-outlined notranslate text-[12px]">rocket_launch</span>
                       Bronce Prueba
                     </button>
                     <button @click="openBanModal(user)" :disabled="processingBanSubmit"
-                      class="h-7 px-2.5 rounded-lg border transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                      class="inline-flex h-8 items-center gap-1.5 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ease-out active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                       :class="user.isBanned
-                        ? 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10'
-                        : 'border-red-500/15 bg-red-500/5 text-red-400 hover:bg-red-500/10'">
+                        ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                        : 'bg-red-50 text-red-600 hover:bg-red-100'">
                       <span v-if="processingBanSubmit"
                         class="w-2.5 h-2.5 border-2 border-current/30 border-t-current rounded-full animate-spin"></span>
-                      <span v-else class="material-symbols-outlined notranslate text-[11px]">{{ user.isBanned ?
+                      <span v-else class="material-symbols-outlined notranslate text-[12px]">{{ user.isBanned ?
                         'how_to_reg' : 'gavel' }}</span>
                       {{ user.isBanned ? 'Restaurar' : 'Suspender' }}
                     </button>
                     <button v-if="user.role !== 'admin' && user.uid !== userStore.getUserId"
                       @click="openDeleteModal(user)" :disabled="processingDeleteUser"
-                      class="h-7 px-2.5 rounded-lg border border-red-500/25 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition flex items-center gap-1 text-[9px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+                      class="inline-flex h-8 items-center gap-1.5 rounded-xl bg-red-500 px-3 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm shadow-red-500/25 transition-all duration-200 ease-out hover:bg-red-600 active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
                       <span v-if="processingDeleteUser"
-                        class="w-2.5 h-2.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
-                      <span v-else class="material-symbols-outlined notranslate text-[11px]">person_off</span>
+                        class="w-2.5 h-2.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                      <span v-else class="material-symbols-outlined notranslate text-[12px]">person_off</span>
                       Eliminar
                     </button>
                   </div>
 
                   <!-- Dates row -->
-                  <div class="flex items-center gap-4 text-[10px] text-white/30 font-mono flex-wrap">
-                    <span>Registro: <span class="text-white/50">{{ formatedDate(user.createdAt) }}</span></span>
-                    <span>Último login: <span class="text-white/50">{{ formatedDate(user.lastLoginAt) }}</span></span>
-                    <span v-if="user.isBanned && user.banReason" class="text-red-300/70">Motivo: {{ user.banReason
+                  <div class="flex items-center gap-x-4 gap-y-1 text-[10px] text-gray-400 font-mono flex-wrap">
+                    <span>Registro: <span class="text-gray-600">{{ formatedDate(user.createdAt) }}</span></span>
+                    <span>Último login: <span class="text-gray-600">{{ formatedDate(user.lastLoginAt) }}</span></span>
+                    <span v-if="user.isBanned && user.banReason" class="text-red-500">Motivo: {{ user.banReason
                     }}</span>
                   </div>
 
                   <!-- Subscriptions -->
-                  <div v-if="getUserSubscriptions(user.uid).length > 0" class="space-y-2">
+                  <div v-if="getUserSubscriptions(user.uid).length > 0" class="space-y-2.5">
                     <div
-                      class="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 flex items-center gap-1.5">
-                      <span class="material-symbols-outlined notranslate text-[11px]">workspace_premium</span>
+                      class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 flex items-center gap-1.5">
+                      <span class="material-symbols-outlined notranslate text-[12px]">workspace_premium</span>
                       Suscripciones {{ getUserSubscriptions(user.uid).length }}
                     </div>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap gap-3">
                       <div v-for="sub in getUserSubscriptions(user.uid)" :key="sub.id"
-                        class="flex-1 min-w-[260px] rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 space-y-2.5">
+                        class="flex-1 min-w-[260px] rounded-2xl border border-gray-200/70 bg-white p-4 shadow-sm space-y-3">
 
                         <!-- Plan header -->
                         <div class="flex items-center justify-between">
                           <div class="flex items-center gap-1.5">
                             <span
-                              class="material-symbols-outlined notranslate text-[14px] text-[#ff7900]">workspace_premium</span>
-                            <span class="font-bold text-[#ff7900] uppercase text-[10px] tracking-wider">{{
+                              class="material-symbols-outlined notranslate text-[15px] text-orange-500">workspace_premium</span>
+                            <span class="font-bold text-orange-600 uppercase text-[10px] tracking-wider">{{
                               planDisplayName(sub.planType)
                               }}</span>
                           </div>
                           <span
-                            :class="statusDisplayName(sub.planType, sub.status) === 'Acabado' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : sub.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : sub.status === 'canceled' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/40 border-white/10'"
-                            class="px-1.5 py-0.5 rounded border text-[7px] font-black uppercase tracking-widest">
+                            :class="statusDisplayName(sub.planType, sub.status) === 'Acabado' ? 'bg-amber-50 text-amber-600 border-amber-200' : sub.status === 'active' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : sub.status === 'canceled' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-gray-100 text-gray-500 border-gray-200'"
+                            class="px-1.5 py-0.5 rounded-md border text-[8px] font-black uppercase tracking-widest">
                             {{ statusDisplayName(sub.planType, sub.status) }}
                           </span>
                         </div>
 
                         <!-- QR progress bar -->
                         <div>
-                          <div class="flex justify-between text-[9px] mb-1">
-                            <span class="text-white/40">QRs</span>
-                            <span class="text-white font-mono font-bold">{{ sub.totalQRsCreated }} / {{
+                          <div class="flex justify-between text-[10px] mb-1.5">
+                            <span class="text-gray-400">QRs</span>
+                            <span class="text-gray-900 font-mono font-bold">{{ sub.totalQRsCreated }} / {{
                               sub.totalQRsAllowed }}</span>
                           </div>
-                          <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                          <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                             <div class="h-full rounded-full transition-all duration-500"
-                              :class="sub.totalQRsCreated >= sub.totalQRsAllowed ? 'bg-red-500' : 'bg-[#ff7900]'"
+                              :class="sub.totalQRsCreated >= sub.totalQRsAllowed ? 'bg-red-500' : 'bg-orange-500'"
                               :style="{ width: `${Math.min((sub.totalQRsCreated / sub.totalQRsAllowed) * 100, 100)}%` }">
                             </div>
                           </div>
                         </div>
 
                         <!-- Meta row -->
-                        <div class="flex items-center justify-between text-[9px] text-white/30">
-                          <span>Envíos: <span class="text-white/50">{{ sub.freeShipmentsUsed ?? 0 }}/{{
+                        <div class="flex items-center justify-between text-[10px] text-gray-400">
+                          <span>Envíos: <span class="text-gray-600">{{ sub.freeShipmentsUsed ?? 0 }}/{{
                             sub.freeShipmentsAllowed ?? 1 }}</span></span>
-                          <span>ID: <span class="font-mono text-white/30">{{ sub.id.slice(0, 8) }}…</span></span>
+                          <span>ID: <span class="font-mono text-gray-400">{{ sub.id.slice(0, 8) }}…</span></span>
                         </div>
 
                         <!-- Dates -->
-                        <div class="flex items-center gap-3 text-[9px] text-white/30">
-                          <span>Inicio: <span class="text-white/50 font-mono">{{ formatedDate(sub.purchasedAt)
+                        <div class="flex items-center gap-3 text-[10px] text-gray-400">
+                          <span>Inicio: <span class="text-gray-600 font-mono">{{ formatedDate(sub.purchasedAt)
                           }}</span></span>
                           <span>Ven: <span class="font-mono"
-                              :class="sub.status === 'active' && sub.endDate && sub.endDate.toDate() < new Date() ? 'text-red-400' : 'text-white/50'">{{
+                              :class="sub.status === 'active' && sub.endDate && sub.endDate.toDate() < new Date() ? 'text-red-500' : 'text-gray-600'">{{
                                 formatedDate(sub.endDate) }}</span></span>
                         </div>
 
                         <!-- Cancel info -->
-                        <div v-if="sub.canceledByAdmin?.reason" class="bg-red-500/5 rounded-lg p-2 space-y-1">
-                          <div class="text-[9px] text-red-300/70">
+                        <div v-if="sub.canceledByAdmin?.reason" class="bg-red-50/60 rounded-xl p-3 space-y-1">
+                          <div class="text-[10px] text-red-600">
                             <strong>Motivo:</strong> {{ sub.canceledByAdmin.reason }}
                           </div>
-                          <div class="text-[8px] text-white/30">
+                          <div class="text-[9px] text-gray-400">
                             {{ sub.canceledByAdmin.name }} · {{ formatedDate(sub.canceledByAdmin.canceledAt) }}
                           </div>
                         </div>
@@ -254,26 +297,26 @@
                           <button @click="openQRModal(user, sub)"
                             v-if="sub.status === 'active' && sub.totalQRsCreated < sub.totalQRsAllowed"
                             :disabled="processingQRSubmit"
-                            class="flex-1 h-7 rounded-lg border border-[#ff7900]/15 bg-[#ff7900]/5 text-[#ff7900]/80 hover:bg-[#ff7900]/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                            class="flex-1 h-8 rounded-xl bg-orange-500 text-white text-[9px] font-bold uppercase tracking-widest shadow-sm shadow-orange-500/25 transition-all duration-200 ease-out hover:bg-orange-600 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                             <span v-if="processingQRSubmit"
-                              class="w-2.5 h-2.5 border-2 border-[#ff7900]/30 border-t-[#ff7900] rounded-full animate-spin"></span>
-                            <span v-else class="material-symbols-outlined notranslate text-[10px]">qr_code</span>
+                              class="w-2.5 h-2.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            <span v-else class="material-symbols-outlined notranslate text-[11px]">qr_code</span>
                             QR
                           </button>
                           <button v-if="sub.status === 'active'" @click="cancelSubscription(sub.id, sub.userId)"
                             :disabled="processingCancelReason"
-                            class="flex-1 h-7 rounded-lg border border-red-500/15 bg-red-500/5 text-red-400/80 hover:bg-red-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                            class="flex-1 h-8 rounded-xl bg-red-50 text-red-600 text-[9px] font-bold uppercase tracking-widest transition-all duration-200 ease-out hover:bg-red-100 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                             <span v-if="processingCancelReason"
-                              class="w-2.5 h-2.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></span>
-                            <span v-else class="material-symbols-outlined notranslate text-[10px]">block</span>
+                              class="w-2.5 h-2.5 border-2 border-red-300 border-t-red-600 rounded-full animate-spin"></span>
+                            <span v-else class="material-symbols-outlined notranslate text-[11px]">block</span>
                             Cancelar
                           </button>
                           <button v-if="sub.status === 'canceled'" @click="renewSubscription(sub)"
                             :disabled="processingRenew"
-                            class="flex-1 h-7 rounded-lg border border-green-500/15 bg-green-500/5 text-green-400/80 hover:bg-green-500/10 transition flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                            class="flex-1 h-8 rounded-xl bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase tracking-widest transition-all duration-200 ease-out hover:bg-emerald-100 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                             <span v-if="processingRenew"
-                              class="w-2.5 h-2.5 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin"></span>
-                            <span v-else class="material-symbols-outlined notranslate text-[10px]">refresh</span>
+                              class="w-2.5 h-2.5 border-2 border-emerald-300 border-t-emerald-600 rounded-full animate-spin"></span>
+                            <span v-else class="material-symbols-outlined notranslate text-[11px]">refresh</span>
                             Renovar
                           </button>
                         </div>
@@ -281,7 +324,7 @@
                     </div>
                   </div>
                   <div v-else>
-                    <span class="text-[10px] text-white/20 italic">Sin suscripciones</span>
+                    <span class="text-[11px] text-gray-400 italic">Sin suscripciones</span>
                   </div>
                 </div>
               </Transition>

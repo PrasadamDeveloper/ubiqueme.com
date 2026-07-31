@@ -47,100 +47,100 @@ const formatDate = (timestamp: { seconds?: number } | null | undefined) => {
   <Transition name="md3-dialog">
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4 backdrop-blur-sm">
+      class="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4 backdrop-blur-sm">
 
       <div
-        class="relative w-full max-w-2xl rounded-2xl border border-white/[0.08] bg-[#0d0d0e] shadow-2xl overflow-hidden">
+        class="relative w-full max-w-2xl rounded-3xl border border-gray-200/70 bg-white shadow-2xl overflow-hidden">
 
         <div class="grid md:grid-cols-[1fr_1.2fr]">
 
           <!-- LEFT: User card + info -->
-          <div class="p-5 border-b md:border-b-0 md:border-r border-white/[0.06] space-y-4 bg-white/[0.01]">
+          <div class="p-6 border-b md:border-b-0 md:border-r border-gray-100 space-y-4 bg-gray-50/60">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-base font-black bg-red-500/10 text-red-400">
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg font-black bg-red-50 text-red-500">
                 <span class="material-symbols-outlined notranslate text-xl">person_off</span>
               </div>
               <div>
-                <span class="text-[9px] uppercase tracking-[0.2em] font-black text-red-400">
+                <span class="text-[10px] uppercase tracking-[0.2em] font-black text-red-500">
                   Eliminar usuario
                 </span>
-                <h3 class="text-sm font-semibold text-white mt-0.5">{{ user.name }}</h3>
+                <h3 class="text-base font-semibold text-gray-900 mt-0.5">{{ user.name }}</h3>
               </div>
             </div>
 
-            <div class="space-y-2 text-[11px]">
-              <div class="flex justify-between">
-                <span class="text-white/35">Email</span>
-                <span class="text-white/70">{{ user.email }}</span>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between gap-4">
+                <span class="text-gray-400">Email</span>
+                <span class="text-gray-700 font-medium truncate">{{ user.email }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-white/35">UID</span>
-                <span class="text-white/50 font-mono text-[9px]">{{ user.uid }}</span>
+              <div class="flex justify-between gap-4">
+                <span class="text-gray-400">UID</span>
+                <span class="text-gray-500 font-mono text-[10px] truncate">{{ user.uid }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-white/35">QRs</span>
-                <span class="text-white/70">{{ user.totalQRs }}</span>
+              <div class="flex justify-between gap-4">
+                <span class="text-gray-400">QRs</span>
+                <span class="text-gray-700 font-medium">{{ user.totalQRs }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-white/35">Rol</span>
-                <span class="text-[#ff7900] font-medium">{{ user.role }}</span>
+              <div class="flex justify-between gap-4">
+                <span class="text-gray-400">Rol</span>
+                <span class="text-orange-600 font-medium">{{ user.role }}</span>
               </div>
             </div>
 
-            <div class="text-[10px] text-white/30 space-y-1">
-              <div>Registro: <span class="text-white/50">{{ formatDate(user.createdAt) }}</span></div>
-              <div>Último acceso: <span class="text-white/50">{{ formatDate(user.lastLoginAt) }}</span></div>
+            <div class="text-[11px] text-gray-400 space-y-1">
+              <div>Registro: <span class="text-gray-600">{{ formatDate(user.createdAt) }}</span></div>
+              <div>Último acceso: <span class="text-gray-600">{{ formatDate(user.lastLoginAt) }}</span></div>
             </div>
           </div>
 
           <!-- RIGHT: Warning + typed confirmation + actions -->
-          <div class="p-5 space-y-4">
-            <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-3.5 space-y-2">
-              <div class="flex items-start gap-2 text-[11px] text-red-300/90 leading-relaxed">
+          <div class="p-6 space-y-4">
+            <div class="rounded-2xl border border-red-100 bg-red-50/60 p-4 space-y-2">
+              <div class="flex items-start gap-2 text-xs text-red-600 leading-relaxed">
                 <span class="material-symbols-outlined notranslate text-[16px] shrink-0">warning</span>
                 <span>
                   Esta acción eliminará permanentemente la cuenta de
-                  <strong class="text-white">{{ user.name }}</strong>, sus códigos QR, suscripciones,
+                  <strong class="text-gray-900">{{ user.name }}</strong>, sus códigos QR, suscripciones,
                   registros de actividad y el acceso a su cuenta. <strong>No se puede deshacer.</strong>
                 </span>
               </div>
-              <div class="text-[10px] text-white/30">
+              <div class="text-[11px] text-gray-400">
                 Se conservará únicamente un registro anónimo (fecha y plan) con fines estadísticos.
               </div>
             </div>
 
             <div class="space-y-1.5">
-              <label class="text-[9px] uppercase tracking-widest text-white/35 font-medium">
-                Escribe <span class="text-red-400 font-black">"confirmar"</span> para autorizar
+              <label class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">
+                Escribe <span class="text-red-500 font-black">"confirmar"</span> para autorizar
               </label>
               <input
                 v-model="confirmInput"
                 type="text"
                 autocomplete="off"
                 placeholder="confirmar"
-                class="w-full h-11 px-3.5 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white text-[13px] outline-none focus:border-red-500/40 placeholder:text-white/20 transition-colors font-mono"
-                :class="confirmInput && !isConfirmed ? 'border-red-500/40' : ''" />
+                class="w-full h-12 px-4 rounded-2xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-red-400 focus:bg-white focus:ring-4 focus:ring-red-500/10 transition-all duration-300 font-mono"
+                :class="confirmInput && !isConfirmed ? 'border-red-400' : ''" />
               <div
                 v-if="confirmInput && !isConfirmed"
-                class="text-[9px] text-red-400/80">
+                class="text-[10px] text-red-500">
                 El texto no coincide. Debe escribir exactamente "confirmar".
               </div>
             </div>
 
-            <div class="flex gap-2 pt-1">
+            <div class="flex gap-2.5 pt-1">
               <button
                 @click="handleCancel"
-                class="flex-1 h-10 rounded-xl border border-white/[0.06] bg-white/[0.03] text-white/70 text-[10px] font-semibold uppercase tracking-widest hover:bg-white/[0.06] transition cursor-pointer">
+                class="flex-1 h-11 rounded-2xl bg-gray-100 text-gray-700 text-[11px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all duration-200 active:scale-95 cursor-pointer">
                 Cancelar
               </button>
               <button
                 @click="handleSubmit"
                 :disabled="!isConfirmed || processing"
-                class="flex-1 h-10 rounded-xl font-semibold text-[10px] uppercase tracking-widest transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer bg-red-500 hover:bg-red-600 text-white">
+                class="flex-1 h-11 rounded-2xl font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-red-500/25 transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer bg-red-500 hover:bg-red-600 text-white">
                 <span
                   v-if="processing"
-                  class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                <span v-else class="material-symbols-outlined notranslate text-[13px]">delete_forever</span>
+                  class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <span v-else class="material-symbols-outlined notranslate text-[14px]">delete_forever</span>
                 Eliminar definitivamente
               </button>
             </div>
@@ -170,16 +170,17 @@ const formatDate = (timestamp: { seconds?: number } | null | undefined) => {
 .md3-dialog-enter-from,
 .md3-dialog-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(8px);
 }
 
 .md3-dialog-enter-to,
 .md3-dialog-leave-from {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1) translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .md3-dialog-enter-active,
   .md3-dialog-leave-active {
     transition: none;
