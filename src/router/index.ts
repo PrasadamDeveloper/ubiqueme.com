@@ -38,6 +38,14 @@ const router = createRouter({
       component: () => import('@/views/public/HomeView.vue'),
     },
     {
+      path: '/promo',
+      name: 'promo',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/PromoView.vue'),
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       meta: {

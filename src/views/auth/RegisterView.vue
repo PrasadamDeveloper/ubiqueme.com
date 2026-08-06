@@ -216,9 +216,10 @@ import {
   signOut,
 } from 'firebase/auth'
 import { doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { nanoid } from 'nanoid'
 import { toast } from 'vue-sonner'
+const route = useRoute()
 const form = reactive({
   name: '',
   email: '',
@@ -268,6 +269,7 @@ const handleRegister = async () => {
       lastLoginAt: Timestamp.now(),
       createdAt: Timestamp.now(),
       trialActive: true, trialStartsAt: Timestamp.now(), trialEndsAt: Timestamp.fromDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)), isTrialUsed: false,
+      promoCode: (route.query.code as string) || '',
     });
 
     const subId = generateRandomId();
