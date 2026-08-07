@@ -80,7 +80,7 @@ const navLinks: NavLink[] = [
       },
     ],
   },
-  { name: 'Dashboard', pathName: 'dashboard', icon: 'dashboard_customize', requiredLogin: true },
+  { name: 'Mis QR', pathName: 'dashboard', icon: 'qr_code_2', requiredLogin: true },
   {
     name: 'Ayuda', pathName: 'help', icon: 'help', requiredLogin: false,
     description: 'Resuelve tus dudas y obtén soporte personalizado',
@@ -265,11 +265,11 @@ onUnmounted(() => {
           <!-- Desktop SSL + HTTPS badges (hidden on mobile) — iOS-style neutral -->
           <div class="hidden md:flex flex-col gap-1">
             <div class="flex items-center gap-1 rounded-full bg-slate-50 border border-slate-200/70 px-2 py-[3px]">
-              <span class="material-symbols-outlined notranslate text-[9px] text-slate-400" style="font-variation-settings:'wght'@300">lock</span>
+              <span class="material-symbols-outlined notranslate text-[9px] text-slate-400" style="font-variation-settings: 'wght' 300">lock</span>
               <span class="text-[8px] font-medium text-slate-500 uppercase tracking-[0.06em]">SSL</span>
             </div>
             <div class="flex items-center gap-1 rounded-full bg-slate-50 border border-slate-200/70 px-2 py-[3px]">
-              <span class="material-symbols-outlined notranslate text-[9px] text-slate-400" style="font-variation-settings:'wght'@300">verified</span>
+              <span class="material-symbols-outlined notranslate text-[9px] text-slate-400" style="font-variation-settings: 'wght' 300">verified</span>
               <span class="text-[8px] font-medium text-slate-500 uppercase tracking-[0.06em]">HTTPS</span>
             </div>
           </div>
@@ -375,11 +375,11 @@ onUnmounted(() => {
 
                 </RouterLink>
 
-                <!-- LINK WITH DROPDOWN -->
-                <button v-else
+                <!-- LINK WITH DROPDOWN (navigable + dropdown on hover) -->
+                <RouterLink v-else :to="{ name: link.pathName }"
                   class="group flex cursor-pointer items-center gap-2 rounded-full px-4 py-2.5 transition-all duration-300"
                   :class="[
-                    activeMenu === link.name
+                    activeMenu === link.name || $route.name === link.pathName
                       ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
                       : 'text-gray-600 hover:bg-orange-50 hover:text-orange-500'
                   ]">
@@ -404,7 +404,7 @@ onUnmounted(() => {
 
                   </span>
 
-                </button>
+                </RouterLink>
 
                 <!-- DROPDOWN -->
                 <Transition name="dropdown">
@@ -505,15 +505,15 @@ onUnmounted(() => {
           <template v-else>
 
             <RouterLink :to="{ name: 'dashboard' }"
-              class="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-300 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600">
+              class="flex items-center gap-2 rounded-full bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-orange-300 active:scale-95">
 
               <span class="material-symbols-outlined notranslate text-[18px]">
 
-                dashboard
+                qr_code_2
 
               </span>
 
-              Panel
+              Mis QR
 
             </RouterLink>
 
@@ -578,15 +578,15 @@ onUnmounted(() => {
                 <template v-else>
 
                   <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
-                    class="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 font-medium text-gray-700 transition hover:bg-orange-50 hover:text-orange-600">
+                    class="flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 py-3 font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600">
 
                     <span class="material-symbols-outlined notranslate">
 
-                      dashboard
+                      qr_code_2
 
                     </span>
 
-                    Panel
+                    Mis QR
 
                   </RouterLink>
 
@@ -644,7 +644,24 @@ onUnmounted(() => {
                   <!-- GROUP -->
                   <div v-else class="mb-2 overflow-hidden rounded-2xl border border-gray-100">
 
-                    <div class="flex items-center gap-3 bg-gray-50 px-4 py-3">
+                    <RouterLink v-if="link.pathName" :to="{ name: link.pathName }" @click="isMobileMenuOpen = false"
+                      class="flex items-center gap-3 bg-gray-50 px-4 py-3">
+
+                      <span class="material-symbols-outlined notranslate text-gray-400">
+
+                        {{ link.icon }}
+
+                      </span>
+
+                      <span class="font-semibold text-gray-700">
+
+                        {{ link.name }}
+
+                      </span>
+
+                    </RouterLink>
+
+                    <div v-else class="flex items-center gap-3 bg-gray-50 px-4 py-3">
 
                       <span class="material-symbols-outlined notranslate text-gray-400">
 

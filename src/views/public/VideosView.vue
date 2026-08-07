@@ -120,28 +120,32 @@ onMounted(() => {
     }, 300)
   }
 })
+
+const preventDownload = (event: Event) => {
+  event.preventDefault();
+}
 </script>
 
 <template>
   <HomeLayout>
     <template #main>
-      <main class="relative bg-[#09090b] overflow-hidden font-google-sans min-h-screen">
+      <main class="relative bg-white overflow-hidden font-google-sans min-h-screen">
 
         <!-- Background ornamentation -->
-        <div class="absolute inset-0 z-0 opacity-[0.22] pointer-events-none"
-          style="background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px); background-size: 100px 100px;">
+        <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
+          style="background-image: linear-gradient(rgba(0,0,0,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.5) 1px, transparent 1px); background-size: 100px 100px;">
         </div>
 
         <article class="relative z-10 w-full pt-28 pb-24 px-6 sm:px-8 max-w-7xl mx-auto">
 
           <!-- Header -->
           <div class="text-center mb-16" data-aos="fade-up">
-            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+            <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mb-4">
               Ubiqueme en acción
               <span
                 class="material-symbols-outlined notranslate text-4xl sm:text-5xl text-orange-500 align-middle">play_circle</span>
             </h1>
-            <p class="text-white/50 text-base sm:text-lg font-medium max-w-2xl mx-auto">
+            <p class="text-slate-500 text-base sm:text-lg font-medium max-w-2xl mx-auto">
               Descubra cómo nuestra tecnología protege lo que más valora. Haga clic en un video para verlo en detalle.
             </p>
           </div>
@@ -149,7 +153,7 @@ onMounted(() => {
           <!-- Quick nav pills -->
           <div class="flex flex-wrap justify-center gap-2 mb-16" data-aos="fade-up" data-aos-delay="100">
             <a v-for="v in videoSources" :key="v.slug" :href="`#${v.slug}`"
-              class="px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-full text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-orange-400 hover:border-orange-500/30 hover:bg-orange-500/[0.06] transition-all duration-300">
+              class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-orange-500 hover:border-orange-400/40 hover:bg-orange-50 transition-all duration-300">
               {{ v.title }}
             </a>
           </div>
@@ -159,26 +163,27 @@ onMounted(() => {
             <div v-for="(v, i) in videoSources" :key="v.slug" :id="v.slug" class="flex flex-col gap-4 scroll-mt-32"
               data-aos="fade-up" :data-aos-delay="(i) * 80">
 
-              <h3 class="text-xl sm:text-2xl font-bold text-white text-center px-2">{{ v.title }}</h3>
+              <h3 class="text-xl sm:text-2xl font-bold text-slate-900 text-center px-2">{{ v.title }}</h3>
 
-              <div class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group"
+              <div class="relative bg-white border border-slate-200 rounded-[2rem] overflow-hidden group"
                 :id="`video-${i}`">
                 <video
-                  class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video"
-                  :src="v.src" autoplay loop muted playsinline>
+                  class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video select-none"
+                  :src="v.src" autoplay loop muted playsinline draggable="false"
+                  controlslist="nodownload" @contextmenu="preventDownload">
                 </video>
 
                 <div
-                  class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
-                  <p class="text-white/90 text-sm md:text-base font-medium leading-relaxed mb-8">{{ v.description }}</p>
+                  class="absolute inset-0 bg-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center p-8 pointer-events-none text-center">
+                  <p class="text-slate-700 text-sm md:text-base font-medium leading-relaxed mb-8">{{ v.description }}</p>
                 </div>
 
                 <div
-                  class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#09090b]/80 to-transparent pointer-events-none transition-opacity duration-300 z-10">
+                  class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/80 to-transparent pointer-events-none transition-opacity duration-300 z-10">
                 </div>
 
                 <button @click="activateSound(i)"
-                  class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-[#09090b] hover:bg-orange-500 border border-orange-500/30 hover:border-transparent text-white/90 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 z-30 flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_25px_rgba(249,115,22,0.3)]">
+                  class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-white hover:bg-orange-500 border border-slate-200 hover:border-transparent text-slate-700 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 z-30 flex items-center gap-2 whitespace-nowrap shadow-[0_4px_15px_rgba(0,0,0,0.08)] hover:shadow-[0_0_25px_rgba(249,115,22,0.3)]">
                   <span class="material-symbols-outlined notranslate text-[14px]">{{ mutedStates[i] ? 'volume_off' :
                     'volume_up' }}</span>
                   {{ mutedStates[i] ? 'Haga click para activar el sonido' : 'Haga click para silenciar' }}
@@ -189,9 +194,9 @@ onMounted(() => {
 
           <!-- CTA -->
           <div class="text-center mt-20" data-aos="fade-up">
-            <p class="text-white/40 text-sm font-medium mb-6">¿Listo para proteger lo que más valora?</p>
+            <p class="text-slate-500 text-sm font-medium mb-6">¿Listo para proteger lo que más valora?</p>
             <router-link :to="{ name: 'register' }"
-              class="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 text-[#09090b] rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)]">
+              class="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)]">
               <span class="material-symbols-outlined notranslate text-sm">qr_code_scanner</span>
               Active su código QR gratis — 30 días sin tarjeta
             </router-link>
