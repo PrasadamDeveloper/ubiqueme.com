@@ -74,14 +74,17 @@ const videoSources: VideoItem[] = [
 
 const mutedStates = ref(videoSources.map(() => true))
 
-const activateSound = (videoId: number) => {
+const activateSound = async (videoId: number) => {
   const videoSelected = document.querySelector(`#video-${videoId} .main-video`) as HTMLVideoElement;
   if (!videoSelected) return;
 
-  videoSelected.muted = !videoSelected.muted;
-  mutedStates.value[videoId] = videoSelected.muted;
+  if (videoSelected.muted) {
+    // iOS-compatible pattern: play first (within the user gesture), then unmute once play() resolves.
+    videoSelected.muted = true;
+    await videoSelected.play();
+    videoSelected.muted = false;
 
-  if (!videoSelected.muted) {
+    // Mute all other videos
     videoSources.forEach((_, index) => {
       if (index !== videoId) {
         const otherVideo = document.querySelector(`#video-${index} .main-video`) as HTMLVideoElement;
@@ -91,9 +94,11 @@ const activateSound = (videoId: number) => {
         }
       }
     });
-    videoSelected.play();
+  } else {
+    videoSelected.muted = true;
   }
 
+  mutedStates.value[videoId] = videoSelected.muted;
   toast.info(videoSelected.muted ? 'Sonido desactivado' : 'Sonido activado');
 }
 
@@ -169,7 +174,7 @@ const preventDownload = (event: Event) => {
                 :id="`video-${i}`">
                 <video
                   class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video select-none"
-                  :src="v.src" autoplay loop muted playsinline draggable="false"
+                  :src="v.src" autoplay loop muted playsinline preload="auto" draggable="false"
                   controlslist="nodownload" @contextmenu="preventDownload">
                 </video>
 
